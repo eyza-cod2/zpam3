@@ -1,0 +1,576 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+#define ORIGIN_WEAPONIMAGE			310 110
+#define ORIGIN_GRENADESLOT1			310 170
+#define ORIGIN_GRENADESLOT2			330 170
+
+{
+	menuDef
+	{
+		name			"weapon_russian"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onEsc 
+		{
+			close weapon_russian;
+		}
+		onOpen 
+		{
+			show pps42_info;
+			show weapon_propertiestext;
+		}
+		onClose
+		{
+			hide nagant_info;
+			hide svt40_info;
+			hide pps42_info;
+			hide ppsh_info;
+			hide nagantsniper_info;
+			hide shotgun_info;
+		}
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+		
+		// Header
+		ITEM_TEXT_HEADING("@MPUI_RUSSIAN_WEAPONS");
+		
+		
+// MENU CHOICES
+		execKey "1" { play "mouse_click"; scriptMenuResponse "PPS42_mp"; }
+		execKey "2" { play "mouse_click"; scriptMenuResponse "mosin_nagant_mp"; }
+		execKey "3" { play "mouse_click"; scriptMenuResponse "SVT40_mp"; }
+		execKey "4" { play "mouse_click"; scriptMenuResponse "mosin_nagant_sniper_mp"; }
+		execKey "5" { play "mouse_click"; scriptMenuResponse "shotgun_mp"; }
+		execKey "6" { play "mouse_click"; scriptMenuResponse "ppsh_mp"; }
+
+		itemDef 
+		{
+			name			"button_pps42"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE1
+			forecolor		GLOBAL_UNFOCUSED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_1_PPS42"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_pps42"
+			showDvar		{ "1" }
+			action
+			{
+				play "mouse_click";
+				scriptMenuResponse "PPS42_mp";
+			}
+			onFocus
+			{
+				hide ppsh_info;
+				hide svt40_info;
+				hide nagant_info;
+				hide nagantsniper_info;
+				hide shotgun_info;
+				play "mouse_over";
+				show pps42_info;
+				show weapon_propertiestext;
+			}
+		}
+		itemDef 
+		{
+			name			"button_pps42"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE1
+			forecolor		GLOBAL_DISABLED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_1_PPS42"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_pps42"
+			showDvar		{ "2" }
+			onFocus
+			{
+				hide ppsh_info;
+				hide svt40_info;
+				hide nagant_info;
+				hide nagantsniper_info;
+				hide shotgun_info;
+				play "mouse_over";
+				show pps42_info;
+				show weapon_propertiestext;
+			}
+			decoration
+		}
+
+		itemDef 
+		{
+			name			"button_nagant"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE2
+			forecolor		GLOBAL_UNFOCUSED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_2_MOSINNAGANT"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_nagant"
+			showDvar		{ "1" }
+			action
+			{
+				play "mouse_click";
+				scriptMenuResponse "mosin_nagant_mp";
+			}
+			onFocus
+			{
+				hide pps42_info;
+				hide ppsh_info;
+				hide svt40_info;
+				hide nagantsniper_info;
+				hide shotgun_info;
+				play "mouse_over";
+				show nagant_info;
+				show weapon_propertiestext;
+			}
+		}
+		itemDef 
+		{
+			name			"button_nagant"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE2
+			forecolor		GLOBAL_DISABLED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_2_MOSINNAGANT"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_nagant"
+			showDvar		{ "2" }
+			onFocus
+			{
+				hide pps42_info;
+				hide ppsh_info;
+				hide svt40_info;
+				hide nagantsniper_info;
+				hide shotgun_info;
+				play "mouse_over";
+				show nagant_info;
+				show weapon_propertiestext;
+			}
+			decoration
+		}
+
+		itemDef 
+		{
+			name			"button_svt40"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE3
+			forecolor		GLOBAL_UNFOCUSED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_3_TOKAREV_SVT40"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_svt40"
+			showDvar		{ "1" }
+			action
+			{
+				play "mouse_click";
+				scriptMenuResponse "SVT40_mp";
+			}
+			onFocus
+			{
+				hide pps42_info;
+				hide ppsh_info;
+				hide nagant_info;
+				hide nagantsniper_info;
+				hide shotgun_info;
+				play "mouse_over";
+				show svt40_info;
+				show weapon_propertiestext;
+			}
+		}
+		itemDef 
+		{
+			name			"button_svt40"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE3
+			forecolor		GLOBAL_DISABLED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_3_TOKAREV_SVT40"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_svt40"
+			showDvar		{ "2" }
+			onFocus
+			{
+				hide pps42_info;
+				hide ppsh_info;
+				hide nagant_info;
+				hide nagantsniper_info;
+				hide shotgun_info;
+				play "mouse_over";
+				show svt40_info;
+				show weapon_propertiestext;
+			}
+			decoration
+		}
+
+		itemDef 
+		{
+			name			"button_nagantsniper"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE4
+			forecolor		GLOBAL_UNFOCUSED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_4_SCOPED_MOSINNAGANT"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_nagantsniper"
+			showDvar		{ "1" }
+			action
+			{
+				play "mouse_click";
+				scriptMenuResponse "mosin_nagant_sniper_mp";
+			}
+			onFocus
+			{
+				hide pps42_info;
+				hide ppsh_info;
+				hide svt40_info;
+				hide nagant_info;
+				hide shotgun_info;
+				play "mouse_over";
+				show nagantsniper_info;
+				show weapon_propertiestext;
+			}
+		}
+		itemDef 
+		{
+			name			"button_nagantsniper"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE4
+			forecolor		GLOBAL_DISABLED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_4_SCOPED_MOSINNAGANT"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_nagantsniper"
+			showDvar		{ "2" }
+			onFocus
+			{
+				hide pps42_info;
+				hide ppsh_info;
+				hide svt40_info;
+				hide nagant_info;
+				hide shotgun_info;
+				play "mouse_over";
+				show nagantsniper_info;
+				show weapon_propertiestext;
+			}
+			decoration
+		}
+
+		itemDef 
+		{
+			name			"button_shotgun"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE5
+			forecolor		GLOBAL_UNFOCUSED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_5_SHOTGUN"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_shotgun"
+			showDvar		{ "1" }
+			action
+			{
+				play "mouse_click";
+				scriptMenuResponse "shotgun_mp";
+			}
+			onFocus
+			{
+				hide pps42_info;
+				hide ppsh_info;
+				hide svt40_info;
+				hide nagant_info;
+				hide nagantsniper_info;
+				play "mouse_over";
+				show shotgun_info;
+				show weapon_propertiestext;
+			}
+		}
+		itemDef 
+		{
+			name			"button_shotgun"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE5
+			forecolor		GLOBAL_DISABLED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_5_SHOTGUN"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_shotgun"
+			showDvar		{ "2" }
+			onFocus
+			{
+				hide pps42_info;
+				hide ppsh_info;
+				hide svt40_info;
+				hide nagant_info;
+				hide nagantsniper_info;
+				play "mouse_over";
+				show shotgun_info;
+				show weapon_propertiestext;
+			}
+			decoration
+		}
+		
+		itemDef 
+		{
+			name			"button_ppsh"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE6
+			forecolor		GLOBAL_UNFOCUSED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_6_PPSH"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_ppsh"
+			showDvar		{ "1" }
+			action
+			{
+				play "mouse_click";
+				scriptMenuResponse "ppsh_mp";
+			}
+			onFocus
+			{
+				hide pps42_info;
+				hide svt40_info;
+				hide nagant_info;
+				hide nagantsniper_info;
+				hide shotgun_info;
+				play "mouse_over";
+				show ppsh_info;
+				show weapon_propertiestext;
+			}
+		}
+		itemDef 
+		{
+			name			"button_ppsh"
+			visible			1
+			rect			0 0 128 24
+			origin			ORIGIN_CHOICE6
+			forecolor		GLOBAL_DISABLED_COLOR
+			type			ITEM_TYPE_BUTTON
+			text			"@MPUI_6_PPSH"
+			textfont		UI_FONT_NORMAL
+			textscale		GLOBAL_TEXT_SIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		20
+			dvartest		"ui_allow_ppsh"
+			showDvar		{ "2" }
+			onFocus
+			{
+				hide pps42_info;
+				hide svt40_info;
+				hide nagant_info;
+				hide nagantsniper_info;
+				hide shotgun_info;
+				play "mouse_over";
+				show ppsh_info;
+				show weapon_propertiestext;
+			}
+			decoration
+		}
+
+		itemDef 
+		{
+			#include "ui_mp/button_mainmenu.menu"
+
+			action
+			{
+				play "mouse_click";
+				close ingame;
+				open main;
+			}
+			onFocus
+			{
+				play "mouse_over";
+			}
+		}
+		
+// WEAPON IMAGES
+		itemDef
+		{
+			name			"pps42_info"
+			visible 		0
+			rect			0 6 224 112
+			origin			ORIGIN_WEAPONIMAGE
+	 		style			WINDOW_STYLE_SHADER
+			background		"weapon_pps42"
+			decoration
+		}
+		itemDef
+		{
+			name			"ppsh_info"
+			visible 		0
+			rect			0 10 224 112
+			origin			ORIGIN_WEAPONIMAGE
+	 		style			WINDOW_STYLE_SHADER
+			background		"weapon_ppsh"
+			decoration
+		}
+		itemDef
+		{
+			name			"svt40_info"
+			visible 		0
+			rect			0 0 224 112
+			origin			ORIGIN_WEAPONIMAGE
+	 		style			WINDOW_STYLE_SHADER
+			background		"weapon_svt40"
+			decoration
+		}
+		itemDef
+		{
+			name			"nagant_info"
+			visible 		0
+			rect			0 0 224 112
+			origin			ORIGIN_WEAPONIMAGE
+	 		style			WINDOW_STYLE_SHADER
+			background		"weapon_nagant"
+			decoration
+		}
+		itemDef
+		{
+			name			"nagantsniper_info"
+			visible 		0
+			rect			0 0 224 112
+			origin			ORIGIN_WEAPONIMAGE
+	 		style			WINDOW_STYLE_SHADER
+			background		"weapon_nagantscoped"
+			decoration
+		}
+		itemDef
+		{
+			name			"shotgun_info"
+			visible 		0
+			rect			0 0 224 112
+			origin			ORIGIN_WEAPONIMAGE
+	 		style			WINDOW_STYLE_SHADER
+			background		"weapon_shotgun"
+			decoration
+		}
+
+// GRENADE LOADOUT
+		itemDef
+		{
+			name			"pps42_info"
+			visible 		0
+			rect			0 0 32 32
+			origin			ORIGIN_GRENADESLOT1
+	 		style			WINDOW_STYLE_SHADER
+			background		"gfx/icons/hud@russian_grenade_C.tga"
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"ppsh_info"
+			visible 		0
+			rect			0 0 32 32
+			origin			ORIGIN_GRENADESLOT1
+	 		style			WINDOW_STYLE_SHADER
+			background		"gfx/icons/hud@russian_grenade_C.tga"
+			decoration
+		}
+
+		itemDef
+		{
+			name			"svt40_info"
+			visible 		0
+			rect			0 0 32 32
+			origin			ORIGIN_GRENADESLOT1
+	 		style			WINDOW_STYLE_SHADER
+			background		"gfx/icons/hud@russian_grenade_C.tga"
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"nagant_info"
+			visible 		0
+			rect			0 0 32 32
+			origin			ORIGIN_GRENADESLOT1
+	 		style			WINDOW_STYLE_SHADER
+			background		"gfx/icons/hud@russian_grenade_C.tga"
+			decoration
+		}
+				
+		itemDef
+		{
+			name			"nagantsniper_info"
+			visible 		0
+			rect			0 0 32 32
+			origin			ORIGIN_GRENADESLOT1
+	 		style			WINDOW_STYLE_SHADER
+			background		"gfx/icons/hud@russian_grenade_C.tga"
+			decoration
+		}
+
+		itemDef
+		{
+			name			"shotgun_info"
+			visible 		0
+			rect			0 0 32 32
+			origin			ORIGIN_GRENADESLOT1
+	 		style			WINDOW_STYLE_SHADER
+			background		"gfx/icons/hud@russian_grenade_C.tga"
+			decoration
+		}
+		
+// SMOKE GRENADE LOADOUT
+		itemDef
+		{
+			name			"shotgun_info"
+			visible 		0
+			rect			0 0 32 32
+			origin			ORIGIN_GRENADESLOT2
+	 		style			WINDOW_STYLE_SHADER
+			background		"hud_us_smokegrenade_C"
+			decoration
+		}
+	}
+}

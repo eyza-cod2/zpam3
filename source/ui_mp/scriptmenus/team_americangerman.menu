@@ -1,0 +1,90 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+{
+	menuDef
+	{
+		name			"team_americangerman"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onOpen
+		{
+			uiScript openMenuOnDvar ui_show_matchinfo "1" matchinfo;
+			open team_americangerman_keys;
+		}
+		onClose
+		{
+		}
+		onEsc
+		{
+			close team_americangerman;
+			close matchinfo;
+			close team_americangerman_keys;
+		}
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+
+
+		// Header: Teams
+		ITEM_TEXT_HEADING("@MPUI_TEAMS")
+
+
+		// Bottom: 1. Auto-Assign
+		ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE1, "@MPUI_1_AUTOASSIGN", "ui_allow_joinauto", showDvar{"1"}, ; show "autoassign_info", scriptMenuResponse "autoassign")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE1, "@MPUI_1_AUTOASSIGN", "ui_allow_joinauto", showDvar{"2"}, ;)
+
+		// Bottom: 2. American
+		ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE2, "@MPUI_2_AMERICAN", "ui_allow_joinallies", showDvar{"1"}, ; show "allies_info", scriptMenuResponse "allies")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE2, "@MPUI_2_AMERICAN", "ui_allow_joinallies", showDvar{"2"}, ;)
+
+		// Bottom: 3. German
+		ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE3, "@MPUI_3_GERMAN", "ui_allow_joinaxis", showDvar{"1"}, ; show "axis_info", scriptMenuResponse "axis")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE3, "@MPUI_3_GERMAN", "ui_allow_joinaxis", showDvar{"2"}, ;)
+
+		// Bottom: 4. Spectate
+		ITEM_BUTTON			(ORIGIN_CHOICE4, "@MPUI_4_SPECTATE", ;, scriptMenuResponse "spectator")
+
+
+		// Close
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, close team_americangerman;)
+		// Main menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, close team_americangerman; open main;)
+		// Server info
+		ITEM_BAR_BOTTOM_BUTTON("^9[I]^7 Server Info",	280, 80, exec "openscriptmenu ingame serverinfo";)
+	}
+
+	// Key choices has to be in different menu if we are using submenus
+	// This keys is opened as last and will be in focus - so keys from this submenu will be accepted
+	menuDef
+	{
+		name			"team_americangerman_keys"
+		rect			0 0 1 1
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		execKey "1" { play "mouse_click"; exec "openscriptmenu team_americangerman autoassign" }
+		execKey "2" { play "mouse_click"; exec "openscriptmenu team_americangerman allies" }
+		execKey "3" { play "mouse_click"; exec "openscriptmenu team_americangerman axis" }
+		execKey "4" { play "mouse_click"; exec "openscriptmenu team_americangerman spectator" }
+
+		execKeyInt 32 { play "mouse_click"; close team_americangerman; open main; } // space
+		execKeyInt 105 { play "mouse_click"; exec "openscriptmenu ingame serverinfo" } // i
+	}
+
+	// Match info
+	menuDef
+	{
+		name			"matchinfo"
+		rect			260 84 430 375
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		#include "ui_mp/scriptmenus/ingame_matchinfo.menu"
+	}
+}

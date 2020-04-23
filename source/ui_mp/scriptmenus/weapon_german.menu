@@ -1,0 +1,56 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+#define HIDE_ALL hide weapon_mp40; hide weapon_kar98; hide weapon_g43; hide weapon_kar98scoped; hide weapon_shotgun; hide weapon_mp44;
+
+{
+	menuDef
+	{
+		name			"weapon_german"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onEsc
+		{
+			HIDE_ALL
+			close weapon_german;
+		}
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+
+		// Header
+		ITEM_TEXT_HEADING("@MPUI_GERMAN_WEAPONS")
+
+
+		// MENU CHOICES
+		execKey "1" { play "mouse_click"; scriptMenuResponse "mp40_mp"; }
+		execKey "2" { play "mouse_click"; scriptMenuResponse "kar98k_mp"; }
+		execKey "3" { play "mouse_click"; scriptMenuResponse "g43_mp"; }
+		execKey "4" { play "mouse_click"; scriptMenuResponse "kar98k_sniper_mp"; }
+		execKey "5" { play "mouse_click"; scriptMenuResponse "shotgun_mp"; }
+		execKey "6" { play "mouse_click"; scriptMenuResponse "mp44_mp"; }
+
+		execKeyInt 32 { play "mouse_click"; close weapon_german; open main; } // space
+
+
+
+		ITEM_WEAPON(ORIGIN_CHOICE1, "button_mp40", 			"@MPUI_1_MP40", 			"ui_allow_mp40", 			"weapon_mp40", 			show weapon_mp40;, 			scriptMenuResponse "mp40_mp";, 			"steilhandgrenate_C",	"smg")
+		ITEM_WEAPON(ORIGIN_CHOICE2, "button_kar98k", 		"@MPUI_2_KAR98K", 			"ui_allow_kar98k", 			"weapon_kar98", 		show weapon_kar98;, 		scriptMenuResponse "kar98k_mp";, 		"steilhandgrenate_C",	"boltaction")
+		ITEM_WEAPON(ORIGIN_CHOICE3, "button_g43", 			"@MPUI_3_G43", 				"ui_allow_g43", 			"weapon_g43", 			show weapon_g43;,			scriptMenuResponse "g43_mp";, 			"steilhandgrenate_C",	"semiautomatic")
+		ITEM_WEAPON(ORIGIN_CHOICE4, "button_kar98k_sniper", "@MPUI_4_SCOPED_KAR98K", 	"ui_allow_kar98ksniper", 	"weapon_kar98scoped", 	show weapon_kar98scoped;, 	scriptMenuResponse "kar98k_sniper_mp";, "steilhandgrenate_C",	"sniper")
+		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, "button_shotgun", "@MPUI_5_SHOTGUN", 			"ui_allow_shotgun", 		"weapon_shotgun", 		show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 		"steilhandgrenate_C",	"shotgun")
+		ITEM_WEAPON(ORIGIN_CHOICE6, "button_mp44", 			"@MPUI_6_MP44", 			"ui_allow_mp44", 			"weapon_mp44", 			show weapon_mp44;, 			scriptMenuResponse "mp44_mp";, 			"steilhandgrenate_C",	"mg")
+
+
+
+		// Close
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, close weapon_german;)
+		// Main menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, close weapon_german; open main;)
+	}
+}

@@ -1,0 +1,83 @@
+// Note to translators:
+// If a sentence is the same in your language then please change it to "#same"
+//
+// eg:
+// LANG_ENGLISH  "HALT"
+// LANG_GERMAN   "#same"
+//
+// (This is so we can tell which strings have been signed-off as ok to be the same words for QA
+//  and because we do not store duplicate strings, which will then get exported again next time
+//  as being untranslated.)
+//
+VERSION             "1"
+CONFIG              "C:\trees\cod2\bin\StringEd.cfg"
+FILENOTES           "Strings for PAM mode"
+
+
+
+
+
+
+
+REFERENCE           MOD_IS_NOT_DOWNLOADED_WATERMARK
+LANG_ENGLISH        ""
+
+
+
+
+
+
+// Ready-up
+REFERENCE           READYUP_MODE
+LANG_ENGLISH        "Ready-Up Mode"
+
+REFERENCE           READYUP_WAITING_ON
+LANG_ENGLISH        "Waiting on"
+
+REFERENCE           READYUP_PLAYERS
+LANG_ENGLISH        "Players"
+
+REFERENCE           READYUP_YOUR_STATUS
+LANG_ENGLISH        "Your Status"
+
+REFERENCE           READYUP_READY
+LANG_ENGLISH        "Ready"
+
+REFERENCE           READYUP_NOT_READY
+LANG_ENGLISH        "Not Ready"
+
+REFERENCE           READYUP_CLOCK
+LANG_ENGLISH        "Clock"
+
+REFERENCE           READYUP_KILLS
+LANG_ENGLISH        "Kills"
+
+
+
+
+// Readyup warnings
+
+REFERENCE           WARNING_PASSWORD_IS_NOT_SET
+LANG_ENGLISH        "Warning: Server password is not set"
+
+REFERENCE           WARNING_CHEATS_ARE_ENABLED
+LANG_ENGLISH        "Warning: Cheats are Enabled"
+
+REFERENCE           WARNING_PUNKBUSTER_IS_DISABLED
+LANG_ENGLISH        "Warning: PunkBuster is Disabled"
+
+REFERENCE           WARNING_CVARS_ARE_CHANGED
+LANG_ENGLISH        "Warning: Server CVAR values are not equal to league rules"
+
+
+
+
+
+
+// League name
+REFERENCE           UNKNOWN_MODE
+LANG_ENGLISH        "^1Unknown &&1 pam mode"
+
+
+
+ENDMARKER

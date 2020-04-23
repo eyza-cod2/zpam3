@@ -1,0 +1,58 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+#define HIDE_ALL hide weapon_sten; hide weapon_enfield; hide weapon_m1garand; hide weapon_enfieldscoped; hide weapon_shotgun; hide weapon_thompson; hide weapon_bren;
+
+{
+	menuDef
+	{
+		name			"weapon_british"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onEsc
+		{
+			HIDE_ALL
+			close weapon_british;
+		}
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+
+		// Header
+		ITEM_TEXT_HEADING("@MPUI_BRITISH_WEAPONS")
+
+
+		// MENU CHOICES
+		execKey "1" { play "mouse_click"; scriptMenuResponse "sten_mp"; }
+		execKey "2" { play "mouse_click"; scriptMenuResponse "enfield_mp"; }
+		execKey "3" { play "mouse_click"; scriptMenuResponse "m1garand_mp"; }
+		execKey "4" { play "mouse_click"; scriptMenuResponse "enfield_scope_mp"; }
+		execKey "5" { play "mouse_click"; scriptMenuResponse "shotgun_mp"; }
+		execKey "6" { play "mouse_click"; scriptMenuResponse "thompson_mp"; }
+		execKey "7" { play "mouse_click"; scriptMenuResponse "bren_mp"; }
+
+		execKeyInt 32 { play "mouse_click"; close weapon_british; open main; } // space
+
+
+
+		ITEM_WEAPON(ORIGIN_CHOICE1, "button_sten", 			"@MPUI_1_STEN", 			"ui_allow_sten", 			"weapon_sten", 			show weapon_sten;, 			scriptMenuResponse "sten_mp";, 			"british_grenade_C",	"smg")
+		ITEM_WEAPON(ORIGIN_CHOICE2, "button_enfield", 		"@MPUI_2_LEEENFIELD", 		"ui_allow_enfield", 		"weapon_enfield", 		show weapon_enfield;, 		scriptMenuResponse "enfield_mp";, 		"british_grenade_C",	"boltaction")
+		ITEM_WEAPON(ORIGIN_CHOICE3, "button_m1garand", 		"@MPUI_3_M1_GARAND", 		"ui_allow_m1garand", 		"weapon_m1garand", 		show weapon_m1garand;,		scriptMenuResponse "m1garand_mp";, 		"british_grenade_C",	"semiautomatic")
+		ITEM_WEAPON(ORIGIN_CHOICE4, "button_enfieldscoped", "@MPUI_4_SCOPED_LEEENFIELD", "ui_allow_enfieldsniper", "weapon_enfieldscoped", 	show weapon_enfieldscoped;, scriptMenuResponse "enfield_scope_mp";, "british_grenade_C",	"sniper")
+		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, "button_shotgun", "@MPUI_5_SHOTGUN", 			"ui_allow_shotgun", 		"weapon_shotgun", 		show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 		"british_grenade_C",	"shotgun")
+		ITEM_WEAPON(ORIGIN_CHOICE6, "button_thompson", 		"@MPUI_6_THOMPSON", 		"ui_allow_thompson", 		"weapon_thompson", 		show weapon_thompson;, 		scriptMenuResponse "thompson_mp";, 		"british_grenade_C",	"smg")
+		ITEM_WEAPON(ORIGIN_CHOICE7, "button_bren", 			"@MPUI_7_BREN_LMG", 		"ui_allow_bren", 			"weapon_bren",			show weapon_bren;, 			scriptMenuResponse "bren_mp";, 			"british_grenade_C",	"mg")
+
+
+
+		// Close
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, close weapon_british;)
+		// Main menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, close weapon_british; open main;)
+	}
+}

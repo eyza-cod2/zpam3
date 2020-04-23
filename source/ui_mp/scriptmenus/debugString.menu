@@ -1,0 +1,786 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+
+{
+	menuDef
+	{
+		name			"debugString"
+		fullscreen		0
+		rect			0 0 640 480
+		focuscolor		1 1 1 1
+		disablecolor	0 0 0 0
+ 		style			WINDOW_STYLE_EMPTY
+
+		onOpen
+		{
+			//setDvar cl_bypassMouseInput "1"
+			scriptMenuResponse "open";
+		}
+		onClose
+		{
+			setDvar cl_bypassMouseInput "0"
+			scriptMenuResponse "close";
+		}
+
+
+
+		execKeyInt 32 { play "mouse_click"; exec "toggle cl_bypassMouseInput 0 1" } // space
+
+
+
+
+		itemDef
+		{
+			style			WINDOW_STYLE_FILLED
+			rect			-128 0 896 480 0 0
+			backcolor		0.045 .05 0.053 .65
+			visible			1
+			decoration
+		}
+
+
+		itemDef
+		{
+			name			"text_1"
+			visible			1
+			origin			20 20
+			forecolor		1 1 1 1
+			dvar			"debug_line_1"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_2"
+			visible			1
+			origin			20 35
+			forecolor		1 1 1 1
+			dvar			"debug_line_2"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_3"
+			visible			1
+			origin			20 50
+			forecolor		1 1 1 1
+			dvar			"debug_line_3"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_4"
+			visible			1
+			origin			20 65
+			forecolor		1 1 1 1
+			dvar			"debug_line_4"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_5"
+			visible			1
+			origin			20 80
+			forecolor		1 1 1 1
+			dvar			"debug_line_5"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_6"
+			visible			1
+			origin			20 95
+			forecolor		1 1 1 1
+			dvar			"debug_line_6"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_7"
+			visible			1
+			origin			20 110
+			forecolor		1 1 1 1
+			dvar			"debug_line_7"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_8"
+			visible			1
+			origin			20 125
+			forecolor		1 1 1 1
+			dvar			"debug_line_8"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_9"
+			visible			1
+			origin			20 140
+			forecolor		1 1 1 1
+			dvar			"debug_line_9"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_10"
+			visible			1
+			origin			20 155
+			forecolor		1 1 1 1
+			dvar			"debug_line_10"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_11"
+			visible			1
+			origin			20 170
+			forecolor		1 1 1 1
+			dvar			"debug_line_11"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_12"
+			visible			1
+			origin			20 185
+			forecolor		1 1 1 1
+			dvar			"debug_line_12"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_13"
+			visible			1
+			origin			20 200
+			forecolor		1 1 1 1
+			dvar			"debug_line_13"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_14"
+			visible			1
+			origin			20 215
+			forecolor		1 1 1 1
+			dvar			"debug_line_14"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_15"
+			visible			1
+			origin			20 230
+			forecolor		1 1 1 1
+			dvar			"debug_line_15"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_16"
+			visible			1
+			origin			20 245
+			forecolor		1 1 1 1
+			dvar			"debug_line_16"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_17"
+			visible			1
+			origin			20 260
+			forecolor		1 1 1 1
+			dvar			"debug_line_17"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_18"
+			visible			1
+			origin			20 275
+			forecolor		1 1 1 1
+			dvar			"debug_line_18"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_19"
+			visible			1
+			origin			20 290
+			forecolor		1 1 1 1
+			dvar			"debug_line_19"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_20"
+			visible			1
+			origin			20 305
+			forecolor		1 1 1 1
+			dvar			"debug_line_20"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_21"
+			visible			1
+			origin			20 320
+			forecolor		1 1 1 1
+			dvar			"debug_line_21"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			name			"text_22"
+			visible			1
+			origin			20 335
+			forecolor		1 1 1 1
+			dvar			"debug_line_22"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			visible			1
+			origin			20 350
+			forecolor		1 1 1 1
+			dvar			"debug_line_23"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			visible			1
+			origin			20 365
+			forecolor		1 1 1 1
+			dvar			"debug_line_24"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			visible			1
+			origin			20 380
+			forecolor		1 1 1 1
+			dvar			"debug_line_25"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			visible			1
+			origin			20 395
+			forecolor		1 1 1 1
+			dvar			"debug_line_26"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			visible			1
+			origin			20 410
+			forecolor		1 1 1 1
+			dvar			"debug_line_27"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			visible			1
+			origin			20 425
+			forecolor		1 1 1 1
+			dvar			"debug_line_28"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			visible			1
+			origin			20 440
+			forecolor		1 1 1 1
+			dvar			"debug_line_29"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+		itemDef
+		{
+			visible			1
+			origin			20 455
+			forecolor		1 1 1 1
+			dvar			"debug_line_30"
+			textfont		UI_FONT_CONSOLE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		16
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				itemDef
+				{
+					name			"text_1"
+					visible			1
+					origin			320 20
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_1"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_2"
+					visible			1
+					origin			320 35
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_2"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_3"
+					visible			1
+					origin			320 50
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_3"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_4"
+					visible			1
+					origin			320 65
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_4"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_5"
+					visible			1
+					origin			320 80
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_5"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_6"
+					visible			1
+					origin			320 95
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_6"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_7"
+					visible			1
+					origin			320 110
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_7"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_8"
+					visible			1
+					origin			320 125
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_8"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_9"
+					visible			1
+					origin			320 140
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_9"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_10"
+					visible			1
+					origin			320 155
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_10"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_11"
+					visible			1
+					origin			320 170
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_11"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_12"
+					visible			1
+					origin			320 185
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_12"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_13"
+					visible			1
+					origin			320 200
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_13"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_14"
+					visible			1
+					origin			320 215
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_14"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_15"
+					visible			1
+					origin			320 230
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_15"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_16"
+					visible			1
+					origin			320 245
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_16"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_17"
+					visible			1
+					origin			320 260
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_17"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_18"
+					visible			1
+					origin			320 275
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_18"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_19"
+					visible			1
+					origin			320 290
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_19"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_20"
+					visible			1
+					origin			320 305
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_20"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_21"
+					visible			1
+					origin			320 320
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_21"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					name			"text_22"
+					visible			1
+					origin			320 335
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_22"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					visible			1
+					origin			320 350
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_23"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					visible			1
+					origin			320 365
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_24"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					visible			1
+					origin			320 380
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_25"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					visible			1
+					origin			320 395
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_26"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					visible			1
+					origin			320 410
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_27"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					visible			1
+					origin			320 425
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_28"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					visible			1
+					origin			320 440
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_29"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+				itemDef
+				{
+					visible			1
+					origin			320 455
+					forecolor		1 1 1 1
+					dvar			"debug_row_2_line_30"
+					textfont		UI_FONT_CONSOLE
+					textscale		0.25
+					textstyle		ITEM_TEXTSTYLE_SHADOWED
+					textaligny		16
+				}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		// TODO: remove when final release
+		ITEM_BUTTON 				(0   450, "end_round", ;, scriptMenuResponse "end_round")
+		ITEM_BUTTON 				(130 450, "next_round", ;, scriptMenuResponse "next_round")
+		ITEM_BUTTON 				(260 450, "do_halftime", ;, scriptMenuResponse "do_halftime")
+		ITEM_BUTTON 				(390 450, "skip_readyup", ;, scriptMenuResponse "skip_readyup")
+		//ITEM_BUTTON 				(520 450, "", ;, scriptMenuResponse "")
+
+
+
+	}
+}

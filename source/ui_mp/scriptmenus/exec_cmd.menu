@@ -1,0 +1,15 @@
+{
+    menuDef
+    {
+        name           "exec_cmd"
+        rect           0 0 1 1
+        visible        0
+        fullscreen     0
+
+        onOpen
+        {
+            execNow "vstr exec_cmd";
+            //close exec_cmd;
+        }
+    }
+}

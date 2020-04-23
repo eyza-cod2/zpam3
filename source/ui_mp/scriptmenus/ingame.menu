@@ -1,0 +1,187 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+#define CLOSE_ALL close ingame_keys; close matchinfo; close playersettings; close rcon_map; close rcon_kick; close aboutpam;
+
+{
+	menuDef
+	{
+		name			"ingame"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onOpen
+		{
+			CLOSE_ALL;
+			uiScript openMenuOnDvar ui_show_matchinfo "1" matchinfo;
+			open ingame_keys;
+
+			RCON_UPDATE_STATUS
+		}
+		onEsc
+		{
+			CLOSE_ALL;
+			close ingame;
+		}
+
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+
+		// Header: Teams
+		ITEM_TEXT_HEADING("@MENU_OPTIONS")
+
+
+		ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE1, "@MPUI_1_CHANGE_WEAPON", "ui_allow_weaponchange", showDvar{"1"}, ;, scriptMenuResponse "changeweapon")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE1, "@MPUI_1_CHANGE_WEAPON", "ui_allow_weaponchange", hideDvar{"1"}, ;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE2, "@MPUI_2_CHANGE_TEAM", ;, scriptMenuResponse "changeteam")
+		ITEM_BUTTON 				(ORIGIN_CHOICE3, "3. Player Settings", ;, 	CLOSE_ALL; open playersettings; open ingame_keys;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE4, "4. Change map", ;, 		CLOSE_ALL; open rcon_map; open ingame_keys; RCON_UPDATE_STATUS;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE5, "5. Kick player", ;, 		CLOSE_ALL; open rcon_kick; open ingame_keys; RCON_UPDATE_STATUS;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE6, "6. About PAM", ;, 		CLOSE_ALL; open aboutpam; open ingame_keys;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE7, "7. Leave Game", ;, 		CLOSE_ALL; close ingame; open leavegame;)
+
+		// This is enabled only if developer_script = 1
+		ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE9, "Debug", "debug", showDvar{"1"}, ;, scriptMenuResponse "debug")
+
+
+		// Close
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, CLOSE_ALL; close ingame;)
+		// Main menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, CLOSE_ALL; close ingame; open main;)
+		// Server info
+		ITEM_BAR_BOTTOM_BUTTON("^9[I]^7 Server Info",	280, 80, scriptMenuResponse "serverinfo"; /*exec "openscriptmenu ingame serverinfo";*/)
+
+		// Disabled
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Call timeout",	395, 120, "ui_allow_timeout", showDvar { "0" })
+		// Enabled
+		ITEM_BAR_BOTTOM_BUTTON_DVAR("^9[T]^7 Call timeout",	395, 120, "ui_allow_timeout", showDvar { "1" }, scriptMenuResponse "timeout";)
+		// Disabled
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Call timeout",	395, 120, "ui_allow_timeout", showDvar { "2" })
+		// Already called
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Timeout called",	395, 120, "ui_allow_timeout", showDvar { "3" })
+		// In timeout
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Already in timeout",	395, 120, "ui_allow_timeout", showDvar { "4" })
+		// Cancel timeout
+		ITEM_BAR_BOTTOM_BUTTON_DVAR("^9[T]^7 Cancel timeout",	395, 120, "ui_allow_timeout", showDvar { "5" }, scriptMenuResponse "timeout";)
+
+
+		// "Rcon status: ^3not logged" / "Rcon status: ^2logged in"
+		ITEM_RCON_STATUS
+	}
+
+	// Key choices has to be in different menu if we are using submenus
+	// This keys is opened as last and will be in focus - so keys from this submenu will be accepted
+	menuDef
+	{
+		name			"ingame_keys"
+		rect			0 0 1 1
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		execKey "1" { play "mouse_click"; exec "openscriptmenu ingame changeweapon" }
+		execKey "2" { play "mouse_click"; exec "openscriptmenu ingame changeteam" }
+		execKey "3" { play "mouse_click"; CLOSE_ALL; open playersettings; open ingame_keys; }
+		execKey "4" { play "mouse_click"; CLOSE_ALL; open rcon_map; open ingame_keys; }
+		execKey "5" { play "mouse_click"; CLOSE_ALL; open rcon_kick; open ingame_keys; }
+		execKey "6" { play "mouse_click"; CLOSE_ALL; open aboutpam; open ingame_keys; }
+		execKey "7" { play "mouse_click"; CLOSE_ALL; close ingame; open leavegame }
+
+		execKeyInt 32 { play "mouse_click"; CLOSE_ALL; close ingame; open main; } // space
+		execKeyInt 105 { play "mouse_click"; exec "openscriptmenu ingame serverinfo";  } // i
+		execKeyInt 116 { play "mouse_click"; exec "openscriptmenu ingame timeout";  } // t
+	}
+
+	menuDef
+	{
+		name			"matchinfo"
+		rect			260 84 430 150
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		#include "ui_mp/scriptmenus/ingame_matchinfo.menu"
+	}
+
+	menuDef
+	{
+		name			"playersettings"
+		rect			240 84 430 350
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		#include "ui_mp/scriptmenus/ingame_playersettings.menu"
+	}
+
+	menuDef
+	{
+		name			"rcon_map"
+		rect			240 84 430 350
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		#include "ui_mp/scriptmenus/ingame_rcon_map.menu"
+	}
+
+	menuDef
+	{
+		name			"rcon_kick"
+		rect			240 84 430 350
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		#include "ui_mp/scriptmenus/ingame_rcon_kick.menu"
+	}
+
+	menuDef
+	{
+		name			"aboutpam"
+		rect			240 60 430 350
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		#include "ui_mp/scriptmenus/ingame_aboutpam.menu"
+	}
+
+
+
+
+	// Menu to leave game
+	menuDef
+	{
+		name			"leavegame"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onEsc
+		{
+			play "mouse_click";
+			close leavegame;
+			open ingame;
+		}
+
+		// MENU CHOICES
+		execKey "1" { play "mouse_click"; close leavegame; exec "disconnect" }
+		execKey "2" { play "mouse_click"; close leavegame; open ingame; }
+
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+
+
+		ITEM_TEXT_HEADING("@MPUI_LEAVE_GAME1")
+
+		ITEM_BUTTON 				(ORIGIN_CHOICE1, "@MPUI_1_YES", ;, exec "disconnect";)
+		ITEM_BUTTON 				(ORIGIN_CHOICE2, "@MPUI_2_NO", ;, close leavegame; open ingame;)
+
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Back",	40, 120, close leavegame; open ingame;)
+
+	}
+}

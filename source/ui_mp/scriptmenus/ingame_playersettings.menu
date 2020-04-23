@@ -1,0 +1,199 @@
+onOpen
+{
+	exec "set ui_drawfps 1";
+	execOnDvarStringValue cg_drawfps Off "set ui_drawfps 0";
+
+	exec "set ui_polygons 1";
+	execOnDvarFloatValue r_polygonOffsetBias 16 "set ui_polygons 0";
+}
+
+
+#define DRAW_ITEM_NAME(textstring, position) \
+itemDef \
+{ \
+	type 			ITEM_TYPE_TEXT \
+	text 			textstring \
+	origin 			position \
+	textaligny		16 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textscale		0.32 \
+	forecolor		1 1 1 1 \
+	visible			1 \
+	decoration \
+}
+
+#define DRAW_ITEM_BUTTON(textstring, position, domouseenter, domouseexit, doaction) \
+itemDef \
+{ \
+	type 				ITEM_TYPE_BUTTON \
+	text 				textstring \
+	rect			0 0 300 19 0 0 \
+	origin 			position \
+	textaligny	16 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textscale		0.32 \
+	forecolor		1 1 1 1 \
+	visible			1 \
+	action \
+	{ \
+		play "mouse_click"; \
+		doaction; \
+	} \
+	mouseEnter  \
+	{ \
+		play "mouse_over"; \
+		domouseenter \
+	} \
+	mouseexit  \
+	{  \
+		domouseexit \
+	} \
+}
+
+#define DRAW_ITEM_YESNO(cvar, position, action_todo) \
+itemDef \
+{ \
+	type 		ITEM_TYPE_YESNO \
+	text 		" " \
+	dvar 		cvar \
+	rect		0 0 300 18 0 0 \
+	origin 	position \
+	textalignx	158 \
+	textalign	ITEM_ALIGN_RIGHT \
+	textaligny	16 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textscale		0.32 \
+	forecolor		1 1 1 1 \
+	visible			1 \
+	mouseEnter \
+	{ \
+		play "mouse_over"; \
+	} \
+	action {  \
+		play "mouse_click"; \
+		action_todo \
+	} \
+}
+
+#define DRAW_ITEM_SLIDER(cvar_info, position) \
+itemDef \
+{ \
+	type ITEM_TYPE_SLIDER \
+	text " " \
+	cvar_info \
+	rect		0 0 300 18 0 0 \
+	origin  position \
+	textalignx 150 \
+	visible		1 \
+	mouseEnter \
+	{ \
+		play "mouse_over"; \
+	} \
+	action { play "mouse_click"; } \
+} \
+itemDef \
+{ \
+	text " " \
+	type ITEM_TYPE_DECIMALFIELD \
+	cvar_info \
+	origin position \
+	textalignx	260 \
+	textalign	ITEM_ALIGN_RIGHT \
+	textaligny	16 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textscale		0.32 \
+	forecolor		1 1 1 1 \
+	visible		1 \
+	decoration \
+	mouseEnter \
+{ \
+	play "mouse_over"; \
+} \
+}
+
+
+
+DRAW_ITEM_NAME("Draw FPS", 0 0)
+DRAW_ITEM_YESNO("ui_drawfps", 0 0, exec "setfromdvar cg_drawfps ui_drawfps";)
+
+DRAW_ITEM_NAME("Draw Lagometer", 0 20)
+DRAW_ITEM_YESNO("cg_drawlagometer", 0 20, ;)
+
+DRAW_ITEM_NAME("Show Polygons", 0 40)
+DRAW_ITEM_YESNO("ui_polygons", 0 40, execOnDvarStringValue ui_polygons 1 "set r_polygonOffsetBias -1; set r_polygonOffsetScale -1"; execOnDvarStringValue ui_polygons 0 "set r_polygonOffsetBias 16; set r_polygonOffsetScale 4";)
+
+
+DRAW_ITEM_NAME("Smooth Mouse", 0 80)
+DRAW_ITEM_YESNO("m_filter", 0 80, ;)
+
+DRAW_ITEM_NAME("Mouse Sensitivity", 0 100)
+DRAW_ITEM_SLIDER(dvarfloat "sensitivity" 5 0.1 10, 0 100)
+
+DRAW_ITEM_NAME("Horizontal Sensitivity", 0 120)
+DRAW_ITEM_SLIDER(dvarfloat "m_yaw" 0.022 0.011 0.033, 0 120)
+
+DRAW_ITEM_NAME("Vertical Sensitivity", 0 140)
+DRAW_ITEM_SLIDER(dvarfloat "m_pitch" 0.022 0.011 0.033, 0 140)
+
+
+
+DRAW_ITEM_NAME("Kill-feed Time", 0 180)
+DRAW_ITEM_SLIDER(dvarfloat "con_gamemessagetime" 5 5 120, 0 180)
+
+DRAW_ITEM_NAME("Compass Size", 0 200)
+DRAW_ITEM_SLIDER(dvarfloat "cg_hudCompassSize" 1 0.8 1.6, 0 200)
+
+
+
+
+////////////////////////////////////////////////////////
+// Call timeout
+itemDef
+{
+	name 		"call_timeout"
+	type 		ITEM_TYPE_TEXT
+	text 		"Call timeout"
+	origin 		0 235
+	textstyle	ITEM_TEXTSTYLE_SHADOWED
+	textaligny	16
+	textscale	0.32
+	forecolor	1 1 1 .9
+	visible		1
+	decoration
+}
+itemDef
+{
+	name 		"call_timeout"
+	type 		ITEM_TYPE_TEXT
+	text 		"/bind <key> openScriptMenu ingame timeout"
+	origin 		0 235
+	textstyle	ITEM_TEXTSTYLE_SHADOWED
+	textalignx	0
+	textaligny	30
+	textscale	0.28
+	visible		1
+	forecolor	0.8 0.8 0.8 0.8
+	wrapped
+	decoration
+}
+
+
+
+
+	DRAW_ITEM_BUTTON("Print my GUID (pb_MyGuid)", 0 290, show pbCommandInfo;, hide pbCommandInfo;, exec "pb_myguid";)
+	DRAW_ITEM_BUTTON("Print connected players (pb_Plist)", 0 310, show pbCommandInfo;, hide pbCommandInfo;, exec "pb_Plist";)
+
+
+	itemDef
+	{
+		name 				pbCommandInfo
+		type 				ITEM_TYPE_TEXT
+		text 				"Open console to see informations (Shift + ~)."
+		origin 			0 325
+		textaligny	16
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textscale		0.22
+		forecolor		1 1 1 1
+		visible			0
+		decoration
+	}

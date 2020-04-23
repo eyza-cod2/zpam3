@@ -1,0 +1,75 @@
+	
+itemDef
+{
+	style			WINDOW_STYLE_FILLED
+	rect			0 10 130 20 0 0
+	backcolor		.8 .8 .8 .2
+	visible			1
+	decoration
+}
+itemDef
+{
+	style			WINDOW_STYLE_FILLED
+	rect			150 10 130 20 0 0
+	backcolor		.8 .8 .8 .2
+	visible			1
+	decoration
+}
+itemDef
+{
+	style			WINDOW_STYLE_FILLED
+	rect			100 32 30 20 0 0
+	backcolor		.8 .8 .8 .2
+	visible			1
+	decoration
+}
+itemDef
+{
+	style			WINDOW_STYLE_FILLED
+	rect			150 32 30 20 0 0
+	backcolor		.8 .8 .8 .2
+	visible			1
+	decoration
+}
+
+ITEM_TEXT_DVAR("ui_match_team1_name", 65, 30, .4, ITEM_ALIGN_CENTER, 1 1 1 1)
+ITEM_TEXT_DVAR("ui_match_team2_name", 215, 30, .4, ITEM_ALIGN_CENTER, 1 1 1 1)
+
+ITEM_TEXT_DVAR("ui_match_team1_score", 115, 52, .5, ITEM_ALIGN_CENTER, 1 1 1 1)
+ITEM_TEXT_DVAR("ui_match_team2_score", 165, 52, .5, ITEM_ALIGN_CENTER, 1 1 1 1)
+
+ITEM_TEXT("vs", 140, 27, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
+ITEM_TEXT(":", 140, 48, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
+
+// Round
+ITEM_TEXT_DVAR("ui_match_round", 140, 70, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
+//ITEM_TEXT_DVAR("ui_match_map", 140, 85, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
+
+
+
+// 1st half
+ITEM_TEXT("Score 1st Half:", 0, 110, .28, ITEM_ALIGN_LEFT, 1 1 1 1)
+ITEM_TEXT_DVAR("ui_match_1half", 100, 110, .28, ITEM_ALIGN_CENTER, 1 1 1 1)
+
+// 2nd half
+ITEM_TEXT("Score 2nd Half:", 0, 125, .28, ITEM_ALIGN_LEFT, 1 1 1 1)
+ITEM_TEXT_DVAR("ui_match_2half", 100, 125, .28, ITEM_ALIGN_CENTER, 1 1 1 1)
+
+
+
+ITEM_TEXT_DVAR("ui_match_halfText", 	175, 110, .28, ITEM_ALIGN_LEFT, 1 1 1 1)
+ITEM_TEXT_DVAR("ui_match_halfRounds", 	280, 110, .28, ITEM_ALIGN_RIGHT, 1 1 1 1)
+
+ITEM_TEXT("Playing time:", 	175, 125, .28, ITEM_ALIGN_LEFT, 1 1 1 1)
+ITEM_TEXT_DVAR("ui_match_totaltime", 	280, 125, .28, ITEM_ALIGN_RIGHT, 1 1 1 1)
+
+
+
+
+// Map history 1
+ITEM_TEXT_DVAR("ui_match_map1_score", 45, 50, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
+ITEM_TEXT_DVAR("ui_match_map1_name", 45, 65, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
+
+// Map history 2
+ITEM_TEXT_DVAR("ui_match_map2_score", 235, 50, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
+ITEM_TEXT_DVAR("ui_match_map2_name", 235, 65, .3, ITEM_ALIGN_CENTER, 1 1 1 1)

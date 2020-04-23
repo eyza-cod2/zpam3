@@ -1,0 +1,36 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+{
+	menuDef
+	{
+		name			"moddownload"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onOpen
+		{
+			scriptMenuResponse "moddownloaded";
+		}
+		OnEsc
+		{
+
+		}
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+
+		//
+		ITEM_TEXT_HEADING("Loading...")
+
+
+		// Close menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 90, scriptMenuResponse "close")
+		// Main menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu", 140, 120, close serverinfo_sd; open main)
+	}
+}
