@@ -1,9 +1,13 @@
 # New zPAM3.1
 
-Mod zPAM3.1 is new version of PAM mode for COD2.
+Mod zPAM3.1 is new version of PAM mode for COD2.<br>
 It is based on latest zPAM2.07 version and implements new features and bug fixes.
 
 Work on this pam was iniciated by me in 2015 a was not never fully finished. Now in corona days i decided to finish it.
+
+Beta version was released 23.4.2020.<br>
+If you want to use it on our server, check instructions below.<br>
+Please report me all of your server crashes, bugs or anything about new pam.
 
 <br>
 
@@ -35,11 +39,9 @@ In order to sucessfully install pam on your server, follow this steps:
 
 <br>
 
-## Bug report
-Do you know about some bugs that are not mentioned here?
-
+## Contact
 Write message on discord <b>CyberGamer Europe</b> in <b>#cod2-zpam-3</b> channel.<br>
-Or add me on discord <b>eyza#7930</b>
+Or add me on discord <b>eyza#7930</b><br>
 Or write me on email <b>kratas.tom@seznam.cz</b>
 
 <br>
@@ -124,9 +126,15 @@ Or write me on email <b>kratas.tom@seznam.cz</b>
 [3.3.9] Shotgun rebalance - long shots and close range hits are balanced by new system of counting damage<br>
     <a href="/images/shotgun.png"> <img src="/images/shotgun.png" alt="" height="1000" /> </a><br><br>
 [3.3.10] Match info - menu with information about team names, score, scores in halfs, total played time, ...<br>
-    <a href="/images/matchinfo.jpg"> <img src="/images/matchinfo.jpg" alt="" height="200" /> </a><br>
+    <a href="/images/matchinfo.jpg"> <img src="/images/matchinfo.jpg" alt="" height="400" /> </a><br>
 [3.3.11] Match info server cvars - basic information like team names, scores, round can be showed via HLSW for example<br>
     <a href="/images/matchinfo_hlsw.jpg"> <img src="/images/matchinfo_hlsw.jpg" alt="" height="150" /> </a><br>
+[3.3.12] Rcon change map<br>
+    <a href="/images/rcon_map.jpg"> <img src="/images/rcon_map.jpg" alt="" height="400" /> </a><br>
+[3.3.13] Rcon kick menu<br>
+    <a href="/images/rcon_kick.jpg"> <img src="/images/rcon_kick.jpg" alt="" height="400" /> </a><br>
+[3.3.14] Strat bot support with path recording<br>
+    <a href="/images/strat_bot.jpg"> <img src="/images/strat_bot.jpg" alt="" height="400" /> </a><br>
 </sub>
 
 #### 3.4 Other
@@ -151,12 +159,49 @@ Or write me on email <b>kratas.tom@seznam.cz</b>
 [3.4.11] Added new cvar system - all cvars (sv_, g_, scr_) are monitored against change (not all cvars was monitored in old pam) + added warning in readyup if cvars are not equal to league rules<br>
 [3.4.12] Removed anoying music at the and of the map<br>
 [3.4.13] Removed anoying music from main menu<br>
+[3.4.14] Current pam modes (changes are marked bold):<br>
+cg<br>
+ - 10 rounds per half<br>
+ - 20 rounds max<br>
+ - used as "first to 21" format<br>
+<br>
+cg_1v1<br>
+ - 8 rounds per half<br>
+ - 16 rounds max<br>
+ - sniper + shotgun disabled<br>
+<br>
+cg_2v2<br>
+ - same as cg<br>
+ - sniper + shotgun disabled<br>
+<br>
+cg_mr10 - <b>removed</b><br>
+ - removed, this mod was same as cg (mr10 word is misscorectly used for "first to 21" format)<br>
+<br>
+cg_mr12 - <b>changed</b><br>
+ - 12 rounds per half<br>
+ - 24 rounds max<br>
+ - 13 end score  <b>(there is the change)</b><br>
+<br>
+mr3, mr10, mr12, mr15<br>
+bash<br>
+pub<br>
+<br>
+<b>pcw (new)<br>
+- new mode for not cg matches<br>
+- auto recording is disabled<br>
+- deadchat is disabled<br>
+- there is no timer in half<br>
+<br>
+fun (new)<br>
+- just fun mode with higher speed and lower gravity<br>
+</b>
 </sub>
+
+<br><br><br>
 
 ### 4. IDEAS
 <sub>
-[4.1] player / server options (player settings, all rcon commands, new commands like set/reset score, move player to team, ...) <strong>(in-progress)</strong> <br>
-    <a href="/images/gui_player_server_options.jpg"> <img src="/images/gui_player_server_options.jpg" alt="" height="200" /></a><br>
+[4.1] <del>player / server options (player settings, all rcon commands, new commands like set/reset score, move player to team, ...) </del><strong>(done as 3.3.13)</strong> <br>
 [4.2] add more info in shoutcaster mode (weapon, grenades..., like in CS:GO) (+ keybindings for players, map overview)  <br>
 [4.3] new binds for taking weapon class -&gt; like when the bind is pressed, player gets Thompson, MP44, or PPSh based on actual team&nbsp;<br>  
 [4.4] increase sv_fps? <br>
@@ -170,6 +215,8 @@ Or write me on email <b>kratas.tom@seznam.cz</b>
 
 ### 5. KNOWN BUGS
 <sub>
+[5.0] Diagonal bug<br>
+    <a href="/images/diagonal.jpg"> <img src="/images/diagonal.jpg" alt="" height="721" /> </a> <br>
 [5.1] Slide bug (when player hits the ground he can not stop moving. It looks like he is "sliding" on the ground) <br>
 [5.2] Defusing with F12 (player can defuse outside plant area when screenshot bind and F is pressed at one time) <br>
 [5.3] Smoke is not visible if player press F12 or game window is minimized <br>
@@ -195,5 +242,8 @@ Or write me on email <b>kratas.tom@seznam.cz</b>
 [5.19] Matmata jungle texture bug <br>
     <a href="/images/matmata_bug_1.jpg"><img src="/images/matmata_bug_1.jpg" alt="" height="150" /> </a>
     <a href="/images/matmata_bug_2.jpg"><img src="/images/matmata_bug_2.jpg" alt="" height="150" /> </a><br>
-[5.20] Tanks - some tanks dont have solid tank wheels - shots go throught them
+[5.20] Tanks - some tanks dont have solid tank wheels - shots go throught them<br>
+[5.21] Toujane bug under A roof<br>
+    <a href="/images/toujane_bug.png"><img src="/images/toujane_bug.png" alt="" height="200" /> </a><br>
+[5.22] Toujane bug in track on B bomb site - you can see enemy behind track boxes with jumping, but enemy cannot see you
  </sub>
