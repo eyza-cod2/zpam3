@@ -45,7 +45,7 @@ init()
 
 checkAlive()
 {
-    wait level.fps_multiplier * 10;
+    wait level.fps_multiplier * 15;
 
 
     // Check cvars that can be se

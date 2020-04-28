@@ -1,5 +1,5 @@
-zPAM3.1 BETA
-Released 2020\04\23
+zPAM3.1 BETA 2
+Released 2020\04\28
 
 This mod was created by EYZA
 

@@ -1,6 +1,6 @@
 init()
 {
-	level.pam_folder = "zpam310_beta";
+	level.pam_folder = "mods/zpam310_beta2";
 
 	level.pam_mode_change = false;
 

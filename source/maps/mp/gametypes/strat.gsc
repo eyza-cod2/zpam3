@@ -254,6 +254,7 @@ self is the player that was killed.
 */
 onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
 {
+	self endon("disconnect");
 	self endon("spawned");
 	self notify("killed_player");
 
@@ -807,6 +808,10 @@ Key_RecordBot()
 					self.recording = true;
 					self thread record();
 				}
+				// Wait untill keys are released
+				while (self attackbuttonpressed() && self useButtonPressed() && !self meleebuttonpressed())
+					wait level.fps_multiplier * 0.2;
+
 				break;
 			}
 			wait level.frame;
@@ -1125,10 +1130,10 @@ add_bot()
 
 		if (!isDefined(self.bot))
 		{
-			self iprintln("Bot adding failed");
+			self iprintln("^1Bot adding failed");
 
 			if (getCvarInt("sv_punkbuster") != 1)
-				self iprintln("You have to start server with disabled Punkbuster!");
+				self iprintln("^1You have to start server with disabled Punkbuster!");
 			return;
 		}
 	}

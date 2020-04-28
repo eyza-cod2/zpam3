@@ -28,17 +28,15 @@ Do_Half_Time()
 	setTeamScore("axis", game["allies_score"]);
 	setTeamScore("allies", game["allies_score"]);
 
-	// Switch time-outs
+	// Switch total called time-outs
 	axis_called_timeouts = game["axis_called_timeouts"];
 	game["axis_called_timeouts"] = game["allies_called_timeouts"];
 	game["allies_called_timeouts"] = axis_called_timeouts;
 
-	// If game is in overtime, and halftime is called, called timeouts cannot be reseted!
-	if (!game["overtime_active"])
-	{
-		game["allies_called_timeouts_half"] = 0;
-		game["axis_called_timeouts_half"] = 0;
-	}
+	// Reset called timeouts in this half
+	game["allies_called_timeouts_half"] = 0;
+	game["axis_called_timeouts_half"] = 0;
+
 
 	// Switch team for match info
 	match_team1_side = game["match_team1_side"];

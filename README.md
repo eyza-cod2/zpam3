@@ -1,13 +1,11 @@
-# New zPAM3.1
+# Introduction
 
 Mod zPAM3.1 is new version of PAM mode for COD2.<br>
 It is based on latest zPAM2.07 version and implements new features and bug fixes.
 
 Work on this pam was iniciated by me in 2015 a was not never fully finished. Now in corona days i decided to finish it.
 
-Beta version was released 23.4.2020.<br>
-If you want to use it on our server, check instructions below.<br>
-Please report me all of your server crashes, bugs or anything about new pam.
+You can currently download and test beta version - but be careful, there can be bugs!<br>
 
 <br>
 
@@ -30,19 +28,45 @@ Please report me all of your server crashes, bugs or anything about new pam.
 
 <br>
 
-## Installation
-### zPAM3.1 BETA
+## zPAM3.1 BETA 2
+- released 2020-04-28
+- if you want to use it on our server, check instructions below.<br>
+- please report me all of your server crashes, bugs or suggestions.
+
+### Bug fixes against BETA 1
+- Spectator bug - when player disconnect right after he was killed, all dead players could spectate enemy -> fixed
+- [2.3.1] Spectating at the and of the round -> this feature was removed - now when all players from team are dead, camera is locked to location where last player die
+- When player reconnect and join team during the round, dead icon is not assinged to player in scoreboard -> fixed
+- In overtime mode teams are swapped -> now they are not swapped and players stay in the same side
+- Number of callable timeouts in overtime mode are incorrectly assigned -> fixed
+- Installation forced to mods folder (to be able run mod in hostings like luxhosting)
+- Strat mode: when player holds keys to start recording bot path and keys are not released, it gets bugged -> fixed
+- For public mode: first round starts too early after map change -> fixed
+- Added config file for public mode
+
+### Installation
 In order to sucessfully install pam on your server, follow this steps:
-- Download and copy files <b>zpam310_beta.iwd</b> and <b>pbsvuser.cfg</b> into following locations:</b>
-    - COD2\zpam310_beta\zpam310_beta.iwd
-    - COD2\pb\pbsvuser.cfg
+- Download and copy files <b>zpam310_beta2.iwd</b>, <b>pbsvuser.cfg</b> and <b>pam_pub.cfg</b>* into following locations:</b>
+    - pb/pbsvuser.cfg
+    - mods/zpam310_beta2/zpam310_beta2.iwd
+    - mods/zpam310_beta2/pam_pub.cfg  <i>* optional - this file is used only when you are runnig public server</i>
+- Add <b>+set fs_game "mods/zpam310_beta2"</b> into command line
+
+<br>
+
+How it should looks like:<br>
+<a href="/images/ftp.jpg"><img src="/images/ftp.jpg" height="147" /></a><br>
+(gameservers hosting for example):<br>
+<a href="/images/gameservers_cmd.jpg"><img src="/images/gameservers_cmd.jpg" height="424" /></a><br>
 
 <br>
 
 ## Contact
 Write message on discord <b>CyberGamer Europe</b> in <b>#cod2-zpam-3</b> channel.<br>
 Or add me on discord <b>eyza#7930</b><br>
-Or write me on email <b>kratas.tom@seznam.cz</b>
+Or write me on email <b>kratas.tom@seznam.cz</b><br>
+<br>
+You can support me via Paypal -> https://paypal.me/kratasy
 
 <br>
 
@@ -85,7 +109,8 @@ Or write me on email <b>kratas.tom@seznam.cz</b>
 
 #### 2.3 Other
 <sub>
-[2.3.1] in sd, when last player dies, all players in defeated team are in spectator mode, but they can not move -&gt; fixed<br>
+[2.3.1] <del>in sd, when last player dies, all players in defeated team are in spectator mode, but they can not move -&gt; fixed</del><br>
+    <b>removed - now when all players from team are dead, camera is locked to location where last player die</b><br>
 [2.3.2] when max team limit is reached and other player disconnect, other players was unable to select team -&gt; fixed<br>
 [2.3.3] fixed bash pam mode (only pistols are allowed, disabled planting)<br>
 [2.3.4] a lot of code rewrited, removed unnessesary things (splitscreen, xbox codes, ...)<br>
@@ -245,5 +270,6 @@ fun (new)<br>
 [5.20] Tanks - some tanks dont have solid tank wheels - shots go throught them<br>
 [5.21] Toujane bug under A roof<br>
     <a href="/images/toujane_bug.png"><img src="/images/toujane_bug.png" alt="" height="200" /> </a><br>
-[5.22] Toujane bug in track on B bomb site - you can see enemy behind track boxes with jumping, but enemy cannot see you
+[5.22] Toujane bug in track on B bomb site - you can see enemy behind track boxes with jumping, but enemy cannot see you<br>
+[5.23] Burgundy black tank - you can see enemy under tank wheels when you are far away from tank
  </sub>

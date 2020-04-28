@@ -5,7 +5,7 @@ init()
 }
 
 // Called at the end of the map if score is equal and overtime is enabled
-Do_Overtime(gametypeOvertimeFunction)
+Do_Overtime()
 {
     thread maps\mp\gametypes\_hud::PAM_Header();
     thread maps\mp\gametypes\_hud::Matchover(true); // true means its overtime
@@ -18,71 +18,38 @@ Do_Overtime(gametypeOvertimeFunction)
     logPrint("OverTime;\n");
 
 
-	// Switch time-outs
-	axis_called_timeouts = game["axis_called_timeouts"];
-	game["axis_called_timeouts"] = game["allies_called_timeouts"];
-	game["allies_called_timeouts"] = axis_called_timeouts;
 
-    axis_called_timeouts_half = game["axis_called_timeouts_half"];
-	game["axis_called_timeouts_half"] = game["allies_called_timeouts_half"];
-	game["allies_called_timeouts_half"] = axis_called_timeouts_half;
+	// Reset main scores
+	game["allies_score"] = 0;
+	game["axis_score"] = 0;
+	setTeamScore("allies", game["allies_score"]);
+	setTeamScore("axis", game["axis_score"]);
+
+	// Reset score at halfs
+	game["half_1_allies_score"] = 0;
+	game["half_1_axis_score"] = 0;
+	game["half_2_allies_score"] = 0;
+	game["half_2_axis_score"] = 0;
+
+	// Total score for clan
+	game["Team_1_Score"] = 0;				// Team_1 is: game["half_1_axis_score"] + game["half_2_allies_score"] ---- team who was as axis in first half
+	game["Team_2_Score"] = 0;				// Team_2 is: game["half_2_axis_score"] + game["half_1_allies_score"] ----	team who was as allies in first half
+
+	// Reset halftime
+	game["is_halftime"] = false;
+
+	// Reset called timeouts in this half
+	game["axis_called_timeouts_half"] = 0;
+	game["allies_called_timeouts_half"] = 0;
+
+	// Other variables
+	game["roundsplayed"] = 0;
 
 
-    // Switch teams
-	axissavedmodel = undefined;
-	alliedsavedmodel = undefined;
-
-	players = getentarray("player", "classname");
-	for(i = 0; i < players.size; i++)
+	if (level.scr_readyup)
 	{
-		player = players[i];
-
-		// Switch Teams
-		if (player.pers["team"] == "axis")
-		{
-			player.pers["team"] = "allies";
-			axissavedmodel = player.pers["savedmodel"];
-		}
-		else if (player.pers["team"] == "allies")
-		{
-			player.pers["team"] = "axis";
-			alliedsavedmodel = player.pers["savedmodel"];
-		}
-
-		//Swap Models
-		if (player.pers["team"] == "axis")
-			 player.pers["savedmodel"] = axissavedmodel;
-		else if (player.pers["team"] == "allies")
-			player.pers["savedmodel"] = alliedsavedmodel;
-
-		//drop weapons and make spec
-		player.pers["weapon"] = undefined;
-		player.pers["weapon1"] = undefined;
-		player.pers["weapon2"] = undefined;
-		player.archivetime = 0;
-		player.reflectdamage = undefined;
-
-		player unlink();
-		player enableWeapon();
-
-		//change headicons
-		if(level.scr_drawfriend)
-		{
-			if(player.pers["team"] == "allies")
-			{
-				player.headicon = game["headicon_allies"];
-				player.headiconteam = "allies";
-			}
-			else
-			{
-				player.headicon = game["headicon_axis"];
-				player.headiconteam = "axis";
-			}
-		}
+		game["Do_Ready_up"] = true;
 	}
-
-    // Call gametype specific function
-    [[gametypeOvertimeFunction]]();
 
 
 
@@ -94,35 +61,6 @@ Do_Overtime(gametypeOvertimeFunction)
 
 
 
-	reset_Match_Score();
-
-
     if (!level.pam_mode_change)
         map_restart(true);
-
-            /*
-    }
-    else
-    {
-        // If scr_overtime_active is set to 1, next map_restart(false) will be game["overtime_active"] set to true
-        setCvar("scr_overtime_active", 1);
-
-        if (!level.pam_mode_change)
-            map_restart(false); // fast_restart
-    }*/
-}
-
-reset_Match_Score()
-{
-	game["allies_score"] = 0;
-	setTeamScore("allies", game["allies_score"]);
-	game["axis_score"] = 0;
-	setTeamScore("axis", game["axis_score"]);
-
-	game["half_1_allies_score"] = 0;
-	game["half_1_axis_score"] = 0;
-	game["half_2_allies_score"] = 0;
-	game["half_2_axis_score"] = 0;
-	game["Team_1_Score"] = 0;
-	game["Team_2_Score"] = 0;
 }

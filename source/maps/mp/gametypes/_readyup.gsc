@@ -55,6 +55,7 @@ Start_Readyup_Mode(runned_in_middle_of_game)
 	addEventListener("onConnected",     ::onConnected);
 	addEventListener("onDisconnect",    ::onDisconnect);
 	addEventListener("onSpawned",    ::onSpawned);
+    addEventListener("onJoinedTeam",      ::onJoinedTeam);
 
 	addEventListener("onPlayerDamaging",  ::onPlayerDamaging);
 	addEventListener("onPlayerKilling",   ::onPlayerKilling);
@@ -100,7 +101,18 @@ onDisconnect()
 
 onSpawned()
 {
+	// We are in readyup, so change icons in scoreboard table
+	if (self.isReady) 	self.statusicon = "party_ready";
+						self.statusicon = "party_notready";
+
 	self PrintTeamAndHowToUse();
+}
+
+onJoinedTeam(teamName)
+{
+	// We are in readyup, so change icons in scoreboard table
+	if (self.isReady) 	self.statusicon = "party_ready";
+						self.statusicon = "party_notready";
 }
 
 /*
@@ -165,6 +177,7 @@ onPlayerKilling(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
 
 respawnOnKilled()
 {
+	self endon("disconnect");
 	self endon("spawned");
 
 	wait level.fps_multiplier * 2;
@@ -209,6 +222,11 @@ playerReadyUpThread()
 
 	// Dont show readyup for just connected players
 	while(self.pers["team"] == "none")
+		wait level.fps_multiplier * 0.1;
+
+	// Dont show readyup if player is in team, but is in spectator mode
+	// This happends when players are swaped at halftime and player has to select weapon
+	while((self.pers["team"] == "allies" || self.pers["team"] == "axis") && self.sessionstate == "spectator")
 		wait level.fps_multiplier * 0.1;
 
     self thread HUD_Player_Status();

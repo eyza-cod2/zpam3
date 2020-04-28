@@ -97,7 +97,8 @@ addHUDClient(player, x, y, fontSize, color, alignX, alignY, horzAlign, vertAlign
 	/#
 	if (player.HUDElements + level.HUDElements > 31)
 	{
-		assertMsg("^1Maximum showable hud elements exceeded! " + (player.HUDElements + level.HUDElements) + " " + player.name);
+		// TODO uncomment
+		//assertMsg("^1Maximum showable hud elements exceeded! " + (player.HUDElements + level.HUDElements) + " " + player.name);
 	}
 	#/
 

@@ -192,13 +192,15 @@ onStartGameType()
 
 
 	// Gametype specific variables
+	level.matchStarted = false;
 	level.in_strattime = 0;
+	level.starttime = 0;
 	level.roundstarted = false;
 	level.roundended = false;
 	level.bombplanted = false;
 	level.bombexploded = false;
 	level.bombKill = false;
-	level.starttime = 0;
+
 
 
 	// Variables to determinate endRound()
@@ -267,6 +269,39 @@ onStartGameType()
 				break;
 			wait level.fps_multiplier * 1;
 		}
+
+		// For public mode, wait untill most of player connect
+		if (level.pam_mode == "pub")
+		{
+			for(;;)
+			{
+				allies = 0;
+				axis = 0;
+
+				players = getentarray("player", "classname");
+				for(i = 0; i < players.size; i++)
+				{
+					if (players[i].pers["team"] == "allies")
+						allies++;
+					else if (players[i].pers["team"] == "axis")
+						axis++;
+				}
+
+				if (allies > 0 && axis > 0)
+				{
+					iprintln("Match is starting");
+
+					wait level.fps_multiplier * 8;
+
+					if (!level.pam_mode_change)
+						map_restart(true);
+
+					break;
+				}
+
+				wait level.fps_multiplier * 3;
+			}
+		}
 	}
 
 
@@ -274,6 +309,8 @@ onStartGameType()
 	thread bombzones();
 
 	level.starttime = getTime();
+	level.matchStarted = true;
+
 
 	if (!level.in_readyup)
 	{
@@ -370,7 +407,7 @@ Return true to prevent the damage.
 onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
 {
 	// Prevent damage when:
-	if (level.in_strattime || level.roundended)
+	if (!level.matchStarted || level.in_strattime || level.roundended)
 		return true;
 
 	// Friendly fire is disabled - prevent damage
@@ -496,7 +533,11 @@ Return true to prevent the kill.
 */
 onPlayerKilling(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
 {
-	// Prevent death when:
+	// Prevent kill if round didnt start
+	if (!level.matchStarted)
+		return true;
+
+	// Prevent death when round ended
 	if (level.roundended && !isdefined(self.switching_teams))
 		return true;
 }
@@ -507,7 +548,11 @@ self is the player that was killed.
 */
 onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
 {
+	self endon("disconnect");
 	self endon("spawned");
+
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
 
 	self notify("killed_player");
 
@@ -625,23 +670,7 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 	{
 		// Dont do killcam
 		doKillcam = false;
-
-		// Last player killed, allow spectating for all players
-		players = getentarray("player", "classname");
-		for(i = 0; i < players.size; i++)
-		{
-			if (self.pers["team"] == "allies" || self.pers["team"] == "axis")
-			{
-				players[i].skip_setspectatepermissions = true;
-
-				players[i] allowSpectateTeam("allies", true);
-				players[i] allowSpectateTeam("axis", true);
-				players[i] allowSpectateTeam("freelook", true);
-				players[i] allowSpectateTeam("none", false);
-			}
-		}
 	}
-
 
 
 	// Do killcam - if enabled, wait here until killcam is done
@@ -674,8 +703,7 @@ spawnPlayer()
 	self.health = self.maxhealth;
 	self.friendlydamage = undefined;
 
-	if (!level.in_readyup)
-		self.statusicon = "";
+	self.statusicon = "";
 
 
 	// Select correct spawn position according to selected team
@@ -1270,7 +1298,7 @@ checkMatchRoundLimit()
 		if (game["roundsplayed"] >= level.matchround)
 		{
 			if (level.scr_overtime && game["allies_score"] == game["axis_score"])
-				level thread maps\mp\gametypes\_overtime::Do_Overtime(::Overtime);
+				level thread maps\mp\gametypes\_overtime::Do_Overtime();
 			else
 				level thread maps\mp\gametypes\_end_of_map::Do_Map_End();
 
@@ -1282,34 +1310,6 @@ checkMatchRoundLimit()
 }
 
 
-Overtime()
-{
-	// Main scores
-	game["allies_score"] = 0;
-	game["axis_score"] = 0;
-
-	// Half-separed scoresg
-	game["half_1_allies_score"] = 0;
-	game["half_1_axis_score"] = 0;
-	game["half_2_allies_score"] = 0;
-	game["half_2_axis_score"] = 0;
-
-	// Total score for clan
-	game["Team_1_Score"] = 0;				// Team_1 is: game["half_1_axis_score"] + game["half_2_allies_score"] ---- team who was as axis in first half
-	game["Team_2_Score"] = 0;				// Team_2 is: game["half_2_axis_score"] + game["half_1_allies_score"] ----	team who was as allies in first half
-
-	// Other variables
-	game["roundsplayed"] = 0;
-
-	game["is_halftime"] = false;
-
-	if (level.scr_readyup)
-	{
-		game["Do_Ready_up"] = true;
-	}
-
-
-}
 
 // Update status about players into level.exist and check of round is draw/winner/atd..
 // Called when: disconnect, player killed, player spawned, spectator spawned
@@ -1535,29 +1535,6 @@ bombzone_think(bombzone_other)
 {
 	level endon("round_ended");
 
-
-/*
-	ents = level._script_exploders;
-
-	for(i = 0; i < ents.size; i++)
-	{
-		if(!isdefined(ents[i]))
-			continue;
-
-		print(i + " " + ents[i].script_exploder + " " + ents[i].model);
-
-		if (isDefined(ents[i].targetname))
-		print(" " + ents[i].targetname);
-
-		if (isdefined (ents[i].script_sound))
-		print(" " + ents[i].script_sound);
-
-		if (isdefined (ents[i].script_fxid))
-		print(" " + ents[i].script_fxid);
-
-		print("\n");
-	}*/
-
 	// If bomplanting is not needed, hide
 	if(level.in_readyup || level.pam_mode == "bash")
 	{
@@ -1587,8 +1564,6 @@ bombzone_think(bombzone_other)
 		{
 			while(player istouching(self) && isAlive(player) && player useButtonPressed())
 			{
-				//player notify("kill_check_bombzone");
-
 				self.planting = true;
 				player.bombinteraction = true;
 
@@ -1732,28 +1707,9 @@ bombzone_think(bombzone_other)
 			}
 
 			self.planting = undefined;
-
-			//if (isDefined(player))
-				//player thread check_bombzone(self);
 		}
 	}
 }
-/*
-check_bombzone(trigger)
-{
-	self endon("disconnect");
-
-	self notify("kill_check_bombzone");
-	self endon("kill_check_bombzone");
-	level endon("round_ended");
-
-	while(isdefined(trigger) && !isdefined(trigger.planting) && self istouching(trigger) && isAlive(self))
-	{
-		wait level.frame;
-
-		self iprintln("?????????????,,,");
-	}
-}*/
 
 bomb_countdown()
 {
@@ -1827,8 +1783,6 @@ bomb_think()
 		{
 			while(isAlive(player) && player useButtonPressed())
 			{
-				//player notify("kill_check_bomb");
-
 				player.bombinteraction = true;
 
 				// Hide "Hold F to defuse bomb" for all others
@@ -1928,25 +1882,10 @@ bomb_think()
 			}
 
 			self.defusing = undefined;
-
-			//if (isDefined(player))
-			//	player thread check_bomb(self);
 		}
 	}
 }
-/*
-check_bomb(trigger)
-{
-	self endon("disconnect");
 
-	self notify("kill_check_bomb");
-	self endon("kill_check_bomb");
-
-	while(isdefined(trigger) && !isdefined(trigger.defusing) && self istouching(trigger) && isAlive(self))
-		wait level.frame;
-}
-
-*/
 
 sayObjective()
 {
@@ -2042,6 +1981,12 @@ playSoundOnPlayers(sound, team)
 	}
 }
 
+showDeadIconIfDead()
+{
+
+}
+
+
 menuAutoAssign()
 {
 	// Team is already selected, do nothing and open menu again
@@ -2101,9 +2046,8 @@ menuAutoAssign()
 	self.pers["savedmodel"] = undefined;
 
 	// Players on a team but without a weapon or dead show as dead since they can not get in this round
-	if(self.statusicon == "" && self.sessionstate != "playing")
+	if(self.sessionstate != "playing")
 		self.statusicon = "hud_status_dead";
-
 
 	self notify("joined", assignment);
 	self notify("joined_allies_axis");
@@ -2137,7 +2081,7 @@ menuAllies()
 	self.pers["savedmodel"] = undefined;
 
 	// Players on a team but without a weapon or dead show as dead since they can not get in this round
-	if(self.statusicon == "" && self.sessionstate != "playing")
+	if(self.sessionstate != "playing")
 		self.statusicon = "hud_status_dead";
 
 	self notify("joined", "allies");
@@ -2172,7 +2116,7 @@ menuAxis()
 	self.pers["savedmodel"] = undefined;
 
 	// Players on a team but without a weapon or dead show as dead since they can not get in this round
-	if(self.statusicon == "" && self.sessionstate != "playing")
+	if(self.sessionstate != "playing")
 		self.statusicon = "hud_status_dead";
 
 	self notify("joined", "axis");
@@ -2292,7 +2236,7 @@ menuWeapon(response)
 	else
 	{
 		// Free weapon chaging is allowed in strat-time - only if player didnt take/drop weapon
-		if(level.in_strattime && self.dropped_weapons == 0 && self.taked_weapons == 0 && self.spawnsInStrattime < 2)
+		if(!level.matchStarted || (level.in_strattime && self.dropped_weapons == 0 && self.taked_weapons == 0 && self.spawnsInStrattime < 2))
 		{
 			if(isDefined(self.pers["weapon"]))
 			{
@@ -2329,7 +2273,7 @@ menuWeapon(response)
 		}
 
 		// else if round started or player drop weapon in strattime
-		else //if (level.roundstarted)
+		else
 		{
 			self.pers["weapon"] = weapon;
 
