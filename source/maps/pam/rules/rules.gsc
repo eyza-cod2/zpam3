@@ -29,6 +29,7 @@ getListOfRuleSets(gametype)
 		valid_mode[9] = "mr15";
 		valid_mode[10] = "bash";
 		valid_mode[11] = "fun";
+		valid_mode[12] = "test";
 	}
     else if (gametype == "strat")
 	{
@@ -42,6 +43,9 @@ Get_SD_Rules()
 {
 	switch (level.pam_mode)
 	{
+		case "test":
+			maps\pam\rules\sd\test::Rules();
+			break;
 		case "bash":
 			maps\pam\rules\sd\bash::Rules();
 			break;

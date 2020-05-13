@@ -151,7 +151,7 @@ Return true to indicate that menu response was handled in this function
 */
 onMenuResponse(menu, response)
 {
-	// Pam is installed correctly, ignore other responses
+	// Pam is not installed correctly, ignore other responses
 	if (!maps\mp\gametypes\_pam::isInstalledCorrectly() || game["pbsv_not_loaded"])
 		return true;
 
@@ -163,6 +163,8 @@ onMenuResponse(menu, response)
 	if(menu == game["menu_moddownload"] && response == "moddownloaded" && maps\mp\gametypes\_force_download::waitingForResponse())
 	{
 		maps\mp\gametypes\_force_download::modIsDownloaded();
+
+		self setClientCvar("g_scriptMainMenu", game["menu_serverinfo"]);
 
 		// Open server info
 		self closeMenu();

@@ -60,10 +60,13 @@ Rules()
 
 	setcvar("scr_allow_shellshock", 0);					// Create shell shock effect when player is hitted
 	setcvar("scr_replace_russian", 1); 					// Replace russians with Americans / Brisith
+	setcvar("scr_shotgun_rebalance", 1);				// Enable shotgun rebalance to fix long shot kills and short range hits
 	setcvar("scr_blackout", 1); 						// If match is in progress, show map background all over the screen and disable sounds for connected player
 	setcvar("scr_recording", 1); 						// Starts automatically recording when match starts
 	setcvar("scr_diagonal_fix", 0); 					// Enable diagonal bug fix (disables leaning for players when strafing)
 	setcvar("scr_matchinfo", 1); 						// Show match info in menu (team names, score, score from previous map,....)
+	setcvar("scr_map_vote", 0);							// Open voting system so players can vote about next map
+	setcvar("scr_map_vote_replay", 0);					// Show option to replay this map in voting system
 	setcvar("scr_auto_deadchat", 1);					// Automaticly enable / disable deadchat
 	setcvar("scr_remove_killtriggers", 1);				// Remove some of the kill-triggers created in 1.3 path
 	setcvar("scr_force_client_best_connection", 1); 	// Client-side cvar forces

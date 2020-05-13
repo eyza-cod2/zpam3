@@ -62,6 +62,7 @@ initAllFunctions()
 	thread maps\mp\gametypes\_blackout::init();	// depends on timeout and readyup
 	thread maps\mp\gametypes\_spectating::init(); // depends on _blackout
 	thread maps\mp\gametypes\_players_left::Init();
+	thread maps\mp\gametypes\_mapvote::Init();
 	thread maps\mp\gametypes\_end_of_map::init();
 
 

@@ -44,7 +44,7 @@ registerCvars()
 	// Rules load - overide cvars with values for defined league mode
 	maps\pam\rules\rules::load();
 
-	// TODO remove
+	// TODO comment for final release
 	//setCvar("developer", 2);
 	//setcvar("developer_script", 1);
 
@@ -137,16 +137,6 @@ Server_Cvars()
 	[[sVar]]("voice_global", "BOOL", 0);
 	[[sVar]]("voice_localEcho", "BOOL", 0);
 
-
-
-
-	[[sVar]]("scr_bots_add", "INT", 0, 0, 64); 		// add <num> bots to the server
-	[[sVar]]("scr_bots_remove", "INT", 0, 0, 64); 	// remove <num> bots from the server
-	[[sVar]]("scr_bots_removeAll", "BOOL", 0);		// remove all bots from server
-
-	[[sVar]]("scr_bots_fillEnabled", "BOOL", 0);		// enable / disable fill the server with bots automaticly up to limit
-	[[sVar]]("scr_bots_fillMaxBots", "INT", 6, 0, 64); 	// maximum number of bots
-	[[sVar]]("scr_bots_fillAutoBalance", "BOOL", 1);
 }
 
 
@@ -306,8 +296,18 @@ Script_Variables()
         [[var]]("scr_recording", "BOOL", 0);               		// level.scr_recording
 		[[var]]("scr_diagonal_fix", "BOOL", 0);					// level.scr_diagonal_fix
 		[[var]]("scr_matchinfo", "BOOL", 0);					// level.scr_matchinfo
+		[[var]]("scr_map_vote", "BOOL", 1);						// level.mapvote
+		[[var]]("scr_map_vote_replay", "BOOL", 0);				// level.mapvotereplay
+		[[var]]("scr_shotgun_rebalance", "BOOL", 1);			// level.scr_shotgun_rebalance
 
 
+		[[var]]("scr_bots_add", "INT", 0, 0, 64); 		// add <num> bots to the server
+		[[var]]("scr_bots_remove", "INT", 0, 0, 64); 	// remove <num> bots from the server
+		[[var]]("scr_bots_removeAll", "BOOL", 0);		// remove all bots from server
+
+		[[var]]("scr_bots_fillEnabled", "BOOL", 0);		// enable / disable fill the server with bots automaticly up to limit
+		[[var]]("scr_bots_fillMaxBots", "INT", 6, 0, 64); 	// maximum number of bots
+		[[var]]("scr_bots_fillAutoBalance", "BOOL", 1);
 
 		// Load weapons cvars (in another file because of clarity simplification)
 		maps\mp\gametypes\_weapons::loadWeaponCvars();
@@ -562,14 +562,6 @@ onCvarChange(cvar, value, isRegisterTime)
 		case "player_toggleBinoculars":				break;
 
 
-		// Bots
-		case "scr_bots_add": 		 			break;
-		case "scr_bots_remove": 		 		break;
-		case "scr_bots_removeAll": 		 		break;
-		case "scr_bots_fillEnabled": 		 	level.bots_fillEnabled = value;			break;
-		case "scr_bots_fillMaxBots": 		 	level.bots_fillMaxBots = value;			break;
-		case "scr_bots_fillAutoBalance": 		level.bots_fillAutoBalance = value;		break;
-
 
 
 
@@ -678,33 +670,18 @@ onCvarChange(cvar, value, isRegisterTime)
 		case "scr_allow_health_regen": 		level.scr_allow_health_regen = value; break;
 		case "scr_allow_regen_sounds": 		level.scr_allow_regen_sounds = value; break;
 		case "scr_regen_delay": 		level.scr_regen_delay = value; break;
-
 		case "scr_show_objective_icons": 		level.scr_show_objective_icons = value; break;
 		case "scr_show_hitblip": 		level.scr_show_hitblip = value; break;
 		case "scr_show_scoreboard": 		level.scr_show_scoreboard = value; break;
-
 		case "scr_allow_shellshock": 		level.scr_allow_shellshock = value; break;
-
 		case "scr_auto_deadchat": 		level.scr_auto_deadchat = value; break;
-
 		case "scr_timeouts": 		level.scr_timeouts = value; break;
 		case "scr_timeouts_half": 		level.scr_timeouts_half = value; break;
 		case "scr_timeout_length": 		level.scr_timeout_length = value; break;
-
-
-
-
 		case "scr_show_players_left": 		level.scr_show_players_left = value; break;
-
 		case "scr_show_scoreboard_limit":		level.scr_show_scoreboard_limit = value; break;
-
-
-
 		case "scr_force_client_best_connection":    level.scr_force_client_best_connection = value; break;
         case "scr_force_client_exploits":           level.scr_force_client_exploits = value; break;
-
-
-
 
 		case "scr_allow_ambient_sounds":	level.scr_allow_ambient_sounds = value; break;
 		case "scr_allow_ambient_fire": 		level.scr_allow_ambient_fire = value; break;
@@ -712,7 +689,6 @@ onCvarChange(cvar, value, isRegisterTime)
 		case "scr_allow_ambient_fog": 		level.scr_allow_ambient_fog = value; break;
 
 		case "scr_remove_killtriggers":	level.scr_remove_killtriggers = value; break;
-
 		case "scr_spawnpointnewlogic": level.spawn_new_logic = value; break;
 
 		case "scr_replace_russian": level.scr_replace_russian = value; break;
@@ -720,7 +696,69 @@ onCvarChange(cvar, value, isRegisterTime)
         case "scr_recording": level.scr_recording = value; break;
 		case "scr_diagonal_fix": level.scr_diagonal_fix = value; break;
 		case "scr_matchinfo": level.scr_matchinfo = value; break;
+		case "scr_map_vote": level.mapvote = value; break;
+		case "scr_map_vote_replay": level.mapvotereplay = value; break;
+		case "scr_shotgun_rebalance":
 
+
+			// Replace all weapons in players slots with new version of shotgun
+			if (!isRegisterTime)
+			{
+				// for all living players store their weapons
+				players = getentarray("player", "classname");
+				for(i = 0; i < players.size; i++)
+				{
+					player = players[i];
+
+					weapon1 = player getWeaponSlotWeapon("primary");
+					weapon2 = player getWeaponSlotWeapon("primaryb");
+
+					shotgun_name = "shotgun_mp";
+					if (level.scr_shotgun_rebalance)
+						shotgun_name = "shotgun_rebalanced_mp";
+
+
+					if((weapon1 == shotgun_name || weapon2 == shotgun_name) &&
+						isDefined(player.pers["weapon"]) && (player.pers["team"] == "allies" || player.pers["team"] == "axis") && player.sessionstate == "playing")
+					{
+
+						slot = "primary";
+						if(weapon2 == shotgun_name)
+							slot = "primaryb";
+
+						player takeWeapon(shotgun_name);
+
+						shotgun_name_new = "shotgun_mp";
+						if (value)
+							shotgun_name_new = "shotgun_rebalanced_mp";
+
+						player setWeaponSlotWeapon(slot, shotgun_name_new);
+						player giveMaxAmmo(shotgun_name_new);
+
+						player switchToWeapon(shotgun_name_new);
+
+						if (player.pers["weapon"] == shotgun_name)
+							player.pers["weapon"] = shotgun_name_new;
+					}
+
+
+				}
+			}
+
+			level.scr_shotgun_rebalance = value;
+
+			break;
+
+
+
+
+		// Bots
+		case "scr_bots_add": 		 			break;
+		case "scr_bots_remove": 		 		break;
+		case "scr_bots_removeAll": 		 		break;
+		case "scr_bots_fillEnabled": 		 	level.bots_fillEnabled = value;			break;
+		case "scr_bots_fillMaxBots": 		 	level.bots_fillMaxBots = value;			break;
+		case "scr_bots_fillAutoBalance": 		level.bots_fillAutoBalance = value;		break;
 
 
 		default:

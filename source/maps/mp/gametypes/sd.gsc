@@ -516,9 +516,6 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 			self thread maps\mp\gametypes\_shellshock::shellshockOnDamage(sMeansOfDeath, iDamage);
 			self playrumble("damage_heavy");
 		}
-
-		if(isdefined(eAttacker) && eAttacker != self)
-			eAttacker thread maps\mp\gametypes\_damagefeedback::updateDamageFeedback();
 	}
 
 
@@ -638,9 +635,6 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 	self.pers["weapon1"] = undefined;
 	self.pers["weapon2"] = undefined;
 
-	if(isdefined(self.bombtimer))
-		self.bombtimer destroy();
-
 	// Wait intill all other kills in same time are processed now before dead body is spawned
 	waittillframeend;
 
@@ -660,10 +654,6 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 
 	delay = 2;	// Delay the player becoming a spectator till after he's done dying
 	wait level.fps_multiplier * delay;	// ?? Also required for Callback_PlayerKilled to complete before killcam can execute
-
-	// Delete dead body in readyup
-	if(isDefined(body) && level.in_readyup)
-		body delete();
 
 	// If the last player on a team was just killed
 	if(!level.exist[self.pers["team"]])
@@ -781,9 +771,6 @@ spawnPlayer()
 	// Hide score if it may be hidden
 	if (level.roundstarted)
 		self maps\mp\gametypes\_hud_teamscore::hideScore(0.5);
-
-	if(level.bombplanted)
-		self thread showPlayerBombTimer();
 
 	// Count how many times player changed team in strattime (used to limit it in menu_weapon)
 	if (level.in_strattime && (self.pers["team"] == "allies" || self.pers["team"] == "axis"))
@@ -1833,7 +1820,7 @@ bomb_think()
 				player.triggerRelease2 = undefined;
 
 				// Bomb defused
-				if(self.progresstime >= level.defusetime)
+				if(self.progresstime >= level.defusetime && isAlive(player))
 				{
 					player.progressbackground destroy();
 					player.progressbar destroy();
@@ -1908,39 +1895,18 @@ sayObjective()
 
 showBombTimers()
 {
-	players = getentarray("player", "classname");
-	for(i = 0; i < players.size; i++)
-	{
-		player = players[i];
-
-		if(isdefined(player.pers["team"]) && player.pers["team"] != "spectator" && player.pers["team"] != "none" && player.sessionstate == "playing")
-			player showPlayerBombTimer();
-	}
-}
-
-showPlayerBombTimer()
-{
 	timeleft = (level.bombtimer - (getTime() - level.bombtimerstart) / 1000);
 
-	if(timeleft > 0)
-	{
-		self.bombtimer = maps\mp\gametypes\_hud_system::addHUDClient(self, 6, 76, undefined, undefined, "left", "top", "left", "top");
-		self.bombtimer maps\mp\gametypes\_hud_system::showHUDSmooth(0.1);
-		self.bombtimer setClock(timeleft, 60, "hudStopwatch", 48, 48);
-	}
+	level.bombtimerhud = maps\mp\gametypes\_hud_system::addHUD(6, 76, undefined, undefined, "left", "top", "left", "top");
+	level.bombtimerhud maps\mp\gametypes\_hud_system::showHUDSmooth(0.1);
+	//level.bombtimerhud.foreground = true;  // visible if menu opened
+	level.bombtimerhud setClock(timeleft, 60, "hudStopwatch", 48, 48);
 }
 
 deleteBombTimers()
 {
-	players = getentarray("player", "classname");
-	for(i = 0; i < players.size; i++)
-		players[i] deletePlayerBombTimer();
-}
-
-deletePlayerBombTimer()
-{
-	if(isdefined(self.bombtimer))
-		self.bombtimer destroy();
+	if (isDefined(level.bombtimerhud))
+		level.bombtimerhud maps\mp\gametypes\_hud_system::removeHUD();
 }
 
 announceWinner(winner, delay)
@@ -2164,6 +2130,16 @@ menuWeapon(response)
 	if (response == "random")
 		response = self maps\mp\gametypes\_weapons::getRandomWeapon();
 
+	// Shotgun rebalance
+	// Because we have 2 version of shotgun, if new version is turned on we need to change name of weapon to new version
+	if (response == "shotgun_mp" || response == "shotgun_rebalanced_mp")
+	{
+		if (level.scr_shotgun_rebalance)
+			response = "shotgun_rebalanced_mp";
+		else
+			response = "shotgun_mp";
+	}
+
 	// Weapon is not valid or is in use
 	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvaible(response))
 	{
@@ -2176,6 +2152,7 @@ menuWeapon(response)
 	}
 
 	weapon = response;
+
 
 	// After selecting a weapon, show "ingame" menu when ESC is pressed
 	self setClientCvar("g_scriptMainMenu", game["menu_ingame"]);

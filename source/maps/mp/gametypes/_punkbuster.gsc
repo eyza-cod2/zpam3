@@ -36,8 +36,7 @@ init()
 
     level.pbAliveSeed = randomintrange(999, 999999);// Returns a random integer r, where min <= r < max
 
-    setCvar("pam_pbsv_load", "set pam_pbsv_alive " + level.pbAliveSeed);
-
+    setCvar("pam_pbsv_load", 			"set pam_pbsv_alive " + level.pbAliveSeed);
 
     thread checkAlive();
 }
@@ -50,7 +49,8 @@ checkAlive()
 
     // Check cvars that can be se
     if ((getCvar("pam_pbsv_loaded") != "" && getCvarInt("pam_pbsv_loaded") == 1) ||
-        getCvarInt("pam_pbsv_alive") != level.pbAliveSeed)
+        getCvarInt("pam_pbsv_alive") != level.pbAliveSeed ||
+		getCvar("pam_pbsv_version") != "2")
     {
         game["pbsv_not_loaded"] = true;
 
@@ -74,7 +74,7 @@ printError()
 	// Is printed only for developer...
     println("^1------------ zPAM Errors -----------");
     println(game["STRING_NOT_INSTALLED_CORRECTLY_1"]);
-    println(game["STRING_PBSV_NOT_LOADED_ERROR_2"]);
+    println(game["STRING_PBSV_NOT_LOADED_ERROR_1"]);
     println("^1------------------------------------");
 }
 
@@ -125,4 +125,17 @@ showError()
 	text3.foreground = true;
 	text3.color = (1, .5, .5);
 	text3 SetText(game["STRING_GITHUB_URL_HELP"]);
+
+	// For all connecte players
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		player = players[i];
+
+		player closeMenu();
+		player closeInGameMenu();
+		player setClientCvar("g_scriptMainMenu", "");
+
+		player [[level.spawnSpectator]]((999999, 999999, -999999), (90, 0, 0));
+	}
 }

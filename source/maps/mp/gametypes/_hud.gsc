@@ -68,7 +68,7 @@ PAM_Header()
     if(level.in_timeout)
     {
         timeoutmode = maps\mp\gametypes\_hud_system::addHUD(0, 20, 1.4, (1,1,0), "center", "top", "center");
-        timeoutmode setText(game["timeouthead"]);// TODO - add corrrect strign name
+        timeoutmode setText(game["timeouthead"]);
     }
 
 

@@ -2,10 +2,10 @@ Rules()
 {
 	// Match Style
 	setcvar("scr_sd_timelimit", 0);		// Time limit for map. 0=disabled (minutes)
-	setcvar("scr_sd_half_round", 12);	// Number of rounds when half-time starts. 0=ignored
+	setcvar("scr_sd_half_round", 2);	// Number of rounds when half-time starts. 0=ignored
 	setcvar("scr_sd_half_score", 0);	// Number of score when half-time starts. 0=ignored
-	setcvar("scr_sd_end_round", 24);	// Number of rounds when map ends. 0=ignored
-	setcvar("scr_sd_end_score", 13);	// Number of score when map ends. 0=ignored
+	setcvar("scr_sd_end_round", 4);	// Number of rounds when map ends. 0=ignored
+	setcvar("scr_sd_end_score", 3);	// Number of score when map ends. 0=ignored
 
 	// Round options
 	setcvar("scr_sd_strat_time", 4);	// Time before round starts where players cannot move
@@ -27,9 +27,9 @@ Rules()
 	// OT Rules - MR3 format
   	if (isDefined(game["overtime_active"]) && game["overtime_active"])
   	{
-		setcvar("scr_sd_half_round", 3);
+		setcvar("scr_sd_half_round", 2);
 		setcvar("scr_sd_half_score", 0);
-		setcvar("scr_sd_end_round", 6);
+		setcvar("scr_sd_end_round", 4);
 		setcvar("scr_sd_end_score", 4);
     }
 
@@ -74,7 +74,7 @@ Rules()
 	setcvar("scr_recording", 1); 						// Starts automatically recording when match starts
 	setcvar("scr_diagonal_fix", 0); 					// Enable diagonal bug fix (disables leaning for players when strafing)
 	setcvar("scr_matchinfo", 1); 						// Show match info in menu (team names, score, score from previous map,....)
-	setcvar("scr_map_vote", 0);							// Open voting system so players can vote about next map
+	setcvar("scr_map_vote", 1);							// Open voting system so players can vote about next map
 	setcvar("scr_map_vote_replay", 0);					// Show option to replay this map in voting system
 	setcvar("scr_auto_deadchat", 1);					// Automaticly enable / disable deadchat
 	setcvar("scr_remove_killtriggers", 1);				// Remove some of the kill-triggers created in 1.3 path

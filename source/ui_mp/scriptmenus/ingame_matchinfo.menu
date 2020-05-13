@@ -1,9 +1,9 @@
-	
+
 itemDef
 {
 	style			WINDOW_STYLE_FILLED
 	rect			0 10 130 20 0 0
-	backcolor		.8 .8 .8 .2
+	backcolor		.1 .1 .1 .2
 	visible			1
 	decoration
 }
@@ -11,7 +11,7 @@ itemDef
 {
 	style			WINDOW_STYLE_FILLED
 	rect			150 10 130 20 0 0
-	backcolor		.8 .8 .8 .2
+	backcolor		.1 .1 .1 .2
 	visible			1
 	decoration
 }
@@ -19,7 +19,7 @@ itemDef
 {
 	style			WINDOW_STYLE_FILLED
 	rect			100 32 30 20 0 0
-	backcolor		.8 .8 .8 .2
+	backcolor		.1 .1 .1 .2
 	visible			1
 	decoration
 }
@@ -27,7 +27,7 @@ itemDef
 {
 	style			WINDOW_STYLE_FILLED
 	rect			150 32 30 20 0 0
-	backcolor		.8 .8 .8 .2
+	backcolor		.1 .1 .1 .2
 	visible			1
 	decoration
 }

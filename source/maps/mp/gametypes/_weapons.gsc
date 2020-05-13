@@ -112,6 +112,7 @@ precacheWeapons()
 
 	// Weapons for all
 	precacheItem("shotgun_mp");
+	precacheItem("shotgun_rebalanced_mp");
 	precacheItem("binoculars_mp");
 }
 
@@ -161,6 +162,7 @@ defineWeapons()
 
 	// All teams
 	addWeapon("shotgun_mp", 		"shotgun", 			"both", 	"scr_allow_shotgun", 		"ui_allow_shotgun");
+	addWeapon("shotgun_rebalanced_mp", 		"shotgun", 			"both", 	"scr_allow_shotgun", 		"ui_allow_shotgun");
 
 	// Array of Available Weapon Classes
 	// If you want to add new classes, you have to create new cvars in start_gametype.gsc
@@ -754,6 +756,10 @@ getWeaponName(weapon)
 		weaponname = &"WEAPON_SHOTGUN";
 		break;
 
+	case "shotgun_rebalanced_mp":
+		weaponname = &"WEAPON_SHOTGUN";
+		break;
+
 	// British
 	case "enfield_mp":
 		weaponname = &"WEAPON_LEEENFIELD";
@@ -831,6 +837,7 @@ useAn(weapon)
 	case "mp40_mp":
 	case "mp44_mp":
 	case "shotgun_mp":
+	case "shotgun_rebalanced_mp":
 		result = true;
 		break;
 

@@ -28,6 +28,24 @@ toujane()
 	allies_window = spawn("script_model",(216, 672, 43));
 	allies_window.angles = (0, 0, 0);
 	allies_window setmodel("xmodel/toujane_window");
+
+
+	// Toujane bug under A roof (player is not visible from allies fox)
+	precacheModel("xmodel/toujane_underA_bug");
+	// First ledge
+	moving_xmodel = spawn("script_model",(1509, 2207, 120)); // 45
+	moving_xmodel.angles = (51, 328, 90);
+	moving_xmodel setmodel("xmodel/toujane_underA_bug");
+	moving_xmodel = spawn("script_model",(1507, 2207, 127)); // top
+	moving_xmodel.angles = (90, 270, 30);
+	moving_xmodel setmodel("xmodel/toujane_underA_bug");
+	// Second ledge
+	moving_xmodel = spawn("script_model",(1558, 2265, 103)); // 45
+	moving_xmodel.angles = (51, 328, 90);
+	moving_xmodel setmodel("xmodel/toujane_underA_bug");
+	moving_xmodel = spawn("script_model",(1556, 2265, 110));
+	moving_xmodel.angles = (90, 270, 30);
+	moving_xmodel setmodel("xmodel/toujane_underA_bug");
 }
 
 burgundy()
@@ -108,7 +126,7 @@ burgundy()
 	wagon1.angles = (90,260,0);
 	wagon1 setmodel("xmodel/caen_fence_post_1");
 
-	wagon2 = spawn("script_model",(1790, 2245, 33)); 
+	wagon2 = spawn("script_model",(1790, 2245, 33));
 	wagon2.angles = (90,78,0);
 	wagon2 setmodel("xmodel/caen_fence_post_1");
 

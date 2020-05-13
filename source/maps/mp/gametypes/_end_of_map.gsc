@@ -15,6 +15,10 @@ Do_Map_End()
 	wait level.fps_multiplier * 5;
 
 
+
+	maps\mp\gametypes\_mapvote::Initialize();
+
+
     // If overtime was active match before, reset them
     game["overtime_active"] = false;
 

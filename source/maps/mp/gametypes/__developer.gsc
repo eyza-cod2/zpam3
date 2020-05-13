@@ -22,47 +22,62 @@ init()
 
 	//level thread trig();
 
+
+
 /*
+	j = 0;
+	/#
+	for (i = 0; i < 1024; i++)
+	{
+		entity = GetEntByNum( i );
+
+		if (isDefined(entity) && isDefined(entity.origin))
+		{
+			underAroof1 = spawn("script_model", entity.origin);
+			//underAroof1.angles = (0, 58, 0);
+			underAroof1 setmodel("xmodel/caen_fence_post_1");
+
+			j++;
+		}
+	}
+
+	println(j);
+	#/
+*/
+
 	// spawn( "trigger_radius", position, spawn flags, radius, height )
 	//tree_collision = spawn("trigger_radius", (3002, 1973, 130), 0, 35, 5); // truck right
 	//tree_collision setcontents(1);
-
+/*
 	tree_collision = spawn("trigger_radius", (3011, 1946, 130), 0, 35, 5); // truck left
 	tree_collision setcontents(1);
-
+*/
 	// 152 = bedna nahore
 	// 84  = track podlaha
 
 
 
-	// First ledge
-	underAroof1 = spawn("script_model",(1522, 2204, 63));
-	underAroof1.angles = (0, 58, 0);
-	underAroof1 setmodel("xmodel/caen_fence_post_1");
+/*
 
-	// Second ledge
-	wagon2 = spawn("script_model",(1521, 2203, 61));
-	wagon2.angles = (0,58,0);
-	wagon2 setmodel("xmodel/caen_fence_post_1");
+	underAroof1 = spawn("script_model",(1506, 2213, 115));
+	underAroof1.angles = (51, 328, 90);
+	underAroof1 setmodel("xmodel/toujane_underA_bug");
+*/
 
-	wagon2 thread obj();
 
-	// Polozeny podel sesikmeni
-	//wagon2 = spawn("script_model",(1535, 2193, 90));
-	//wagon2.angles = (39, 150, 0);
-	//wagon2 setmodel("xmodel/caen_fence_post_1");
 
-	// Vedle tracku
-	tree_collision = spawn("trigger_radius", (3006, 1760, 107), 0, 50, 40); // under a roof bug 2. stair top
-	tree_collision setcontents(1);
+	//setCvar("id", 1);
 
+
+/*
 
 	tree_collision = spawn("trigger_radius", (2987, 1948, 106), 0, 50, 40); // under a roof bug 2. stair top
 	tree_collision setcontents(1);
-*/
-	// 106 = Z
 
-	//thread potencionalInfiniteLoopTest();
+	tree_collision thread moving_obj("1");
+*/
+
+	setcvar("sg_debug", "0");
 }
 
 potencionalInfiniteLoopTest()
@@ -88,7 +103,7 @@ skipReadyup()
 }
 
 
-obj()
+moving_obj(id)
 {
 	origin = self getOrigin();
 
@@ -112,34 +127,36 @@ obj()
 		newobjpoint.y = origin[1];
 		newobjpoint.z = origin[2];
 
-		if (getCvar("x") != "")
-			self.origin += (getCvarInt("x"), 0, 0);
-		if (getCvar("y") != "")
-			self.origin += (0, getCvarInt("y"), 0);
-		if (getCvar("z") != "")
-			self.origin += (0, 0, getCvarInt("z"));
-
-		if (getCvar("yaw") != "")
-			self.angles += (getCvarInt("yaw"), 0, 0);
-		if (getCvar("pitch") != "")
-			self.angles += (0, getCvarInt("pitch"), 0);
-		if (getCvar("roll") != "")
-			self.angles += (0, 0, getCvarInt("roll"));
-
-		if (getCvar("x") != "" || getCvar("y") != "" || getCvar("z") != "" || getCvar("yaw") != "" || getCvar("pitch") != "" || getCvar("roll") != "")
+		if (getCvar("id") == id)
 		{
-			println(self.origin);
-			println(self.angles);
+			if (getCvar("x") != "")
+				self.origin += (getCvarInt("x"), 0, 0);
+			if (getCvar("y") != "")
+				self.origin += (0, getCvarInt("y"), 0);
+			if (getCvar("z") != "")
+				self.origin += (0, 0, getCvarInt("z"));
+
+			if (getCvar("yaw") != "")
+				self.angles += (getCvarInt("yaw"), 0, 0);
+			if (getCvar("pitch") != "")
+				self.angles += (0, getCvarInt("pitch"), 0);
+			if (getCvar("roll") != "")
+				self.angles += (0, 0, getCvarInt("roll"));
+
+			if (getCvar("x") != "" || getCvar("y") != "" || getCvar("z") != "" || getCvar("yaw") != "" || getCvar("pitch") != "" || getCvar("roll") != "")
+			{
+				println(self.origin);
+				println(self.angles);
+			}
+
+			setCvar("x", "");
+			setCvar("y", "");
+			setCvar("z", "");
+
+			setCvar("yaw", "");
+			setCvar("pitch", "");
+			setCvar("roll", "");
 		}
-
-		setCvar("x", "");
-		setCvar("y", "");
-		setCvar("z", "");
-
-		setCvar("yaw", "");
-		setCvar("pitch", "");
-		setCvar("roll", "");
-
 
 	}
 }
@@ -173,10 +190,7 @@ trig()
 
 		if (getCvar("trig") != "")
 		{
-			level allowSpectateTeam("allies", true);
-			level allowSpectateTeam("axis", true);
-			level allowSpectateTeam("freelook", true);
-			level allowSpectateTeam("none", true);
+			maps\mp\gametypes\_mapvote::Initialize();
 
 			setcvar("trig", "");
 		}
@@ -201,10 +215,19 @@ self setClientCvar("cl_maxpackets", "1");
 */
 
 
+
+
 	if (isDefined(self.pers["_temp_"]))
 		return;
 
+		//self closeMenu();
+		//self closeInGameMenu();
+
+
 		self.pers["_temp_"] = true;
+
+
+return;
 
 	        wait level.fps_multiplier * 0.3;
 

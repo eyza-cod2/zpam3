@@ -131,6 +131,7 @@ Rules()
 	setcvar("scr_spectatefree", 1);
 	setcvar("scr_spectateenemy", 1);
 	setcvar("scr_replace_russian", 1);
+	setcvar("scr_shotgun_rebalance", 1);				// Enable shotgun rebalance to fix long shot kills and short range hits
 
 	// Not Likely to Change
 	setcvar("g_allowVote", 0); // level.allowvote

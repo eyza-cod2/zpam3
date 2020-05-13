@@ -46,6 +46,21 @@ Do_Overtime()
 	game["roundsplayed"] = 0;
 
 
+	// Drop saved weapons
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		player = players[i];
+
+		player.pers["weapon1"] = undefined;
+		player.pers["weapon2"] = undefined;
+
+		player unlink();
+		player enableWeapon();
+	}
+
+
+
 	if (level.scr_readyup)
 	{
 		game["Do_Ready_up"] = true;
