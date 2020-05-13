@@ -2,10 +2,6 @@
 
 init()
 {
-	// Ignore mod is not downloaded if pam is not installed correctly
-	if (!maps\mp\gametypes\_pam::isInstalledCorrectly() || game["pbsv_not_loaded"])
-		return;
-
     setCvar("sv_allowDownload", "1");
     setCvar("sv_wwwDlDisconnected", "0"); // disconnect player while downloading?
 
@@ -14,6 +10,10 @@ init()
 
 onConnected()
 {
+	// Ignore if pam is not installed correctly
+	if (!maps\mp\gametypes\_pam::isInstalledCorrectly() || game["pbsv_not_loaded"])
+		return;
+
 	// Define variables
 	if (!isDefined(self.pers["modDownloaded"]))
 	{
@@ -34,14 +34,20 @@ checkDownload()
 {
 	self endon("disconnect");
 
-	// After 5 second of not getting response from client disable all
+	// After a few second of not getting response from client disable all
 	wait level.fps_multiplier * 3;
+
+	// Ignore if pam is not installed correctly
+	if (!maps\mp\gametypes\_pam::isInstalledCorrectly() || game["pbsv_not_loaded"])
+		return;
 
 	if (!self.pers["modDownloaded"])
 	{
 		self.pers["downloadDisableResponse"] = true;
 
-		self closemenu();
+		self closeMenu();
+		self closeInGameMenu();
+		self setClientCvar("g_scriptMainMenu", "");
 
 		spawnModNotDownloaded();
 	}
@@ -52,10 +58,12 @@ spawnModNotDownloaded()
 	self setClientCvar("cl_allowdownload", "1"); // enable downloading on client side (just for sure)
 	self setClientCvar("cl_wwwdownload", "1");
 
-	// Special icon for player in "none" team
-	self.statusicon = "icon_mod";
-
 	[[level.spawnSpectator]]((999999, 999999, -999999), (90, 0, 0));
+
+	wait level.frame; // wait to correctly replace statusicon (is set in readyup)
+	
+	// Special icon for player with not downloaded mod
+	self.statusicon = "icon_mod";
 }
 
 modIsDownloaded()

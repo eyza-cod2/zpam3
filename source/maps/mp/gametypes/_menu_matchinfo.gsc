@@ -25,6 +25,9 @@ Init()
 	if (!level.scr_matchinfo)
 		return;
 
+	// Matchinfo cannot working without readyup...
+	if (!level.scr_readyup)
+		return;
 
 	addEventListener("onConnectedAll",  ::onConnectedAll);
 	addEventListener("onMenuResponse",  ::onMenuResponse);
@@ -58,7 +61,7 @@ onConnected()
 	}
 	else
 	{
-		wait level.fps_multiplier * 1;
+		wait level.fps_multiplier * 0.2;
 		self setClientCvar("ui_show_matchinfo", "0");
 	}
 }
@@ -79,7 +82,36 @@ generateTeamNames()
 
 	level.teamname["allies"] = level.teamname_allies;
 	level.teamname["axis"] = level.teamname_axis;
+
+
+
+	alliesDef = "";
+	switch(game["allies"])
+	{
+		case "american": alliesDef = &"MPUI_AMERICAN"; break;
+		case "british":  alliesDef = &"MPUI_BRITISH"; break;
+		case "russian":  alliesDef = &"MPUI_RUSSIAN"; break;
+	}
+	axisDef = &"MPUI_GERMAN";
+
+	// for all living players store their weapons
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		player = players[i];
+
+		if (level.teamname_allies != "")
+			player setClientCvar("g_TeamName_Allies", level.teamname_allies);
+		else
+			player setClientCvar("g_TeamName_Allies", alliesDef);
+
+		if (level.teamname_axis != "")
+			player setClientCvar("g_TeamName_Axis", level.teamname_axis);
+		else
+			player setClientCvar("g_TeamName_Axis", axisDef);
+	}
 }
+
 
 
 processPreviousMapToHistory()

@@ -29,8 +29,8 @@
 
 
 		// Close menu
-		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 90, scriptMenuResponse "close")
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 90, ;)
 		// Main menu
-		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu", 140, 120, close serverinfo_sd; open main)
+		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu", 140, 120, ;)
 	}
 }

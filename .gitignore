@@ -1,6 +1,9 @@
+.gitignore
 .atom
 .gitignore
 gsc_help.txt
 gsc_changes.txt
 what_to_test.txt
 source_compiled
+*iwd
+zpam310_beta3

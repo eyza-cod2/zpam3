@@ -1,4 +1,5 @@
 #include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
 
 #define WEAPON_TEXTSCALE .3
 
@@ -13,6 +14,71 @@
 		shadowY  5						// y amount for shadow offset
 		shadowColor 0.1 0.1 0.1 .25	// shadow color
 	}
+
+/*
+	menuDef
+	{
+	  	name matchinfo555
+	  	fullScreen MENU_FALSE
+	  	visible MENU_TRUE
+	    rect 0 0 40 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+		onOpen
+		{
+			closeMenuOnDvar ui_show_matchinfo "0" matchinfo555";
+		}
+
+
+		itemDef
+		{
+			style			WINDOW_STYLE_FILLED
+			rect			-140 5 130 17 0 0
+			backcolor		.1 .1 .1 .5
+			visible			1
+			decoration
+		}
+		itemDef
+		{
+			style			WINDOW_STYLE_FILLED
+			rect			10 5 130 17 0 0
+			backcolor		.1 .1 .1 .5
+			visible			1
+			decoration
+		}
+		itemDef
+		{
+			style			WINDOW_STYLE_FILLED
+			rect			-40 25 30 17 0 0
+			backcolor		.1 .1 .1 .5
+			visible			1
+			decoration
+		}
+		itemDef
+		{
+			style			WINDOW_STYLE_FILLED
+			rect			10 25 30 17 0 0
+			backcolor		.1 .1 .1 .5
+			visible			1
+			decoration
+		}
+
+		ITEM_TEXT_DVAR("ui_match_team1_name", -75, 20, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
+		ITEM_TEXT_DVAR("ui_match_team2_name", 75, 20, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
+
+		ITEM_TEXT_DVAR("ui_match_team1_score", -25, 42, .4, ITEM_ALIGN_CENTER, 1 1 1 1)
+		ITEM_TEXT_DVAR("ui_match_team2_score", 25, 42, .4, ITEM_ALIGN_CENTER, 1 1 1 1)
+
+		ITEM_TEXT("vs", 0, 27, .2, ITEM_ALIGN_CENTER, 1 1 1 1)
+		ITEM_TEXT(":", 0, 48, .2, ITEM_ALIGN_CENTER, 1 1 1 1)
+
+		// Round
+		ITEM_TEXT_DVAR("ui_match_round", 0, 60, .25, ITEM_ALIGN_CENTER, 1 1 1 1)
+	}
+
+*/
+
+
+
+
 
 //	// Hold Breath Hint
 //	menuDef

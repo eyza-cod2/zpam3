@@ -237,24 +237,41 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	To do that we need to waittillframeend everytime this function is called to be able to count all shots in single frame
 
 	Shotgun hits are splited into 3 parts:
-		- Very close range 	: 0 - 250 distance
-		- Close range		: 250 - 400 distance
-		- The rest			: 400 - 800 distance
+		- Close range 	: 0 - 180 distance
+		- Mid range		: 180 - 550 distance
+		- Far range		: 550 - 800 distance
 
-	Shotgun's shots fired in single bulled was increased from 8 to 16 to increase chance player is hitted
-	In every parts are hits are processed according to this table:
+	Shotgun's bullets fired in single shot was increased from 8 to 16 (to increase chance player is hitted)
+	In every part hits are processed according to this table:
 
-	Very close range:
-		- Atleast 2 bullets hit the player -> kill
-		- Othervise -> Damage 85
+	Close range: 0 - 180:
 
-	Close range:
-		- atleast 2 bullets hit the player and 40% of them hit the body (not legs) = kill
-		- othervise = damage 50
+		To kill a player:
+		2 to 16 bullets must hit the player
 
-	The rest:
-		- count total of original damage and limit it to max 99
-		- (this avoid long shots - you will always need to hit player atleast twice to kill him)
+		85hp damage:
+		1 bullet from 16 hit the player
+
+	Mid range: 180 - 550:
+
+		To kill a player:
+		10 to 16 bullets must hit the player
+		- or -
+		atleast 4 bullets must hit the player and 50% of them must hit the body or head
+
+		60hp damage:
+		less than 4 bullets hit the player
+		or 50% of bullets goes to legs
+
+	Far range: 550 - 800:
+
+		To kill a player:
+		not possible by single fire
+		you will always need to fire atleast twice to kill the player
+
+		Damage:
+		original damage from PAM2.07 is applied
+
 	*/
 	/*
 	MOD_PISTOL_BULLET = pistol / shotgun / thompson
@@ -263,9 +280,11 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	MOD_GRENADE_SPLASH = grenade
 	*/
 
+	damageFeedback = 1;
 
-	if (isDefined(eAttacker) && isPlayer(eAttacker) && isDefined(sHitLoc) && isDefined(sMeansOfDeath) &&
-		isDefined(sWeapon) && sWeapon == "shotgun_mp" && sMeansOfDeath == "MOD_PISTOL_BULLET")
+	if (level.scr_shotgun_rebalance && // Shotgun rebalance can be turned on/off by command
+		isDefined(eAttacker) && isPlayer(eAttacker) && isDefined(sHitLoc) && isDefined(sMeansOfDeath) &&
+		isDefined(sWeapon) && sWeapon == "shotgun_rebalanced_mp" && sMeansOfDeath == "MOD_PISTOL_BULLET")
 	{
 		// count distance
 		dist = distance(self getOrigin(), eAttacker getOrigin());
@@ -319,35 +338,46 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 
 		iDamage = self._shotgunTotalDamage;
 
+		//scr_shotgun_rebalance
+
 		// Very close range
-		if (dist < 250)
+		if (dist < 180)
 		{
 			// X shots from 16 (max shotCount) hits the player
 			if (self._shotgunShots >= 2)
 			{
+				// do bigger damage feedback to feel player is killed
+				if (self._shotgunShots > 12) damageFeedback = 3;
+				else 						 damageFeedback = 2;
+
 				iDamage = 100; // do kill
-				if(getCvar("debug")!="") eAttacker iprintln("^1Very close range, force kill (distance:" + dist + " shots: " + self._shotgunShots + ")");
+				if(getCvar("sg_debug")=="1") eAttacker iprintln("^1Close range, kill (distance: " + int(dist) + " bullets: " + self._shotgunShots + "/16)");
 			}
 			else
 			{
 				iDamage = 85; // do just big hit
-				if(getCvar("debug")!="") eAttacker iprintln("^3Very close range, do big hit (distance:" + dist + " shots: " + self._shotgunShots + ")");
+				if(getCvar("sg_debug")=="1") eAttacker iprintln("^1Close range, "+iDamage+"hp damage (distance: " + int(dist) + " bullets: " + self._shotgunShots + "/16)");
 			}
 		}
 
-		// Mid close range
-		else if (dist < 400)
+		// Mid range
+		else if (dist < 550)
 		{
-			// If most of the shots go to the legs || only X shots from 16 (max shotCount) hits the player
-			if ((self._shotgunShotsLegs / self._shotgunShots) > 0.6 || self._shotgunShots < 3)
+			// Atleast 8 bullets hits the player or atleast 4 bullets hits the player and 50% goes to body
+			if (self._shotgunShots >= 10 || (self._shotgunShots >= 4 && (self._shotgunShotsLegs / self._shotgunShots) < 0.5))
 			{
-				iDamage = 50; // do just hit
-				if(getCvar("debug")!="") eAttacker iprintln("^3Close range, do 50hp hit (distance:" + dist + " shots: " + self._shotgunShots + ")");
+				// do bigger damage feedback to feel player is killed
+				if (self._shotgunShots > 12) damageFeedback = 3;
+				else 						 damageFeedback = 2;
+
+				// do kill
+				iDamage = 100;
+				if(getCvar("sg_debug")=="1") eAttacker iprintln("^3Mid range, kill (distance: " + int(dist) + " bullets: " + self._shotgunShots + "/16 legs: " + self._shotgunShotsLegs + "/" + self._shotgunShots + ")");
 			}
 			else
 			{
-				iDamage = 100; // do kill
-				if(getCvar("debug")!="") eAttacker iprintln("^1Close range, force kill (distance:" + dist + " shots: " + self._shotgunShots + ")");
+				iDamage = 60; // do just hit
+				if(getCvar("sg_debug")=="1") eAttacker iprintln("^3Mid range, "+iDamage+"hp damage (distance: " + int(dist) + " bullets: " + self._shotgunShots + "/16 legs: " + self._shotgunShotsLegs + "/" + self._shotgunShots + ")");
 			}
 		}
 		else
@@ -358,7 +388,7 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 			if (iDamage >= 100)
 				iDamage = 99;
 
-			if(getCvar("debug")!="") eAttacker iprintln("Damage:" + iDamage + " distance:" + dist + " shots: " + self._shotgunShots + " totDmg: " + self._shotgunTotalDamage);
+			if(getCvar("sg_debug")=="1") eAttacker iprintln("Far range, " + iDamage + "hp damage (distance:" + int(dist) + " bullets: " + self._shotgunShots + " totDmg: " + self._shotgunTotalDamage + ")");
 
 		}
 
@@ -415,6 +445,7 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 
 
 
+
 	// First loop onPlayerDamaging events that can prevent from the damage
 	return_value = [];
     for (i = 0; i < level.events.onPlayerDamaging.size; i++)
@@ -423,6 +454,15 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
     for (i = 0; i < return_value.size; i++)
         if (isDefined(return_value[i]) && return_value[i])
             return; // prevent damage
+
+
+	// Damage feedback
+	for (i = 0; i < damageFeedback; i++)
+	{
+		if(isdefined(eAttacker) && eAttacker != self && !(iDFlags & level.iDFLAGS_NO_PROTECTION))
+			eAttacker thread maps\mp\gametypes\_damagefeedback::updateDamageFeedback();
+	}
+
 
 	// Do onPlayerDamaged event
 	for (i = 0; i < level.events.onPlayerDamaged.size; i++)
@@ -478,7 +518,7 @@ CodeCallback_PlayerKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon
 	}
 
     // If the player was killed by a head shot, let players know it was a head shot kill (except shotgun)
-	if(sHitLoc == "head" && sMeansOfDeath != "MOD_MELEE" && sWeapon != "shotgun_mp")
+	if(sHitLoc == "head" && sMeansOfDeath != "MOD_MELEE" && sWeapon != "shotgun_mp" && sWeapon != "shotgun_rebalanced_mp")
 		sMeansOfDeath = "MOD_HEAD_SHOT";
 
 

@@ -106,12 +106,23 @@ generateDemoName()
         }
     }
 
+	// Shot xVx text only if it is not 5v5
+	xVx = "";
+	if (myTeamPlayers != 5 && enemyTeamPlayers != 5)
+		xVx = "_"+myTeamPlayers+"v"+enemyTeamPlayers;
+
     // Map name
     mapname = level.mapname;
     if (ToLower(mapname[0]) == "m" && ToLower(mapname[1]) == "p" && ToLower(mapname[2]) == "_")
         mapname = getsubstr(mapname, 3, mapname.size);
 
-    demoName = myTeamPlayers+"v"+enemyTeamPlayers+"_"+mapname+"_"+myTeamName+"_"+enemyTeamName+"__"+game["recordingMatchID"];
+	if (mapname == "toujane")	mapname = "tj";
+	if (mapname == "burgundy")	mapname = "bg";
+	if (mapname == "dawnville")	mapname = "dw";
+	if (mapname == "matmata")	mapname = "mat";
+	if (mapname == "carentan")	mapname = "car";
+
+    demoName = mapname+xVx+"_"+myTeamName+"_"+enemyTeamName+"__"+game["recordingMatchID"];
 
     // Avoiding file overwritting
     if (level.gametype == "sd" && game["roundsplayed"] > 0 && !game["overtime_active"])

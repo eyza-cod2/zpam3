@@ -78,6 +78,10 @@ Start_Readyup_Mode(runned_in_middle_of_game)
 	// reset flag as readyup was runned
 	game["readyup_first_run"] = false;
 
+	// Enable online renaming
+	wait level.frame;
+	setClientNameMode("auto_change");
+
 	// Wait here until level.playersready is false
 	Update_Players_Count();
 
@@ -103,7 +107,7 @@ onSpawned()
 {
 	// We are in readyup, so change icons in scoreboard table
 	if (self.isReady) 	self.statusicon = "party_ready";
-						self.statusicon = "party_notready";
+	else				self.statusicon = "party_notready";
 
 	self PrintTeamAndHowToUse();
 }
@@ -112,7 +116,7 @@ onJoinedTeam(teamName)
 {
 	// We are in readyup, so change icons in scoreboard table
 	if (self.isReady) 	self.statusicon = "party_ready";
-						self.statusicon = "party_notready";
+	else				self.statusicon = "party_notready";
 }
 
 /*
@@ -162,25 +166,30 @@ onPlayerKilling(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
 		self.sessionstate = "dead";
 
 		// Clone players model for death animations
+		body = undefined;
 		if(!isdefined(self.switching_teams))
 			body = self cloneplayer(deathAnimDuration);
 
 		// Reset flag that means that this kill was executed while player is chaging sides via menu (suicide() was called)
 		self.switching_teams = undefined;
 
-		self thread respawnOnKilled();
+		self thread respawnOnKilled(body);
 	}
 
 	// Always prevent kill in readyup
 	return true;
 }
 
-respawnOnKilled()
+respawnOnKilled(body)
 {
 	self endon("disconnect");
 	self endon("spawned");
 
 	wait level.fps_multiplier * 2;
+
+	// Delete dead body in readyup
+	if(isDefined(body))
+		body delete();
 
 	// If player is not changing team, spawn them again
 	if (isDefined(self.pers["weapon"]))
@@ -254,7 +263,7 @@ playerReadyUpThread()
 				self.statusicon = "party_ready";
 
 				self.readyhud.color = (.73, .99, .73);
-				self.readyhud setText(&"PAM_READYUP_READY");
+				self.readyhud setText(game["STRING_READYUP_READY"]);
 
 				//logPrint(self.name + ";" + " is Ready Logfile;" + "\n");
 			}
@@ -264,7 +273,7 @@ playerReadyUpThread()
 				self.statusicon = "party_notready";
 
 				self.readyhud.color = (1, .66, .66);
-				self.readyhud setText(&"PAM_READYUP_NOT_READY");
+				self.readyhud setText(game["STRING_READYUP_NOT_READY"]);
 
                 //logPrint(self.name + ";" + " is Not Ready Logfile;" + "\n");
 			}
@@ -492,7 +501,7 @@ check_Warnings()
     	{
             level.warning1.y = 70 + line_offset;
             level.warning1.alpha = 1;
-            level.warning1 setText(&"PAM_WARNING_PUNKBUSTER_IS_DISABLED");
+            level.warning1 setText(game["STRING_WARNING_PUNKBUSTER_IS_DISABLED"]);
 
     		line_offset += 16;
     	}
@@ -502,7 +511,7 @@ check_Warnings()
     	{
             level.warning2.y = 70 + line_offset;
             level.warning2.alpha = 1;
-            level.warning2 setText(&"PAM_WARNING_CHEATS_ARE_ENABLED");
+            level.warning2 setText(game["STRING_WARNING_CHEATS_ARE_ENABLED"]);
 
     		line_offset += 16;
     	}
@@ -512,7 +521,7 @@ check_Warnings()
         {
             level.warning3.y = 70 + line_offset;
             level.warning3.alpha = 1;
-            level.warning3 setText(&"PAM_WARNING_CVARS_ARE_CHANGED");
+            level.warning3 setText(game["STRING_WARNING_CVARS_ARE_CHANGED"]);
 
             line_offset += 16;
         }
@@ -522,7 +531,7 @@ check_Warnings()
         {
             level.warning4.y = 70 + line_offset;
             level.warning4.alpha = 1;
-            level.warning4 setText(&"PAM_WARNING_PASSWORD_IS_NOT_SET");
+            level.warning4 setText(game["STRING_WARNING_PASSWORD_IS_NOT_SET"]);
         }
 
         wait level.fps_multiplier * 1;
@@ -593,9 +602,6 @@ createLevelHUD()
         deletePlacedEntity("misc_turret");
     	deletePlacedEntity("misc_mg42");
     }
-
-	// Enable online renaming
-	setClientNameMode("auto_change");
 }
 
 
@@ -608,12 +614,12 @@ HUD_Player_Status()
 
     // Your status
     self.status = maps\mp\gametypes\_hud_system::addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 120, 1.2, (0.8,1,1), "center", "middle", "right");
-	self.status setText(&"PAM_READYUP_YOUR_STATUS");
+	self.status setText(game["STRING_READYUP_YOUR_STATUS"]);
 
 	// Ready / Not ready
     self.readyhud = maps\mp\gametypes\_hud_system::addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 135, 1.2, (1, .66, .66), "center", "middle", "right");
     self.readyhud.archived = false;         // show my status instead of spectating players status if im following another player
-	self.readyhud setText(&"PAM_READYUP_NOT_READY");
+	self.readyhud setText(game["STRING_READYUP_NOT_READY"]);
 
     level waittill("rupover");
 
@@ -658,7 +664,7 @@ HUD_Clock()
 	level.timertext.alignY = "middle";
 	level.timertext.fontScale = 1.2;
 	level.timertext.color = (.8, 1, 1);
-	level.timertext SetText(&"PAM_READYUP_CLOCK");
+	level.timertext SetText(game["STRING_READYUP_CLOCK"]);
 
 	level.stim = newHudElem();
 	level.stim.x = level.hud_readyup_offsetX;
@@ -726,7 +732,7 @@ HUD_WaitingOn_X_Players()
 	level.waitingon.fontScale = 1.2;
 	level.waitingon.font = "default";
 	level.waitingon.color = (.8, 1, 1);
-	level.waitingon setText(&"PAM_READYUP_WAITING_ON");
+	level.waitingon setText(game["STRING_READYUP_WAITING_ON"]);
 
 	// Number
 	level.notreadyhud = newHudElem();
@@ -749,7 +755,7 @@ HUD_WaitingOn_X_Players()
 	level.playerstext.fontScale = 1.2;
 	level.playerstext.font = "default";
 	level.playerstext.color = (.8, 1, 1);
-	level.playerstext setText(&"PAM_READYUP_PLAYERS");
+	level.playerstext setText(game["STRING_READYUP_PLAYERS"]);
 
     level waittill("rupover");
 

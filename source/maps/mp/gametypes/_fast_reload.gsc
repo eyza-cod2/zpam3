@@ -155,6 +155,7 @@ GetRechamberTime(weaponName)
         case "springfield_mp":          timer = 1.33; break;
 
         case "shotgun_mp":              timer = 1.0163; break;
+		case "shotgun_rebalanced_mp":              timer = 1.0163; break;
     }
 
     return timer;

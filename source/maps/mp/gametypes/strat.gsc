@@ -216,10 +216,6 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 {
 	if(!(iDFlags & level.iDFLAGS_NO_PROTECTION))
 	{
-		// Shot hitblip
-		if(isdefined(eAttacker) && eAttacker != self)
-			eAttacker thread maps\mp\gametypes\_damagefeedback::updateDamageFeedback();
-
 		// Make sure at least one point of damage is done
 		if(iDamage < 1)
 			iDamage = 1;
@@ -564,6 +560,16 @@ menuWeapon(response)
 	if (response == "random")
 		response = self maps\mp\gametypes\_weapons::getRandomWeapon();
 
+	// Shotgun rebalance
+	// Because we have 2 version of shotgun, if new version is turned on we need to change name of weapon to new version
+	if (response == "shotgun_mp" || response == "shotgun_rebalanced_mp")
+	{
+		if (level.scr_shotgun_rebalance)
+			response = "shotgun_rebalanced_mp";
+		else
+			response = "shotgun_mp";
+	}
+
 	// Weapon is not valid or is in use
 	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvaible(response))
 	{
@@ -576,6 +582,8 @@ menuWeapon(response)
 	}
 
 	weapon = response;
+
+
 
 	// After selecting a weapon, show "ingame" menu when ESC is pressed
 	self setClientCvar("g_scriptMainMenu", game["menu_ingame"]);
@@ -1307,7 +1315,7 @@ playRecord()
 	self notify("end_playRecord");
 	self endon("end_playRecord");
 
-	if (self.recordsPos.size == 0)
+	if (!isDefined(self.recordsPos) || self.recordsPos.size == 0)
 	{
 		self iprintlnbold("^1No record to play");
 		return;

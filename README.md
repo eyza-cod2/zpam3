@@ -28,10 +28,77 @@ You can currently download and test beta version - but be careful, there can be 
 
 <br>
 
-## zPAM3.1 BETA 2
-- released 2020-04-28
+
+## Contact
+Write message on discord <b>CyberGamer Europe</b> in <b>#cod2-zpam-3</b> channel.<br>
+Or add me on discord <b>eyza#7930</b><br>
+Or write me on email <b>kratas.tom@seznam.cz</b><br>
+<br>
+You can support me via Paypal -> https://paypal.me/kratasy
+
+<br>
+
+
+## zPAM3.1 BETA 3
+- released 2020-05-13
 - if you want to use it on our server, check instructions below.<br>
 - please report me all of your server crashes, bugs or suggestions.
+
+### Bug fixes against BETA 2
+#### Bug fixes:
+- In readyup: when you spawn, red/green circle icon in scoreboard is bugged -> fixed
+- Secondary weapon from round before overtime is saved to first round of overtime -> fixed
+- Fixed menu for Russian weapons
+- Fixed pb cvar range check for players with inverted mouse
+- Custom colors of teams resets every round -> fixed
+- Bomb timer is not visible when last player is killed -> fixed
+- You cannot change nickname immediately in half ready-up -> fixed
+
+#### New features:
+- Shotgun rebalance was adjusted (see image on <a href="/images/shotgun.png">[3.3.9]</a> - last try before i decide to replace it with old shotgun)
+- You can enable printing information about shotgun hits via /rcon set sg_debug 1
+- Rebelanced shotgun can be turned off by command /rcon scr_shotgun_rebalance 0<br>
+(these shotgun commands will be removed in final release)
+- Toujane bug under A roof - fixed by new textures (see image on <a href="/images/toujane_underAroof_bug.jpg">[1.6]</a>)
+- Toujane bucket model is now rendered from far distance (see image on <a href="/images/toujane_bucket_fixed.jpg">[1.7]</a>)
+- Toujane B bomb tank model is rendered from far distance (see image on <a href="/images/toujane_B_bomb.jpg">[1.8]</a>)
+- Added voting system for public mode (map voting at the end of the map)
+- Russian side is enabled for PCW pam mode
+- Deadchat is turned off for PCW pam mode
+- Demo name for auto recording was shortened (5v5_toujane_team1_team2__id => tj_team1_team2__id)
+(if you play in other number of players than 5, substring like 3v3 is added to demo name)
+- Cvar cl_packetdup is forced from 1 to 3 now (testing)
+
+
+<i>Note:<br>
+While replaying demo recorded in new pam, you may see untextured horse model instead of shotgun.<br>
+This is because of switchable shotguns. To fix this, you have run COD2 with command +set fs_game zpam310_beta3.<br>
+To do that, create shorcut of CoD2MP_s.exe, open Properites and add that command after game path.</i>
+
+
+### Installation
+In order to sucessfully install pam on your server, follow this steps:
+- Download file <b><a href="/zpam310_beta3.zip">zpam310_beta3.zip</a></b> and extract folders with files into following locations:</b>
+    - pb/pbsvuser.cfg
+    - mods/zpam310_beta3/zpam310_beta3.iwd
+    - mods/zpam310_beta3/pam_pub.cfg  <i>* optional - this file is used only when you are runnig public server</i>
+- Add <b>+set fs_game "mods/zpam310_beta3"</b> into command line
+
+<i>Note:<br>
+If you are running cracked server, you have to uncomment command pb_sv_guidRelax 7 in file <b>pb/pbsvuser.cfg</b>
+</i>
+<br>
+<br>
+
+How it should looks like:<br>
+<a href="/images/ftp.jpg"><img src="/images/ftp.jpg" height="147" /></a><br>
+(gameservers hosting for example):<br>
+<a href="/images/gameservers_cmd.png"><img src="/images/gameservers_cmd.png" height="236" /></a>
+
+<br>
+
+## zPAM3.1 BETA 2
+- released 2020-04-28
 
 ### Bug fixes against BETA 1
 - Spectator bug - when player disconnect right after he was killed, all dead players could spectate enemy -> fixed
@@ -44,31 +111,7 @@ You can currently download and test beta version - but be careful, there can be 
 - For public mode: first round starts too early after map change -> fixed
 - Added config file for public mode
 
-### Installation
-In order to sucessfully install pam on your server, follow this steps:
-- Download and copy files <b>zpam310_beta2.iwd</b>, <b>pbsvuser.cfg</b> and <b>pam_pub.cfg</b>* into following locations:</b>
-    - pb/pbsvuser.cfg
-    - mods/zpam310_beta2/zpam310_beta2.iwd
-    - mods/zpam310_beta2/pam_pub.cfg  <i>* optional - this file is used only when you are runnig public server</i>
-- Add <b>+set fs_game "mods/zpam310_beta2"</b> into command line
 
-<br>
-
-How it should looks like:<br>
-<a href="/images/ftp.jpg"><img src="/images/ftp.jpg" height="147" /></a><br>
-(gameservers hosting for example):<br>
-<a href="/images/gameservers_cmd.jpg"><img src="/images/gameservers_cmd.jpg" height="424" /></a><br>
-
-<br>
-
-## Contact
-Write message on discord <b>CyberGamer Europe</b> in <b>#cod2-zpam-3</b> channel.<br>
-Or add me on discord <b>eyza#7930</b><br>
-Or write me on email <b>kratas.tom@seznam.cz</b><br>
-<br>
-You can support me via Paypal -> https://paypal.me/kratasy
-
-<br>
 
 ## List of changes
 
@@ -87,7 +130,15 @@ You can support me via Paypal -> https://paypal.me/kratasy
 <a href="/images/burgundy_jump.jpg"><img src="/images/burgundy_jump.jpg" height="130" /></a><br>
 <a href="/images/dawnville_jump.jpg"><img src="/images/dawnville_jump.jpg" height="130" /></a><br>
 [1.4] Fast reload bug (when you fire, press R to reload and then you scroll down 2x, you are able to shoot faster) -&gt; fixed<br>
-[1.5] Bind to stop actually playing sound -&gt; fixed
+[1.5] Bind to stop actually playing sound -&gt; fixed<br>
+[1.6] Toujane bug inder A roof<br>
+<a href="/images/toujane_underAroof_bug.jpg"><img src="/images/toujane_underAroof_bug.jpg" height="800" /></a><br>
+[1.7] Toujane bucket is not visible from far distance -> fixed<br>
+<a href="/images/toujane_bucket_fixed.jpg"><img src="/images/toujane_bucket_fixed.jpg" height="108" /></a><br>
+[1.8] Toujane B tank model top grid is not visible from far distance -> fixed<br>
+<a href="/images/toujane_B_bomb.jpg"><img src="/images/toujane_B_bomb.jpg" height="172" /></a><br>
+
+
 </sub>
 
 ### 2. Fixed script bugs
@@ -149,7 +200,7 @@ You can support me via Paypal -> https://paypal.me/kratasy
 [3.3.7] add new info to scoreboard at the end of the round (how long you are playing + rounds to halftime)<br>
 [3.3.8] <del>show weapon instead of headshot in killfeed in match pam mode</del> <strong>(removed)</strong><br>
 [3.3.9] Shotgun rebalance - long shots and close range hits are balanced by new system of counting damage<br>
-    <a href="/images/shotgun.png"> <img src="/images/shotgun.png" alt="" height="1000" /> </a><br><br>
+    <a href="/images/shotgun.png"> <img src="/images/shotgun.png" alt="" height="755" /> </a><br><br>
 [3.3.10] Match info - menu with information about team names, score, scores in halfs, total played time, ...<br>
     <a href="/images/matchinfo.jpg"> <img src="/images/matchinfo.jpg" alt="" height="400" /> </a><br>
 [3.3.11] Match info server cvars - basic information like team names, scores, round can be showed via HLSW for example<br>
@@ -168,7 +219,8 @@ You can support me via Paypal -> https://paypal.me/kratasy
     <a href="/images/lod.gif"><img src="/images/lod.gif" height="200" /></a>
     <a href="/images/toujane_bucket.jpg"><img src="/images/toujane_bucket.jpg" height="200" /></a><br>
     (this may be applyed only for toujane)</del><br>
-    <b>Canceled - this caused significant FPS drops on some spots</b><br><br>
+    <b>Canceled - this caused significant FPS drops on some spots</b><br>
+    <b>Some models are forced to render in high detail by another method</b><br><br>
 [3.4.2] New bomb explosion radius + fixed explosion effect <br>
   <img src="/images/bomb_damage.jpg" alt="" width="345" height="198" /><br>
 [3.4.3] when bomb explodes and kills someone, kill is assigned to planter<br>
@@ -213,6 +265,7 @@ pub<br>
 <br>
 <b>pcw (new)<br>
 - new mode for not cg matches<br>
+- russian side turned on
 - auto recording is disabled<br>
 - deadchat is disabled<br>
 - there is no timer in half<br>
@@ -268,7 +321,8 @@ fun (new)<br>
     <a href="/images/matmata_bug_1.jpg"><img src="/images/matmata_bug_1.jpg" alt="" height="150" /> </a>
     <a href="/images/matmata_bug_2.jpg"><img src="/images/matmata_bug_2.jpg" alt="" height="150" /> </a><br>
 [5.20] Tanks - some tanks dont have solid tank wheels - shots go throught them<br>
-[5.21] Toujane bug under A roof<br>
+[5.21] <del>Toujane bug under A roof</del><br>
+<b>Fixed, viz [1.6]</b><br>
     <a href="/images/toujane_bug.png"><img src="/images/toujane_bug.png" alt="" height="200" /> </a><br>
 [5.22] Toujane bug in track on B bomb site - you can see enemy behind track boxes with jumping, but enemy cannot see you<br>
 [5.23] Burgundy black tank - you can see enemy under tank wheels when you are far away from tank

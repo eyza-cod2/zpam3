@@ -99,7 +99,7 @@ Force()
         self setClientCvar("cl_maxpackets", 100);
         wait level.fps_multiplier * 0.1;
 
-		self setClientCvar("cl_packetdup", 1);	// this will increase length of packets
+		self setClientCvar("cl_packetdup", 3);	// this will increase length of packets
 		wait level.fps_multiplier * 0.1;
 
         self setClientCvar("snaps", 30);	// this may corespond to sv_fps
@@ -109,6 +109,9 @@ Force()
 	if (level.scr_force_client_exploits)
 	{
         self setClientCvar("sc_enable", 0); // disable shadows in dx9
+		wait level.fps_multiplier * 0.1;
+
+		self setClientCvar("r_drawSun", 0); // disable sun
 		wait level.fps_multiplier * 0.1;
 
         self setClientCvar("fx_sort", 1); // for better smoke rendering
@@ -162,7 +165,7 @@ setForcedCvarsByPB()
     self setClientCvar("cl_freelook", "1");
 	wait level.frame;
     self setClientCvar("cl_maxpackets", "100");
-    self setClientCvar("cl_packetdup", "1");
+    self setClientCvar("cl_packetdup", "3");
     self setClientCvar("cl_pitchspeed", "140");
     self setClientCvar("cl_yawspeed", "140");
 

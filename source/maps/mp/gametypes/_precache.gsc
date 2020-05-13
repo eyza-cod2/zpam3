@@ -37,15 +37,15 @@ Precache()
 
 
 	// HUD: PAM header
-	addString("STRING_VERSION_INFO", &"zPAM 3.1 ^1BETA 2");
-	addString("STRING_RELEASED_INFO", &"Released 2020/04/28");
+	addString("STRING_VERSION_INFO", &"zPAM 3.1 ^1BETA 3");
+	addString("STRING_RELEASED_INFO", &"Released 2020/05/13");
 
 
 
 	addString("STRING_OVERTIME_MODE", &"Overtime");
 	// League name header (is defined in each mode file)
 	if (!isdefined(game["leagueString"]))
-		game["leagueString"] = &"PAM_UNKNOWN_MODE";
+		game["leagueString"] = &"^1Unknown &&1 pam mode";
 	precacheString(game["leagueString"]);
 
 
@@ -105,53 +105,50 @@ Precache()
 
 	// PAM installed wrong
 	addString("STRING_NOT_INSTALLED_CORRECTLY_1", &"Error: zPAM is not installed correctly.");
-	addString("STRING_NOT_INSTALLED_CORRECTLY_2", &"Folder with mod must exists under mods/zpam310_beta2/zpam310_beta2.iwd"); // TODO: rename to actual version
+	addString("STRING_NOT_INSTALLED_CORRECTLY_2", &"Folder with mod must exists under mods/zpam310_beta3/zpam310_beta3.iwd"); // TODO: rename to actual version
 
 	// PBSVUSER.cfg load error
 	addString("STRING_PBSV_NOT_LOADED_ERROR_1", &"Punkbuster file pbsvuser.cfg was not loaded.");
 
 	// Help url
 	addString("STRING_GITHUB_URL", &"https://github.com/eyza-cod2/zpam3");
-	addString("STRING_GITHUB_URL_HELP", &"Please visit https://github.com/eyza-cod2/zpam3 for more info.");
+	addString("STRING_GITHUB_URL_HELP", &"Please visit https://github.com/eyza-cod2/zpam3 for install instructions.");
 
 
 
 
 
 
-
-
-
-
-	// Readyup
-	precacheString(&"PAM_READYUP_MODE");
-	precacheString(&"PAM_READYUP_WAITING_ON");
-	precacheString(&"PAM_READYUP_PLAYERS");
-	precacheString(&"PAM_READYUP_YOUR_STATUS");
-	precacheString(&"PAM_READYUP_READY");
-	precacheString(&"PAM_READYUP_NOT_READY");
-	precacheStatusIcon("party_ready");
-	precacheStatusIcon("party_notready");
-	precacheString(&"PAM_READYUP_CLOCK");
-	precachestring(&"PAM_READYUP_KILLS");
-
-	// Readyup warnings
-	precachestring(&"PAM_WARNING_PASSWORD_IS_NOT_SET");
-	precachestring(&"PAM_WARNING_CHEATS_ARE_ENABLED");
-	precachestring(&"PAM_WARNING_PUNKBUSTER_IS_DISABLED");
-	precachestring(&"PAM_WARNING_CVARS_ARE_CHANGED");
-
+	// Ready-up
+	addString("STRING_READYUP_WAITING_ON", &"Waiting on");
+	addString("STRING_READYUP_PLAYERS", &"Players");
+	addString("STRING_READYUP_YOUR_STATUS", &"Your Status");
+	addString("STRING_READYUP_READY", &"Ready");
+	addString("STRING_READYUP_NOT_READY", &"Not Ready");
+	addString("STRING_READYUP_CLOCK", &"Clock");
 
 	addString("STRING_READYUP_MODE", &"Ready-Up Mode");
 	addString("STRING_READYUP_MODE_HALF", &"Half-Time Ready-Up Mode");
 	addString("STRING_READYUP_MODE_TIMEOUT", &"Time-Out Ready-Up Mode");
 	addString("STRING_READYUP_MODE_OVERTIME", &"Overtime Ready-Up Mode");
 
-
-
-
-
+	// problem with precache...
 	game["STRING_READYUP_ALL_PlAYERS_ARE_READY"] = "All players are ready.";
+
+
+
+	precacheStatusIcon("party_ready");
+	precacheStatusIcon("party_notready");
+
+
+
+	// Readyup warnings
+	addString("STRING_WARNING_PASSWORD_IS_NOT_SET", &"Warning: Server password is not set");
+	addString("STRING_WARNING_CHEATS_ARE_ENABLED", &"Warning: Cheats are Enabled");
+	addString("STRING_WARNING_PUNKBUSTER_IS_DISABLED", &"Warning: PunkBuster is Disabled");
+	addString("STRING_WARNING_CVARS_ARE_CHANGED", &"Warning: Server CVAR values are not equal to league rules");
+
+
 
 
 
@@ -247,6 +244,15 @@ Precache()
 	precacheString(game["matchresuming"]);
 
 
+	// Map vote
+	game["MapVote"]	= &"Press ^2FIRE^7 to vote                           Votes";
+	game["TimeLeft"] = &"Time Left: ";
+	game["MapVoteHeader"] = &"Next Map Vote";
+	precacheString(game["MapVote"]);
+	precacheString(game["TimeLeft"]);
+	precacheString(game["MapVoteHeader"]);
+
+
 
 	//Health Bar for spectator?
 	game["health_bar"] = "gfx/hud/hud@health_bar.tga";
@@ -257,15 +263,7 @@ Precache()
 	precacheModel(game["Item_Healthpack"]);
 
 
-	// CTF Status Icons
-	if (level.gametype == "ctf")
-	{
-		precacheStatusIcon("compass_flag_" + game["allies"]);
-		precacheStatusIcon("compass_flag_" + game["axis"]);
 
-		game["alive_hud_text"] = &"Alive";
-		precacheString(game["alive_hud_text"]);
-	}
 
 	// Strat mode
 	game["flyenabled"] = &"Enabled";
