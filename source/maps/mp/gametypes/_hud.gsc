@@ -2,8 +2,8 @@
 
 init()
 {
-    level.hud_readyup_offsetX = -65;
-    level.hud_readyup_offsetY = 35;
+    level.hud_readyup_offsetX = -50;
+    level.hud_readyup_offsetY = 20;
 
 
     level.hud_scoreboard_offsetX = -35;
@@ -18,6 +18,7 @@ init()
 PAM_Header()
 {
 	// TODO: REMOVE in release
+  /*
     notreleased1 = maps\mp\gametypes\_hud_system::addHUD(0, 3, 1.0, (1,1,0), "center", "top", "center", "top");
     notreleased1.alpha = 0.5;
     notreleased1 setText(game["STRING_NOT_RELEASED_1"]);
@@ -25,7 +26,7 @@ PAM_Header()
     notreleased2 = maps\mp\gametypes\_hud_system::addHUD(0, 16, 0.8, (1,1,0), "center", "top", "center", "top");
     notreleased2.alpha = 0.5;
     notreleased2 setText(game["STRING_NOT_RELEASED_2"]);
-
+*/
 
     leaguelogo = undefined;
     pammode = undefined;
@@ -46,13 +47,13 @@ PAM_Header()
     }
 
     // zPAM v3.00
-    pam_version = maps\mp\gametypes\_hud_system::addHUD(-35, 25, 1.2, (0.8,1,1), "right", "top", "right");
-	pam_version setText(game["STRING_VERSION_INFO"]);
-
+    pam_version = maps\mp\gametypes\_hud_system::addHUD(-20, 25, 1.2, (0.8,1,1), "right", "top", "right");
+  	pam_version setText(game["STRING_VERSION_INFO"]);
+/*
     // Released 10/2015
     pam_released = maps\mp\gametypes\_hud_system::addHUD(-35, 39, 1, (0.8,1,1), "right", "top", "right");
 	pam_released setText(game["STRING_RELEASED_INFO"]);
-
+*/
     // Overtime mode
     overtimemode = undefined;
     if (game["overtime_active"])
@@ -79,7 +80,7 @@ PAM_Header()
     if (isDefined(leaguelogo)) leaguelogo thread maps\mp\gametypes\_hud_system::removeHUDSmooth(1);
     pammode thread maps\mp\gametypes\_hud_system::removeHUDSmooth(1);
     pam_version thread maps\mp\gametypes\_hud_system::removeHUDSmooth(1);
-    pam_released thread maps\mp\gametypes\_hud_system::removeHUDSmooth(1);
+    //pam_released thread maps\mp\gametypes\_hud_system::removeHUDSmooth(1);
     if (isDefined(overtimemode)) overtimemode thread maps\mp\gametypes\_hud_system::removeHUDSmooth(1);
     if (isDefined(timeoutmode)) timeoutmode thread maps\mp\gametypes\_hud_system::removeHUDSmooth(1);
 }

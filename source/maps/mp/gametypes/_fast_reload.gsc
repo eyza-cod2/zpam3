@@ -2,15 +2,31 @@
 
 init()
 {
-    addEventListener("onConnected",     ::onConnected);
-
     level.fastReload_startTime = getTime();
-}
 
+    addEventListener("onConnected",     ::onConnected);
+}
 
 onConnected()
 {
+    if (!level.scr_fast_reload_fix)
+      return;
+
     self thread manageWeaponCycleDelay();
+}
+
+// Called if cvar scr_fast_reload_fix changes
+cvarChanged()
+{
+  	if (level.scr_fast_reload_fix) // changed to 1
+  	{
+    		players = getentarray("player", "classname");
+    		for(i = 0; i < players.size; i++)
+    		{
+      			player = players[i];
+      			player onConnected();
+    		}
+  	}
 }
 
 getCurrentWeaponSlot()
@@ -42,13 +58,22 @@ manageWeaponCycleDelay()
     lastClipAmmo = 0;
     lastWeapon = "";
 
-    cycleDelayActivated = false;
+    // Start as activated to fix problem when the cvar is set at the end of the round
+    cycleDelayActivated = true;
     cycleDelayTime = 0;
 
+    wait level.fps_multiplier * 0.2;
 
     for (;;)
     {
         wait level.frame;
+
+        // Fast reload fix was turned off by cvar
+        if (!level.scr_fast_reload_fix)
+        {
+          if (!cycleDelayActivated) // wait until cycle dalay is restored to original state
+            return;
+        }
 
         // If we have weapon that can be bugged
         if (cycleDelayActivated)
@@ -89,10 +114,6 @@ manageWeaponCycleDelay()
         }
 
 
-
-
-
-
         currentClipAmmo = self getClipAmmo();
 
         // If weapon fired
@@ -101,19 +122,17 @@ manageWeaponCycleDelay()
             // Get time how long rechamber will take
             timer = GetRechamberTime(currentWeapon);
 
-			if (timer > 0)
-			{
-	            cycleDelayActivated = true;
-	            cycleDelayTime = timer;
+      			if (timer > 0)
+      			{
+  	            cycleDelayActivated = true;
+  	            cycleDelayTime = timer;
 
-	            //self iprintln("^1Preventing fast reload bug");
-	            self setClientCvar("cg_weaponCycleDelay", "200");	// time in ms when player can change weapon again
-			}
+  	            //self iprintln("^1Preventing fast reload bug");
+  	            self setClientCvar("cg_weaponCycleDelay", "200");	// time in ms when player can change weapon again
+      			}
         }
 
         lastClipAmmo = currentClipAmmo;
-
-
     }
 }
 
@@ -155,7 +174,7 @@ GetRechamberTime(weaponName)
         case "springfield_mp":          timer = 1.33; break;
 
         case "shotgun_mp":              timer = 1.0163; break;
-		case "shotgun_rebalanced_mp":              timer = 1.0163; break;
+	      case "shotgun_rebalanced_mp":              timer = 1.0163; break;
     }
 
     return timer;

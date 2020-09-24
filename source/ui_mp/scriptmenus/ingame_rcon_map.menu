@@ -33,17 +33,34 @@ itemDef  \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textaligny		15 \
 	dvartest		dvarstring \
-	hideDvar    {dvarvalue, "-1"} \
+	hideDvar    {dvarvalue, "-1", "-2"} \
 	onFocus \
 	{ \
 		play "mouse_over"; \
+		RCON_UPDATE_STATUS \
 	} \
 	action \
 	{ \
 		play "mouse_click"; \
   		setFocus "unfocus"; \
 		doaction; \
+		setitemcolor login_warning forecolor 1 0 0 1; \
 	} \
+} \
+itemDef  \
+{ \
+	visible			1 \
+	origin			origin_choice \
+	forecolor		GLOBAL_DISABLED_COLOR \
+	type			ITEM_TYPE_TEXT \
+	text			textstring \
+	textfont		UI_FONT_NORMAL \
+	textscale		0.28 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textaligny		15 \
+	dvartest		dvarstring \
+	showDvar    {"-2"} \
+	decoration \
 } \
 itemDef  \
 { \
@@ -94,7 +111,7 @@ ITEM_GAMETYPE_ONDVAR(246 60, 53, "Downtown",     "ui_rcon_map_map", "mp_downtown
 ITEM_GAMETYPE_ONDVAR(323 06, 45, "Breakout",     "ui_rcon_map_map", "mp_breakout",  exec "openscriptmenu ingame rcon_map_map_mp_breakout")
 ITEM_GAMETYPE_ONDVAR(323 24, 41, "Brecourt",     "ui_rcon_map_map", "mp_brecourt",  exec "openscriptmenu ingame rcon_map_map_mp_brecourt")
 ITEM_GAMETYPE_ONDVAR(323 42, 36, "Decoy",        "ui_rcon_map_map", "mp_decoy",  exec "openscriptmenu ingame rcon_map_map_mp_decoy")
-
+ITEM_GAMETYPE_ONDVAR(323 60, 60, "<Fast Restart>", "ui_rcon_map_map", "fast_restart",  exec "openscriptmenu ingame rcon_map_map_fast_restart")
 
 
 
@@ -135,9 +152,25 @@ ITEM_GAMETYPE_ONDVAR(121 170, 21, "No",   "ui_rcon_map_cheats", "0",  exec "open
 
 
 
+// Extra options in zPAM
+ITEM_MAP_OPTIONS_HEADING(0 200, "Fast reload:")
+ITEM_GAMETYPE_ONDVAR(86 200, 40, "Enable",  "ui_rcon_map_fast_reload_fix", "0", exec "openscriptmenu ingame rcon_map_fast_reload_fix_0")
+ITEM_GAMETYPE_ONDVAR(135 200, 60, "Prevent",   "ui_rcon_map_fast_reload_fix", "1",  exec "openscriptmenu ingame rcon_map_fast_reload_fix_1")
+
+ITEM_MAP_OPTIONS_HEADING(0 220, "Diagonal:")
+ITEM_GAMETYPE_ONDVAR(86 220, 40, "Enable",  "ui_rcon_map_diagonal_fix", "0", exec "openscriptmenu ingame rcon_map_diagonal_fix_0")
+ITEM_GAMETYPE_ONDVAR(135 220, 60, "Prevent",   "ui_rcon_map_diagonal_fix", "1",  exec "openscriptmenu ingame rcon_map_diagonal_fix_1")
+
+ITEM_MAP_OPTIONS_HEADING(0 240, "Shotgun:")
+ITEM_GAMETYPE_ONDVAR(86 240, 40, "Classic",  "ui_rcon_map_shotgun_rebalance", "0", exec "openscriptmenu ingame rcon_map_shotgun_rebalance_0")
+ITEM_GAMETYPE_ONDVAR(135 240, 80, "Rebalanced",   "ui_rcon_map_shotgun_rebalance", "1",  exec "openscriptmenu ingame rcon_map_shotgun_rebalance_1")
+
+
+
+
 // Apply
 ITEM_BUTTON_ONDVAR_DISABLED   	  (0 300, "Apply", "ui_rcon_map_exec", showDvar {""}, RCON_UPDATE_STATUS;)
-ITEM_BUTTON_ONDVAR			      (0 300, "Apply", "ui_rcon_map_exec", hideDvar {""}, RCON_UPDATE_STATUS, RCON_UPDATE_STATUS; exec "vstr ui_rcon_map_exec"; setitemcolor login_warning forecolor 1 0 0 1)
+ITEM_BUTTON_ONDVAR			      (0 300, "Apply", "ui_rcon_map_exec", hideDvar {""}, RCON_UPDATE_STATUS, RCON_UPDATE_STATUS; exec "vstr ui_rcon_map_exec"; CLOSE_ALL; close ingame)
 
 
 

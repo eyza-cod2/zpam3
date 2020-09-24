@@ -43,7 +43,7 @@ Rules()
 	setcvar("scr_show_objective_icons", 0);
 	setcvar("scr_show_hitblip", 1);
 
-	setcvar("scr_show_scoreboard", 2); 		//Score in the upper left corner [0 - 2] 0=hided  1=visible  2=visible only before and after round
+	setcvar("scr_show_scoreboard", 1); 		//Score in the upper left corner [0 - 2] 0=hided  1=visible  2=visible only before and after round
 	setcvar("scr_show_scoreboard_limit", 0);
 
 	// Health Regeneration
@@ -60,10 +60,11 @@ Rules()
 
 	setcvar("scr_allow_shellshock", 0);					// Create shell shock effect when player is hitted
 	setcvar("scr_replace_russian", 1); 					// Replace russians with Americans / Brisith
-	setcvar("scr_shotgun_rebalance", 1);				// Enable shotgun rebalance to fix long shot kills and short range hits
+	setcvar("scr_shotgun_rebalance", 0);				// Enable shotgun rebalance to fix long shot kills and short range hits
 	setcvar("scr_blackout", 0); 						// If match is in progress, show map background all over the screen and disable sounds for connected player
 	setcvar("scr_recording", 0); 						// Starts automatically recording when match starts
 	setcvar("scr_diagonal_fix", 0); 					// Enable diagonal bug fix (disables leaning for players when strafing)
+	setcvar("scr_fast_reload_fix", 1);				// Prevent players from shoting faster via double-scroll bug
 	setcvar("scr_matchinfo", 0); 						// Show match info in menu (team names, score, score from previous map,....)
 	setcvar("scr_map_vote", 0);							// Open voting system so players can vote about next map
 	setcvar("scr_map_vote_replay", 0);					// Show option to replay this map in voting system

@@ -73,3 +73,63 @@ ITEM_TEXT_DVAR("ui_match_map1_name", 45, 65, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
 // Map history 2
 ITEM_TEXT_DVAR("ui_match_map2_score", 235, 50, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
 ITEM_TEXT_DVAR("ui_match_map2_name", 235, 65, .3, ITEM_ALIGN_CENTER, 1 1 1 1)
+
+
+
+
+
+
+itemDef
+{
+	visible			1
+	rect				0 0 200 24 0 0
+	origin			35 150
+	forecolor		GLOBAL_UNFOCUSED_COLOR
+	type				ITEM_TYPE_BUTTON
+	text				"Show match info ingame"
+	textfont		UI_FONT_NORMAL
+	textscale		.25
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textaligny	20
+	textalignx	100
+	textalign		ITEM_ALIGN_CENTER
+	dvartest		"ui_match_ingame_show"
+	hideDvar		{ "1" }
+	action
+	{
+		play "mouse_click";
+		exec "openscriptmenu ingame matchinfo";
+	}
+	onFocus
+	{
+		play "mouse_over";
+	}
+}
+
+
+itemDef
+{
+	visible			1
+	rect				0 0 200 24 0 0
+	origin			35 150
+	forecolor		GLOBAL_UNFOCUSED_COLOR
+	type				ITEM_TYPE_BUTTON
+	text				"Hide match info ingame"
+	textfont		UI_FONT_NORMAL
+	textscale		.25
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textaligny	20
+	textalignx	100
+	textalign		ITEM_ALIGN_CENTER
+	dvartest		"ui_match_ingame_show"
+	showDvar		{ "1" }
+	action
+	{
+		play "mouse_click";
+		exec "openscriptmenu ingame matchinfo";
+	}
+	onFocus
+	{
+		play "mouse_over";
+	}
+}

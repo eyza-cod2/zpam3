@@ -100,8 +100,8 @@ initAllFunctions()
 	println("zPAM: All scripts are initialized correctly.");
 	println("------------------------------------------------");
 
+	// This is called only if developer_script is set to 1
 	thread maps\mp\gametypes\__developer::init();
-
 	thread maps\mp\gametypes\_menu_debug::init();
 	#/
 

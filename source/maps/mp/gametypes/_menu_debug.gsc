@@ -15,7 +15,7 @@ onMenuResponse(menu, response)
 {
 	if (response == "debug") {
 
-		// DEBUG: If we are in LAN mode, show debug menu anyway
+		// TODO: If we are in LAN mode, show debug menu anyway
 		if (self.pers["rcon_logged_in"] || getCvar("dedicated") == "1")
 		{
 			self closeMenu();

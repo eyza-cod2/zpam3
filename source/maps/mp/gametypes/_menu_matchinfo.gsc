@@ -22,6 +22,8 @@ Init()
 
 	addEventListener("onConnected",     ::onConnected);
 
+	addEventListener("onMenuResponse",  ::onMenuResponse);
+
 	if (!level.scr_matchinfo)
 		return;
 
@@ -30,7 +32,6 @@ Init()
 		return;
 
 	addEventListener("onConnectedAll",  ::onConnectedAll);
-	addEventListener("onMenuResponse",  ::onMenuResponse);
 
 
 	if (!isDefined(game["match_teams_set"]))
@@ -46,6 +47,18 @@ Init()
 
 onConnected()
 {
+	// Ingame match info bar
+	if (!isDefined(self.pers["showIngameMatchInfo"]))
+	{
+			self.pers["showIngameMatchInfo"] = false;
+
+			if (level.scr_matchinfo)
+				self setClientCvar("ui_match_ingame_show", "0");
+			else
+				self setClientCvar("ui_match_ingame_show", "-1"); // disable option
+	}
+
+
 	if (level.scr_matchinfo)
 	{
 		self setClientCvar("ui_show_matchinfo", "1");
@@ -64,6 +77,7 @@ onConnected()
 		wait level.fps_multiplier * 0.2;
 		self setClientCvar("ui_show_matchinfo", "0");
 	}
+
 }
 
 onConnectedAll()
@@ -94,7 +108,7 @@ generateTeamNames()
 	}
 	axisDef = &"MPUI_GERMAN";
 
-	// for all living players store their weapons
+	// for all players change team name in scoreboard
 	players = getentarray("player", "classname");
 	for(i = 0; i < players.size; i++)
 	{
@@ -259,14 +273,22 @@ waitForPlayerOrReset(playersLast)
 {
 	wait level.fps_multiplier * 60;
 
-	players = getentarray("player", "classname");
-
-	// reset score if 30% of players disconnect or there are no players or there was no players last map
-	if (((players.size * 1.0) < (playersLast * 0.7)) || players.size == 0 || playersLast == 0)
+	for(;;)
 	{
-		iprintln("Info about teams was cleared.");
-		resetAll();
+		// Exit loop if teams are set
+		if (game["match_teams_set"])
+			return;
 
+		// reset matchinfo if 30% of players disconnect or there are no players or there was no players last map
+		players = getentarray("player", "classname");
+		if (((players.size * 1.0) < (playersLast * 0.7)) || players.size == 0 || playersLast == 0)
+		{
+			iprintln("Info about teams was cleared.");
+			resetAll();
+			return;
+		}
+
+		wait level.fps_multiplier * 10;
 	}
 }
 
@@ -374,6 +396,58 @@ UpdatePlayerCvars()
 
 		// Total time
 		player setClientCvarIfChanged("ui_match_totaltime", game["match_totaltime_text"]);
+
+// TODO: do it better?
+		// Ingame match info bar
+		if (player.pers["showIngameMatchInfo"])
+		{
+			// Team names
+			player setClientCvarIfChanged("ui_match_ingame_team1_name", game["match_team1_name"]);
+			player setClientCvarIfChanged("ui_match_ingame_team2_name", game["match_team2_name"]);
+
+			// scores
+			player setClientCvarIfChanged("ui_match_ingame_team1_score", game["match_team1_score"]);
+			player setClientCvarIfChanged("ui_match_ingame_team2_score", game["match_team2_score"]);
+
+			// Round
+			player setClientCvarIfChanged("ui_match_ingame_round", game["match_round"]);
+
+			// Static text
+			player setClientCvarIfChanged("ui_match_ingame_semicolon", ":");
+
+			// Map history
+			for (j = 1; j <= 2; j++)
+			{
+				player setClientCvarIfChanged("ui_match_ingame_map" + j + "_name", GetMapName(getCvar("sv_map" + j + "_name")));
+				player setClientCvarIfChanged("ui_match_ingame_map" + j + "_score", getCvar("sv_map" + j + "_score"));
+
+				//player setClientCvarIfChanged("ui_match_ingame_map" + j + "_name", "Toujane");
+				//player setClientCvarIfChanged("ui_match_ingame_map" + j + "_score", "13:7");
+			}
+		}
+		else
+		{
+			// Team names
+			player setClientCvarIfChanged("ui_match_ingame_team1_name", "");
+			player setClientCvarIfChanged("ui_match_ingame_team2_name", "");
+
+			// scores
+			player setClientCvarIfChanged("ui_match_ingame_team1_score", "");
+			player setClientCvarIfChanged("ui_match_ingame_team2_score", "");
+
+			// Round
+			player setClientCvarIfChanged("ui_match_ingame_round", "");
+
+			// Static text
+			player setClientCvarIfChanged("ui_match_ingame_semicolon", "");
+
+			// Map history
+			for (j = 1; j <= 2; j++)
+			{
+				player setClientCvarIfChanged("ui_match_ingame_map" + j + "_name", "");
+				player setClientCvarIfChanged("ui_match_ingame_map" + j + "_score", "");
+			}
+		}
 	}
 }
 
@@ -390,7 +464,6 @@ refresh()
 
 		// Run timer - untill 1min the same number of player must connect
 		// Othervise considere this as team left and we need to reset match info
-		//
 		playersLast = getCvar("sv_map_players");
 		if (playersLast != "")
 		{
@@ -561,7 +634,37 @@ refresh()
 
 		if (game["match_round"] != "") 			setCvar("_match_round", game["match_round"]);
 		else									setCvar("_match_round", "-");
+	}
 
+
+}
+
+
+
+/*
+Turn off or on the ingame match info
+self is player that call this
+*/
+toggleIngameMatchInfo()
+{
+	if (self.pers["showIngameMatchInfo"])
+	{
+		self.pers["showIngameMatchInfo"] = false;
+		self setClientCvar("ui_match_ingame_show", "0");
+		UpdatePlayerCvars();
+	}
+	else
+	{
+		if (level.scr_matchinfo)
+		{
+			self.pers["showIngameMatchInfo"] = true;
+			self setClientCvar("ui_match_ingame_show", "1");
+			UpdatePlayerCvars();
+		}
+		else
+		{
+			self iprintln("Match info is not enabled.");
+		}
 	}
 }
 
@@ -574,12 +677,11 @@ Return true to indicate that menu response was handled in this function
 */
 onMenuResponse(menu, response)
 {
-	if (menu != "ingame")
-		return false;
-
-	if (response == "open")
+	if (menu == game["menu_ingame"] && response == "matchinfo")
 	{
-
+		// Turn off or on the ingame match info
+		self toggleIngameMatchInfo();
+		return true;
 	}
 }
 

@@ -80,16 +80,6 @@ init()
 	setcvar("sg_debug", "0");
 }
 
-potencionalInfiniteLoopTest()
-{
-	for(i = 0; i < 10000; i++)
-	{
-		wait level.fps_multiplier * 0.1;
-
-		println("a");
-	}
-}
-
 skipReadyup()
 {
 	wait level.fps_multiplier * 7;
@@ -163,6 +153,7 @@ moving_obj(id)
 
 shot()
 {
+	level.ii = 0;
 	for(;;)
 	{
 		wait level.frame;
@@ -172,9 +163,18 @@ shot()
 			players = getentarray("player", "classname");
 			for(p = 0; p < players.size; p++)
 			{
-				players[p] setClientCvar("exec_cmd", "+attack; -attack");
-				players[p] openMenu(game["menu_exec_cmd"]);
-				players[p] closeMenu();
+				// Exec command on client side
+				// If some menu is already opened:
+				//	- by player (by ESC command) -> it will work well over already opened menu
+				//  - by script (via openMenu()) -> that menu will be closed and exec_cmd will not be closed correctly
+				//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
+				players[p] setClientCvar("exec_cmd", "set aaa 1");
+				players[p] openMenu(game["menu_exec_cmd"]);		// open menu via script
+				players[p] closeMenu();							// will only close menu opened by script
+
+
+				players[p] setClientCvar("ui_match_round", level.ii);
+				level.ii++;
 			}
 
 			setcvar("shot", "");

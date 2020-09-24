@@ -29,16 +29,16 @@ Precache()
 	precacheString(&"PAM_UNKNOWN_MODE");
 
 	precacheShader("cybergamer_logo");
-
+/*
 	// TODO: REMOVE in release
 	addString("STRING_NOT_RELEASED_1", &"You are testing new version of zPAM");  // This is not the final release of zPAM
 	addString("STRING_NOT_RELEASED_2", &"Check changes on github.com/eyza-cod2/zpam3"); // It is not allowed to play matches on it
-
+*/
 
 
 	// HUD: PAM header
-	addString("STRING_VERSION_INFO", &"zPAM 3.1 ^1BETA 3");
-	addString("STRING_RELEASED_INFO", &"Released 2020/05/13");
+	addString("STRING_VERSION_INFO", &"zPAM 3.1 ^1BETA 4");
+	//addString("STRING_RELEASED_INFO", &"Released 2020/08/xx");
 
 
 
@@ -105,7 +105,7 @@ Precache()
 
 	// PAM installed wrong
 	addString("STRING_NOT_INSTALLED_CORRECTLY_1", &"Error: zPAM is not installed correctly.");
-	addString("STRING_NOT_INSTALLED_CORRECTLY_2", &"Folder with mod must exists under mods/zpam310_beta3/zpam310_beta3.iwd"); // TODO: rename to actual version
+	addString("STRING_NOT_INSTALLED_CORRECTLY_2", &"Folder with mod must exists under mods/zpam310_beta4/zpam310_beta4.iwd"); // TODO: rename to actual version
 
 	// PBSVUSER.cfg load error
 	addString("STRING_PBSV_NOT_LOADED_ERROR_1", &"Punkbuster file pbsvuser.cfg was not loaded.");
@@ -150,7 +150,8 @@ Precache()
 
 
 
-
+	// Recording
+	addString("STRING_RECORDING_INFO", &"Recording will start automatically...");
 
 
 	// Readyup (problem with precache...)

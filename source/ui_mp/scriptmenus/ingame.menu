@@ -40,13 +40,15 @@
 		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE1, "@MPUI_1_CHANGE_WEAPON", "ui_allow_weaponchange", hideDvar{"1"}, ;)
 		ITEM_BUTTON 				(ORIGIN_CHOICE2, "@MPUI_2_CHANGE_TEAM", ;, scriptMenuResponse "changeteam")
 		ITEM_BUTTON 				(ORIGIN_CHOICE3, "3. Player Settings", ;, 	CLOSE_ALL; open playersettings; open ingame_keys;)
-		ITEM_BUTTON 				(ORIGIN_CHOICE4, "4. Change map", ;, 		CLOSE_ALL; open rcon_map; open ingame_keys; RCON_UPDATE_STATUS;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE4, "4. Server Settings", ;, 		CLOSE_ALL; open rcon_map; open ingame_keys; RCON_UPDATE_STATUS;)
 		ITEM_BUTTON 				(ORIGIN_CHOICE5, "5. Kick player", ;, 		CLOSE_ALL; open rcon_kick; open ingame_keys; RCON_UPDATE_STATUS;)
-		ITEM_BUTTON 				(ORIGIN_CHOICE6, "6. About PAM", ;, 		CLOSE_ALL; open aboutpam; open ingame_keys;)
-		ITEM_BUTTON 				(ORIGIN_CHOICE7, "7. Leave Game", ;, 		CLOSE_ALL; close ingame; open leavegame;)
+		ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE6, "6. Call Vote", "ui_allowvote", showDvar{"1"}, ;, scriptMenuResponse "callvote")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE6, "6. Call Vote", "ui_allowvote", hideDvar{"1"}, ;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE7, "7. About PAM", ;, 		CLOSE_ALL; open aboutpam; open ingame_keys;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE8, "8. Leave Game", ;, 		CLOSE_ALL; close ingame; open leavegame;)
 
-		// This is enabled only if developer_script = 1
-		ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE9, "Debug", "debug", showDvar{"1"}, ;, scriptMenuResponse "debug")
+		// TODO: disable in final release
+		//ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE9, "Debug", "debug", showDvar{"1"}, ;, scriptMenuResponse "debug")
 
 
 		// Close
@@ -88,8 +90,11 @@
 		execKey "3" { play "mouse_click"; CLOSE_ALL; open playersettings; open ingame_keys; }
 		execKey "4" { play "mouse_click"; CLOSE_ALL; open rcon_map; open ingame_keys; }
 		execKey "5" { play "mouse_click"; CLOSE_ALL; open rcon_kick; open ingame_keys; }
-		execKey "6" { play "mouse_click"; CLOSE_ALL; open aboutpam; open ingame_keys; }
-		execKey "7" { play "mouse_click"; CLOSE_ALL; close ingame; open leavegame }
+		execKey "6" { play "mouse_click"; exec "openscriptmenu ingame callvote" }
+		execKey "7" { play "mouse_click"; CLOSE_ALL; open aboutpam; open ingame_keys; }
+		execKey "8" { play "mouse_click"; CLOSE_ALL; close ingame; open leavegame }
+
+
 
 		execKeyInt 32 { play "mouse_click"; CLOSE_ALL; close ingame; open main; } // space
 		execKeyInt 105 { play "mouse_click"; exec "openscriptmenu ingame serverinfo";  } // i
@@ -99,7 +104,7 @@
 	menuDef
 	{
 		name			"matchinfo"
-		rect			260 84 430 150
+		rect			260 84 430 250
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 

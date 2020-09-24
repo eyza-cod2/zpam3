@@ -298,7 +298,9 @@ Script_Variables()
 		[[var]]("scr_matchinfo", "BOOL", 0);					// level.scr_matchinfo
 		[[var]]("scr_map_vote", "BOOL", 1);						// level.mapvote
 		[[var]]("scr_map_vote_replay", "BOOL", 0);				// level.mapvotereplay
-		[[var]]("scr_shotgun_rebalance", "BOOL", 1);			// level.scr_shotgun_rebalance
+		[[var]]("scr_shotgun_rebalance", "BOOL", 0);			// level.scr_shotgun_rebalance
+    [[var]]("scr_fast_reload_fix", "BOOL", 0);			// level.scr_fast_reload_fix
+
 
 
 		[[var]]("scr_bots_add", "INT", 0, 0, 64); 		// add <num> bots to the server
@@ -693,14 +695,24 @@ onCvarChange(cvar, value, isRegisterTime)
 
 		case "scr_replace_russian": level.scr_replace_russian = value; break;
 		case "scr_blackout": level.scr_blackout = value; break;
-        case "scr_recording": level.scr_recording = value; break;
-		case "scr_diagonal_fix": level.scr_diagonal_fix = value; break;
+    case "scr_recording": level.scr_recording = value; break;
 		case "scr_matchinfo": level.scr_matchinfo = value; break;
 		case "scr_map_vote": level.mapvote = value; break;
 		case "scr_map_vote_replay": level.mapvotereplay = value; break;
+
+    case "scr_fast_reload_fix":
+      level.scr_fast_reload_fix = value;
+      if (!isRegisterTime)
+        level maps\mp\gametypes\_fast_reload::CvarChanged();
+      break;
+
+    case "scr_diagonal_fix":
+      level.scr_diagonal_fix = value;
+      if (!isRegisterTime)
+        level maps\mp\gametypes\_diagonal_fix::CvarChanged();
+      break;
+
 		case "scr_shotgun_rebalance":
-
-
 			// Replace all weapons in players slots with new version of shotgun
 			if (!isRegisterTime)
 			{

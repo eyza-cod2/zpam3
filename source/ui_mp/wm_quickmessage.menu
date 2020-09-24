@@ -166,11 +166,44 @@
 			textfont		UI_FONT_NORMAL
 			textscale		.24
 			textaligny		8
+			text			"7. Show ingame match info"
+			dvartest		"ui_match_ingame_show"
+			hideDvar		{ "1" }
+			decoration
+		}
+		itemDef
+		{
+			name			"window"
+			visible			1
+			rect			16 116 0 0
+			origin			ORIGIN_QUICKMESSAGEWINDOW
+			forecolor		1 1 1 1
+			textfont		UI_FONT_NORMAL
+			textscale		.24
+			textaligny		8
+			text			"7. Hide ingame match info"
+			dvartest		"ui_match_ingame_show"
+			showDvar		{ "1" }
+			decoration
+		}
+		execKey "7" { close quickmessage; exec "openscriptmenu ingame matchinfo" }
+
+/*
+		itemDef
+		{
+			name			"window"
+			visible			1
+			rect			16 116 0 0
+			origin			ORIGIN_QUICKMESSAGEWINDOW
+			forecolor		1 1 1 1
+			textfont		UI_FONT_NORMAL
+			textscale		.24
+			textaligny		8
 			text			"7. Start recording a demo"
 			decoration
 		}
 		execKey "7" { close quickmessage; exec "openscriptmenu ingame record" }
-
+*/
 		itemDef
 		{
 			name			"window"

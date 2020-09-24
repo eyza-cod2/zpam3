@@ -45,6 +45,24 @@ itemDef \
 	decoration \
 }
 
+#define ITEM_TEXT_DVAR_DVAR(cvar, x, y, fontsize, txtalign, fontcolor, dvartotest, dvarshowhide) \
+itemDef \
+{ \
+	rect			0 0 200 50 0 0 \
+	origin			x y \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		fontcolor \
+	textfont		UI_FONT_NORMAL \
+	textscale		fontsize \
+	textalign		txtalign \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvar			cvar \
+	dvartest		dvartotest \
+	dvarshowhide \
+	decoration \
+}
+
 #define ITEM_BAR_BOTTOM_BUTTON_DVAR(textstring, x, w, dvartotest, dvarshowhide, todo)  \
 itemDef \
 { \

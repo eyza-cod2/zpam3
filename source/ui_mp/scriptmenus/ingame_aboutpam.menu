@@ -3,7 +3,7 @@ itemDef
 	visible			1
 	origin			0 45
 	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"You are testing new version of zPAM"
+	text			"You are playing on zPAM mod"
 	textfont		UI_FONT_NORMAL
 	textscale		0.3
 	textstyle		ITEM_TEXTSTYLE_SHADOWED
@@ -14,9 +14,9 @@ itemDef
 itemDef
 {
 	visible			1
-	origin			0 65
+	origin			0 60
 	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"There may be bugs. Check changes on ^9github.com/eyza-cod2/zpam3"
+	text			"Created in 2020 with love <3"
 	textfont		UI_FONT_NORMAL
 	textscale		0.25
 	textstyle		ITEM_TEXTSTYLE_SHADOWED
@@ -27,36 +27,9 @@ itemDef
 itemDef
 {
 	visible			1
-	origin			0 85
+	origin			0 75
 	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"Work is still in progress!"
-	textfont		UI_FONT_NORMAL
-	textscale		0.25
-	textstyle		ITEM_TEXTSTYLE_SHADOWED
-	textalign		ITEM_ALIGN_LEFT
-	decoration
-}
-
-
-itemDef
-{
-	visible			1
-	origin			0 130
-	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"Creator: EYZA"
-	textfont		UI_FONT_NORMAL
-	textscale		0.25
-	textstyle		ITEM_TEXTSTYLE_SHADOWED
-	textalign		ITEM_ALIGN_LEFT
-	decoration
-}
-
-itemDef
-{
-	visible			1
-	origin			0 145
-	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"Main testers: askeslav, tomik"
+	text			"Check changes on ^9github.com/eyza-cod2/zpam3"
 	textfont		UI_FONT_NORMAL
 	textscale		0.25
 	textstyle		ITEM_TEXTSTYLE_SHADOWED
@@ -68,7 +41,34 @@ itemDef
 itemDef
 {
 	visible			1
-	origin			0 170
+	origin			0 110
+	forecolor		GLOBAL_UNFOCUSED_COLOR
+	text			"Creator: eyza"
+	textfont		UI_FONT_NORMAL
+	textscale		0.25
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textalign		ITEM_ALIGN_LEFT
+	decoration
+}
+
+itemDef
+{
+	visible			1
+	origin			0 125
+	forecolor		GLOBAL_UNFOCUSED_COLOR
+	text			"Supporters: askeslav, tomik, cokY"
+	textfont		UI_FONT_NORMAL
+	textscale		0.25
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textalign		ITEM_ALIGN_LEFT
+	decoration
+}
+
+
+itemDef
+{
+	visible			1
+	origin			0 140
 	forecolor		GLOBAL_UNFOCUSED_COLOR
 	text			"Join us on discord ^9CyberGamer Europe ^7in ^9#cod2-zpam-3 ^7channel."
 	textfont		UI_FONT_NORMAL

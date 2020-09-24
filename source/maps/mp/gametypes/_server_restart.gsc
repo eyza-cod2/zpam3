@@ -12,8 +12,6 @@ init()
 
 onConnecting()
 {
-	level notify("exit_server_restart"); // If some player connects, cancel waiting-threat that turning on hibernartion
-
 	level.players_num++;
 }
 
@@ -23,25 +21,24 @@ onDisconnect()
 
 	if (level.players_num == 0)
 	{
-		// Turn to hibernation after a few minutes
-		level thread waitBeforeHibernation();
-
-		//Println("---------------- Last player disconnectc - turning on waiting-thread to hibernation");
+		level thread restartServer();
 	}
 
 	if (level.players_num < 0)
 		assertMsg("Server restart not working");
 }
 
-waitBeforeHibernation()
-{
-	level endon("exit_server_restart");
 
-	wait level.fps_multiplier * 300;
+restartServer()
+{
+	//Println("---------------- Last player disconnectc - turning on waiting-thread to hibernation");
+
+	// Will disable all comming map-restrat (so map can be changed correctly)
+	level.pam_mode_change = true;
+
+	wait level.fps_multiplier * 10;
 
 	//Println("------------- Hibernation activated");
-
-	level notify("log_server_restart");
 
 	map_restart(false);
 }

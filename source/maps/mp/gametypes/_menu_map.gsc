@@ -18,6 +18,7 @@ init()
     map["mp_rhine"] = 12;
     map["mp_toujane"] = 13;
     map["mp_trainstation"] = 14;
+    map["fast_restart"] = 15; // special id for performing fast_restart
 
     gametype = [];
     gametype["sd"] = 0;
@@ -78,116 +79,175 @@ mapOptions(response)
         if (level.gametype == "strat")
             pam_mode = "strat"; // strat does not have pam modes
 
-        // Set selections to default
-        self.pers["serverOptions_map"] =        level.mapname;
-        self.pers["serverOptions_gametype"] =   level.gametype;
-        self.pers["serverOptions_pam"] =        pam_mode; // default pam mode
-        self.pers["serverOptions_cheats"] =     getCvarInt("sv_cheats");
-
-        updatePAMArray(); // update level.serverOptions.pamArray correctly if was changed before
-
-        self setClientCvar("ui_rcon_map_map", self.pers["serverOptions_map"]);
-        self setClientCvar("ui_rcon_map_gametype", self.pers["serverOptions_gametype"]);
-
-        // Show pam modes according to selected gametype
-        loadPAMModeAndCheatsSettings();
-
-        mapOptions_updateRconCommand();
-    }
-
-    else if (response == "fast_restart")
-    {
-        if (self.pers["rcon_logged_in"])
-        {
-            self closeMenu();
-            self closeIngameMenu();
-
-            // Will disable all comming map-restrat (so pam_mode can be changed correctly)
-            level.pam_mode_change = true;
-
-            self iprintlnbold("^3Applying fast_restart...");
-
-            wait level.fps_multiplier * 1.5;
-
-            map_restart(false); // fast_restart
-        }
+        onOpen(pam_mode);
     }
 
     else if (startsWith(response, "map_"))
     {
         mapInput = getsubstr(response, 4);
-
-		map = level.mapname; // set to default
-        if (isDefined(level.serverOptions.mapArray[mapInput]))
-            map = mapInput;
-
-        // Save selected map
-        self.pers["serverOptions_map"] = map;
-
-        self setClientCvar("ui_rcon_map_map", map);
-
-        mapOptions_updateRconCommand();
+        onMapChange(mapInput);
     }
-
     else if (startsWith(response, "gametype_"))
     {
         gametypeInput = getsubstr(response, 9);
-
-		gametype = level.gametype; // set to default
-        if (isDefined(level.serverOptions.gametypeArray[gametypeInput]))
-            gametype = gametypeInput;
-
-        // Save selected gametype
-        self.pers["serverOptions_gametype"] = gametype;
-
-        self setClientCvar("ui_rcon_map_gametype", gametype);
-
-        // Load PAM modes according to new selected gametype
-        updatePAMArray();
-
-        loadPAMModeAndCheatsSettings();
-
-        mapOptions_updateRconCommand();
+		    onGametypeChange(gametypeInput);
     }
-
     else if (startsWith(response, "pam_"))
     {
-        pam = level.pam_mode;
-        if (level.gametype == "strat")
-            pam = "strat"; // strat does not have pam modes
-
         pamInput = getsubstr(response, 4);
-
-        if (isDefined(level.serverOptions.pamArray[pamInput]))
-			pam = pamInput;
-
-        // Save selected gametype
-        self.pers["serverOptions_pam"] = pam;
-
-        loadPAMModeAndCheatsSettings();
-
-        mapOptions_updateRconCommand();
+        onPamChange(pamInput);
     }
-
-
     else if (startsWith(response, "cheats_"))
     {
         numberInput = getsubstr(response, 7);
         numberSafe = 0;
-
         if (numberInput == "1")
             numberSafe = 1;
 
-        // Save selected gametype
-        self.pers["serverOptions_cheats"] = numberSafe;
+        onCheatsChange(numberSafe);
+    }
 
-        loadPAMModeAndCheatsSettings();
+    else if (startsWith(response, "fast_reload_fix_"))
+    {
+        numberInput = getsubstr(response, 16);
+        numberSafe = 0;
+        if (numberInput == "1")
+            numberSafe = 1;
+        // Save selected
+        self.pers["serverOptions_fastReloadFix"] = numberSafe;
+        // Update string
+        mapOptions_updateRconCommand();
+    }
 
+    else if (startsWith(response, "diagonal_fix_"))
+    {
+        numberInput = getsubstr(response, 13);
+        numberSafe = 0;
+        if (numberInput == "1")
+            numberSafe = 1;
+        // Save selected
+        self.pers["serverOptions_diagonalFix"] = numberSafe;
+        // Update string
+        mapOptions_updateRconCommand();
+    }
+
+    else if (startsWith(response, "shotgun_rebalance_"))
+    {
+        numberInput = getsubstr(response, 18);
+        numberSafe = 0;
+        if (numberInput == "1")
+            numberSafe = 1;
+        // Save selected
+        self.pers["serverOptions_shotgunRebalance"] = numberSafe;
+        // Update string
         mapOptions_updateRconCommand();
     }
 }
 
-updatePAMArray()
+onOpen(pam_mode)
+{
+  // Set selections to default
+  self.pers["serverOptions_map"] =        level.mapname;
+  self.pers["serverOptions_gametype"] =   level.gametype;
+  self.pers["serverOptions_pam"] =        pam_mode; // default pam mode
+  self.pers["serverOptions_cheats"] =     getCvarInt("sv_cheats");
+
+  self.pers["serverOptions_fastReloadFix"] = level.scr_fast_reload_fix;
+  self.pers["serverOptions_diagonalFix"] = level.scr_diagonal_fix;
+  self.pers["serverOptions_shotgunRebalance"] = level.scr_shotgun_rebalance;
+
+
+  loadPAMArray(); // update level.serverOptions.pamArray correctly if was changed before
+
+  self setClientCvar("ui_rcon_map_map", self.pers["serverOptions_map"]);
+
+  // Show pam modes according to selected gametype
+  highlightSelectedItems();
+
+  mapOptions_updateRconCommand();
+}
+
+
+
+onMapChange(mapInput)
+{
+  map = level.mapname; // set to default
+  if (isDefined(level.serverOptions.mapArray[mapInput]))
+      map = mapInput;
+
+  // Save selected map
+  self.pers["serverOptions_map"] = map;
+
+  self setClientCvar("ui_rcon_map_map", map);
+
+  highlightSelectedItems();
+
+  mapOptions_updateRconCommand();
+}
+
+
+
+onGametypeChange(gametypeInput)
+{
+  gametype = level.gametype; // set to default
+  if (isDefined(level.serverOptions.gametypeArray[gametypeInput]))
+      gametype = gametypeInput;
+
+  // If gametype is changed and fast_restart is selected, resotre actual map
+  if (self.pers["serverOptions_map"] == "fast_restart")
+    self.pers["serverOptions_map"] = level.mapname;
+
+  // Save selected gametype
+  self.pers["serverOptions_gametype"] = gametype;
+
+  // Load PAM modes according to new selected gametype
+  loadPAMArray();
+
+  highlightSelectedItems();
+
+  mapOptions_updateRconCommand();
+}
+
+
+
+onPamChange(pamInput)
+{
+  pam = level.pam_mode;
+  if (level.gametype == "strat")
+      pam = "strat"; // strat does not have pam modes
+
+  if (isDefined(level.serverOptions.pamArray[pamInput]))
+    pam = pamInput;
+
+  // Save selected gametype
+  self.pers["serverOptions_pam"] = pam;
+
+  highlightSelectedItems();
+
+  mapOptions_updateRconCommand();
+}
+
+
+
+onCheatsChange(numberSafe)
+{
+  // If devmap is changed and fast_restart is selected, resotre actual map
+  if (self.pers["serverOptions_map"] == "fast_restart")
+    self.pers["serverOptions_map"] = level.mapname;
+
+  // Save selected gametype
+  self.pers["serverOptions_cheats"] = numberSafe;
+
+  highlightSelectedItems();
+
+  mapOptions_updateRconCommand();
+}
+
+
+
+
+
+loadPAMArray()
 {
     // Load selected gametype
     gametype = self.pers["serverOptions_gametype"];
@@ -211,24 +271,9 @@ updatePAMArray()
 }
 
 // Show pam modes according to selected gametype
-loadPAMModeAndCheatsSettings()
+highlightSelectedItems()
 {
-    sd = -1;
-    strat = -1;
 
-    // Selected gametype
-    gametype = self.pers["serverOptions_gametype"];
-    pam = self.pers["serverOptions_pam"];
-
-    if (gametype == "sd")
-        sd = pam;
-    else if (gametype == "strat")
-        strat = pam;
-
-    self setClientCvar("ui_rcon_map_pam_sd", sd);
-    self setClientCvar("ui_rcon_map_pam_strat", strat);
-
-    self setClientCvar("ui_rcon_map_cheats", self.pers["serverOptions_cheats"]);
 }
 
 mapOptions_updateRconCommand()
@@ -245,46 +290,136 @@ mapOptions_updateRconCommand()
     pamChanged = self.pers["serverOptions_pam"] != pam_mode;
     cheatsChanged = self.pers["serverOptions_cheats"] != getCvarInt("sv_cheats");
 
+    fastReloadChanged = self.pers["serverOptions_fastReloadFix"] != level.scr_fast_reload_fix;
+    diagonalChanged = self.pers["serverOptions_diagonalFix"] != level.scr_diagonal_fix;
+    shotgunChanged = self.pers["serverOptions_shotgunRebalance"] != level.scr_shotgun_rebalance;
+
+    fastRestart = self.pers["serverOptions_map"] == "fast_restart";
+
 	// Because RCON commands can come only each 1 second, we need to separe them by wait command
 	// Player typically run at 250 FPS, so wait 250 = 1sec
 	// To be sure it will execute, we will wait 260
 
-    if (gametypeChanged)
+    if (fastRestart)
     {
-        rconString += "/rcon g_gametype " + self.pers["serverOptions_gametype"] + "; ";
-        execString += "rcon g_gametype " + self.pers["serverOptions_gametype"] + "; wait 260;";
+        rconString += "/rcon fast_restart;";
+        execString += "rcon fast_restart;";
+    }
+    else
+    {
+        if (gametypeChanged)
+        {
+            rconString += "/rcon g_gametype " + self.pers["serverOptions_gametype"] + "; ";
+            execString += "rcon g_gametype " + self.pers["serverOptions_gametype"] + "; wait 260;";
+        }
+
+        if (pamChanged && self.pers["serverOptions_gametype"] != "strat") // dont change pam if gametype is strat
+        {
+            rconString += "/rcon pam_mode " + self.pers["serverOptions_pam"] + "; ";
+            execString += "rcon pam_mode " + self.pers["serverOptions_pam"] + "; wait 260;";
+        }
+
+        // If map of gametype is changed, map needs to be reseted
+        if (mapChanged || gametypeChanged || cheatsChanged)
+        {
+            if (self.pers["serverOptions_cheats"] == 1)
+            {
+                rconString += "/rcon devmap " + self.pers["serverOptions_map"] + "; ";
+                execString += "rcon devmap " + self.pers["serverOptions_map"] + ";";
+            }
+            else
+            {
+                rconString += "/rcon map " + self.pers["serverOptions_map"] + "; ";
+                execString += "rcon map " + self.pers["serverOptions_map"] + ";";
+            }
+        }
+        else if (fastRestart)
+        {
+          rconString += "/rcon fast_restart;";
+          execString += "rcon fast_restart;";
+        }
+
+        // If nothing changed, we can change additional cvars
+        if (!mapChanged && !gametypeChanged && !pamChanged && !cheatsChanged)
+        {
+          if (fastReloadChanged)
+          {
+            rconString += "/rcon scr_fast_reload_fix " + self.pers["serverOptions_fastReloadFix"] + "; ";
+            execString += "rcon scr_fast_reload_fix " + self.pers["serverOptions_fastReloadFix"] + "; wait 260;";
+          }
+
+          if (diagonalChanged)
+          {
+            rconString += "/rcon scr_diagonal_fix " + self.pers["serverOptions_diagonalFix"] + "; ";
+            execString += "rcon scr_diagonal_fix " + self.pers["serverOptions_diagonalFix"] + "; wait 260;";
+          }
+
+          if (shotgunChanged)
+          {
+            rconString += "/rcon scr_shotgun_rebalance " + self.pers["serverOptions_shotgunRebalance"] + "; ";
+            execString += "rcon scr_shotgun_rebalance " + self.pers["serverOptions_shotgunRebalance"] + "; wait 260;";
+          }
+        }
     }
 
-    if (pamChanged && self.pers["serverOptions_gametype"] != "strat") // dont change pam if gametype is strat
+
+    // -1 = not visible
+    // -2 = disabled
+    gametype = self.pers["serverOptions_gametype"];
+    sd = -1;
+    strat = -1;
+    cheats = self.pers["serverOptions_cheats"];
+
+    pam = self.pers["serverOptions_pam"];
+    map = self.pers["serverOptions_map"];
+
+    // Show disabled pam options if fast_Restart is selected
+    if (map == "fast_restart")
     {
-        rconString += "/rcon pam_mode " + self.pers["serverOptions_pam"] + "; ";
-        execString += "rcon pam_mode " + self.pers["serverOptions_pam"] + "; wait 260;";
+      if (gametype == "sd")
+          sd = -2;
+      else if (gametype == "strat")
+          strat = -2;
+      cheats = -2;
+      gametype = -2;
+    }
+    // Highlight correct pam mode
+    else if (gametype == "sd")
+        sd = pam;
+    else if (gametype == "strat")
+        strat = pam;
+
+    self setClientCvar("ui_rcon_map_gametype", gametype);
+
+    self setClientCvar("ui_rcon_map_pam_sd", sd);
+    self setClientCvar("ui_rcon_map_pam_strat", strat);
+
+    self setClientCvar("ui_rcon_map_cheats", cheats);
+
+    // If nothing changed, we can change additional cvars
+    if (!mapChanged && !gametypeChanged && !pamChanged && !cheatsChanged)
+    {
+      self setClientCvar("ui_rcon_map_fast_reload_fix", self.pers["serverOptions_fastReloadFix"]);
+      self setClientCvar("ui_rcon_map_diagonal_fix", self.pers["serverOptions_diagonalFix"]);
+      self setClientCvar("ui_rcon_map_shotgun_rebalance", self.pers["serverOptions_shotgunRebalance"]);
+    }
+    else
+    {
+        self setClientCvar("ui_rcon_map_fast_reload_fix", "-2"); // disabled
+        self setClientCvar("ui_rcon_map_diagonal_fix", "-2"); // disabled
+        self setClientCvar("ui_rcon_map_shotgun_rebalance", "-2"); // disabled
     }
 
-    // If map of gametype is changed, map needs to be reseted
-    if (mapChanged || gametypeChanged || pamChanged || cheatsChanged)
-    {
-        if (self.pers["serverOptions_cheats"] == 1)
-        {
-            rconString += "/rcon devmap " + self.pers["serverOptions_map"] + "; ";
-            execString += "rcon devmap " + self.pers["serverOptions_map"] + ";";
-        }
-        else if (mapChanged || cheatsChanged || gametypeChanged)
-        {
-            rconString += "/rcon map " + self.pers["serverOptions_map"] + "; ";
-            execString += "rcon map " + self.pers["serverOptions_map"] + ";";
-        }
-		else
-		{
-			rconString += "/rcon fast_restart;";
-            execString += "rcon fast_restart;";
-		}
-    }
+
+
+
+
+
 
 
 
     self setClientCvar("ui_rcon_map_execString", rconString);
-	self setClientCvar("ui_rcon_map_exec", execString);
+    self setClientCvar("ui_rcon_map_exec", execString);
 
     if (rconString.size > 60)
         self setClientCvar("ui_rcon_map_exec_size", "1"); // smaller font size

@@ -7,10 +7,11 @@ init()
 
 	// Match ID is just random string to avoid demo overwrite
 	if (!isDefined(game["recordingMatchID"]))
-    	game["recordingMatchID"] = generateHash(3);
+    	game["recordingMatchID"] = generateHash(2);
 
     addEventListener("onConnected",         ::onConnected);
     addEventListener("onSpawnedPlayer",     ::onSpawnedPlayer);
+    addEventListener("onSpawnedSpectator",     ::onSpawnedSpectator);
 	addEventListener("onMenuResponse",  ::onMenuResponse);
 
 	level thread onReadyupOver();
@@ -23,9 +24,36 @@ onConnected()
 
 	if (!isDefined(self.pers["recordingStopped"]))
         self.pers["recordingStopped"] = false;
+
+  // Shot text "Recording will start automatically"
+  if (!self.pers["isRecording"])
+  {
+    self.recording_info = maps\mp\gametypes\_hud_system::addHUDClient(self, 2, -1, 1, (1,1,1), "left", "bottom", "left", "bottom");
+  	self.recording_info setText(game["STRING_RECORDING_INFO"]);
+    self.recording_info.font = "smallfixed";
+    self.recording_info.alpha = 0.75;
+  }
 }
 
+
 onSpawnedPlayer()
+{
+  if (isDefined(self.recording_info))
+    self.recording_info.alpha = 0.75;
+
+	self onSpawned();
+}
+
+onSpawnedSpectator()
+{
+  if (isDefined(self.recording_info))
+    self.recording_info.alpha = 0;
+
+	self onSpawned();
+}
+
+
+onSpawned()
 {
 	if (!self.pers["isRecording"])
 	{
@@ -33,9 +61,15 @@ onSpawnedPlayer()
 		// This make sure demos will be separed by each map
 		if (!self.pers["recordingStopped"])
 		{
+			// Exec command on client side
+			// If some menu is already opened:
+			//	- by player (by ESC command) -> it will work well over already opened menu
+			//  - by script (via openMenu()) -> that menu will be closed and exec_cmd will not be closed correctly
+			//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
 			self setClientCvar("exec_cmd", "stoprecord");
-		    self openMenu(game["menu_exec_cmd"]);
-		    self closeMenu();
+			self openMenu(game["menu_exec_cmd"]);		// open menu via script
+			self closeMenu();							// will only close menu opened by script
+
 			self.pers["recordingStopped"] = true;
 		}
 
@@ -72,9 +106,11 @@ onReadyupOver()
 
 generateDemoName()
 {
+    // Wait untill team names are generated in case recording is executed right at start of new round
+    waittillframeend;
+
     // Assing my team name as first
     myTeamName = level.teamname_allies;
-
     enemyTeamName = level.teamname_axis;
     if (self.pers["team"] == "axis")
     {
@@ -122,7 +158,7 @@ generateDemoName()
 	if (mapname == "matmata")	mapname = "mat";
 	if (mapname == "carentan")	mapname = "car";
 
-    demoName = mapname+xVx+"_"+myTeamName+"_"+enemyTeamName+"__"+game["recordingMatchID"];
+    demoName = myTeamName+"_"+enemyTeamName+xVx + "_" + mapname+"_#" + game["recordingMatchID"];
 
     // Avoiding file overwritting
     if (level.gametype == "sd" && game["roundsplayed"] > 0 && !game["overtime_active"])
@@ -160,19 +196,25 @@ execRecording()
     self iprintln("Recording to '"+level.pam_folder+"/demos/"+demoName+".dm_1'");
 
     // Do record
-	self closeMenu(); // in case some menu is opened, it needs to be closed or it will not start recording
-	self closeInGameMenu();
-    self setClientCvar("exec_cmd", ("record " + demoName));
-    self openMenu(game["menu_exec_cmd"]);
-    self closeMenu();
+	// Exec command on client side
+	// If some menu is already opened:
+	//	- by player (by ESC command) -> it will work well over already opened menu
+	//  - by script (via openMenu()) -> that menu will be closed and exec_cmd will not be closed correctly
+	//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
+	self setClientCvar("exec_cmd", ("record " + demoName));
+	self openMenu(game["menu_exec_cmd"]);		// open menu via script
+	self closeMenu();							// will only close menu opened by script
 
 	self.pers["isRecording"] = true;
+
+  if (isDefined(self.recording_info))
+    self.recording_info.alpha = 0;
 }
 
 generateHash(len)
 {
     // Generate random hash (disbled chars: -----   <>:\"/\\|?*   )
-    avaibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    avaibleChars = "0123456789";//abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     hash = "";
     for (i = 0; i < len; i++)
     {

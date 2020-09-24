@@ -14,7 +14,6 @@ You can currently download and test beta version - but be careful, there can be 
 * Double kills fixed
 * Fast-reload shot bug fixed
 * Missing textures fixed
-* Shotgun rebalance
 * Auto demo recording
 * Auto overtime mode for MR12
 * New functions for STRAT mode (bots, path recording)
@@ -23,6 +22,7 @@ You can currently download and test beta version - but be careful, there can be 
 * Ability to change map / pam_mode / kick player directly from menu
 * <del>Diagonal bug fix</del> (canceled - the way it was fixed does not like most of the people)
 * <del>Changable FOV</del> (canceled - too big change)
+* <del>Shotgun rebalance</del> (canceled)
 
 *And much more - see full list down below*
 
@@ -39,50 +39,13 @@ You can support me via Paypal -> https://paypal.me/kratasy
 <br>
 
 
-## zPAM3.1 BETA 3
-- released 2020-05-13
-- if you want to use it on our server, check instructions below.<br>
-- please report me all of your server crashes, bugs or suggestions.
-
-### Bug fixes against BETA 2
-#### Bug fixes:
-- In readyup: when you spawn, red/green circle icon in scoreboard is bugged -> fixed
-- Secondary weapon from round before overtime is saved to first round of overtime -> fixed
-- Fixed menu for Russian weapons
-- Fixed pb cvar range check for players with inverted mouse
-- Custom colors of teams resets every round -> fixed
-- Bomb timer is not visible when last player is killed -> fixed
-- You cannot change nickname immediately in half ready-up -> fixed
-
-#### New features:
-- Shotgun rebalance was adjusted (see image on <a href="/images/shotgun.png">[3.3.9]</a> - last try before i decide to replace it with old shotgun)
-- You can enable printing information about shotgun hits via /rcon set sg_debug 1
-- Rebelanced shotgun can be turned off by command /rcon scr_shotgun_rebalance 0<br>
-(these shotgun commands will be removed in final release)
-- Toujane bug under A roof - fixed by new textures (see image on <a href="/images/toujane_underAroof_bug.jpg">[1.6]</a>)
-- Toujane bucket model is now rendered from far distance (see image on <a href="/images/toujane_bucket_fixed.jpg">[1.7]</a>)
-- Toujane B bomb tank model is rendered from far distance (see image on <a href="/images/toujane_B_bomb.jpg">[1.8]</a>)
-- Added voting system for public mode (map voting at the end of the map)
-- Russian side is enabled for PCW pam mode
-- Deadchat is turned off for PCW pam mode
-- Demo name for auto recording was shortened (5v5_toujane_team1_team2__id => tj_team1_team2__id)
-(if you play in other number of players than 5, substring like 3v3 is added to demo name)
-- Cvar cl_packetdup is forced from 1 to 3 now (testing)
-
-
-<i>Note:<br>
-While replaying demo recorded in new pam, you may see untextured horse model instead of shotgun.<br>
-This is because of switchable shotguns. To fix this, you have run COD2 with command +set fs_game zpam310_beta3.<br>
-To do that, create shorcut of CoD2MP_s.exe, open Properites and add that command after game path.</i>
-
-
 ### Installation
 In order to sucessfully install pam on your server, follow this steps:
-- Download file <b><a href="/zpam310_beta3.zip">zpam310_beta3.zip</a></b> and extract folders with files into following locations:</b>
+- Download file <b><a href="/zpam310_beta4.zip">zpam310_beta4.zip</a></b> and extract folders with files into following locations:</b>
     - pb/pbsvuser.cfg
-    - mods/zpam310_beta3/zpam310_beta3.iwd
-    - mods/zpam310_beta3/pam_pub.cfg  <i>* optional - this file is used only when you are runnig public server</i>
-- Add <b>+set fs_game "mods/zpam310_beta3"</b> into command line
+    - mods/zpam310_beta4/zpam310_beta4.iwd
+    - mods/zpam310_beta4/pam_pub.cfg  <i>* optional - this file is used only when you are runnig public server</i>
+- Add <b>+set fs_game "mods/zpam310_beta4"</b> into command line
 
 <i>Note:<br>
 If you are running cracked server, you have to uncomment command pb_sv_guidRelax 7 in file <b>pb/pbsvuser.cfg</b>
@@ -96,21 +59,6 @@ How it should looks like:<br>
 <a href="/images/gameservers_cmd.png"><img src="/images/gameservers_cmd.png" height="236" /></a>
 
 <br>
-
-## zPAM3.1 BETA 2
-- released 2020-04-28
-
-### Bug fixes against BETA 1
-- Spectator bug - when player disconnect right after he was killed, all dead players could spectate enemy -> fixed
-- [2.3.1] Spectating at the and of the round -> this feature was removed - now when all players from team are dead, camera is locked to location where last player die
-- When player reconnect and join team during the round, dead icon is not assinged to player in scoreboard -> fixed
-- In overtime mode teams are swapped -> now they are not swapped and players stay in the same side
-- Number of callable timeouts in overtime mode are incorrectly assigned -> fixed
-- Installation forced to mods folder (to be able run mod in hostings like luxhosting)
-- Strat mode: when player holds keys to start recording bot path and keys are not released, it gets bugged -> fixed
-- For public mode: first round starts too early after map change -> fixed
-- Added config file for public mode
-
 
 
 ## List of changes
@@ -199,7 +147,7 @@ How it should looks like:<br>
 [3.3.6] <del>abillity to change FOV (filed-of-view)</del> <strong>(canceled)</strong><br>
 [3.3.7] add new info to scoreboard at the end of the round (how long you are playing + rounds to halftime)<br>
 [3.3.8] <del>show weapon instead of headshot in killfeed in match pam mode</del> <strong>(removed)</strong><br>
-[3.3.9] Shotgun rebalance - long shots and close range hits are balanced by new system of counting damage<br>
+[3.3.9] Shotgun rebalance - long shots and close range hits are balanced by new system of counting damage (this is turned off by default)<br>
     <a href="/images/shotgun.png"> <img src="/images/shotgun.png" alt="" height="755" /> </a><br><br>
 [3.3.10] Match info - menu with information about team names, score, scores in halfs, total played time, ...<br>
     <a href="/images/matchinfo.jpg"> <img src="/images/matchinfo.jpg" alt="" height="400" /> </a><br>
@@ -211,6 +159,8 @@ How it should looks like:<br>
     <a href="/images/rcon_kick.jpg"> <img src="/images/rcon_kick.jpg" alt="" height="400" /> </a><br>
 [3.3.14] Strat bot support with path recording<br>
     <a href="/images/strat_bot.jpg"> <img src="/images/strat_bot.jpg" alt="" height="400" /> </a><br>
+[3.3.15] Match info ingame for streamers<br>
+    <a href="/images/matchinfo_ingame.jpg"> <img src="/images/matchinfo_ingame.jpg" alt="" height="400" /> </a><br>
 </sub>
 
 #### 3.4 Other

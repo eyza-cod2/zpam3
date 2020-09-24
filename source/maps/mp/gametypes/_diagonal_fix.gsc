@@ -1,18 +1,30 @@
 #include maps\mp\gametypes\_callbacksetup;
 
-// Canceled due to way how its fixed - people does not like it
-
 Init()
 {
-	if (!level.scr_diagonal_fix)
-		return;
-
 	addEventListener("onConnected",     ::onConnected);
 }
 
 onConnected()
 {
+	if (!level.scr_diagonal_fix)
+		return;
+
 	self thread PreprareForFix();
+}
+
+// Called if cvar scr_diagonal_fix changes
+cvarChanged()
+{
+		if (level.scr_diagonal_fix) // changed to 1
+		{
+				players = getentarray("player", "classname");
+				for(i = 0; i < players.size; i++)
+				{
+						player = players[i];
+						player onConnected();
+				}
+		}
 }
 
 reduceAngle(angle)
@@ -23,6 +35,7 @@ reduceAngle(angle)
 	return angle;
 }
 
+// Is also called on every player if cvar is changed in middle of game
 PreprareForFix()
 {
 	self endon("disconnect");
@@ -80,6 +93,13 @@ diagonalFix()
 		while (!isAlive(self))
 			wait level.fps_multiplier * 1;
 
+		// If diagonal was disabled via cvar
+		if (!level.scr_diagonal_fix)
+		{
+			self enableLeaning();
+			return;
+		}
+
 		// Get if player is moving forward + left/right + in ads
 		origin = self getOrigin();
 		inDiagonalMoving = self isDiagonalMovement(origin, origin_old);
@@ -115,17 +135,29 @@ diagonalFix()
 disableLeaning()
 {
 	/# self iprintln("^1Block diagonal!"); #/
+
+	// Exec command on client side
+	// If some menu is already opened:
+	//	- by player (by ESC command) -> it will work well over already opened menu
+	//  - by script (via openMenu()) -> that menu will be closed and exec_cmd will not be closed correctly
+	//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
 	self setClientCvar("exec_cmd", "+leanleft; +leanright");
-	self openMenu(game["menu_exec_cmd"]);
-	self closeMenu();
+	self openMenu(game["menu_exec_cmd"]);		// open menu via script
+	self closeMenu();							// will only close menu opened by script
 }
 
 enableLeaning()
 {
 	/# self iprintln("^2 Diagonal ok"); #/
+
+	// Exec command on client side
+	// If some menu is already opened:
+	//	- by player (by ESC command) -> it will work well over already opened menu
+	//  - by script (via openMenu()) -> that menu will be closed and exec_cmd will not be closed correctly
+	//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
 	self setClientCvar("exec_cmd", "-leanleft; -leanright");
-	self openMenu(game["menu_exec_cmd"]);
-	self closeMenu();
+	self openMenu(game["menu_exec_cmd"]);		// open menu via script
+	self closeMenu();							// will only close menu opened by script
 }
 
 
@@ -152,14 +184,14 @@ isDiagonalMovement(origin, origin_old)
 	selfYaw = reduceAngle(angles[1]);				// <-180 ; 180>
 	movementYaw = reduceAngle(movementAngle[1]);	//<0; 360>
 	yawMovementDiff = reduceAngle(movementYaw - selfYaw);
-	/*				0 FORWARD
-					|
-					|
-		LEFT		|		  RIGHT
+/*					0 FORWARD
+								|
+								|
+				LEFT		|		  RIGHT
 		90----------|------------270  -90
-					|
-					|
-					|
+								|
+								|
+								|
 				   180 BACKWARD
 	*/
 

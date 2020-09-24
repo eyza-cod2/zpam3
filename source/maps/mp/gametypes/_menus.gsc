@@ -26,6 +26,9 @@ init()
 		game["menu_serverinfo"] = "serverinfo_" + level.gametype;
 		precacheMenu(game["menu_serverinfo"]);
 
+		game["menu_callvote"] = "callvote";
+		precacheMenu(game["menu_callvote"]);
+
 		game["menu_exec_cmd"] = "exec_cmd";
 		precacheMenu(game["menu_exec_cmd"]);
 
@@ -213,6 +216,13 @@ onMenuResponse(menu, response)
 			self closeMenu();
 			self closeInGameMenu();
 			self openMenu(game["menu_serverinfo"]);
+			return true;
+		}
+		if (response == "callvote")
+		{
+			self closeMenu();
+			self closeInGameMenu();
+			self openMenu(game["menu_callvote"]);
 			return true;
 		}
 	}

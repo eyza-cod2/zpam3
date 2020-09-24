@@ -131,7 +131,10 @@ Rules()
 	setcvar("scr_spectatefree", 1);
 	setcvar("scr_spectateenemy", 1);
 	setcvar("scr_replace_russian", 1);
-	setcvar("scr_shotgun_rebalance", 1);				// Enable shotgun rebalance to fix long shot kills and short range hits
+	setcvar("scr_recording", 0); 						// Starts automatically recording when match starts
+	setcvar("scr_shotgun_rebalance", 0);				// Enable shotgun rebalance to fix long shot kills and short range hits
+	setcvar("scr_diagonal_fix", 0); 					// Enable diagonal bug fix (disables leaning for players when strafing)
+	setcvar("scr_fast_reload_fix", 0);				// Prevent players from shoting faster via double-scroll bug
 
 	// Not Likely to Change
 	setcvar("g_allowVote", 0); // level.allowvote
@@ -145,8 +148,6 @@ Rules()
 
 	// Blackout
 	setcvar("scr_blackout", 0); // If match is in progress, show map background all over the screen and disable sounds for connected player
-	setcvar("scr_recording", 0); 						// Starts automatically recording when match starts
-	setcvar("scr_diagonal_fix", 0); 					// Enable diagonal bug fix (disables leaning for players when strafing)
 
 	// DO NOT MODIFY BELOW THIS LINE!
 	game["leagueLogo"] = "";
