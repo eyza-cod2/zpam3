@@ -47,6 +47,9 @@ registerCvars()
 	// TODO comment for final release
 	//setCvar("developer", 2);
 	//setcvar("developer_script", 1);
+  	//setCvar("debug", "");
+
+  //setCvar("sg_debug", "1");
 
 	// Save rule sets values as default so we are able to check if some of the cvar was changed from original
 	maps\mp\gametypes\_cvar_system::saveRuleValues();
@@ -261,6 +264,8 @@ Script_Variables()
 		[[var]]("scr_timeouts_half", "INT", 0, 0, 10); 	      // level.scr_timeouts_half
 		[[var]]("scr_timeout_length", "FLOAT", 5, 0, 1440);   // level.scr_timeout_length
 
+    [[var]]("scr_bash", "BOOL", 0); 	          // level.scr_bash
+
         [[var]]("scr_show_players_left", "BOOL", 1);	    // level.scr_show_players_left // NOTE: after reset
         [[var]]("scr_show_objective_icons", "BOOL", 1); 	// level.scr_show_objective_icons  // NOTE: after reset
 		[[var]]("scr_show_hitblip", "BOOL", 1); 	        // level.scr_show_hitblip
@@ -295,12 +300,12 @@ Script_Variables()
 		[[var]]("scr_blackout", "BOOL", 0);                     // level.scr_blackout
         [[var]]("scr_recording", "BOOL", 0);               		// level.scr_recording
 		[[var]]("scr_diagonal_fix", "BOOL", 0);					// level.scr_diagonal_fix
-		[[var]]("scr_matchinfo", "BOOL", 0);					// level.scr_matchinfo
+		[[var]]("scr_matchinfo", "INT", 0, 0, 2);					// level.scr_matchinfo
 		[[var]]("scr_map_vote", "BOOL", 1);						// level.mapvote
 		[[var]]("scr_map_vote_replay", "BOOL", 0);				// level.mapvotereplay
 		[[var]]("scr_shotgun_rebalance", "BOOL", 0);			// level.scr_shotgun_rebalance
     [[var]]("scr_fast_reload_fix", "BOOL", 0);			// level.scr_fast_reload_fix
-
+    [[var]]("scr_prone_peak_fix", "BOOL", 0);					// level.scr_prone_peak_fix
 
 
 		[[var]]("scr_bots_add", "INT", 0, 0, 64); 		// add <num> bots to the server
@@ -348,13 +353,8 @@ DM_Variables()
 {
 	var = maps\mp\gametypes\_cvar_system::addScriptCvar;
 
-	[[var]]("scr_dm_half_score", "INT", 0, 0, 99999); //level.halfscore
-	[[var]]("scr_dm_end_score", "INT", 0, 0, 99999); //level.scorelimit
-	[[var]]("scr_dm_end_half2score", "INT", 0, 0, 99999); //level.matchscore2
-	[[var]]("scr_dm_timelimit_halftime", "INT", 0, 0, 1); //level.do_halftime
-
-    // NOTE: add also to all other non sd gametypes
-    [[var]]("scr_spawnpointnewlogic", "BOOL", 0); // this cvar is used in _spawnlogic.gsc, add to non sd gametypes
+	[[var]]("scr_dm_timelimit", "INT", 0, 0, 99999); //level.halfscore
+	[[var]]("scr_dm_scorelimit", "INT", 0, 0, 99999); //level.scorelimit
 }
 
 HQ_Variables()
@@ -455,12 +455,8 @@ onCvarChange(cvar, value, isRegisterTime)
 
 
 		// DM Cvars
-		case "scr_dm_half_score": level.halfscore = value; break;
-		case "scr_dm_end_score": level.scorelimit = value; break;
-		case "scr_dm_end_half2score": level.matchscore2 = value; break;
-		case "scr_dm_timelimit_halftime": level.do_halftime = value; break;
-
-
+		case "scr_dm_timelimit": level.timelimit = value; break;
+		case "scr_dm_scorelimit": level.scorelimit = value; break;
 
 
 
@@ -683,7 +679,8 @@ onCvarChange(cvar, value, isRegisterTime)
 		case "scr_show_players_left": 		level.scr_show_players_left = value; break;
 		case "scr_show_scoreboard_limit":		level.scr_show_scoreboard_limit = value; break;
 		case "scr_force_client_best_connection":    level.scr_force_client_best_connection = value; break;
-        case "scr_force_client_exploits":           level.scr_force_client_exploits = value; break;
+    case "scr_force_client_exploits":           level.scr_force_client_exploits = value; break;
+    case "scr_bash": 		level.scr_bash = value; break;
 
 		case "scr_allow_ambient_sounds":	level.scr_allow_ambient_sounds = value; break;
 		case "scr_allow_ambient_fire": 		level.scr_allow_ambient_fire = value; break;
@@ -691,7 +688,6 @@ onCvarChange(cvar, value, isRegisterTime)
 		case "scr_allow_ambient_fog": 		level.scr_allow_ambient_fog = value; break;
 
 		case "scr_remove_killtriggers":	level.scr_remove_killtriggers = value; break;
-		case "scr_spawnpointnewlogic": level.spawn_new_logic = value; break;
 
 		case "scr_replace_russian": level.scr_replace_russian = value; break;
 		case "scr_blackout": level.scr_blackout = value; break;
@@ -713,54 +709,14 @@ onCvarChange(cvar, value, isRegisterTime)
       break;
 
 		case "scr_shotgun_rebalance":
-			// Replace all weapons in players slots with new version of shotgun
-			if (!isRegisterTime)
-			{
-				// for all living players store their weapons
-				players = getentarray("player", "classname");
-				for(i = 0; i < players.size; i++)
-				{
-					player = players[i];
-
-					weapon1 = player getWeaponSlotWeapon("primary");
-					weapon2 = player getWeaponSlotWeapon("primaryb");
-
-					shotgun_name = "shotgun_mp";
-					if (level.scr_shotgun_rebalance)
-						shotgun_name = "shotgun_rebalanced_mp";
-
-
-					if((weapon1 == shotgun_name || weapon2 == shotgun_name) &&
-						isDefined(player.pers["weapon"]) && (player.pers["team"] == "allies" || player.pers["team"] == "axis") && player.sessionstate == "playing")
-					{
-
-						slot = "primary";
-						if(weapon2 == shotgun_name)
-							slot = "primaryb";
-
-						player takeWeapon(shotgun_name);
-
-						shotgun_name_new = "shotgun_mp";
-						if (value)
-							shotgun_name_new = "shotgun_rebalanced_mp";
-
-						player setWeaponSlotWeapon(slot, shotgun_name_new);
-						player giveMaxAmmo(shotgun_name_new);
-
-						player switchToWeapon(shotgun_name_new);
-
-						if (player.pers["weapon"] == shotgun_name)
-							player.pers["weapon"] = shotgun_name_new;
-					}
-
-
-				}
-			}
-
 			level.scr_shotgun_rebalance = value;
-
 			break;
 
+    case "scr_prone_peak_fix":
+      level.scr_prone_peak_fix = value;
+      if (!isRegisterTime)
+        level maps\mp\gametypes\_prone_peak_fix::CvarChanged();
+      break;
 
 
 

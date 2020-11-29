@@ -136,6 +136,12 @@ pickup_think(weaponname) {
 
 	self.hasBrain = true;
 
+//	iprintln("## Running thread on spawend weapon " + weaponname);
+
+	//iprintln(self.count);
+	//iprintln(self.spawnflags);
+
+
     for (;;)
     {
     	// Called if weapon is picked up or ammo is used

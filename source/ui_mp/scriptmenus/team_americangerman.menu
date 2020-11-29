@@ -11,8 +11,11 @@
 		blurWorld		5.0
 		onOpen
 		{
-			uiScript openMenuOnDvar ui_show_matchinfo "1" matchinfo;
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			uiScript openMenuOnDvar ui_scoreboard_show "sd" ingame_scoreboard_sd;
 			open team_americangerman_keys;
+
+			RCON_UPDATE_STATUS
 		}
 		onClose
 		{
@@ -21,8 +24,10 @@
 		{
 			close team_americangerman;
 			close matchinfo;
+			close ingame_scoreboard_sd;
 			close team_americangerman_keys;
 		}
+
 
 		// Background
 		DRAW_MAP_BACKGROUND_IF_BLACKOUT
@@ -57,6 +62,17 @@
 		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, close team_americangerman; open main;)
 		// Server info
 		ITEM_BAR_BOTTOM_BUTTON("^9[I]^7 Server Info",	280, 80, exec "openscriptmenu ingame serverinfo";)
+
+		// Timeout
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Call timeout",	395, 120, "ui_allow_timeout", showDvar { "0" }) // Disabled
+		ITEM_BAR_BOTTOM_BUTTON_DVAR("^9[T]^7 Call timeout",	395, 120, "ui_allow_timeout", showDvar { "1" }, scriptMenuResponse "timeout";) // Enabled
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Call timeout",	395, 120, "ui_allow_timeout", showDvar { "2" }) // Disabled
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Timeout called",	395, 120, "ui_allow_timeout", showDvar { "3" }) // Already called
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Already in timeout",	395, 120, "ui_allow_timeout", showDvar { "4" }) // In timeout
+		ITEM_BAR_BOTTOM_BUTTON_DVAR("^9[T]^7 Cancel timeout",	395, 120, "ui_allow_timeout", showDvar { "5" }, scriptMenuResponse "timeout";) // Cancel timeout
+
+		// "Rcon status: ^3not logged" / "Rcon status: ^2logged in"
+		ITEM_RCON_STATUS
 	}
 
 	// Key choices has to be in different menu if we are using submenus
@@ -75,16 +91,5 @@
 
 		execKeyInt 32 { play "mouse_click"; close team_americangerman; open main; } // space
 		execKeyInt 105 { play "mouse_click"; exec "openscriptmenu ingame serverinfo" } // i
-	}
-
-	// Match info
-	menuDef
-	{
-		name			"matchinfo"
-		rect			260 84 430 375
-		focuscolor		GLOBAL_FOCUSED_COLOR
-		style			WINDOW_STYLE_EMPTY
-
-		#include "ui_mp/scriptmenus/ingame_matchinfo.menu"
 	}
 }

@@ -37,7 +37,7 @@ Precache()
 
 
 	// HUD: PAM header
-	addString("STRING_VERSION_INFO", &"zPAM 3.1 ^1BETA 4");
+	addString("STRING_VERSION_INFO", &"zPAM 3.1 ^1BETA 5");
 	//addString("STRING_RELEASED_INFO", &"Released 2020/08/xx");
 
 
@@ -105,7 +105,7 @@ Precache()
 
 	// PAM installed wrong
 	addString("STRING_NOT_INSTALLED_CORRECTLY_1", &"Error: zPAM is not installed correctly.");
-	addString("STRING_NOT_INSTALLED_CORRECTLY_2", &"Folder with mod must exists under mods/zpam310_beta4/zpam310_beta4.iwd"); // TODO: rename to actual version
+	addString("STRING_NOT_INSTALLED_CORRECTLY_2", &"Folder with mod must exists under mods/zpam310_beta5/zpam310_beta5.iwd"); // TODO: rename to actual version
 
 	// PBSVUSER.cfg load error
 	addString("STRING_PBSV_NOT_LOADED_ERROR_1", &"Punkbuster file pbsvuser.cfg was not loaded.");
@@ -147,7 +147,7 @@ Precache()
 	addString("STRING_WARNING_CHEATS_ARE_ENABLED", &"Warning: Cheats are Enabled");
 	addString("STRING_WARNING_PUNKBUSTER_IS_DISABLED", &"Warning: PunkBuster is Disabled");
 	addString("STRING_WARNING_CVARS_ARE_CHANGED", &"Warning: Server CVAR values are not equal to league rules");
-
+	addString("STRING_WARNING_SERVER_IS_CRACKED", &"Info: Server is cracked");
 
 
 	// Recording
@@ -163,6 +163,16 @@ Precache()
 
 	game["objective_readyup"] = game["readyup_press_activate"] + "\n" + game["readyup_hold_melee"];
 	game["objective_timeout"] = game["readyup_press_activate"];
+
+
+
+	addString("STRING_AUTO_SPECT_ENABLED", &"(^3[{+activate}]^7)  Auto-spectator: ^2Enabled");
+	addString("STRING_AUTO_SPECT_DISABLED", &"(^3[{+activate}]^7)  Auto-spectator: ^1Disabled");
+
+	game["STRING_AUTO_SPECT_IS_ENABLED"] =  "Auto-spectator is ^2Enabled";
+	game["STRING_AUTO_SPECT_IS_DISABLED"] = "Auto-spectator is ^1Disabled";
+
+
 
 
 
@@ -223,10 +233,9 @@ Precache()
 	precachestring(game["killingt"]);
 
 	// Bash Round
-	game["bashrnd"] = &"Starting Bash Round";
-	precacheString(game["bashrnd"]);
-	game["bashbegin"] = &"BEGIN!";
-	precacheString(game["bashbegin"]);
+	game["STRING_BASH_MODE"] = &"Pistol bash";
+	precacheString(game["STRING_BASH_MODE"]);
+
 
 	// Players Left Display
 	game["axis_hud_text"] = &"Axis Left";

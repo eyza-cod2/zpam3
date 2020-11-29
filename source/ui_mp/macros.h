@@ -29,7 +29,24 @@ itemDef \
 	decoration \
 }
 
-#define ITEM_TEXT_DVAR(cvar, x, y, fontsize, txtalign, fontcolor) \
+#define ITEM_TEXT_DVAR(textstring, x, y, fontsize, txtalign, fontcolor, dvartotest, dvarshowhide) \
+itemDef \
+{ \
+	rect			x y 0 0 0 0 \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		fontcolor \
+	text			textstring \
+	textfont		UI_FONT_NORMAL \
+	textscale		fontsize \
+	textalign		txtalign \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvartest		dvartotest \
+	dvarshowhide \
+	decoration \
+}
+
+#define ITEM_DVAR(cvar, x, y, fontsize, txtalign, fontcolor) \
 itemDef \
 { \
 	rect			0 0 200 50 0 0 \
@@ -45,7 +62,7 @@ itemDef \
 	decoration \
 }
 
-#define ITEM_TEXT_DVAR_DVAR(cvar, x, y, fontsize, txtalign, fontcolor, dvartotest, dvarshowhide) \
+#define ITEM_DVAR_DVAR(cvar, x, y, fontsize, txtalign, fontcolor, dvartotest, dvarshowhide) \
 itemDef \
 { \
 	rect			0 0 200 50 0 0 \
@@ -619,4 +636,39 @@ itemDef \
   dvartest		"ui_rcon_logged_in" \
   showDvar    { "1" } \
   decoration \
+}
+
+
+#define QUICKMESSAGE_LINE_TEXT(y, textstring, fontcolor)  \
+itemDef \
+{ \
+	name			"window" \
+	visible			1 \
+	rect			16 y 0 0 0 0 \
+	origin			ORIGIN_QUICKMESSAGEWINDOW \
+	forecolor		fontcolor \
+	textfont		UI_FONT_NORMAL \
+	textscale		.24 \
+	textaligny		8 \
+	textstyle ITEM_TEXTSTYLE_SHADOWED \
+	text			textstring \
+	decoration \
+}
+
+#define QUICKMESSAGE_LINE_TEXT_DVAR(y, textstring, fontcolor, dvarstring, dvarvisible)  \
+itemDef \
+{ \
+	name			"window" \
+	visible			1 \
+	rect			16 y 0 0 0 0 \
+	origin			ORIGIN_QUICKMESSAGEWINDOW \
+	forecolor		fontcolor \
+	textfont		UI_FONT_NORMAL \
+	textscale		.24 \
+	textaligny		8 \
+	textstyle ITEM_TEXTSTYLE_SHADOWED \
+	text			textstring \
+	dvartest		dvarstring \
+	dvarvisible \
+	decoration \
 }

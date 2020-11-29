@@ -12,7 +12,7 @@ Do_Map_End()
 	thread maps\mp\gametypes\_hud::ScoreBoard(true);
 
 
-	wait level.fps_multiplier * 5;
+	wait level.fps_multiplier * 2;
 
 
 
@@ -39,7 +39,7 @@ Do_Map_End()
 		player [[level.spawnIntermission]]();
 	}
 
-	wait level.fps_multiplier * 4;
+	wait level.fps_multiplier * 12;
 
 
     if (game["is_public_mode"])

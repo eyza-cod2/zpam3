@@ -107,7 +107,7 @@ checkingRconCvarThread()
                     // This player is player who set the correct uuid - so he has correct rcon password
                     player.pers["rcon_logged_in"] = true;
 
-        			player iprintln("You are logged into remote console!");
+        			player iprintln("You are logged via rcon!");
 
         			player setClientCvar("ui_rcon_logged_in", "1");
 

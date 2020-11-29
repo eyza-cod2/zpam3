@@ -1,4 +1,5 @@
 #include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\_cvar_system;
 
 init()
 {
@@ -48,10 +49,11 @@ onJoinedTeam(teamName)
 	}
 }
 
+// TODO
 onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
-{
+{/*
     if (self.pers["team"] == "allies" || self.pers["team"] == "axis")
-        level thread Update_All_Weapon_Limits(); //(self.pers["team"]);
+        level thread Update_All_Weapon_Limits(); //(self.pers["team"]);*/
 }
 
 onWeaponChanged()
@@ -65,34 +67,36 @@ onWeaponChanged()
             Update_Client_Weapon(self, leavedWeapon, leavedWeaponFromTeam);
 
         // Mark this selected weapon as selected in menu
-        self setClientCvar(level.weapons[new_weapon].client_allowcvar, 3);
+        self setClientCvarIfChanged(level.weapons[new_weapon].client_allowcvar, 3);
 
 
         level thread Update_All_Weapon_Limits();
     }
 }
 
+// TODO
 onWeaponDropped()
-{
+{/*
     for(;;)
     {
         level waittill("weapon_dropped", weaponname, player);
 
         if (isDefined(level.weapons[weaponname]) && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
             level thread Update_All_Weapon_Limits(); //(player.pers["team"]);
-    }
+    }*/
 }
 
+// TODO
 // Can be called even if just ammo is taked from weapon
 onWeaponTaked()
-{
+{/*
     for(;;)
     {
         level waittill("weapon_taked", weaponname, player);
 
         if (isDefined(level.weapons[weaponname]) && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
             level thread Update_All_Weapon_Limits(); //(player.pers["team"]);
-    }
+    }*/
 }
 
 
@@ -183,7 +187,7 @@ Update_All_Weapon_Limits()
 			playername = allies_names[classname][p];
 
 			if (p!=0)
-				level.weaponclass[classname].allies_usedby += ", ";
+				level.weaponclass[classname].allies_usedby += "\n";
 
 			level.weaponclass[classname].allies_usedby += playername;
 		}
@@ -194,7 +198,7 @@ Update_All_Weapon_Limits()
 			playername = axis_names[classname][p];
 
 			if (p!=0)
-				level.weaponclass[classname].axis_usedby += ", ";
+				level.weaponclass[classname].axis_usedby += "\n";
 
 			level.weaponclass[classname].axis_usedby += playername;
 		}
@@ -297,40 +301,59 @@ isWeaponPickable(weaponname)
 
 isWeaponSaveable(weaponname)
 {
-    if (maps\mp\gametypes\_weapons::isMainWeapon(weaponname) && self isWeaponSelectable(weaponname))
+    if (maps\mp\gametypes\_weapons::isMainWeapon(weaponname))
+    {
+      // Player has this weapon selected, it means it can be saved
+      if (isDefined(self.pers["weapon"]) && self.pers["weapon"] == weaponname)
         return true;
 
+      weaponclass = level.weapons[weaponname].classname;
+
+      // Atleast 2 weapons are enabled
+      if (level.weaponclass[weaponclass].limit > 1)
+      {
+        // Save only if there is atleast one free slot for weapon
+        weapon_class_count = self getUsageOfWeaponClass(weaponclass, true);
+
+      	if (weapon_class_count < level.weaponclass[weaponclass].limit)
+      		return true;
+      }
+    }
     return false;
 }
 
-// Called when weapon changed via menu or to know if weapon can be saved to next round
+// Called when weapon changed via menu
 isWeaponSelectable(weaponname)
 {
-	weaponclass = level.weapons[weaponname].classname;
-	weapon_class_count = 0;
-
-	// Find how many players from my team have weapons from the class
-	players = getentarray("player", "classname");
-	for(i = 0; i < players.size; i++)
-	{
-		player = players[i];
-
-        // Player is not spawned yet || Player is in different team || its me
-		if (!isDefined(player.pers["weapon"]) || player.pers["team"] != self.pers["team"] || player == self)
-			continue;
-
-        // Players selected weapon is in class we are looking for
-        if (level.weapons[player.pers["weapon"]].classname == weaponclass)
-			weapon_class_count++;
-	}
-
-    //self iprintln(weapon_class_count);
+  weaponclass = level.weapons[weaponname].classname;
+	weapon_class_count = self getUsageOfWeaponClass(weaponclass, false);
 
 	// We are on maximum limit, so disable selection
 	if (weapon_class_count >= level.weaponclass[weaponclass].limit)
 		return false;
 
 	return true;
+}
+
+
+getUsageOfWeaponClass(weaponclass, countSelf)
+{
+  weapon_class_count = 0;
+  // Find how many players from my team have weapons from the class
+  players = getentarray("player", "classname");
+  for(i = 0; i < players.size; i++)
+  {
+      player = players[i];
+
+      // Player is not spawned yet || Player is in different team || its me
+      if (!isDefined(player.pers["weapon"]) || player.pers["team"] != self.pers["team"] || (!countSelf && player == self))
+        continue;
+
+      // Players selected weapon is in class we are looking for
+      if (level.weapons[player.pers["weapon"]].classname == weaponclass)
+        weapon_class_count++;
+  }
+  return weapon_class_count;
 }
 
 
@@ -364,34 +387,35 @@ Update_WeaponClass_HUDs(team, weaponclass)
 		if (level.weapons[weaponname].team != team && level.weapons[weaponname].team != "both")
 			continue;
 
-
-
 		//debugtext = "###                                     |---> " + weaponname + "       (";
 
-
-		players = getentarray("player", "classname");
-		for(i = 0; i < players.size; i++)
-		{
-			player = players[i];
-
-			if (!isDefined(player.pers["team"]))
-				continue;
-
-			if (player.pers["team"] != team)
-				continue;
-
-			Update_Client_Weapon(player, weaponname, team);
-
-			//debugtext += player.name+", ";
-		}
-
+    thread Update_WeaponClass_HUDs_Cvars(weaponname, team);
 
 		//iprintln(debugtext+")");
 
-
-
 		//wait level.fps_multiplier * 0.05;
 	}
+}
+
+Update_WeaponClass_HUDs_Cvars(weaponname, team)
+{
+  players = getentarray("player", "classname");
+  for(i = 0; i < players.size; i++)
+  {
+    player = players[i];
+    if (!isDefined(player)) // Because we wait a frame, next frame player may be disconnected
+      continue;
+
+    if (!isDefined(player.pers["team"]))
+      continue;
+
+    if (player.pers["team"] != team)
+      continue;
+
+    Update_Client_Weapon(player, weaponname, team);
+
+    wait level.frame;
+  }
 }
 
 // Use "team" variable only if weapon is useable for both teams
@@ -424,58 +448,57 @@ Update_Client_Weapon(player, weaponname, team)
 	else if (level.weapons[weaponname].team == "both")
 	{
 		if (i_have_this_weapon)
-			cvarValue = 3;
+			cvarValue = 3; // 3 = selected
 
 		else if (team == "allies")
 		{
-			if(level.weaponclass[weaponclass].allies_limited && !i_have_weapon_of_this_class && !i_have_weapon_of_this_class_in_slot)
-				cvarValue = 2; // 2 means visible, not clickable
+			if(level.weaponclass[weaponclass].allies_limited && !i_have_weapon_of_this_class/* && !i_have_weapon_of_this_class_in_slot*/)
+				cvarValue = 2; // 2 = disabled
 			else
-				cvarValue = 1;
+				cvarValue = 1; // 1 = visible
 		}
 		else if (team == "axis")
 		{
-			if(level.weaponclass[weaponclass].axis_limited && !i_have_weapon_of_this_class && !i_have_weapon_of_this_class_in_slot)
-				cvarValue = 2; // 2 means visible, not clickable
+			if(level.weaponclass[weaponclass].axis_limited && !i_have_weapon_of_this_class/* && !i_have_weapon_of_this_class_in_slot*/)
+				cvarValue = 2; // 2 = disabled
 			else
-				cvarValue = 1;
+				cvarValue = 1; // 1 = visible
 		}
 	}
 	else
 	{
 		if (i_have_this_weapon)
-			cvarValue = 3;
+			cvarValue = 3; // 3 = selected
 
-		else if (allowed || i_have_weapon_of_this_class || i_have_weapon_of_this_class_in_slot)
-			cvarValue = 1;
+		else if (allowed || i_have_weapon_of_this_class /*|| i_have_weapon_of_this_class_in_slot*/) // TODO
+			cvarValue = 1; // 1 = visible
 
 		else
-			cvarValue = 2; // 2 means visible, not clickable
+			cvarValue = 2; // 2 = disabled
 
+    /*
+    0 - not visivle
+    1 - visible
+    2 - disabled
+    3 - selected
+    */
 	}
 
 
 
-	if (cvarValue != -1)
+
+  if (cvarValue != -1)
 	{
-		//player iprintln("^1 sending client cmd "+level.weapons[weaponname].client_allowcvar);
+		  player setClientCvarIfChanged(level.weapons[weaponname].client_allowcvar, cvarValue);
 
-		player setClientCvar(level.weapons[weaponname].client_allowcvar, cvarValue);
-
-		if (cvarValue == 2)
-		{
 			if (player.pers["team"] == "allies")
 			{
-				if (level.weaponclass[weaponclass].allies_limited)
-					player setClientCvar("ui_weapons_"+weaponclass+"_usedby", level.weaponclass[weaponclass].allies_usedby);
+					player setClientCvarIfChanged("ui_weapons_"+weaponclass+"_usedby", level.weaponclass[weaponclass].allies_usedby);
 			}
 			else if (player.pers["team"] == "axis")
 			{
-				if (level.weaponclass[weaponclass].axis_limited)
-					player setClientCvar("ui_weapons_"+weaponclass+"_usedby", level.weaponclass[weaponclass].axis_usedby);
+					player setClientCvarIfChanged("ui_weapons_"+weaponclass+"_usedby", level.weaponclass[weaponclass].axis_usedby);
 			}
-		}
-		else
-			player setClientCvar("ui_weapons_"+weaponclass+"_usedby", "");
 	}
+
 }

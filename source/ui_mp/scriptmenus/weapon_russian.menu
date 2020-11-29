@@ -11,10 +11,17 @@
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 		blurWorld		5.0
+		onOpen
+		{
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			open weapon_russian_keys;
+		}
 		onEsc
 		{
 			HIDE_ALL
 			close weapon_russian;
+			close matchinfo;
+			close weapon_russian_keys;
 		}
 
 		// Background
@@ -28,17 +35,6 @@
 
 
 		// MENU CHOICES
-		execKey "1" { play "mouse_click"; scriptMenuResponse "PPS42_mp"; }
-		execKey "2" { play "mouse_click"; scriptMenuResponse "mosin_nagant_mp"; }
-		execKey "3" { play "mouse_click"; scriptMenuResponse "SVT40_mp"; }
-		execKey "4" { play "mouse_click"; scriptMenuResponse "mosin_nagant_sniper_mp"; }
-		execKey "5" { play "mouse_click"; scriptMenuResponse "shotgun_mp"; }
-		execKey "6" { play "mouse_click"; scriptMenuResponse "ppsh_mp"; }
-
-		execKeyInt 32 { play "mouse_click"; close weapon_german; open main; } // space
-
-
-
 		ITEM_WEAPON(ORIGIN_CHOICE1, "button_pps42", 		"@MPUI_1_PPS42", 			"ui_allow_pps42", 			"weapon_pps42", 		show weapon_pps42;, 		scriptMenuResponse "PPS42_mp";, 		"russian_grenade_C",	"smg")
 		ITEM_WEAPON(ORIGIN_CHOICE2, "button_nagant", 		"@MPUI_2_MOSINNAGANT", 		"ui_allow_nagant", 			"weapon_nagant", 		show weapon_nagant;, 		scriptMenuResponse "mosin_nagant_mp";, 	"russian_grenade_C",	"boltaction")
 		ITEM_WEAPON(ORIGIN_CHOICE3, "button_svt40", 		"@MPUI_3_TOKAREV_SVT40", 	"ui_allow_svt40", 			"weapon_svt40", 		show weapon_svt40;,			scriptMenuResponse "SVT40_mp";, 		"russian_grenade_C",	"semiautomatic")
@@ -52,5 +48,25 @@
 		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, close weapon_russian;)
 		// Main menu
 		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, close weapon_russian; open main;)
+	}
+
+
+	// Key choices has to be in different menu if we are using submenus
+	// This keys is opened as last and will be in focus - so keys from this submenu will be accepted
+	menuDef
+	{
+		name			"weapon_russian_keys"
+		rect			0 0 1 1
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		execKey "1" { play "mouse_click"; exec "openscriptmenu weapon_russian PPS42_mp"; }
+		execKey "2" { play "mouse_click"; exec "openscriptmenu weapon_russian mosin_nagant_mp"; }
+		execKey "3" { play "mouse_click"; exec "openscriptmenu weapon_russian SVT40_mp"; }
+		execKey "4" { play "mouse_click"; exec "openscriptmenu weapon_russian mosin_nagant_sniper_mp"; }
+		execKey "5" { play "mouse_click"; exec "openscriptmenu weapon_russian shotgun_mp"; }
+		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_russian ppsh_mp"; }
+
+		execKeyInt 32 { play "mouse_click"; close weapon_german; open main; } // space
 	}
 }

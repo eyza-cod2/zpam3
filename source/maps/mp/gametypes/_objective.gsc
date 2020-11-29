@@ -108,8 +108,7 @@ setPlayerObjective()
 		break;
 	case "sd":
 
-		mode = getcvar("pam_mode");
-		if (mode == "bash")
+		if (level.in_bash)
 		{
 			self setClientCvar("cg_objectiveText", "Eliminate your enemy, then choose side/map.");
 		}

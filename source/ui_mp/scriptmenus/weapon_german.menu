@@ -11,10 +11,17 @@
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 		blurWorld		5.0
+		onOpen
+		{
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			open weapon_german_keys;
+		}
 		onEsc
 		{
 			HIDE_ALL
 			close weapon_german;
+			close matchinfo;
+			close weapon_german_keys;
 		}
 
 		// Background
@@ -28,17 +35,6 @@
 
 
 		// MENU CHOICES
-		execKey "1" { play "mouse_click"; scriptMenuResponse "mp40_mp"; }
-		execKey "2" { play "mouse_click"; scriptMenuResponse "kar98k_mp"; }
-		execKey "3" { play "mouse_click"; scriptMenuResponse "g43_mp"; }
-		execKey "4" { play "mouse_click"; scriptMenuResponse "kar98k_sniper_mp"; }
-		execKey "5" { play "mouse_click"; scriptMenuResponse "shotgun_mp"; }
-		execKey "6" { play "mouse_click"; scriptMenuResponse "mp44_mp"; }
-
-		execKeyInt 32 { play "mouse_click"; close weapon_german; open main; } // space
-
-
-
 		ITEM_WEAPON(ORIGIN_CHOICE1, "button_mp40", 			"@MPUI_1_MP40", 			"ui_allow_mp40", 			"weapon_mp40", 			show weapon_mp40;, 			scriptMenuResponse "mp40_mp";, 			"steilhandgrenate_C",	"smg")
 		ITEM_WEAPON(ORIGIN_CHOICE2, "button_kar98k", 		"@MPUI_2_KAR98K", 			"ui_allow_kar98k", 			"weapon_kar98", 		show weapon_kar98;, 		scriptMenuResponse "kar98k_mp";, 		"steilhandgrenate_C",	"boltaction")
 		ITEM_WEAPON(ORIGIN_CHOICE3, "button_g43", 			"@MPUI_3_G43", 				"ui_allow_g43", 			"weapon_g43", 			show weapon_g43;,			scriptMenuResponse "g43_mp";, 			"steilhandgrenate_C",	"semiautomatic")
@@ -52,5 +48,25 @@
 		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, close weapon_german;)
 		// Main menu
 		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, close weapon_german; open main;)
+	}
+
+
+	// Key choices has to be in different menu if we are using submenus
+	// This keys is opened as last and will be in focus - so keys from this submenu will be accepted
+	menuDef
+	{
+		name			"weapon_german_keys"
+		rect			0 0 1 1
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		execKey "1" { play "mouse_click"; exec "openscriptmenu weapon_german mp40_mp"; }
+		execKey "2" { play "mouse_click"; exec "openscriptmenu weapon_german kar98k_mp"; }
+		execKey "3" { play "mouse_click"; exec "openscriptmenu weapon_german g43_mp"; }
+		execKey "4" { play "mouse_click"; exec "openscriptmenu weapon_german kar98k_sniper_mp"; }
+		execKey "5" { play "mouse_click"; exec "openscriptmenu weapon_german shotgun_mp"; }
+		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_german mp44_mp"; }
+
+		execKeyInt 32 { play "mouse_click"; close weapon_german; open main; } // space
 	}
 }

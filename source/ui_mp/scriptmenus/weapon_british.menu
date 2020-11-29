@@ -11,10 +11,17 @@
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 		blurWorld		5.0
+		onOpen
+		{
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			open weapon_british_keys;
+		}
 		onEsc
 		{
 			HIDE_ALL
 			close weapon_british;
+			close matchinfo;
+			close weapon_british_keys;
 		}
 
 		// Background
@@ -28,18 +35,6 @@
 
 
 		// MENU CHOICES
-		execKey "1" { play "mouse_click"; scriptMenuResponse "sten_mp"; }
-		execKey "2" { play "mouse_click"; scriptMenuResponse "enfield_mp"; }
-		execKey "3" { play "mouse_click"; scriptMenuResponse "m1garand_mp"; }
-		execKey "4" { play "mouse_click"; scriptMenuResponse "enfield_scope_mp"; }
-		execKey "5" { play "mouse_click"; scriptMenuResponse "shotgun_mp"; }
-		execKey "6" { play "mouse_click"; scriptMenuResponse "thompson_mp"; }
-		execKey "7" { play "mouse_click"; scriptMenuResponse "bren_mp"; }
-
-		execKeyInt 32 { play "mouse_click"; close weapon_british; open main; } // space
-
-
-
 		ITEM_WEAPON(ORIGIN_CHOICE1, "button_sten", 			"@MPUI_1_STEN", 			"ui_allow_sten", 			"weapon_sten", 			show weapon_sten;, 			scriptMenuResponse "sten_mp";, 			"british_grenade_C",	"smg")
 		ITEM_WEAPON(ORIGIN_CHOICE2, "button_enfield", 		"@MPUI_2_LEEENFIELD", 		"ui_allow_enfield", 		"weapon_enfield", 		show weapon_enfield;, 		scriptMenuResponse "enfield_mp";, 		"british_grenade_C",	"boltaction")
 		ITEM_WEAPON(ORIGIN_CHOICE3, "button_m1garand", 		"@MPUI_3_M1_GARAND", 		"ui_allow_m1garand", 		"weapon_m1garand", 		show weapon_m1garand;,		scriptMenuResponse "m1garand_mp";, 		"british_grenade_C",	"semiautomatic")
@@ -54,5 +49,26 @@
 		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, close weapon_british;)
 		// Main menu
 		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, close weapon_british; open main;)
+	}
+
+
+	// Key choices has to be in different menu if we are using submenus
+	// This keys is opened as last and will be in focus - so keys from this submenu will be accepted
+	menuDef
+	{
+		name			"weapon_british_keys"
+		rect			0 0 1 1
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		execKey "1" { play "mouse_click"; exec "openscriptmenu weapon_british sten_mp"; }
+		execKey "2" { play "mouse_click"; exec "openscriptmenu weapon_british enfield_mp"; }
+		execKey "3" { play "mouse_click"; exec "openscriptmenu weapon_british m1garand_mp"; }
+		execKey "4" { play "mouse_click"; exec "openscriptmenu weapon_british enfield_scope_mp"; }
+		execKey "5" { play "mouse_click"; exec "openscriptmenu weapon_british shotgun_mp"; }
+		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_british thompson_mp"; }
+		execKey "7" { play "mouse_click"; exec "openscriptmenu weapon_british bren_mp"; }
+
+		execKeyInt 32 { play "mouse_click"; close weapon_british; open main; } // space
 	}
 }

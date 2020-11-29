@@ -1,0 +1,61 @@
+itemDef
+{
+  style			WINDOW_STYLE_FILLED
+  rect			-113 1 90 12 0 0
+  backcolor		.1 .1 .1 .5
+  visible			1
+  dvartest		"ui_matchinfo_ingame_show"
+  showDvar		{ "1" }
+  decoration
+}
+itemDef
+{
+  style			WINDOW_STYLE_FILLED
+  rect			22 1 90 12 0 0
+  backcolor		.1 .1 .1 .5
+  visible			1
+  dvartest		"ui_matchinfo_ingame_show"
+  showDvar		{ "1" }
+  decoration
+}
+itemDef
+{
+  style			WINDOW_STYLE_FILLED
+  rect			-22 1 18 12 0 0
+  backcolor		.1 .1 .1 .5
+  visible			1
+  dvartest		"ui_matchinfo_ingame_show"
+  showDvar		{ "1" }
+  decoration
+}
+itemDef
+{
+  style			WINDOW_STYLE_FILLED
+  rect			3 1 18 12 0 0
+  backcolor		.1 .1 .1 .5
+  visible			1
+  dvartest		"ui_matchinfo_ingame_show"
+  showDvar		{ "1" }
+  decoration
+}
+
+// Team names text
+ITEM_DVAR_DVAR("ui_matchinfo_team1_name", -67, 12, .2, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })
+ITEM_DVAR_DVAR("ui_matchinfo_team2_name", 67, 12, .2, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })
+// Team scores text
+ITEM_DVAR_DVAR("ui_matchinfo_team1_score", -14, 11, .21, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })
+ITEM_DVAR_DVAR("ui_matchinfo_team2_score", 12, 11, .21, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })
+// :
+ITEM_TEXT_DVAR(":", -1, 10, .18, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })
+// Round
+ITEM_DVAR_DVAR("ui_matchinfo_round", 0, 21, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })
+// Map history 1
+ITEM_DVAR_DVAR("ui_matchinfo_map1_score", -188, 10, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })
+ITEM_DVAR_DVAR("ui_matchinfo_map1_name", -188, 18, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })
+// Map history 2
+ITEM_DVAR_DVAR("ui_matchinfo_map2_score", 138, 10, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })
+ITEM_DVAR_DVAR("ui_matchinfo_map2_name", 138, 18, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })
+
+// Play time
+ITEM_DVAR_DVAR("ui_matchinfo_matchtime_text", -140, 10, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })
+ITEM_DVAR_DVAR("ui_matchinfo_matchtime_value", -140, 18, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_ingame_show", showDvar { "1" })

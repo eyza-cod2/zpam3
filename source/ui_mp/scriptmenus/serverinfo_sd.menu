@@ -11,14 +11,11 @@
 		blurWorld		5.0
 		onOpen
 		{
-		}
-		onEsc
-		{
-			scriptMenuResponse "close";
-		}
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			open serverinfo_sd_keys;
 
-		// Keys
-		execKeyInt 32 { play "mouse_click"; close ingame; open main; } // space
+			exec "vstr server16;" // server16 contains string with player's settings
+		}
 
 		// Background
 		DRAW_MAP_BACKGROUND_IF_BLACKOUT
@@ -47,5 +44,22 @@
 		// Main menu
 		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu", 135, 120, close serverinfo_sd; open main)
 
+	}
+
+
+	// Key choices has to be in different menu if we are using submenus
+	// This keys is opened as last and will be in focus - so keys from this submenu will be accepted
+	menuDef
+	{
+		name			"serverinfo_sd_keys"
+		rect			0 0 1 1
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		onEsc
+		{
+			exec "openscriptmenu serverinfo_sd close";
+		}
+
+		execKeyInt 32 { play "mouse_click"; close ingame; open main; } // space
 	}
 }

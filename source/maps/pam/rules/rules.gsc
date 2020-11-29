@@ -3,8 +3,9 @@ load()
     // Rules load - overide cvars with values for defined league mode
 	switch (level.gametype)
 	{
-		case "sd":  Get_SD_Rules(); break;
-        case "strat": Get_Strat_Rules(); break;
+		case "sd": Get_SD_Rules(); break;
+		case "dm": Get_DM_Rules(); break;
+		case "strat": Get_Strat_Rules(); break;
 	}
 
     // Used to check if cvar "pam_mode" was changed but no pam-change was executed (cvar was changed right before map_restart)
@@ -19,16 +20,18 @@ getListOfRuleSets(gametype)
 	{
 		valid_mode[0] = "pub";
 		valid_mode[1] = "pcw";
-		valid_mode[2] = "cg_1v1";
-		valid_mode[3] = "cg_2v2";
-		valid_mode[4] = "cg_mr12";
-		valid_mode[5] = "cg";
-		valid_mode[6] = "mr3";
-		valid_mode[7] = "mr10";
-        valid_mode[8] = "mr12";
-		valid_mode[9] = "mr15";
-		valid_mode[10] = "bash";
-		valid_mode[11] = "fun";
+		valid_mode[2] = "cg_2v2";
+		valid_mode[3] = "cg_mr12";
+		valid_mode[4] = "cg";
+		valid_mode[5] = "mr3";
+		valid_mode[6] = "mr10";
+    valid_mode[7] = "mr12";
+		valid_mode[8] = "mr15";
+		valid_mode[9] = "fun";
+	}
+    else if (gametype == "dm")
+	{
+		// Deatmatch have all modes valid (it doesnt matter)
 	}
     else if (gametype == "strat")
 	{
@@ -42,9 +45,6 @@ Get_SD_Rules()
 {
 	switch (level.pam_mode)
 	{
-		case "bash":
-			maps\pam\rules\sd\bash::Rules();
-			break;
 		case "pcw":
 			maps\pam\rules\sd\pcw::Rules();
 			break;
@@ -53,9 +53,6 @@ Get_SD_Rules()
 			break;
 		case "cg_mr12":
 			maps\pam\rules\sd\cg_mr12::Rules();
-			break;
-		case "cg_1v1":
-			maps\pam\rules\sd\cg_1v1::Rules();
 			break;
 		case "cg_2v2":
 			maps\pam\rules\sd\cg_2v2::Rules();
@@ -79,6 +76,11 @@ Get_SD_Rules()
 		default:
 			maps\pam\rules\sd\pub::Rules();
 	}
+}
+
+Get_DM_Rules()
+{
+    maps\pam\rules\dm\dm::Rules();
 }
 
 Get_Strat_Rules()

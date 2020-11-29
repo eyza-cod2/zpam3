@@ -95,6 +95,9 @@ debugBasics()
 
 
 
+
+
+
 	while(1)
 	{
 
@@ -103,10 +106,31 @@ debugBasics()
 		self setClientCvar("debug_line_3", "self.sessionstate   = " + self.sessionstate);
 		self setClientCvar("debug_line_4", "self.health         = " + self.health);
 		self setClientCvar("debug_line_5", "isAlive(self)       = " + isAlive(self));
-		//self setClientCvar("debug_line_6", "self.eye      = " + "["+self.tag_weapon_right[0]+", "+self.tag_weapon_right[1]+", "+self.tag_weapon_right[2]+"]");
-		self setClientCvar("debug_line_7", "self.origin   = " + "["+self.origin[0]+", "+self.origin[1]+", "+self.origin[2]+"]");
+
 		angles = self getplayerangles();
-		self setClientCvar("debug_line_8", "self.angles   = " + "["+angles[0]+", "+angles[1]+", "+angles[2]+"]");
+
+
+		if (isDefined(self.tag_head))
+		{
+			head_pos = self.tag_head getOrigin();
+			self setClientCvar("debug_line_6", "self.tag_head = " + "["+head_pos[0]+", "+head_pos[1]+", "+head_pos[2]+"]" + distance((0, 0, head_pos[2]), (0, 0, self.origin[2])));
+		}
+		else
+		{
+			self setClientCvar("debug_line_6", "self.tag_head = " + "undefined");
+		}
+
+
+		self setClientCvar("debug_line_7", "self.origin   = " + "["+self.origin[0]+", "+self.origin[1]+", "+self.origin[2]+"] ");
+
+
+		//movementAngle = anglesToForward(angles);
+		//self setClientCvar("debug_line_8", "self.origin   = " + "["+movementAngle[0]+", "+movementAngle[1]+", "+movementAngle[2]+"] ");
+
+		self setClientCvar("debug_line_8", "self.movingDifference   = " + self.movingDifference);
+
+
+		self setClientCvar("debug_line_9", "self.angles   = " + "["+angles[0]+", "+angles[1]+", "+angles[2]+"]");
 
         if (level.gametype == "sd")
         {
@@ -131,10 +155,14 @@ debugBasics()
 		// removed 2020
         //self setClientCvar("debug_line_26", "level.players_in_connecting_state   = " + 		 level.players_in_connecting_state);
 
+				maps\mp\gametypes\_teamname::refreshTeamName("allies");
+		    maps\mp\gametypes\_teamname::refreshTeamName("axis");
+				maps\mp\gametypes\_teamname::refreshTeamName("");
 
-		self setClientCvar("debug_line_26", "allies name   = " + 		 level.teamname_allies + " / " + maps\mp\gametypes\_menu_matchinfo::getTeamName("allies"));
-        self setClientCvar("debug_line_27", "axis name     = " + 		 level.teamname_axis + " / " + maps\mp\gametypes\_menu_matchinfo::getTeamName("axis"));
-		self setClientCvar("debug_line_28", "all           = " + 		 level.teamname_all + " / " + maps\mp\gametypes\_menu_matchinfo::getTeamName(""));
+
+				self setClientCvar("debug_line_26", "allies name   = " + 		 level.teamname_allies);
+        self setClientCvar("debug_line_27", "axis name     = " + 		 level.teamname_axis);
+				self setClientCvar("debug_line_28", "all           = " + 		 level.teamname_all);
 
 		/*
 		self setClientCvar("debug_line_17", "allies_called_timeouts = " + game["allies_called_timeouts"]);
@@ -189,8 +217,7 @@ debugBasics()
 		self setClientCvar("debug_row_2_line_15", "self.dropped_weapons   = " + 		 self.dropped_weapons);
         self setClientCvar("debug_row_2_line_16", "self.taked_weapons     = " + 		 self.taked_weapons);
 
-		self setClientCvar("debug_row_2_line_18", "self.usedgrenade   = " + 		 self.usedgrenade);
-        self setClientCvar("debug_row_2_line_19", "self.usedsmoke     = " + 		 self.usedsmoke);
+
 
 
         self setClientCvar("debug_row_2_line_21", "level.HUDElements   = " + 		 level.HUDElements);

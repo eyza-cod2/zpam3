@@ -17,7 +17,7 @@ init()
 // Is removed at readyup after all players are ready
 PAM_Header()
 {
-	// TODO: REMOVE in release
+	// TO-DO: REMOVE in release
   /*
     notreleased1 = maps\mp\gametypes\_hud_system::addHUD(0, 3, 1.0, (1,1,0), "center", "top", "center", "top");
     notreleased1.alpha = 0.5;

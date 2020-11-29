@@ -6,26 +6,15 @@ init()
 {
 	precacheWeapons();
 
-
-
-	//////////////////////////
 	// Weapons & Limits
-	//////////////////////////
 	maps\mp\gametypes\_weapons::defineWeapons();
 
-
-
-
-
+	// Disable MG
 	if (!level.allow_turrets)
 	{
 		deletePlacedEntity("misc_turret");
 		deletePlacedEntity("misc_mg42");
 	}
-
-	addEventListener("onConnected",     ::onConnected);
-    //addEventListener("onPlayerKilled",  	 ::onPlayerKilled);
-    //addEventListener("onSpawnedPlayer",     ::onSpawnedPlayer);
 }
 
 
@@ -112,7 +101,6 @@ precacheWeapons()
 
 	// Weapons for all
 	precacheItem("shotgun_mp");
-	precacheItem("shotgun_rebalanced_mp");
 	precacheItem("binoculars_mp");
 }
 
@@ -162,7 +150,6 @@ defineWeapons()
 
 	// All teams
 	addWeapon("shotgun_mp", 		"shotgun", 			"both", 	"scr_allow_shotgun", 		"ui_allow_shotgun");
-	addWeapon("shotgun_rebalanced_mp", 		"shotgun", 			"both", 	"scr_allow_shotgun", 		"ui_allow_shotgun");
 
 	// Array of Available Weapon Classes
 	// If you want to add new classes, you have to create new cvars in start_gametype.gsc
@@ -318,17 +305,6 @@ loadWeaponCvars()
 
 
 
-
-
-
-onConnected()
-{
-	self.usedgrenade = false; // watchGrenadeUsage
-	self.usedsmoke = false;   // watchGrenadeUsage
-
-	self thread watchGrenadeUsage();
-}
-
 // Adds pistol to primaryb slot only if empty
 givePistol()
 {
@@ -375,20 +351,7 @@ givePistol()
 
 		//self giveWeapon(pistoltype);
 		self setWeaponSlotWeapon("primaryb", pistoltype);
-
-		if (level.pam_mode == "bash")
-		{
-			self setWeaponSlotAmmo("primaryb",0);
-			self setWeaponSlotClipAmmo("primaryb", 0);
-
-			wait level.frame;
-
-			self switchToWeapon(pistoltype);
-		}
-		else
-		{
-			self giveMaxAmmo(pistoltype);
-		}
+		self giveMaxAmmo(pistoltype);
 	}
 }
 
@@ -415,58 +378,49 @@ GetSmokeTypeName()
 }
 
 
-giveGrenades()
+giveGrenade(count)
 {
-	grenadetype = self GetGrenadeTypeName();
-	smokegrenadetype = self GetSmokeTypeName();
-
 	// remove all grenades
 	self takeWeapon("frag_grenade_american_mp");
 	self takeWeapon("frag_grenade_british_mp");
 	self takeWeapon("frag_grenade_russian_mp");
 	self takeWeapon("frag_grenade_german_mp");
-	self takeWeapon("smoke_grenade_american_mp");
-	self takeWeapon("smoke_grenade_british_mp");
-	self takeWeapon("smoke_grenade_russian_mp");
-	self takeWeapon("smoke_grenade_german_mp");
 
-
+	grenadetype = self GetGrenadeTypeName();
 	fraggrenadecount = getWeaponBasedGrenadeCount(self.pers["weapon"]);
+
 	if(fraggrenadecount)
 	{
-		if (level.in_readyup && self.usedgrenade)
-		{
-			fraggrenadecount = 0; // dont respawn nades in readyup if weapon is changed via menu
-			//self iprintln("--- getting 0 grenades in readyup");
-		}
+		if (isDefined(count)) // replace count with own number
+			fraggrenadecount = count;
 
 		self giveWeapon(grenadetype);
 		self setWeaponClipAmmo(grenadetype, fraggrenadecount);
 	}
 
+	self switchtooffhand(grenadetype);
+}
+
+giveSmoke(count)
+{
+	// remove all smokes
+	self takeWeapon("smoke_grenade_american_mp");
+	self takeWeapon("smoke_grenade_british_mp");
+	self takeWeapon("smoke_grenade_russian_mp");
+	self takeWeapon("smoke_grenade_german_mp");
+
+	smokegrenadetype = self GetSmokeTypeName();
 	smokegrenadecount = getWeaponBasedSmokeGrenadeCount(self.pers["weapon"]);
+
 	if(smokegrenadecount)
 	{
-		if (level.in_readyup/* && self.usedsmoke*/)
-		{
-			smokegrenadecount = 0; // dont respawn smokes in readyup if weapon is changed via menu
-			//self iprintln("--- getting 0 smokes in readyup");
-		}
+		if (isDefined(count)) // replace count with own number
+			smokegrenadecount = count;
 
 		self giveWeapon(smokegrenadetype);
 		self setWeaponClipAmmo(smokegrenadetype, smokegrenadecount);
 	}
-
-
-	// Update value of default nades for watchGrenadeUsage thread
-	self.spawn_nades = fraggrenadecount;
-	self.spawn_smokes = smokegrenadecount;
-
-
-	self switchtooffhand(grenadetype);
 }
-
-
 
 
 giveBinoculars()
@@ -682,47 +636,6 @@ getRandomWeapon()
 
 
 
-
-
-
-// Used only in readyup
-// called every time player is spawned
-watchGrenadeUsage()
-{
-	self endon("disconnect");
-
-	// These values are updated if weapon is changed to another (weapon can have more grenades)
-	self.spawn_nades = self getFragGrenadeCount();
-	self.spawn_smokes = self getSmokeGrenadeCount();
-
-	for (;;)
-	{
-		wait level.frame;
-
-		if (!isAlive(self))
-		{
-			self.usedgrenade = false;
-			self.usedsmoke = false;
-			continue;
-		}
-
-		my_nades = self getFragGrenadeCount();
-		my_smokes = self getSmokeGrenadeCount();
-
-		if (!self.usedgrenade && my_nades < self.spawn_nades)
-		{
-			self.usedgrenade = true;
-			//self iprintln("--------- usedgrenade");
-		}
-
-		if (!self.usedsmoke && my_smokes < self.spawn_smokes)
-		{
-			self.usedsmoke = true;
-			//self iprintln("--------- usedgrenade");
-		}
-	}
-}
-
 getWeaponName(weapon)
 {
 	switch(weapon)
@@ -753,10 +666,6 @@ getWeaponName(weapon)
 		break;
 
 	case "shotgun_mp":
-		weaponname = &"WEAPON_SHOTGUN";
-		break;
-
-	case "shotgun_rebalanced_mp":
 		weaponname = &"WEAPON_SHOTGUN";
 		break;
 
@@ -837,7 +746,6 @@ useAn(weapon)
 	case "mp40_mp":
 	case "mp44_mp":
 	case "shotgun_mp":
-	case "shotgun_rebalanced_mp":
 		result = true;
 		break;
 

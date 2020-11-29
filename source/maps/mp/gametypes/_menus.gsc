@@ -9,28 +9,32 @@ init()
 	if (!isDefined(game["menuPrecached"]))
 	{
 		game["menu_moddownload"] = "moddownload";
-		precacheMenu(game["menu_moddownload"]);
-
 		game["menu_ingame"] = "ingame";
-		precacheMenu(game["menu_ingame"]);
-
 		game["menu_team"] = "team_" + game["allies"] + game["axis"];	// team_britishgerman
-		precacheMenu(game["menu_team"]);
-
 		game["menu_weapon_allies"] = "weapon_" + game["allies"];
 		game["menu_weapon_axis"] = "weapon_" + game["axis"];
+		game["menu_serverinfo"] = "serverinfo_" + level.gametype;
+		game["menu_callvote"] = "callvote";
+		game["menu_exec_cmd"] = "exec_cmd";
+		game["menu_quickcommands"] = "quickcommands";
+		game["menu_quickstatements"] = "quickstatements";
+		game["menu_quickresponses"] = "quickresponses";
+		game["menu_quicksettings"] = "quicksettings";
+		game["menu_scoreboard"] = "scoreboard_sd";
 
+		precacheMenu(game["menu_moddownload"]);
+		precacheMenu(game["menu_ingame"]);
+		precacheMenu(game["menu_team"]);
 		precacheMenu(game["menu_weapon_allies"]);
 		precacheMenu(game["menu_weapon_axis"]);
-
-		game["menu_serverinfo"] = "serverinfo_" + level.gametype;
 		precacheMenu(game["menu_serverinfo"]);
-
-		game["menu_callvote"] = "callvote";
 		precacheMenu(game["menu_callvote"]);
-
-		game["menu_exec_cmd"] = "exec_cmd";
 		precacheMenu(game["menu_exec_cmd"]);
+		precacheMenu(game["menu_quickcommands"]);
+		precacheMenu(game["menu_quickstatements"]);
+		precacheMenu(game["menu_quickresponses"]);
+		precacheMenu(game["menu_quicksettings"]);
+		precacheMenu(game["menu_scoreboard"]);
 
 		/#
 		game["menu_debugString"] = "debugString";
@@ -69,6 +73,8 @@ onConnected()
 	// If player is just connected
 	else if (self.pers["team"] == "none")
 	{
+		self setClientCvar("ui_allow_weaponchange", 0);
+
 		// Server info wasnt skiped yet - player didnt click "continue"
 		if(!isDefined(self.pers["skipserverinfo"]))
 		{
@@ -266,6 +272,12 @@ onMenuResponse(menu, response)
 			self [[level.spectator]]();
 			if(self.pers["team"] != teamBefore)
 				self thread printTeamChanged(self.name + " Joined Spectators", "");
+			break;
+
+		case "options":
+			self closeMenu();
+			self closeInGameMenu();
+			self openMenu(game["menu_ingame"]);
 			break;
 		}
 		return true;

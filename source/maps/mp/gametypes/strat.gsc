@@ -277,8 +277,10 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 
 	level notify("log_kill", self, attacker,  sWeapon, iDamage, sMeansOfDeath, sHitLoc);
 
-	// Wait intill all other kills in same time are processed now before dead body is spawned
-	waittillframeend;
+	// Wait before dead body is spawned to allow double kills (bullets may stop in this dead body)
+	// Ignore this for shotgun, because it create a smoke effect on dead body (for good feeling)
+	if (sWeapon != "shotgun_mp")
+		waittillframeend;
 
 	body = undefined;
 	if(!isdefined(self.switching_teams))
@@ -560,16 +562,6 @@ menuWeapon(response)
 	if (response == "random")
 		response = self maps\mp\gametypes\_weapons::getRandomWeapon();
 
-	// Shotgun rebalance
-	// Because we have 2 version of shotgun, if new version is turned on we need to change name of weapon to new version
-	if (response == "shotgun_mp" || response == "shotgun_rebalanced_mp")
-	{
-		if (level.scr_shotgun_rebalance)
-			response = "shotgun_rebalanced_mp";
-		else
-			response = "shotgun_mp";
-	}
-
 	// Weapon is not valid or is in use
 	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvaible(response))
 	{
@@ -680,14 +672,20 @@ Run_Strat()
 	self thread Key_Toggle_FlyMode();
 	self thread Key_SavePosition();
 	self thread Key_LoadPosition();
-	self thread Key_AddBot();
-	self thread Key_RecordBot();
-	self thread Key_PlayRecord();
+
+	if (getCvarInt("sv_punkbuster") == 0)
+	{
+		self thread Key_AddBot();
+		self thread Key_RecordBot();
+		self thread Key_PlayRecord();
+	}
 }
 
 // Hold Shift to enable / disable fly mode
 Key_Toggle_FlyMode()
 {
+	self endon("disconnect");
+
 	for(;;)
 	{
 		waittime = 0;
@@ -1054,16 +1052,24 @@ Show_HUD_Global()
 
 
 	level.trainingdummy = maps\mp\gametypes\_hud_system::addHUD(-35, 250, 1.2, (.8,1,1), "right", "top", "right");
-	level.trainingdummy setText(&"Training Dummy");
+	level.trainingdummy setText(&"Training Bot");
 
-	level.trainingdummykey = maps\mp\gametypes\_hud_system::addHUD(-35, 270, .9, (.8,1,1), "right", "top", "right");
-	level.trainingdummykey setText(&"Spawn: Hold ^3[{+melee_breath}] ^7+ ^3[{+activate}]");
+	if (getCvarInt("sv_punkbuster") == 0)
+	{
+		level.trainingdummykey = maps\mp\gametypes\_hud_system::addHUD(-35, 270, .9, (.8,1,1), "right", "top", "right");
+		level.trainingdummykey setText(&"Spawn: Hold ^3[{+melee_breath}] ^7+ ^3[{+activate}]");
 
-	level.trainingdummyrecord = maps\mp\gametypes\_hud_system::addHUD(-35, 280, .9, (.8,1,1), "right", "top", "right");
-	level.trainingdummyrecord setText(&"Record: Hold ^3[{+attack}] ^7+ ^3[{+activate}]");
+		level.trainingdummyrecord = maps\mp\gametypes\_hud_system::addHUD(-35, 280, .9, (.8,1,1), "right", "top", "right");
+		level.trainingdummyrecord setText(&"Record: Hold ^3[{+attack}] ^7+ ^3[{+activate}]");
 
-	level.trainingdummyplay = maps\mp\gametypes\_hud_system::addHUD(-35, 290, .9, (.8,1,1), "right", "top", "right");
-	level.trainingdummyplay setText(&"Play: Hold ^3[{+activate}]");
+		level.trainingdummyplay = maps\mp\gametypes\_hud_system::addHUD(-35, 290, .9, (.8,1,1), "right", "top", "right");
+		level.trainingdummyplay setText(&"Play: Hold ^3[{+activate}]");
+	}
+	else
+	{
+		level.trainingdummywarn = maps\mp\gametypes\_hud_system::addHUD(-35, 270, .9, (1,1,0), "right", "top", "right");
+		level.trainingdummywarn setText(&"Disable Punkbuster!");
+	}
 }
 
 
@@ -1139,9 +1145,6 @@ add_bot()
 		if (!isDefined(self.bot))
 		{
 			self iprintln("^1Bot adding failed");
-
-			if (getCvarInt("sv_punkbuster") != 1)
-				self iprintln("^1You have to start server with disabled Punkbuster!");
 			return;
 		}
 	}
@@ -1333,6 +1336,16 @@ playRecord()
 	self iprintlnbold(" ");
 	self iprintlnbold(" ");
 
+	self.clock = newClientHudElem(self);
+	self.clock.font = "default";
+	self.clock.fontscale = 2;
+	self.clock.horzAlign = "center_safearea";
+	self.clock.vertAlign = "top";
+	self.clock.color = (1, 1, 1);
+	self.clock.x = -25;
+	self.clock.y = 445;
+	self.clock setTimer(2 * 60);
+
 	bot = self.bot;
 	for (i = 0; i < self.recordsPos.size; i++)
 	{
@@ -1346,4 +1359,6 @@ playRecord()
 
 		wait level.fps_multiplier * 0.25;
 	}
+
+	self.clock destroy();
 }

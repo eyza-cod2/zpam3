@@ -75,9 +75,6 @@ Start_Readyup_Mode(runned_in_middle_of_game)
 	// Create "Ready-up Mode", "Waiting On X Players", "Clock", "Waring: PB is off.." atd...
     createLevelHUD();
 
-	// reset flag as readyup was runned
-	game["readyup_first_run"] = false;
-
 	// Enable online renaming
 	wait level.frame;
 	setClientNameMode("auto_change");
@@ -165,25 +162,30 @@ onPlayerKilling(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
 
 		self.sessionstate = "dead";
 
-		// Clone players model for death animations
-		body = undefined;
-		if(!isdefined(self.switching_teams))
-			body = self cloneplayer(deathAnimDuration);
-
-		// Reset flag that means that this kill was executed while player is chaging sides via menu (suicide() was called)
-		self.switching_teams = undefined;
-
-		self thread respawnOnKilled(body);
+		self thread respawnOnKilled(sWeapon, deathAnimDuration);
 	}
 
 	// Always prevent kill in readyup
 	return true;
 }
 
-respawnOnKilled(body)
+respawnOnKilled(sWeapon, deathAnimDuration)
 {
 	self endon("disconnect");
 	self endon("spawned");
+
+	// Wait before dead body is spawned to allow double kills (bullets may stop in this dead body)
+	// Ignore this for shotgun, because it create a smoke effect on dead body (for good feeling)
+	if (sWeapon != "shotgun_mp")
+		waittillframeend;
+
+	// Clone players model for death animations
+	body = undefined;
+	if(!isdefined(self.switching_teams))
+		body = self cloneplayer(deathAnimDuration);
+
+	// Reset flag that means that this kill was executed while player is chaging sides via menu (suicide() was called)
+	self.switching_teams = undefined;
 
 	wait level.fps_multiplier * 2;
 
@@ -318,8 +320,9 @@ playerReadyUpThread()
 
 	}
 
-
+		self iprintlnbold("Playing ^2"+level.pam_mode+"^7 mode");
     self iprintlnbold(game["STRING_READYUP_ALL_PlAYERS_ARE_READY"]);
+
 
 	self.statusicon = "party_ready";
 }
@@ -408,6 +411,9 @@ End_Readyup_Mode()
 	wait level.fps_multiplier * level.scr_half_start_timer; // (10sec)
 
 	level.in_readyup = 0;
+
+	// reset flag as readyup was runned
+	game["readyup_first_run"] = false;
 
 	if (!level.in_timeout)
 	{
@@ -532,6 +538,17 @@ check_Warnings()
             level.warning4.y = 70 + line_offset;
             level.warning4.alpha = 1;
             level.warning4 setText(game["STRING_WARNING_PASSWORD_IS_NOT_SET"]);
+
+						line_offset += 16;
+        }
+
+
+        level.warning5.alpha = 0;
+        if (game["is_cracked"])
+        {
+            level.warning5.y = 70 + line_offset;
+            level.warning5.alpha = 1;
+            level.warning5 setText(game["STRING_WARNING_SERVER_IS_CRACKED"]);
         }
 
         wait level.fps_multiplier * 1;
@@ -594,6 +611,11 @@ createLevelHUD()
 	// Run auto-resume thread for timeout
 	else if (level.in_timeout && level.scr_timeout_length != 0)
 		thread Timeout_AutoResume();
+
+	// If nothink, show atleast elapsed time
+	else
+		level thread HUD_Clock();
+
 
 
 	//Remove MG nests (if is timeout remove only in sd)
@@ -816,6 +838,15 @@ HUD_Warnings()
     level.warning4.alpha = 0;
     level.warning4.color = (1, 1, 0);
 
+		// cracked server
+    level.warning5 = newHudElem();
+    level.warning5.x = 320;
+    level.warning5.y = 70 + 80;
+    level.warning5.alignX = "center";
+    level.warning5.alignY = "top";
+    level.warning5.fontScale = 1.2;
+    level.warning5.alpha = 0;
+    level.warning5.color = (1, 1, 0);
 
     level waittill("rupover");
 
@@ -827,6 +858,8 @@ HUD_Warnings()
     level.warning3.alpha = 0;
     level.warning4 FadeOverTime(1);
     level.warning4.alpha = 0;
+		level.warning5 FadeOverTime(1);
+    level.warning5.alpha = 0;
 
     wait level.fps_multiplier * 1;
 
@@ -834,6 +867,7 @@ HUD_Warnings()
     level.warning2 destroy();
     level.warning3 destroy();
     level.warning4 destroy();
+    level.warning5 destroy();
 }
 
 // Halftime auto resume timer

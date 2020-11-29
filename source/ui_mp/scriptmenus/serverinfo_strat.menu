@@ -11,6 +11,7 @@
 		blurWorld		5.0
 		onOpen
 		{
+			exec "vstr server16;" // server16 contains string with player's settings
 		}
 		onEsc
 		{

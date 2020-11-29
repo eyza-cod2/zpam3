@@ -21,7 +21,7 @@ onConnected()
 		self.pers["downloadDisableResponse"] = false;
 	}
 
-	if (!self.pers["modDownloaded"])
+	if (!self.pers["modDownloaded"] && game["state"] != "intermission")
 	{
 		// Show error message even if we dont know yet if mod is downloaded
 		// Message is not visible if menu is open and is removed when response comes
@@ -38,7 +38,7 @@ checkDownload()
 	wait level.fps_multiplier * 3;
 
 	// Ignore if pam is not installed correctly
-	if (!maps\mp\gametypes\_pam::isInstalledCorrectly() || game["pbsv_not_loaded"])
+	if (!maps\mp\gametypes\_pam::isInstalledCorrectly() || game["pbsv_not_loaded"] || game["state"] == "intermission")
 		return;
 
 	if (!self.pers["modDownloaded"])
@@ -55,13 +55,15 @@ checkDownload()
 
 spawnModNotDownloaded()
 {
+  self endon("disconnect");
+
 	self setClientCvar("cl_allowdownload", "1"); // enable downloading on client side (just for sure)
 	self setClientCvar("cl_wwwdownload", "1");
 
 	[[level.spawnSpectator]]((999999, 999999, -999999), (90, 0, 0));
 
 	wait level.frame; // wait to correctly replace statusicon (is set in readyup)
-	
+
 	// Special icon for player with not downloaded mod
 	self.statusicon = "icon_mod";
 }

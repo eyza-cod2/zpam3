@@ -56,7 +56,7 @@ itemDef
 	visible			1
 	origin			0 125
 	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"Supporters: askeslav, tomik, cokY"
+	text			"Supporters: askeslav, tomik, cokY, Sk1lzZ, YctN, kebit, foxbuster, ^9<==^3Mustang^9==>^2Clan  from Hungary"
 	textfont		UI_FONT_NORMAL
 	textscale		0.25
 	textstyle		ITEM_TEXTSTYLE_SHADOWED

@@ -11,10 +11,17 @@
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 		blurWorld		5.0
+		onOpen
+		{
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			open weapon_american_keys;
+		}
 		onEsc
 		{
 			HIDE_ALL
 			close weapon_american;
+			close matchinfo;
+			close weapon_american_keys;
 		}
 
 		// Background
@@ -28,18 +35,6 @@
 
 
 		// MENU CHOICES
-		execKey "1" { play "mouse_click"; scriptMenuResponse "greasegun_mp" }
-		execKey "2" { play "mouse_click"; scriptMenuResponse "m1carbine_mp" }
-		execKey "3" { play "mouse_click"; scriptMenuResponse "m1garand_mp" }
-		execKey "4" { play "mouse_click"; scriptMenuResponse "springfield_mp" }
-		execKey "5" { play "mouse_click"; scriptMenuResponse "shotgun_mp" }
-		execKey "6" { play "mouse_click"; scriptMenuResponse "thompson_mp" }
-		execKey "7" { play "mouse_click"; scriptMenuResponse "bar_mp" }
-
-		execKeyInt 32 { play "mouse_click"; close weapon_american; open main; } // space
-
-
-
 		ITEM_WEAPON(ORIGIN_CHOICE1, "button_greasegun", 			"@MPUI_1_GREASEGUN", 			"ui_allow_greasegun", 			"weapon_greasegun", 			show weapon_greasegun;, 			scriptMenuResponse "greasegun_mp";, 			"us_grenade_C",	"smg")
 		ITEM_WEAPON(ORIGIN_CHOICE2, "button_m1carbine", 		"@MPUI_2_M1A1_CARBINE", 		"ui_allow_m1carbine", 		"weapon_m1carbine", 		show weapon_m1carbine;, 		scriptMenuResponse "m1carbine_mp";, 		"us_grenade_C",	"semiautomatic")
 		ITEM_WEAPON(ORIGIN_CHOICE3, "button_m1garand", 		"@MPUI_3_M1_GARAND", 		"ui_allow_m1garand", 		"weapon_m1garand", 		show weapon_m1garand;,		scriptMenuResponse "m1garand_mp";, 		"us_grenade_C",	"semiautomatic")
@@ -54,5 +49,26 @@
 		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, close weapon_american;)
 		// Main menu
 		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, close weapon_american; open main;)
+	}
+
+
+	// Key choices has to be in different menu if we are using submenus
+	// This keys is opened as last and will be in focus - so keys from this submenu will be accepted
+	menuDef
+	{
+		name			"weapon_american_keys"
+		rect			0 0 1 1
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		execKey "1" { play "mouse_click"; exec "openscriptmenu weapon_american greasegun_mp" }
+		execKey "2" { play "mouse_click"; exec "openscriptmenu weapon_american m1carbine_mp" }
+		execKey "3" { play "mouse_click"; exec "openscriptmenu weapon_american m1garand_mp" }
+		execKey "4" { play "mouse_click"; exec "openscriptmenu weapon_american springfield_mp" }
+		execKey "5" { play "mouse_click"; exec "openscriptmenu weapon_american shotgun_mp" }
+		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_american thompson_mp" }
+		execKey "7" { play "mouse_click"; exec "openscriptmenu weapon_american bar_mp" }
+
+		execKeyInt 32 { play "mouse_click"; close weapon_american; open main; } // space
 	}
 }

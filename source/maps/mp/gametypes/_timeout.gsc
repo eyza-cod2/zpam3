@@ -29,7 +29,7 @@ init()
     // If this flag is set to true, we know timeout will be runned
     if (game["do_timeout"])
     {
-        Start_Timeout_Mode(false); // runned_in_middle_of_game = false
+        level thread Start_Timeout_Mode(false); // runned_in_middle_of_game = false
     }
 
 

@@ -38,7 +38,7 @@ setSpectatePermissions()
 		return;
 
 
-	if (self.sessionteam == "none")
+	if ((self.sessionteam == "none" && level.gametype != "dm") || game["state"] == "intermission") // in dm player is in none team
 	{
 		self allowSpectateTeam("allies", false);
 		self allowSpectateTeam("axis", false);

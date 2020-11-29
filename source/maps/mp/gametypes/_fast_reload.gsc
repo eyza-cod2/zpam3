@@ -125,7 +125,10 @@ manageWeaponCycleDelay()
       			if (timer > 0)
       			{
   	            cycleDelayActivated = true;
-  	            cycleDelayTime = timer;
+  	            cycleDelayTime = timer - level.frame*3;
+
+                // Send command after a few frames (this may help fix fps drop when player fire from weapon)
+                wait level.frame*3;
 
   	            //self iprintln("^1Preventing fast reload bug");
   	            self setClientCvar("cg_weaponCycleDelay", "200");	// time in ms when player can change weapon again
@@ -174,7 +177,6 @@ GetRechamberTime(weaponName)
         case "springfield_mp":          timer = 1.33; break;
 
         case "shotgun_mp":              timer = 1.0163; break;
-	      case "shotgun_rebalanced_mp":              timer = 1.0163; break;
     }
 
     return timer;

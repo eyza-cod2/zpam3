@@ -46,6 +46,17 @@ toujane()
 	moving_xmodel = spawn("script_model",(1556, 2265, 110));
 	moving_xmodel.angles = (90, 270, 30);
 	moving_xmodel setmodel("xmodel/toujane_underA_bug");
+
+  /*
+  // B sandbags roof (holes towards A top)
+  precacheModel("xmodel/prop_bear_detail_sitting");
+  sandbags = spawn("script_model",(1723, 1209, 224));
+	sandbags.angles = (0, 55, 0);
+	sandbags setmodel("xmodel/prop_bear_detail_sitting");
+  sandbags = spawn("script_model",(1793, 1234, 224));
+	sandbags.angles = (0, 55, 0);
+	sandbags setmodel("xmodel/prop_bear_detail_sitting");
+  */
 }
 
 burgundy()
@@ -145,7 +156,7 @@ burgundy()
 	wall1_collision setcontents(1);
 
 	// Allies spawn - player can stand in the air next to tree
-	tree_collision = spawn("trigger_radius", (475, 55, 43), 0, 12, 72);
+	tree_collision = spawn("trigger_radius", (475, 55, 43), 0, 12, 58);
 	tree_collision setcontents(1);
 
 }
@@ -252,4 +263,41 @@ carentan()
 
 	window1_collision = spawn("trigger_radius", window1.origin, 0, 8 , 50);
 	window1_collision setcontents(1);
+
+//TODO
+/*
+  // A walls
+  precacheModel("xmodel/prop_door_wood");
+  wall = spawn("script_model",(-934,1885,-8));
+  wall.angles = (0,312,0);
+  wall setmodel("xmodel/prop_door_wood");
+
+  wall maps\mp\gametypes\__developer::moving_obj("");*/
+
+
+/*
+  // spawn(<classname>, <origin>, <flags>, <radius>, <height>)
+	jump = spawn("trigger_radius", (651, 557, 190), 0, 8, 30);
+	jump setcontents(1);
+  jump = spawn("trigger_radius", (651, 500, 190), 0, 8, 30);
+	jump setcontents(1);
+*/
+}
+
+
+matmata()
+{
+  /*
+  // sandbags
+  precacheModel("xmodel/prop_bear_detail_sitting");
+  sandbags = spawn("script_model",(4600,5290,163));
+  sandbags.angles = (0,226,0);
+  sandbags setmodel("xmodel/prop_bear_detail_sitting");
+  sandbags = spawn("script_model",(4378,5288,163));
+  sandbags.angles = (0,270,0);
+  sandbags setmodel("xmodel/prop_bear_detail_sitting");
+  sandbags = spawn("script_model",(4453,5288,163));
+  sandbags.angles = (0,270,0);
+  sandbags setmodel("xmodel/prop_bear_detail_sitting");
+  */
 }

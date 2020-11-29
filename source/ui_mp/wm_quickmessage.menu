@@ -1,4 +1,5 @@
 #include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
 
 #define ORIGIN_QUICKMESSAGETAB			32 224
 #define ORIGIN_QUICKMESSAGEWINDOW		32 256
@@ -17,8 +18,6 @@
 		onOpen
 		{
 			setDvar cl_bypassMouseInput "1"
-
-			execOnDvarStringValue ui_rcon_logged_in 0 "vstr ui_rcon_hash";
 		}
 		onClose
 		{
@@ -91,7 +90,7 @@
 			forecolor		1 1 1 1
 			backcolor		0 0 0 0.7975
 			type			ITEM_TYPE_TEXT
-			text			"@QUICKMESSAGE_QUICK_MESSAGE"
+			text			"Quick Menu"
 			textfont		UI_FONT_NORMAL
 			textscale		.24
 			textalignx		112
@@ -110,127 +109,40 @@
 			decoration
 		}
 
-		itemDef
-		{
-			name			"window"
-			visible			1
-			rect			16 20 0 0
-			origin			ORIGIN_QUICKMESSAGEWINDOW
-			forecolor		1 1 1 1
-			textfont		UI_FONT_NORMAL
-			textscale		.24
-			textaligny		8
-			text			"@QUICKMESSAGE_1_COMMANDS"
-			decoration
-		}
+
+
+
+		QUICKMESSAGE_LINE_TEXT(20, "@QUICKMESSAGE_1_COMMANDS", 1 1 1 1)
 		execKey "1" { close quickmessage; open quickcommands }
 
-		itemDef
-		{
-			name			"window"
-			visible			1
-			rect			16 36 0 0
-			origin			ORIGIN_QUICKMESSAGEWINDOW
-			forecolor		1 1 1 1
-			textfont		UI_FONT_NORMAL
-			textscale		.24
-			textaligny		8
-			text			"@QUICKMESSAGE_2_STATEMENTS"
-			decoration
-		}
+		QUICKMESSAGE_LINE_TEXT(36, "@QUICKMESSAGE_2_STATEMENTS", 1 1 1 1)
 		execKey "2" { close quickmessage; open quickstatements }
 
-		itemDef
-		{
-			name			"window"
-			visible			1
-			rect			16 52 0 0
-			origin			ORIGIN_QUICKMESSAGEWINDOW
-			forecolor		1 1 1 1
-			textfont		UI_FONT_NORMAL
-			textscale		.24
-			textaligny		8
-			text			"@QUICKMESSAGE_3_RESPONSES"
-			decoration
-		}
+		QUICKMESSAGE_LINE_TEXT(52, "@QUICKMESSAGE_3_RESPONSES", 1 1 1 1)
 		execKey "3" { close quickmessage; open quickresponses }
 
 
-		itemDef
-		{
-			name			"window"
-			visible			1
-			rect			16 116 0 0
-			origin			ORIGIN_QUICKMESSAGEWINDOW
-			forecolor		1 1 1 1
-			textfont		UI_FONT_NORMAL
-			textscale		.24
-			textaligny		8
-			text			"7. Show ingame match info"
-			dvartest		"ui_match_ingame_show"
-			hideDvar		{ "1" }
-			decoration
-		}
-		itemDef
-		{
-			name			"window"
-			visible			1
-			rect			16 116 0 0
-			origin			ORIGIN_QUICKMESSAGEWINDOW
-			forecolor		1 1 1 1
-			textfont		UI_FONT_NORMAL
-			textscale		.24
-			textaligny		8
-			text			"7. Hide ingame match info"
-			dvartest		"ui_match_ingame_show"
-			showDvar		{ "1" }
-			decoration
-		}
-		execKey "7" { close quickmessage; exec "openscriptmenu ingame matchinfo" }
+		QUICKMESSAGE_LINE_TEXT(100, "6. Settings", 1 1 1 1)
+		execKey "6" { close quickmessage; open quicksettings }
 
-/*
-		itemDef
-		{
-			name			"window"
-			visible			1
-			rect			16 116 0 0
-			origin			ORIGIN_QUICKMESSAGEWINDOW
-			forecolor		1 1 1 1
-			textfont		UI_FONT_NORMAL
-			textscale		.24
-			textaligny		8
-			text			"7. Start recording a demo"
-			decoration
-		}
-		execKey "7" { close quickmessage; exec "openscriptmenu ingame record" }
-*/
-		itemDef
-		{
-			name			"window"
-			visible			1
-			rect			16 132 0 0
-			origin			ORIGIN_QUICKMESSAGEWINDOW
-			forecolor		1 1 1 1
-			textfont		UI_FONT_NORMAL
-			textscale		.24
-			textaligny		8
-			text			"8. Call timeout"
-			decoration
-		}
+		QUICKMESSAGE_LINE_TEXT_DVAR(116, "7. Call pistol bash", .35 .35 .35 1, 	"ui_allow_bash", showDvar { "0" }) 	// 0 = "" (invisible)
+		QUICKMESSAGE_LINE_TEXT_DVAR(116, "7. Call pistol bash", 1 1 1 1, 				"ui_allow_bash", showDvar { "1" }) 	// 1 = "Call bash"
+		QUICKMESSAGE_LINE_TEXT_DVAR(116, "7. Call pistol bash", .35 .35 .35 1, 	"ui_allow_bash", showDvar { "2" }) 	// 2 = "Call bash" (disabled)
+		QUICKMESSAGE_LINE_TEXT_DVAR(116, "7. Call pistol bash", .35 .35 .35 1, 	"ui_allow_bash", showDvar { "3" }) 	// 3 = "In bash" (disabled)
+		QUICKMESSAGE_LINE_TEXT_DVAR(116, "7. Cancel pistol bash", 1 1 1 1, 			"ui_allow_bash", showDvar { "4" }) 	// 4 = "Cancel bash"
+		execKey "7" { close quickmessage; exec "openscriptmenu ingame bash" }
+
+
+		QUICKMESSAGE_LINE_TEXT_DVAR(132, "8. Call timeout", .35 .35 .35 1, 			"ui_allow_timeout", showDvar { "0" }) // Disabled
+		QUICKMESSAGE_LINE_TEXT_DVAR(132, "8. Call timeout", 1 1 1 1, 						"ui_allow_timeout", showDvar { "1" }) // Enabled
+		QUICKMESSAGE_LINE_TEXT_DVAR(132, "8. Call timeout", .35 .35 .35 1, 			"ui_allow_timeout", showDvar { "2" }) // Disabled
+		QUICKMESSAGE_LINE_TEXT_DVAR(132, "8. Timeout called", .35 .35 .35 1, 		"ui_allow_timeout", showDvar { "3" }) //  Already called
+		QUICKMESSAGE_LINE_TEXT_DVAR(132, "8. Already in timeout", .35 .35 .35 1, "ui_allow_timeout", showDvar { "4" }) // In timeout
+		QUICKMESSAGE_LINE_TEXT_DVAR(132, "8. Cancel timeout", 1 1 1 1, 					"ui_allow_timeout", showDvar { "5" }) // Cancel timeout
 		execKey "8" { close quickmessage; exec "openscriptmenu ingame timeout" }
 
-		itemDef
-		{
-			name			"window"
-			visible			1
-			rect			16 148 0 0
-			origin			ORIGIN_QUICKMESSAGEWINDOW
-			forecolor		1 1 1 1
-			textfont		UI_FONT_NORMAL
-			textscale		.24
-			textaligny		8
-			text			"@QUICKMESSAGE_ESC_EXIT"
-			decoration
-		}
+
+		QUICKMESSAGE_LINE_TEXT(148, "@QUICKMESSAGE_ESC_EXIT", 1 1 1 1)
+
 	}
 }

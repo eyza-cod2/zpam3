@@ -1,6 +1,6 @@
 init()
 {
-	level.pam_folder = "mods/zpam310_beta4";
+	level.pam_folder = "mods/zpam310_beta5";
 
 	level.pam_mode_change = false;
 
@@ -23,6 +23,11 @@ isInstalledCorrectly()
 	// If we are in listening mode, dont show bad installating error
 	if (getCvar("dedicated") == "0")
 		return true;
+
+	// TODO
+	/*
+	if (getCvar("eyza") != "1337")
+		return false;*/
 
 	return tolower(level.fs_game) == tolower(level.pam_folder);
 }

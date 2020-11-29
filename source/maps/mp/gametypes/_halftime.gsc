@@ -14,7 +14,7 @@ Do_Half_Time()
 	thread maps\mp\gametypes\_hud::ScoreBoard(true); // call this before game["is_halftime"] is set to true
 	thread maps\mp\gametypes\_hud::TeamSwap();
 
-	wait level.fps_multiplier * 7;
+	wait level.fps_multiplier * 4;
 
 	// Activate half-time
 	game["is_halftime"] = true;

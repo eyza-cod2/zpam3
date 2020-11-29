@@ -216,6 +216,9 @@ onStartGameType()
 	maps\mp\gametypes\_init::initAllFunctions();
 
 
+	thread maps\mp\gametypes\_hud_teamscore::init();
+
+
 	// Spawn points
 	spawnpointname = "mp_sd_spawn_attacker";
 	spawnpoints = getentarray(spawnpointname, "classname");
@@ -257,7 +260,10 @@ onStartGameType()
 
 	serverInfo();
 
-
+/*
+	    game["state"] = "intermission";
+		level notify("intermission");
+*/
 
 	// Wait here untill there is atleast one player connected
 	if (!isDefined(game["gametypeStarted"]))
@@ -308,6 +314,7 @@ onStartGameType()
 
 	thread bombzones();
 
+
 	level.starttime = getTime();
 	level.matchStarted = true;
 
@@ -318,7 +325,6 @@ onStartGameType()
 
 		thread startRound();
 	}
-
 
 
 	game["gametypeStarted"] = true;
@@ -378,6 +384,15 @@ onConnected()
 	// Define default variables specific for this gametype
 	self.bombinteraction = false;
 	self.spawnsInStrattime = 0;
+
+	// Set score and deaths
+	if(!isdefined(self.pers["score"]))
+		self.pers["score"] = 0;
+	self.score = self.pers["score"];
+
+	if(!isdefined(self.pers["deaths"]))
+		self.pers["deaths"] = 0;
+	self.deaths = self.pers["deaths"];
 }
 
 /*================
@@ -397,7 +412,51 @@ onDisconnect()
 
 
 	level thread updateTeamStatus(); // in thread because of wait 0
+
+/*
+	if (0) // TODO spawn virtual player?
+	{
+		if (level.roundstarted && isAlive(self))
+		{
+			body = self ClonePlayer(300000);
+			body setcontents(1);
+
+			body.name = self.name;
+			body.health = 100;
+			body.sessionstate = self.sessionstate;
+			body.sessionteam = self.sessionteam;
+
+			body thread virtualPlayer();
+
+			players = getentarray("player", "classname");
+			for(p = 0; p < players.size; p++)
+			{
+				player = players[i];
+				if (isAlive(player) && player != self)
+				{
+					player lookForVirtualPlayer(body);
+				}
+			}
+		}
+	}*/
 }
+
+/*
+virtualPlayer()
+{
+
+}
+
+lookForVirtualPlayer(body)
+{
+	forward = anglestoforward(self getplayerangles());
+	forwardTrace = Bullettrace(self getEye(),self getEye()+(forward[0]*100000, forward[1]*100000, forward[2]*100000),true,self);
+
+	if (isDefined(forwardTrace["entity"]) && forwardTrace["entity"] == body)
+	{
+	}
+}
+*/
 
 /*
 Called when player is about to take a damage.
@@ -408,6 +467,10 @@ onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon
 {
 	// Prevent damage when:
 	if (!level.matchStarted || level.in_strattime || level.roundended)
+		return true;
+
+	// In bash mode allow damage only via pistol bash
+	if (level.in_bash && (sMeansOfDeath != "MOD_MELEE" || !maps\mp\gametypes\_weapons::isPistol(sWeapon)))
 		return true;
 
 	// Friendly fire is disabled - prevent damage
@@ -508,6 +571,19 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 			if(iDamage < 1)
 				iDamage = 1;
 
+
+			// Player's stats - increase damage points (_player_stat.gsc)
+			if (isDefined(eAttacker) && eAttacker != self && !level.in_readyup && level.roundstarted && !level.roundended)
+			{
+				if (iDamage >= self.health)
+					dmg = self.health / 100;
+				else
+					dmg = iDamage / 100;
+				eAttacker maps\mp\gametypes\_player_stat::AddDamage(dmg);
+				eAttacker maps\mp\gametypes\_player_stat::AddScore(dmg);
+			}
+
+
 			self finishPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime);
 			self notify("damaged_player", iDamage);
 
@@ -571,6 +647,10 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 	{
 		self.pers["deaths"]++;
 		self.deaths = self.pers["deaths"];
+
+		// Player's stats - increase kill points (_player_stat.gsc)
+		if (!level.in_readyup && level.roundstarted && !level.roundended)
+			self maps\mp\gametypes\_player_stat::AddDeath();
 	}
 
 	attackerNum = -1; // used for killcam
@@ -609,11 +689,22 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 			{
 				attacker.pers["score"]--;
 				attacker.score = attacker.pers["score"];
+
+				// Player's stats - decrease score points (_player_stat.gsc)
+				if (!level.in_readyup && level.roundstarted && !level.roundended)
+					attacker maps\mp\gametypes\_player_stat::AddScore(-1);
 			}
 			else
 			{
 				attacker.pers["score"]++;
 				attacker.score = attacker.pers["score"];
+
+				// Player's stats - increase kill points (_player_stat.gsc)
+				if (!level.in_readyup && level.roundstarted && !level.roundended)
+				{
+					attacker maps\mp\gametypes\_player_stat::AddKill();
+					attacker maps\mp\gametypes\_player_stat::AddScore(1);
+				}
 			}
 		}
 	}
@@ -635,8 +726,10 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 	self.pers["weapon1"] = undefined;
 	self.pers["weapon2"] = undefined;
 
-	// Wait intill all other kills in same time are processed now before dead body is spawned
-	waittillframeend;
+	// Wait before dead body is spawned to allow double kills (bullets may stop in this dead body)
+	// Ignore this for shotgun, because it create a smoke effect on dead body (for good feeling)
+	if (sWeapon != "shotgun_mp")
+		waittillframeend;
 
 	// Clone players model for death animations
 	body = undefined;
@@ -715,14 +808,6 @@ spawnPlayer()
 	level thread updateTeamStatus(); // in thread because of wait 0
 
 
-	if(!isdefined(self.pers["score"]))
-		self.pers["score"] = 0;
-	self.score = self.pers["score"];
-
-	if(!isdefined(self.pers["deaths"]))
-		self.pers["deaths"] = 0;
-	self.deaths = self.pers["deaths"];
-
 	if(!isdefined(self.pers["savedmodel"]))
 		maps\mp\gametypes\_teams::model();
 	else
@@ -752,21 +837,27 @@ spawnPlayer()
 
 	// Give grenades only if we are in readyup
 	if(level.in_readyup)
-		maps\mp\gametypes\_weapons::giveGrenades();
+	{
+		maps\mp\gametypes\_weapons::giveSmoke(0);
+		maps\mp\gametypes\_weapons::giveGrenade();
+	}
+	else
+	{
+		maps\mp\gametypes\_weapons::giveSmoke(0);
+		maps\mp\gametypes\_weapons::giveGrenade(0);	// grenades will be added after start time
+	}
 	maps\mp\gametypes\_weapons::givePistol();
 	maps\mp\gametypes\_weapons::giveBinoculars();
 
+	// Switch to pistol in bash mode
+	if (level.in_bash)
+	{
+		self setSpawnWeapon(self getweaponslotweapon("primaryb"));
+	}
+
+
 	self.spawnedWeapon = self.pers["weapon"]; // to determine is weapon was changed during round
 
-
-
-	if (level.pam_mode == "bash")
-	{
-		self setClientCvar("ui_allow_weaponchange", "0");
-
-		self takeWeapon(self.pers["weapon"]); // remove main weapon
-		self setSpawnWeapon(self getweaponslotweapon("primaryb")); // set pistol as spawn weapon
-	}
 
 	// Hide score if it may be hidden
 	if (level.roundstarted)
@@ -837,12 +928,14 @@ spawnIntermission()
 	self stopShellshock();
 	self stoprumble("damage_heavy");
 
-	self.sessionstate = "intermission";
+	self.sessionstate = "spectator";
 	self.spectatorclient = -1;
 	self.archivetime = 0;
 	self.psoffsettime = 0;
 	self.friendlydamage = undefined;
 
+	// Will disable spectating
+	self thread maps\mp\gametypes\_spectating::setSpectatePermissions();
 
 	spawnpointname = "mp_global_intermission";
 	spawnpoints = getentarray(spawnpointname, "classname");
@@ -858,6 +951,10 @@ spawnIntermission()
 	// Specific for SD
 	if(isdefined(level.bombmodel))
 		level.bombmodel stopLoopSound();
+
+  // Open alternative scoreboard
+	self openMenu(game["menu_scoreboard"]);
+	self setClientCvar("g_scriptMainMenu", game["menu_ingame"]);
 
 	// Notify "spawned" notifications
 	self notify("spawned");
@@ -955,16 +1052,23 @@ startRound()
 			player.statusicon = "hud_status_dead";
 
 		// To all living player give grenades
-		if (isDefined(player.pers["weapon"]) && player.sessionstate == "playing" && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
-			player maps\mp\gametypes\_weapons::giveGrenades();
+		if (isDefined(player.pers["weapon"]) && player.sessionstate == "playing" && (player.pers["team"] == "allies" || player.pers["team"] == "axis") && !level.in_bash)
+		{
+			player maps\mp\gametypes\_weapons::giveSmoke();
+			player maps\mp\gametypes\_weapons::giveGrenade();
+		}
 
 	}
 
 
 	// If is bash, there is no time-limit
-	if(level.pam_mode == "bash")
+	if(level.in_bash)
 	{
 		level.clock destroy();
+		objective_delete(0);
+		objective_delete(1);
+		maps\mp\gametypes\_weapons::deletePlacedEntity("misc_turret");
+		maps\mp\gametypes\_weapons::deletePlacedEntity("misc_mg42");
 		return;
 	}
 
@@ -1039,6 +1143,7 @@ endRound(roundwinner)
 
 
 
+
 	if(roundwinner == "allies")
 	{
 		if (game["is_halftime"])
@@ -1098,6 +1203,16 @@ endRound(roundwinner)
 
 	// Show score even if is disabled
 	level maps\mp\gametypes\_hud_teamscore::showScore(0.5);
+
+
+	if (level.in_bash)
+	{
+		wait level.fps_multiplier * 3;
+		if (!level.pam_mode_change)
+        map_restart(false);
+		return;
+	}
+
 
 
 	// In SD there are 3 checks: Time limit, Score limit and Round limit
@@ -1164,13 +1279,14 @@ endRound(roundwinner)
 		M1			| M1	-		| M1	-			| thomp	-
 		M1			| -		M1		| M1	-			| thomp	-
 		M1			| M1	KAR		| M1	KAR			| thomp	KAR
-		M1			| KAR	M1		| M1	KAR			| thomp	KAR
+		M1			| KAR	M1		| KAR	M1		   +| thomp M1
 		M1			| KAR	MP44	| KAR	MP44		| thomp	MP44
 		M1			| KAR	-		| KAR	-			| thomp	-
 		M1			| -		KAR		| KAR	-			| thomp	-
 		M1			| M1	thomp	| M1	thomp		| thomp	-
-		M1			| thomp	M1		| M1	thomp		| thomp	-
+		M1			| thomp	M1		| thomp M1		   +| thomp M1
 		M1			| -		-		| M1	-			| thomp	-
+
 		*/
 
 
@@ -1184,14 +1300,6 @@ endRound(roundwinner)
 				weapon1 = "none";
 			if (!player maps\mp\gametypes\_weapon_limiter::isWeaponSaveable(weapon2))
 				weapon2 = "none";
-
-			// Swap weapons if spawned weapon is in secondary slot or there is weapon in secondary slot only
-			if (player.spawnedWeapon == weapon2 || (weapon1 == "none" && weapon2 != "none"))
-			{
-				temp = weapon1;
-				weapon1 = weapon2;
-				weapon2 = temp;
-			}
 
 			// Give player selected weapon if selected weapon is changed
 			if (player.spawnedWeapon != player.pers["weapon"])
@@ -1523,7 +1631,7 @@ bombzone_think(bombzone_other)
 	level endon("round_ended");
 
 	// If bomplanting is not needed, hide
-	if(level.in_readyup || level.pam_mode == "bash")
+	if(level.in_readyup || level.in_bash)
 	{
 		self SetCursorHint("HINT_NONE");
 		return;
@@ -1546,8 +1654,15 @@ bombzone_think(bombzone_other)
 
 		team = game["attackers"]; // team wich is able to planting
 
+
+		// Restrict planting in some areas
+		positionOk = true;
+		// 333 jump plant on carentan bomb B
+		if (level.mapname == "mp_carentan" && (self.script_label == "B" || self.script_label == "b") && player.origin[2] > 0)
+			positionOk = false;
+
 		// check for having been triggered by a valid player
-		if(isPlayer(player) && (player.pers["team"] == team) && player isOnGround())
+		if(isPlayer(player) && (player.pers["team"] == team) && player isOnGround() && positionOk)
 		{
 			while(player istouching(self) && isAlive(player) && player useButtonPressed())
 			{
@@ -1662,6 +1777,10 @@ bombzone_think(bombzone_other)
 						player.pers["score"] = player.pers["score"] + level.bomb_plant_points;
 						player.score = player.pers["score"];
 					}
+
+					// Player's stats - increase plant points (_player_stat.gsc)
+					player maps\mp\gametypes\_player_stat::AddPlant();
+					player maps\mp\gametypes\_player_stat::AddScore(1);
 
 					iprintln(&"MP_EXPLOSIVESPLANTED");
 
@@ -1848,6 +1967,10 @@ bomb_think()
 						player.pers["score"] = player.pers["score"] + level.bomb_defuse_points;
 						player.score = player.pers["score"];
 					}
+
+					// Player's stats - increase defuse points (_player_stat.gsc)
+					player maps\mp\gametypes\_player_stat::AddDefuse();
+					player maps\mp\gametypes\_player_stat::AddScore(1);
 
 					level thread endRound(player.pers["team"]);
 
@@ -2130,16 +2253,6 @@ menuWeapon(response)
 	if (response == "random")
 		response = self maps\mp\gametypes\_weapons::getRandomWeapon();
 
-	// Shotgun rebalance
-	// Because we have 2 version of shotgun, if new version is turned on we need to change name of weapon to new version
-	if (response == "shotgun_mp" || response == "shotgun_rebalanced_mp")
-	{
-		if (level.scr_shotgun_rebalance)
-			response = "shotgun_rebalanced_mp";
-		else
-			response = "shotgun_mp";
-	}
-
 	// Weapon is not valid or is in use
 	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvaible(response))
 	{
@@ -2158,16 +2271,14 @@ menuWeapon(response)
 	self setClientCvar("g_scriptMainMenu", game["menu_ingame"]);
 
 	// If newly selected weapon is same as actualy selected weapon and is in player slot -> do nothing
-	primary = self getWeaponSlotWeapon("primary");
-	primaryb = self getWeaponSlotWeapon("primaryb");
-	if(isdefined(self.pers["weapon"]) && self.pers["weapon"] == weapon && (primary == weapon || primaryb == weapon))
+	if(isdefined(self.pers["weapon"]))
 	{
-		return;
-	}
+		primary = self getWeaponSlotWeapon("primary");
+		primaryb = self getWeaponSlotWeapon("primaryb");
 
-	// Weapon change is not needed in bash mode
-	if (level.pam_mode == "bash" && isdefined(self.pers["weapon"]))
-		return;
+		if (self.pers["weapon"] == weapon && primary == weapon && maps\mp\gametypes\_weapons::isPistol(primaryb))
+			return;
+	}
 
 	// Save weapon before change (used in weapon_limiter)
 	leavedWeapon = undefined;
@@ -2197,7 +2308,8 @@ menuWeapon(response)
 
 			// Give pistol to secondary slot + give grenades and smokes
 			maps\mp\gametypes\_weapons::givePistol();
-			maps\mp\gametypes\_weapons::giveGrenades(); // will give 0 smokes and 0 grenades
+			maps\mp\gametypes\_weapons::giveSmoke(0);
+			thread giveGrenadesInReadyup();
 
 			// Switch to main weapon
 			self switchToWeapon(weapon);
@@ -2227,7 +2339,8 @@ menuWeapon(response)
 				self takeWeapon(primary);
 
 				// If newly selected weapon is already in secondary slot, give pistol instead of duplicate weapon!
-				if (weapon == primaryb)
+				// If I select the same weapon that is already in slot, it means I want to remove secondary weapon to pistol
+				if (weapon == primaryb || (self.pers["weapon"] == weapon && (primary == weapon)))
 				{
 					self takeWeapon(primaryb);
 					maps\mp\gametypes\_weapons::givePistol();
@@ -2287,6 +2400,33 @@ menuWeapon(response)
 }
 
 
+// Give grenades after a few seconds!
+giveGrenadesInReadyup()
+{
+	self endon("disconnect");
+	self endon("killed_player");
+	self endon("spawned");
+	self notify("kill_giveGrenadesInReadyup");
+	self endon("kill_giveGrenadesInReadyup");
+
+	if (!isDefined(self.lastWeaponChangeTime))
+		self.lastWeaponChangeTime = 0;
+
+	// Check timer
+	timeNow = getTime();
+	diffTime = timeNow - self.lastWeaponChangeTime;
+
+
+	// Give new grenade only after 5 sec!
+	grenades = self maps\mp\gametypes\_weapons::getFragGrenadeCount();
+
+	if (grenades == 0 && diffTime < 5000)
+		wait level.fps_multiplier * (diffTime / 1000);
+
+	self.lastWeaponChangeTime = getTime();
+
+	maps\mp\gametypes\_weapons::giveGrenade();
+}
 
 
 soundPlanted(player)

@@ -225,6 +225,8 @@ balanceTeams()
 // Called when level.allies or level.axis menu function is called
 getJoinTeamPermissions(team)
 {
+	if (game["state"] == "intermission")
+		return false;
 	if (level.in_readyup)
 		return true;
 
@@ -335,6 +337,8 @@ updateAutoAssignCvar()
 	else
 		self setClientCvar("ui_allow_joinauto", "1"); // enable
 }
+
+
 
 setPlayerModels()
 {

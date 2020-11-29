@@ -1,3 +1,5 @@
+#include maps\mp\gametypes\_callbacksetup;
+
 init()
 {
 	// Ignore pb check if pam is not installed correctly
@@ -50,7 +52,7 @@ checkAlive()
     // Check cvars that can be se
     if ((getCvar("pam_pbsv_loaded") != "" && getCvarInt("pam_pbsv_loaded") == 1) ||
         getCvarInt("pam_pbsv_alive") != level.pbAliveSeed ||
-		getCvar("pam_pbsv_version") != "2")
+		getCvar("pam_pbsv_version") != "3")
     {
         game["pbsv_not_loaded"] = true;
 

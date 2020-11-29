@@ -4,41 +4,39 @@
 
 init()
 {
-	addEventListener("onConnecting",     ::onConnecting);
+	if (!isDefined(game["watchEmptyServer"]))
+		game["watchEmptyServer"] = false;
+
+	addEventListener("onConnected",     ::onConnected);
 	addEventListener("onDisconnect",     ::onDisconnect);
 
-	level.players_num = 0;
+	if (game["watchEmptyServer"])
+		level thread restartIfEmpty();
 }
 
-onConnecting()
+onConnected()
 {
-	level.players_num++;
+	game["watchEmptyServer"] = true;
 }
 
 onDisconnect()
 {
-	level.players_num--;
-
-	if (level.players_num == 0)
-	{
-		level thread restartServer();
-	}
-
-	if (level.players_num < 0)
-		assertMsg("Server restart not working");
+	level thread restartIfEmpty();
 }
 
-
-restartServer()
+restartIfEmpty()
 {
-	//Println("---------------- Last player disconnectc - turning on waiting-thread to hibernation");
+		level notify("server_restart");
+		level endon("server_restart");
 
-	// Will disable all comming map-restrat (so map can be changed correctly)
-	level.pam_mode_change = true;
+		wait level.fps_multiplier * 30;
 
-	wait level.fps_multiplier * 10;
-
-	//Println("------------- Hibernation activated");
-
-	map_restart(false);
+		players = getentarray("player", "classname");
+		if (players.size == 0)
+		{
+			iprintln("Restarting server...");
+			// Will disable all comming map-restrat (so map can be changed correctly)
+			level.pam_mode_change = true;
+			map_restart(false);
+		}
 }

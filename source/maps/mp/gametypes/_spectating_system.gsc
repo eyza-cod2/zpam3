@@ -6,15 +6,33 @@ init()
 		return;
 	if (level.gametype != "sd")
 		return;
+	if (level.in_readyup)
+		return;
 
+	level.autoSpectating_forceTime = 0;
+
+	addEventListener("onConnected",  ::onConnected);
 	addEventListener("onSpawnedSpectator",  ::onSpawnedSpectator);
+}
+
+onConnected()
+{
+	if (!isDefined(self.pers["autoSpectating"]))
+		self.pers["autoSpectating"] = false;
+	if (!isDefined(self.pers["autoSpectatingID"]))
+		self.pers["autoSpectatingID"] = -1;
+	self.autoSpectating_timer = 0;
+
+	self thread watchAction();
 }
 
 onSpawnedSpectator()
 {
 	if (self.pers["team"] == "spectator")
 	{
-		spectator_mode();
+		thread spectator_mode();
+
+		thread autoSpectator();
 	}
 }
 
@@ -236,5 +254,115 @@ unfill_boxes()
 	{
 		self.healthbar_allies[r].filled = false;
 		self.healthbar_axis[r].filled = false;
+	}
+}
+
+
+
+
+
+autoSpectator()
+{
+	self endon("disconnect");
+
+	if(!isdefined(self.autoSpectatingText))
+	{
+		self.autoSpectatingText = newClientHudElem(self);
+		self.autoSpectatingText.horzAlign = "right";
+		self.autoSpectatingText.vertAlign = "bottom";
+		self.autoSpectatingText.alignX = "right";
+		self.autoSpectatingText.alignY = "bottom";
+		self.autoSpectatingText.x = -5;
+		self.autoSpectatingText.y = -1;
+		self.autoSpectatingText.archived = false;
+		self.autoSpectatingText.font = "default";
+		self.autoSpectatingText.fontscale = 0.75;
+	}
+	if(self.pers["autoSpectating"])
+	{
+		self.autoSpectatingText setText(game["STRING_AUTO_SPECT_ENABLED"]);
+
+		// Follow previously active player
+		if (self.pers["autoSpectatingID"] > -1)
+			self.spectatorclient = self.pers["autoSpectatingID"];
+	}
+	else
+		self.autoSpectatingText setText(game["STRING_AUTO_SPECT_DISABLED"]);
+
+	for(;;)
+	{
+		// End this thread if player join team
+		if (self.pers["team"] != "spectator")
+		{
+			self.autoSpectatingText destroy();
+			self.autoSpectatingText = undefined;
+			self.pers["autoSpectating"] = false;
+			break;
+		}
+
+		if(self usebuttonpressed())
+		{
+			if(self.pers["autoSpectating"] == false)
+			{
+				self iprintlnbold(game["STRING_AUTO_SPECT_IS_ENABLED"]);
+				self.autoSpectatingText setText(game["STRING_AUTO_SPECT_ENABLED"]);
+				self.pers["autoSpectating"] = true;
+
+				// Follow previously active player
+				if (self.pers["autoSpectatingID"] > -1)
+					self.spectatorclient = self.pers["autoSpectatingID"];
+			}
+			else
+			{
+				self iprintlnbold(game["STRING_AUTO_SPECT_IS_DISABLED"]);
+				self.autoSpectatingText setText(game["STRING_AUTO_SPECT_DISABLED"]);
+				self.pers["autoSpectating"] = false;
+
+				self.spectatorclient = -1;
+				self.pers["autoSpectatingID"] = -1;
+			}
+
+			// Wait untill key is released
+			while(self usebuttonpressed())
+			{
+				wait level.fps_multiplier * 0.2;
+			}
+		}
+
+		wait level.frame;
+	}
+}
+
+// If player is firing, spectators are forced to follow this player
+watchAction()
+{
+	self endon("disconnect");
+
+	for(;;)
+	{
+		wait level.frame;
+
+		if (isAlive(self) && self attackbuttonpressed())
+		{
+			if(gettime() - level.autoSpectating_forceTime > 5000)
+			{
+				// Set all spectators to follow this player
+				players = getentarray("player", "classname");
+				for(i = 0; i < players.size; i++)
+				{
+					player = players[i];
+					if (player.pers["team"] == "spectator" && player.pers["autoSpectating"])
+					{
+						player.spectatorclient = self getEntityNumber();
+
+						level.autoSpectating_forceTime = gettime();
+					}
+					player.pers["autoSpectatingID"] = self getEntityNumber();
+				}
+
+				// Follow this player for atleast 5 sec
+				wait level.fps_multiplier * 5;
+			}
+		}
 	}
 }

@@ -1,5 +1,8 @@
 main()
 {
+	// Fix texture bugs
+	maps\mp\_bug_fix::matmata();
+
 	maps\mp\mp_matmata_fx::main();
 	maps\mp\_load::main();
 

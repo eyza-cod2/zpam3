@@ -1,0 +1,162 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+#define ORIGIN_QUICKMESSAGETAB			32 224
+#define ORIGIN_QUICKMESSAGEWINDOW		32 256
+
+{
+	menuDef
+	{
+		name			"quicksettings"
+		fullscreen		0
+		rect			0 0 640 480
+		focuscolor		1 1 1 1
+		disablecolor	0 0 0 0
+ 		style			WINDOW_STYLE_EMPTY
+
+		onOpen
+		{
+			setDvar cl_bypassMouseInput "1"
+
+			exec "setfromdvar ui_m_pitch m_pitch"
+		}
+		onClose
+		{
+			setDvar cl_bypassMouseInput "0"
+		}
+
+// WINDOW BACKGROUND
+		itemDef
+		{
+			name			"window_background"
+			visible			1
+			rect			0 0 224 192
+			origin			ORIGIN_QUICKMESSAGEWINDOW
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0.7975
+			decoration
+		}
+
+// WINDOW LINES
+		itemDef
+		{
+			name			"window_lines"
+			visible			1
+			rect			3 0 2 187
+			origin			ORIGIN_QUICKMESSAGEWINDOW
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef
+		{
+			name			"window_lines"
+			visible			1
+			rect			219 0 2 187
+			origin			ORIGIN_QUICKMESSAGEWINDOW
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef
+		{
+			name			"window_lines"
+			visible			1
+			rect			5 0 214 2
+			origin			ORIGIN_QUICKMESSAGEWINDOW
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef
+		{
+			name			"window_lines"
+			visible			1
+			rect			3 187 218 2
+			origin			ORIGIN_QUICKMESSAGEWINDOW
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+
+// TITLE
+		itemDef
+		{
+			name			"title"
+			visible			1
+			rect			0 0 224 32
+			origin			ORIGIN_QUICKMESSAGETAB
+			style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0.7975
+			type			ITEM_TYPE_TEXT
+			text			"Quick settings"
+			textfont		UI_FONT_NORMAL
+			textscale		.24
+			textalignx		112
+			textaligny		24
+			textalign		ITEM_ALIGN_CENTER
+			decoration
+		}
+		itemDef
+		{
+			name			"title_quickmessage_gray"
+			visible			1
+			rect			3 3 218 29
+			origin			ORIGIN_QUICKMESSAGETAB
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+
+		QUICKMESSAGE_LINE_TEXT_DVAR(20, "1. Auto recording: ^5On", 1 1 1 1, "ui_quicksettings_autorecording", showDvar { "1" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(20, "1. Auto recording: ^5Off", 1 1 1 1, "ui_quicksettings_autorecording", showDvar { "0" })
+		execKey "1" { exec "openscriptmenu quicksettings autorecording" }
+
+		QUICKMESSAGE_LINE_TEXT_DVAR(35, "2. Show match info in game: ^5Yes", 1 1 1 1, "ui_quicksettings_matchinfo", showDvar { "1" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(35, "2. Show match info in game: ^5No", 1 1 1 1, "ui_quicksettings_matchinfo", showDvar { "0" })
+		execKey "2" { exec "openscriptmenu quicksettings matchinfo" }
+
+		QUICKMESSAGE_LINE_TEXT_DVAR(50, "3. Packet duplication: ^50x", 1 1 1 1, "cl_packetdup", showDvar { "0" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(50, "3. Packet duplication: ^51x", 1 1 1 1, "cl_packetdup", showDvar { "1" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(50, "3. Packet duplication: ^52x", 1 1 1 1, "cl_packetdup", showDvar { "2" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(50, "3. Packet duplication: ^53x", 1 1 1 1, "cl_packetdup", showDvar { "3" })
+		execKey "3" { exec "togglep cl_packetdup 0 1 2 3" }
+
+
+
+		QUICKMESSAGE_LINE_TEXT(68, "4. [-]   Sensitivity:", 1 1 1 1)
+		QUICKMESSAGE_LINE_TEXT(81, "5. [+]  ^9/sensitivity", 1 1 1 1)
+		ITEM_DVAR("sensitivity", 133, 345, .25, ITEM_ALIGN_LEFT, 0 1 1 1)
+
+		execKey "4" { exec "togglep sensitivity 3 2.9 2.8 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2 1.9 1.8 1.7 1.6 1.5 1.4 1.3 1.2 1.1 1 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1" }
+		execKey "5" { exec "togglep sensitivity 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2 2.1 2.2 2.3 2.4 2.5 2.6 2.7 2.8 2.9 3" }
+
+
+
+
+
+		QUICKMESSAGE_LINE_TEXT(99, "6. [-]   Vertical sensitivity:", 1 1 1 1)
+		QUICKMESSAGE_LINE_TEXT(112, "7. [+]  ^9/m_pitch", 1 1 1 1)
+		ITEM_DVAR("ui_m_pitch", 125, 376, .25, ITEM_ALIGN_LEFT, 0 1 1 1)
+
+		execKey "6" { exec "togglep m_pitch 0.033 0.028 0.022 0.017 0.011"; exec "setfromdvar ui_m_pitch m_pitch" }
+		execKey "7" { exec "togglep m_pitch 0.011 0.017 0.022 0.028 0.033"; exec "setfromdvar ui_m_pitch m_pitch" }
+
+
+
+
+
+		QUICKMESSAGE_LINE_TEXT(130, "8. [-]   Acceleration:", 1 1 1 1)
+		QUICKMESSAGE_LINE_TEXT(143, "9. [+]  ^9/cl_mouseAccel", 1 1 1 1)
+		ITEM_DVAR("cl_mouseAccel", 153, 407, .25, ITEM_ALIGN_LEFT, 0 1 1 1)
+
+		execKey "8" { exec "togglep cl_mouseAccel 0.04 0.03 0.02 0.01 0" }
+		execKey "9" { exec "togglep cl_mouseAccel 0 0.01 0.02 0.03 0.04" }
+
+
+
+		QUICKMESSAGE_LINE_TEXT(167, "@QUICKMESSAGE_ESC_EXIT", 1 1 1 1)
+	}
+}

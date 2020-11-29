@@ -1,0 +1,130 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+{
+	menuDef
+	{
+		name			"scoreboard_sd"
+		rect			120 20 400 430
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		0
+		onOpen
+		{
+      open scoreboard_lines_sd
+		}
+		onEsc
+		{
+      close scoreboard_lines_sd
+      close scoreboard_sd
+		}
+
+
+    itemDef
+    {
+    	style			WINDOW_STYLE_FILLED
+    	rect			0 0 400 430 0 0
+    	backcolor		.0 .0 .0 .8
+    	visible			1
+    	decoration
+    }
+
+
+    // WINDOW LINES 400x430
+		itemDef // TOP
+		{
+			visible			1
+			rect			3 3 394 2
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef // RIGHT
+		{
+			visible			1
+			rect			395 5 2 420
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef // BOTTOM
+		{
+			visible			1
+			rect			3 425 394 2
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef // LEFT
+		{
+			visible			1
+			rect			3 5 2 420
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+
+    // Top separator
+    itemDef
+		{
+			visible			1
+			rect			5 30 390 1
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+/*
+    // Bottom separator
+    itemDef
+		{
+      visible			1
+			rect			5 412 390 1
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+*/
+
+
+
+    itemDef
+    {
+      text        "@MPUI_SEARCH_AND_DESTROY"
+      textfont		UI_FONT_BIG
+      textscale		0.4
+      textstyle		ITEM_TEXTSTYLE_SHADOWED
+      textaligny	0
+      textalign		ITEM_ALIGN_LEFT
+      visible			1
+      origin			10 26
+      decoration
+    }
+
+    itemDef
+    {
+      dvar 				"ui_scoreboard_map"
+      textfont		UI_FONT_BIG
+      textscale		0.4
+      textstyle		ITEM_TEXTSTYLE_SHADOWED
+      textaligny	0
+      textalign		ITEM_ALIGN_RIGHT
+      visible			1
+      origin			390 26
+      decoration
+    }
+	}
+
+
+
+  menuDef
+	{
+		name			"scoreboard_lines_sd"
+		rect			120 48 400 430
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		0
+
+    #include "ui_mp/scriptmenus/submenus/scoreboard_lines_sd.menu"
+  }
+
+}

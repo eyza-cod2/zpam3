@@ -2,52 +2,52 @@
 
 init()
 {
-    if (!level.scr_recording)
-        return;
+  addEventListener("onConnected",         ::onConnected);
+
+  if (!level.scr_recording)
+      return;
 
 	// Match ID is just random string to avoid demo overwrite
 	if (!isDefined(game["recordingMatchID"]))
     	game["recordingMatchID"] = generateHash(2);
 
-    addEventListener("onConnected",         ::onConnected);
     addEventListener("onSpawnedPlayer",     ::onSpawnedPlayer);
     addEventListener("onSpawnedSpectator",     ::onSpawnedSpectator);
-	addEventListener("onMenuResponse",  ::onMenuResponse);
 
 	level thread onReadyupOver();
 }
 
 onConnected()
 {
-    if (!isDefined(self.pers["isRecording"]))
-        self.pers["isRecording"] = false;
+  if (!isDefined(self.pers["autorecording"]))
+      self.pers["autorecording"] = true;
+
+  if (!level.scr_recording)
+      return;
+
+  if (!isDefined(self.pers["isRecording"]))
+      self.pers["isRecording"] = false;
 
 	if (!isDefined(self.pers["recordingStopped"]))
         self.pers["recordingStopped"] = false;
 
   // Shot text "Recording will start automatically"
-  if (!self.pers["isRecording"])
-  {
-    self.recording_info = maps\mp\gametypes\_hud_system::addHUDClient(self, 2, -1, 1, (1,1,1), "left", "bottom", "left", "bottom");
-  	self.recording_info setText(game["STRING_RECORDING_INFO"]);
-    self.recording_info.font = "smallfixed";
-    self.recording_info.alpha = 0.75;
-  }
+  if (isEnabled())
+    self show();
 }
 
 
 onSpawnedPlayer()
 {
-  if (isDefined(self.recording_info))
-    self.recording_info.alpha = 0.75;
+  if (isEnabled())
+    self show();
 
 	self onSpawned();
 }
 
 onSpawnedSpectator()
 {
-  if (isDefined(self.recording_info))
-    self.recording_info.alpha = 0;
+  self hide();
 
 	self onSpawned();
 }
@@ -75,24 +75,11 @@ onSpawned()
 
 	    // If player connect in the middle of the match, start recording
 	    // If recording was not runned yet
-	    if (!level.in_readyup && !level.in_timeout)
+	    if (!level.in_readyup && !level.in_timeout && (self.sessionteam == "allies" || self.sessionteam == "axis"))
 	    {
+        waittillframeend; // wait until team names are generated
 	    	self execRecording();
 	    }
-	}
-}
-
-/*
-Called when command scriptmenuresponse is executed on client side
-self is player that called scriptmenuresponse
-Return true to indicate that menu response was handled in this function
-*/
-onMenuResponse(menu, response)
-{
-	if (menu == game["menu_ingame"] && response == "record")
-	{
-		self execRecording();
-		return true;
 	}
 }
 
@@ -102,6 +89,61 @@ onReadyupOver()
 
 	startRecordingForAll();
 }
+
+
+
+
+isEnabled()
+{
+  return isDefined(self.pers["autorecording"]) && self.pers["autorecording"];
+}
+
+enable()
+{
+  self.pers["autorecording"] = true;
+  if (level.scr_recording)
+    self show();
+}
+
+disable()
+{
+  self.pers["autorecording"] = false;
+  if (level.scr_recording)
+    self hide();
+}
+
+toggle()
+{
+  if (isEnabled())
+    self disable();
+  else
+    self enable();
+}
+
+// Show hud element
+show()
+{
+  if (!self.pers["isRecording"]) // show only if we are not recording
+  {
+    if (!isDefined(self.recording_info))
+    {
+      self.recording_info = maps\mp\gametypes\_hud_system::addHUDClient(self, 2, -1, 1, (1,1,1), "left", "bottom", "left", "bottom");
+      self.recording_info setText(game["STRING_RECORDING_INFO"]);
+      self.recording_info.font = "smallfixed";
+    }
+    self.recording_info.alpha = 0.75;
+  }
+}
+// Hide hud element
+hide()
+{
+  if (isDefined(self.recording_info))
+  {
+    self.recording_info.alpha = 0;
+  }
+}
+
+
 
 
 generateDemoName()
@@ -172,6 +214,10 @@ generateDemoName()
 
 startRecordingForAll()
 {
+    // Generate team names according to player names
+    maps\mp\gametypes\_teamname::refreshTeamName("allies"); // will update level.teamname_allies
+  	maps\mp\gametypes\_teamname::refreshTeamName("axis"); // will update level.teamname_axis
+
     players = getentarray("player", "classname");
     for(i = 0; i < players.size; i++)
     {
@@ -185,6 +231,15 @@ startRecordingForAll()
 
 execRecording()
 {
+  // Auto recording is turned off by player, print atleast warning message
+  if (!self.pers["autorecording"])
+  {
+    self iprintln("Don't forget to record!");
+    self.pers["isRecording"] = true;
+		return;
+  }
+
+
 	if (self.pers["isRecording"])
 	{
 		self iprintln("Already recording");
@@ -207,8 +262,7 @@ execRecording()
 
 	self.pers["isRecording"] = true;
 
-  if (isDefined(self.recording_info))
-    self.recording_info.alpha = 0;
+  self hide();
 }
 
 generateHash(len)

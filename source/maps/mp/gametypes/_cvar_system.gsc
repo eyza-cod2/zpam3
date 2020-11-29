@@ -194,6 +194,38 @@ getValueByType(name, type, defaultValue)
 }
 
 
+// Set cvar only if changed (this will avoid line writed to log)
+setCvarIfChanged(cvar, value)
+{
+  // Convert value to string (to avoid wierd unmatching variable types errors)
+	valueStr = value + "";
+
+	// If value changed from last
+	if (valueStr != getCvar(cvar))
+	{
+		setCvar(cvar, valueStr);
+	}
+}
+
+
+// This function will remember the last value sended to client, so if the same value is used, nothing will be send to client
+setClientCvarIfChanged(cvar, value)
+{
+	if (!isDefined(value)) // just safety
+		value = "";
+
+	// Convert value to string (to avoid wierd unmatching variable types errors)
+	valueStr = value + "";
+
+	// If value changed from last
+	if (!isDefined(self.pers["cvar_" + cvar]) || valueStr != self.pers["cvar_" + cvar])
+	{
+		self setClientCvar(cvar, valueStr);
+	}
+
+	self.pers["cvar_" + cvar] = valueStr;
+}
+
 
 //Checks if cvar is in min and max limit and return true if value is not valid
 limitCvar(cvar)

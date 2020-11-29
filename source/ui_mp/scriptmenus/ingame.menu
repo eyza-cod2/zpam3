@@ -1,7 +1,7 @@
 #include "ui_mp/menudef.h"
 #include "ui_mp/macros.h"
 
-#define CLOSE_ALL close ingame_keys; close matchinfo; close playersettings; close rcon_map; close rcon_kick; close aboutpam;
+#define CLOSE_ALL close ingame_keys; close ingame_scoreboard_sd; close rcon_map; close rcon_kick; close aboutpam;
 
 {
 	menuDef
@@ -14,14 +14,19 @@
 		onOpen
 		{
 			CLOSE_ALL;
-			uiScript openMenuOnDvar ui_show_matchinfo "1" matchinfo;
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			uiScript openMenuOnDvar ui_scoreboard_show "sd" ingame_scoreboard_sd;
 			open ingame_keys;
 
 			RCON_UPDATE_STATUS
 		}
-		onEsc
+		onClose
 		{
 			CLOSE_ALL;
+			close matchinfo;
+		}
+		onEsc
+		{
 			close ingame;
 		}
 
@@ -39,13 +44,12 @@
 		ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE1, "@MPUI_1_CHANGE_WEAPON", "ui_allow_weaponchange", showDvar{"1"}, ;, scriptMenuResponse "changeweapon")
 		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE1, "@MPUI_1_CHANGE_WEAPON", "ui_allow_weaponchange", hideDvar{"1"}, ;)
 		ITEM_BUTTON 				(ORIGIN_CHOICE2, "@MPUI_2_CHANGE_TEAM", ;, scriptMenuResponse "changeteam")
-		ITEM_BUTTON 				(ORIGIN_CHOICE3, "3. Player Settings", ;, 	CLOSE_ALL; open playersettings; open ingame_keys;)
-		ITEM_BUTTON 				(ORIGIN_CHOICE4, "4. Server Settings", ;, 		CLOSE_ALL; open rcon_map; open ingame_keys; RCON_UPDATE_STATUS;)
-		ITEM_BUTTON 				(ORIGIN_CHOICE5, "5. Kick player", ;, 		CLOSE_ALL; open rcon_kick; open ingame_keys; RCON_UPDATE_STATUS;)
-		ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE6, "6. Call Vote", "ui_allowvote", showDvar{"1"}, ;, scriptMenuResponse "callvote")
-		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE6, "6. Call Vote", "ui_allowvote", hideDvar{"1"}, ;)
-		ITEM_BUTTON 				(ORIGIN_CHOICE7, "7. About PAM", ;, 		CLOSE_ALL; open aboutpam; open ingame_keys;)
-		ITEM_BUTTON 				(ORIGIN_CHOICE8, "8. Leave Game", ;, 		CLOSE_ALL; close ingame; open leavegame;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE3, "3. Server Settings", ;, 		CLOSE_ALL; open rcon_map; open ingame_keys; RCON_UPDATE_STATUS;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE4, "4. Kick player", ;, 		CLOSE_ALL; open rcon_kick; open ingame_keys; RCON_UPDATE_STATUS;)
+		ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE5, "5. Call Vote", "ui_allowvote", showDvar{"1"}, ;, scriptMenuResponse "callvote")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE5, "5. Call Vote", "ui_allowvote", hideDvar{"1"}, ;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE6, "6. About PAM", ;, 		CLOSE_ALL; open aboutpam; open ingame_keys;)
+		ITEM_BUTTON 				(ORIGIN_CHOICE7, "7. Leave Game", ;, 		CLOSE_ALL; close ingame; open leavegame;)
 
 		// TODO: disable in final release
 		//ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE9, "Debug", "debug", showDvar{"1"}, ;, scriptMenuResponse "debug")
@@ -58,19 +62,13 @@
 		// Server info
 		ITEM_BAR_BOTTOM_BUTTON("^9[I]^7 Server Info",	280, 80, scriptMenuResponse "serverinfo"; /*exec "openscriptmenu ingame serverinfo";*/)
 
-		// Disabled
-		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Call timeout",	395, 120, "ui_allow_timeout", showDvar { "0" })
-		// Enabled
-		ITEM_BAR_BOTTOM_BUTTON_DVAR("^9[T]^7 Call timeout",	395, 120, "ui_allow_timeout", showDvar { "1" }, scriptMenuResponse "timeout";)
-		// Disabled
-		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Call timeout",	395, 120, "ui_allow_timeout", showDvar { "2" })
-		// Already called
-		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Timeout called",	395, 120, "ui_allow_timeout", showDvar { "3" })
-		// In timeout
-		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Already in timeout",	395, 120, "ui_allow_timeout", showDvar { "4" })
-		// Cancel timeout
-		ITEM_BAR_BOTTOM_BUTTON_DVAR("^9[T]^7 Cancel timeout",	395, 120, "ui_allow_timeout", showDvar { "5" }, scriptMenuResponse "timeout";)
-
+		// Timeout
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Call timeout",	395, 120, "ui_allow_timeout", showDvar { "0" }) // Disabled
+		ITEM_BAR_BOTTOM_BUTTON_DVAR("^9[T]^7 Call timeout",	395, 120, "ui_allow_timeout", showDvar { "1" }, scriptMenuResponse "timeout";) // Enabled
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Call timeout",	395, 120, "ui_allow_timeout", showDvar { "2" }) // Disabled
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Timeout called",	395, 120, "ui_allow_timeout", showDvar { "3" }) // Already called
+		ITEM_BAR_BOTTOM_BUTTON_DVAR_DISABLED("[T] Already in timeout",	395, 120, "ui_allow_timeout", showDvar { "4" }) // In timeout
+		ITEM_BAR_BOTTOM_BUTTON_DVAR("^9[T]^7 Cancel timeout",	395, 120, "ui_allow_timeout", showDvar { "5" }, scriptMenuResponse "timeout";) // Cancel timeout
 
 		// "Rcon status: ^3not logged" / "Rcon status: ^2logged in"
 		ITEM_RCON_STATUS
@@ -87,12 +85,11 @@
 
 		execKey "1" { play "mouse_click"; exec "openscriptmenu ingame changeweapon" }
 		execKey "2" { play "mouse_click"; exec "openscriptmenu ingame changeteam" }
-		execKey "3" { play "mouse_click"; CLOSE_ALL; open playersettings; open ingame_keys; }
-		execKey "4" { play "mouse_click"; CLOSE_ALL; open rcon_map; open ingame_keys; }
-		execKey "5" { play "mouse_click"; CLOSE_ALL; open rcon_kick; open ingame_keys; }
-		execKey "6" { play "mouse_click"; exec "openscriptmenu ingame callvote" }
-		execKey "7" { play "mouse_click"; CLOSE_ALL; open aboutpam; open ingame_keys; }
-		execKey "8" { play "mouse_click"; CLOSE_ALL; close ingame; open leavegame }
+		execKey "3" { play "mouse_click"; CLOSE_ALL; open rcon_map; open ingame_keys; }
+		execKey "4" { play "mouse_click"; CLOSE_ALL; open rcon_kick; open ingame_keys; }
+		execKey "5" { play "mouse_click"; exec "openscriptmenu ingame callvote" }
+		execKey "6" { play "mouse_click"; CLOSE_ALL; open aboutpam; open ingame_keys; }
+		execKey "7" { play "mouse_click"; CLOSE_ALL; close ingame; open leavegame }
 
 
 
@@ -101,24 +98,147 @@
 		execKeyInt 116 { play "mouse_click"; exec "openscriptmenu ingame timeout";  } // t
 	}
 
+	// Match info
+	// This menu is now global, because ingame.menu is defined in menus.txt - it means this menu name is global for all other menus
+	// This is why its defined only here and used also in other menus
 	menuDef
 	{
-		name			"matchinfo"
-		rect			260 84 430 250
-		focuscolor		GLOBAL_FOCUSED_COLOR
-		style			WINDOW_STYLE_EMPTY
+		name				"matchinfo"
+		rect 				0 0 400 80 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+		focuscolor	GLOBAL_FOCUSED_COLOR
+		style				WINDOW_STYLE_EMPTY
 
-		#include "ui_mp/scriptmenus/ingame_matchinfo.menu"
+		onOpen
+		{
+			open matchinfo_2;
+		}
+		onClose
+		{
+			close matchinfo_2;
+		}
+
+		#include "ui_mp/scriptmenus/submenus/matchinfo_menu.menu"
 	}
 
 	menuDef
 	{
-		name			"playersettings"
-		rect			240 84 430 350
+		name				"matchinfo_2"
+		rect 				0 0 640 50
+		focuscolor	GLOBAL_FOCUSED_COLOR
+		style				WINDOW_STYLE_EMPTY
+
+
+		itemDef
+		{
+			visible			1
+			rect				-100 0 200 24 0 0
+			origin			320 30
+			forecolor		GLOBAL_UNFOCUSED_COLOR
+			type				ITEM_TYPE_BUTTON
+			text				"Show in game"
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny	20
+			textalignx	100
+			textalign		ITEM_ALIGN_CENTER
+			dvartest		"ui_matchinfo_ingame_show"
+			hideDvar		{ "1" }
+			action
+			{
+				play "mouse_click";
+				exec "openscriptmenu quicksettings matchinfo";
+			}
+			onFocus
+			{
+				play "mouse_over";
+			}
+		}
+
+
+		itemDef
+		{
+			visible			1
+			rect				-100 0 200 24 0 0
+			origin			320 30
+			forecolor		GLOBAL_UNFOCUSED_COLOR
+			type				ITEM_TYPE_BUTTON
+			text				"Hide in game"
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny	20
+			textalignx	100
+			textalign		ITEM_ALIGN_CENTER
+			dvartest		"ui_matchinfo_ingame_show"
+			showDvar		{ "1" }
+			action
+			{
+				play "mouse_click";
+				exec "openscriptmenu quicksettings matchinfo";
+			}
+			onFocus
+			{
+				play "mouse_over";
+			}
+		}
+	}
+
+
+
+	// Scoreboard
+	// This menu is now global
+	menuDef
+	{
+		name			"ingame_scoreboard_sd"
+		rect			220 84 400 400
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 
-		#include "ui_mp/scriptmenus/ingame_playersettings.menu"
+		itemDef
+    {
+    	style			WINDOW_STYLE_FILLED
+    	rect			0 0 400 330 0 0
+    	backcolor		.0 .0 .0 .5
+    	visible			1
+    	decoration
+    }
+
+		// WINDOW LINES 400x430
+		itemDef // TOP
+		{
+			visible			1
+			rect			3 3 394 2
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef // RIGHT
+		{
+			visible			1
+			rect			395 5 2 320
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef // BOTTOM
+		{
+			visible			1
+			rect			3 325 394 2
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef // LEFT
+		{
+			visible			1
+			rect			3 5 2 320
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+
+		#include "ui_mp/scriptmenus/submenus/scoreboard_lines_sd.menu"
 	}
 
 	menuDef
@@ -128,17 +248,17 @@
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 
-		#include "ui_mp/scriptmenus/ingame_rcon_map.menu"
+		#include "ui_mp/scriptmenus/submenus/ingame_rcon_map.menu"
 	}
 
 	menuDef
 	{
 		name			"rcon_kick"
-		rect			240 84 430 350
+		rect			260 84 430 350
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 
-		#include "ui_mp/scriptmenus/ingame_rcon_kick.menu"
+		#include "ui_mp/scriptmenus/submenus/ingame_rcon_kick.menu"
 	}
 
 	menuDef
@@ -148,7 +268,7 @@
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 
-		#include "ui_mp/scriptmenus/ingame_aboutpam.menu"
+		#include "ui_mp/scriptmenus/submenus/ingame_aboutpam.menu"
 	}
 
 

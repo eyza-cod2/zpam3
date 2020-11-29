@@ -5,13 +5,6 @@
 
 init()
 {
-	game["menu_quickcommands"] = "quickcommands";
-	game["menu_quickstatements"] = "quickstatements";
-	game["menu_quickresponses"] = "quickresponses";
-
-	precacheMenu(game["menu_quickcommands"]);
-	precacheMenu(game["menu_quickstatements"]);
-	precacheMenu(game["menu_quickresponses"]);
 	precacheHeadIcon("talkingicon");
 }
 

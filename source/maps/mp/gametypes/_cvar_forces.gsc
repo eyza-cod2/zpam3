@@ -3,7 +3,6 @@
 init()
 {
     addEventListener("onConnected",         ::onConnected);
-	addEventListener("onSpawnedPlayer",     ::onSpawnedPlayer);
 
     setCvar("rate", "25000");
     setCvar("sv_maxRate", "25000");
@@ -19,37 +18,16 @@ onConnected()
     if (!self.pers["pbForcedCvarsLoaded"])
         self thread setForcedCvarsByPB();
 
-    // Set some cheat-cvars to value that increase details, realistic and better quality
-    self thread betterGraphics();
-
-    self thread Force();
+    // Set some cvars to value that increase competitive quality
+    self thread competitiveQuality();
 }
 
-betterGraphics()
+
+competitiveQuality()
 {
     self endon("disconnect");
 
-    // Wait untill sv_cheats is properly set (if this is called right after map is changed via devmap, sv_cheats is set after 0.05)
-    wait level.fps_multiplier * 0.1;
-
-	/*
-	!!!!!!!!!!!!!!!!!!!!!!!
-	This below was canceled because of significant FPS drops in some areas of map
-	!!!!!!!!!!!!!!!!!!!!!!!
-	*/
-
-	// More details for far distance
-	// Set it only if we are not in devmap!
-	// (there is a bug when r_forceLod is changed in devmap and map is restarted.. - all xmodels are not visible.. why??)
-    if (getCvarInt("sv_cheats") == 1 || level.gametype == "strat") {
-		// Low detail
-		//self setClientCvar("r_lodBias", "0"); //  cvar is cheat protected, so it has to be handled in pb ranges
-	    //self setClientCvar("r_forceLod", "none");
-	} else {
-		// High detail
-	    //self setClientCvar("r_lodBias", "-500"); //  cvar is cheat protected, so it has to be handled in pb ranges
-	    //self setClientCvar("r_forceLod", "high");
-	}
+    wait level.fps_multiplier * (randomIntRange(10, 30) / 10); // wait 1-3 sec (to avoid sendind commands to all players at once)
 
     // More realistic bullet-trace light
     self setClientCvar("cg_tracerChance", "1");
@@ -57,76 +35,22 @@ betterGraphics()
     self setClientCvar("cg_tracerLength", "1000");
     self setClientCvar("cg_tracerSpeed", "20000");
 
+    wait level.fps_multiplier * 0.1;
+
     // Show icons in scipe while zoomed
     self setClientCvar("cg_hudDamageIconInScope", "1");
     self setClientCvar("cg_hudGrenadeIconInScope", "1");
+
+    // disable sun
+    self setClientCvar("r_drawSun", 0);
 }
 
-onSpawnedPlayer()
-{
-    self notify("stop_enforcement"); // stop thread before running next one
-	self thread Start_Enforcer();
-}
-
-
-Start_Enforcer()
-{
-	self endon("disconnect");
-	self endon("killed_player");
-    self endon("joined_spectators");
-	self endon("stop_enforcement");
-
-	//wait level.fps_multiplier * 3; // Wait a while after they spawned to help minimize the number of commands being flooded into the client
-
-	while (1)
-	{
-		wait level.fps_multiplier * 3;
-		self thread Force();
-	}
-}
-
-Force()
-{
-    self endon("disconnect");
-
-    //self iprintln("^5ENFORCE");
-
-    if (level.scr_force_client_best_connection)
-    {
-        self setClientCvar("rate", 25000);
-		wait level.fps_multiplier * 0.1;
-
-        self setClientCvar("cl_maxpackets", 100);
-        wait level.fps_multiplier * 0.1;
-
-		self setClientCvar("cl_packetdup", 3);	// this will increase length of packets
-		wait level.fps_multiplier * 0.1;
-
-        self setClientCvar("snaps", 30);	// this may corespond to sv_fps
-        wait level.fps_multiplier * 0.1;
-    }
-
-	if (level.scr_force_client_exploits)
-	{
-        self setClientCvar("sc_enable", 0); // disable shadows in dx9
-		wait level.fps_multiplier * 0.1;
-
-		self setClientCvar("r_drawSun", 0); // disable sun
-		wait level.fps_multiplier * 0.1;
-
-        self setClientCvar("fx_sort", 1); // for better smoke rendering
-        wait level.fps_multiplier * 0.1;
-
-        self setClientCvar("mss_Q3fs", 1); // 0 will disable background music - ???
-        wait level.fps_multiplier * 0.1;
-	}
-}
 
 setForcedCvarsByPB()
 {
     self endon("disconnect");
 
-    wait level.fps_multiplier * 3;
+    wait level.fps_multiplier * (randomIntRange(10, 30) / 10); // wait 1-3 sec (to avoid sendind commands to all players at once)
 
     self setClientCvar("cg_errordecay", "100");
     self setClientCvar("cg_hintFadeTime", "100");
@@ -135,6 +59,8 @@ setForcedCvarsByPB()
     self setClientCvar("cg_hudCompassMinRadius", "0");
     self setClientCvar("cg_hudCompassMinRange", "0");
     self setClientCvar("cg_hudCompassSpringyPointers", "0");
+    self setClientCvar("cg_hudCompassSoundPingFadeTime", "2");
+
 
 	wait level.frame;
 
@@ -165,7 +91,7 @@ setForcedCvarsByPB()
     self setClientCvar("cl_freelook", "1");
 	wait level.frame;
     self setClientCvar("cl_maxpackets", "100");
-    self setClientCvar("cl_packetdup", "3");
+    //self setClientCvar("cl_packetdup", "3");
     self setClientCvar("cl_pitchspeed", "140");
     self setClientCvar("cl_yawspeed", "140");
 
@@ -182,8 +108,7 @@ setForcedCvarsByPB()
 
     self setClientCvar("rate", "25000");
     self setClientCvar("sc_enable", "0");
-
-    self setClientCvar("snaps", "30");
+    self setClientCvar("snaps", 30);
 
 
     self.pers["pbForcedCvarsLoaded"] = true;

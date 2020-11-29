@@ -24,68 +24,8 @@
 	  	visible MENU_TRUE
 	    rect 0 0 200 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
 
-
-		itemDef
-		{
-			style			WINDOW_STYLE_FILLED
-			rect			-152 1 120 14 0 0
-			backcolor		.1 .1 .1 .5
-			visible			1
-			dvartest		"ui_match_ingame_show"
-			showDvar		{ "1" }
-			decoration
-		}
-		itemDef
-		{
-			style			WINDOW_STYLE_FILLED
-			rect			33 1 120 14 0 0
-			backcolor		.1 .1 .1 .5
-			visible			1
-			dvartest		"ui_match_ingame_show"
-			showDvar		{ "1" }
-			decoration
-		}
-		itemDef
-		{
-			style			WINDOW_STYLE_FILLED
-			rect			-30 1 25 14 0 0
-			backcolor		.1 .1 .1 .5
-			visible			1
-			dvartest		"ui_match_ingame_show"
-			showDvar		{ "1" }
-			decoration
-		}
-		itemDef
-		{
-			style			WINDOW_STYLE_FILLED
-			rect			5 1 25 14 0 0
-			backcolor		.1 .1 .1 .5
-			visible			1
-			dvartest		"ui_match_ingame_show"
-			showDvar		{ "1" }
-			decoration
-		}
-
-		// Team names text
-		ITEM_TEXT_DVAR_DVAR("ui_match_ingame_team1_name", -95, 14, .28, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_match_ingame_show", showDvar { "1" })
-		ITEM_TEXT_DVAR_DVAR("ui_match_ingame_team2_name", 95, 14, .28, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_match_ingame_show", showDvar { "1" })
-		// Team scores text
-		ITEM_TEXT_DVAR_DVAR("ui_match_ingame_team1_score", -18, 14, .3, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_match_ingame_show", showDvar { "1" })
-		ITEM_TEXT_DVAR_DVAR("ui_match_ingame_team2_score", 17, 14, .3, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_match_ingame_show", showDvar { "1" })
-		// :
-		ITEM_TEXT_DVAR_DVAR("ui_match_ingame_semicolon", -1, 13, .25, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_match_ingame_show", showDvar { "1" })
-		// Round
-		ITEM_TEXT_DVAR_DVAR("ui_match_ingame_round", 0, 25, .21, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_match_ingame_show", showDvar { "1" })
-		// Map history 1
-		ITEM_TEXT_DVAR_DVAR("ui_match_ingame_map1_score", -180, 13, .23, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_match_ingame_show", showDvar { "1" })
-		ITEM_TEXT_DVAR_DVAR("ui_match_ingame_map1_name", -180, 25, .23, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_match_ingame_show", showDvar { "1" })
-		// Map history 2
-		ITEM_TEXT_DVAR_DVAR("ui_match_ingame_map2_score", 180, 13, .23, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_match_ingame_show", showDvar { "1" })
-		ITEM_TEXT_DVAR_DVAR("ui_match_ingame_map2_name", 180, 25, .23, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_match_ingame_show", showDvar { "1" })
+			#include "ui_mp/scriptmenus/submenus/matchinfo_hud.menu"
 	}
-
-
-
 
 
 
