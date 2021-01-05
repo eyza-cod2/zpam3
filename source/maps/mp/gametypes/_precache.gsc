@@ -37,7 +37,7 @@ Precache()
 
 
 	// HUD: PAM header
-	addString("STRING_VERSION_INFO", &"zPAM 3.1 ^1BETA 5");
+	addString("STRING_VERSION_INFO", &"zPAM 3.1 ^1BETA 6");
 	//addString("STRING_RELEASED_INFO", &"Released 2020/08/xx");
 
 
@@ -105,7 +105,7 @@ Precache()
 
 	// PAM installed wrong
 	addString("STRING_NOT_INSTALLED_CORRECTLY_1", &"Error: zPAM is not installed correctly.");
-	addString("STRING_NOT_INSTALLED_CORRECTLY_2", &"Folder with mod must exists under mods/zpam310_beta5/zpam310_beta5.iwd"); // TODO: rename to actual version
+	addString("STRING_NOT_INSTALLED_CORRECTLY_2", &"Folder with mod must exists under mods/zpam310_beta6/zpam310_beta6.iwd"); // TODO: rename to actual version
 
 	// PBSVUSER.cfg load error
 	addString("STRING_PBSV_NOT_LOADED_ERROR_1", &"Punkbuster file pbsvuser.cfg was not loaded.");

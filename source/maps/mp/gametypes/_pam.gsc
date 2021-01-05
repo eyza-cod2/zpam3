@@ -1,6 +1,6 @@
 init()
 {
-	level.pam_folder = "mods/zpam310_beta5";
+	level.pam_folder = "mods/zpam310_beta6";
 
 	level.pam_mode_change = false;
 
@@ -24,10 +24,9 @@ isInstalledCorrectly()
 	if (getCvar("dedicated") == "0")
 		return true;
 
-	// TODO
-	/*
-	if (getCvar("eyza") != "1337")
-		return false;*/
+	// TODO - eyza 1337 safe
+	//if (getCvar("eyza") != "1337")
+	//	return false;
 
 	return tolower(level.fs_game) == tolower(level.pam_folder);
 }

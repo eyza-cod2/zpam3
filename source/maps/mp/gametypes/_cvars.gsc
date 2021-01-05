@@ -21,6 +21,7 @@ Init()
 // This is called only once map/gametype starts ()
 registerCvars()
 {
+
 	// Load important cvars that needs to be loaded first
 	Important_Cvars();
 
@@ -68,8 +69,8 @@ Important_Cvars()
 	// To define level.fps_multiplier and level.frame vars
 	[[iVar]]("S", "sv_fps", "INT", 20, 20, 30);
 
-	// Register pam_mode cvar ("I" means that this cvar will be not restarted when resetScriptCvars is callled)
-	[[iVar]]("I", "pam_mode", "STRING", "pub", maps\pam\rules\rules::getListOfRuleSets(level.gametype));
+	// Register pam_mode cvar ("I" means that this cvar will be monitored, but not restarted when resetScriptCvars is callled)
+	[[iVar]]("I", "pam_mode", "STRING", "pcw", maps\pam\rules\rules::getListOfRuleSets(level.gametype));
 
     // Important variables
     game["is_public_mode"] = level.pam_mode == "pub";
@@ -353,8 +354,10 @@ DM_Variables()
 {
 	var = maps\mp\gametypes\_cvar_system::addScriptCvar;
 
-	[[var]]("scr_dm_timelimit", "INT", 0, 0, 99999); //level.halfscore
-	[[var]]("scr_dm_scorelimit", "INT", 0, 0, 99999); //level.scorelimit
+	[[var]]("scr_dm_timelimit", "INT", 0, 0, 99999); //level.timelimit
+	[[var]]("scr_dm_half_score", "INT", 0, 0, 99999); //level.halfscorelimit
+	[[var]]("scr_dm_end_score", "INT", 0, 0, 99999); //level.scorelimit
+	[[var]]("scr_dm_halftime", "BOOL", 1); //level.halftime_enabled
 }
 
 HQ_Variables()
@@ -409,15 +412,13 @@ CTF_Variables()
 }
 
 TDM_Variables()
-{/*
-	level.tdm_tk_scoring = [[//level.setdvar]]("scr_tdm_tk_penalty", 0, 0, 1);
+{
+	var = maps\mp\gametypes\_cvar_system::addScriptCvar;
 
-	level.halfscore = getcvarint("scr_tdm_half_score");
-	level.scorelimit = getcvarint("scr_tdm_end_score");
-	level.matchscore2 = getcvarint("scr_tdm_end_half2score");
-
-	level.do_halftime = [[//level.setdvar]]("scr_tdm_timelimit_halftime", 0, 0, 1);
-    */
+	[[var]]("scr_tdm_timelimit", "INT", 0, 0, 99999); //level.timelimit
+	[[var]]("scr_tdm_half_score", "INT", 0, 0, 99999); //level.halfscorelimit
+	[[var]]("scr_tdm_end_score", "INT", 0, 0, 99999); //level.scorelimit
+	[[var]]("scr_tdm_halftime", "BOOL", 1); //level.halftime_enabled
 }
 
 
@@ -456,9 +457,18 @@ onCvarChange(cvar, value, isRegisterTime)
 
 		// DM Cvars
 		case "scr_dm_timelimit": level.timelimit = value; break;
-		case "scr_dm_scorelimit": level.scorelimit = value; break;
+		case "scr_dm_half_score": level.halfscorelimit = value; break;
+		case "scr_dm_end_score": level.scorelimit = value; break;
+		case "scr_dm_halftime": level.halftime_enabled = value; break;
 
 
+
+
+		// TDM Cvars
+		case "scr_tdm_timelimit": level.timelimit = value; break;
+		case "scr_tdm_half_score": level.halfscorelimit = value; break;
+		case "scr_tdm_end_score": level.scorelimit = value; break;
+		case "scr_tdm_halftime": level.halftime_enabled = value; break;
 
 
 

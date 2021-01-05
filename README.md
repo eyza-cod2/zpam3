@@ -28,8 +28,19 @@ You can currently download and test beta version - but be careful, there can be 
 *And much more - see full list down below*
 
 ### PAM modes
+##### Search and Destroy
 | pcw | cg | cg_mr12 | cg_2v2 | mr3 | mr10 | mr12 | mr15 | fun | pub |
 |-----|----|---------|--------|-----|------|------|------|-----|-----|
+
+##### Deathmatch
+| pcw | pub | warmup |
+|-----|-----|--------|
+
+##### Team Deathmatch
+| pcw | pub |
+|-----|-----|
+
+<br>
 
 #### Formats
 | First to 21                         | Max round 3 (MR3)                                       | Max round 10 (MR10)                                        | Max round 12 (MR12)                                        | Max round 15 (MR15)                                        |
@@ -38,12 +49,17 @@ You can currently download and test beta version - but be careful, there can be 
 | 10 rounds per half<br>20 rounds max | 3 rounds per half<br>6 rounds max<br>4 is winning score | 10 rounds per half<br>20 rounds max<br>11 is winning score | 12 rounds per half<br>24 rounds max<br>13 is winning score | 15 rounds per half<br>30 rounds max<br>16 is winning score |
 
 #### Settings
-| pcw                                                                                                                                    | cg modes, mr modes                                                                                                                    | fun                                                    | pub           |
-|----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|---------------|
-| - for classic match<br>- deadchat is enabled<br>- no count-down timer in half<br>- russian side turned on<br>- auto recording disabled | - for CyberGamer match<br>- deadchat is disabled<br>- 5min timer in half<br>- british replace russians<br>- auto recording is enabled | - just fun mode with<br>higher speed and lower gravity | - public mode<br>- own settings |
+| pcw                                                                                                                                    | cg modes, mr modes                                                                                                                    | pub           |
+|----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| - for classic match<br>- deadchat is enabled<br>- no count-down timer in half<br>- russian side turned on<br>- auto recording disabled | - for CyberGamer match<br>- deadchat is disabled<br>- 5min timer in half<br>- british replace russians<br>- auto recording is enabled | - public mode<br>- own settings |
 
 
-**Only SD, DM and STRAT game modes are currently supported*
+
+| fun                                                    | warmup |
+|--------------------------------------------------------|--------|
+| - just fun mode with<br>higher speed and lower gravity | - mode for DM gametype<br>- no readyup, killcam enabled |
+
+**Only SD, DM, TDM and STRAT game modes are currently supported*
 <br><br><br>
 
 
@@ -58,13 +74,23 @@ You can support me via Paypal -> https://paypal.me/kratasy
 <br>
 
 
+## Versions
+Previous versions of zPAM:
+- 2021/01/05 - <b>zPAM 3.1 BETA 6 - actual</b>
+- 2020/11/29 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/b3e8711b13b493134ec1c762aeba17399eefb95d">zPAM 3.1 BETA 5</a></b></b>
+- 2020/09/24 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/2d3e3589dced881409bd42d2c5c500cc6ed3e0a1">zPAM 3.1 BETA 4</a></b></b>
+- 2020/05/13 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c327385fd7cc7fbcb1d3d04a443abf16ee93ad6b">zPAM 3.1 BETA 3</a></b></b>
+- 2020/04/28 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/8c9e528ad09be3ce626bcd36463c3cdf180295ae">zPAM 3.1 BETA 2</a></b></b>
+- 2020/04/23 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f58fdedbf23f31c62e29ffd25379d6a1d7993e49">zPAM 3.1 BETA</a></b></b>
+
+
 ## Installation
-In order to sucessfully install pam on your server, follow this steps:
-- Download file <b><a href="/zpam310_beta5.zip">zpam310_beta5.zip</a></b> and extract folders with files into following locations:</b>
+In order to sucessfully install pam on your server, follow these steps:
+- Download file <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam310_beta6.zip">zpam310_beta6.zip</a></b> and extract folders with files into following locations:</b>
     - pb/pbsvuser.cfg
-    - mods/zpam310_beta5/zpam310_beta5.iwd
-    - mods/zpam310_beta5/pam_pub.cfg  <i>* optional - this file is used only when you are runnig public server</i>
-- Add <b>+set fs_game "mods/zpam310_beta5"</b> into command line
+    - mods/zpam310_beta6/zpam310_beta6.iwd
+    - mods/zpam310_beta6/pam_pub.cfg  <i>* optional - this file is used only when you are running public server</i>
+- Add <b>+set fs_game "mods/zpam310_beta6"</b> into command line
 
 
 <br>
@@ -187,7 +213,7 @@ How it should looks like:<br>
     <a href="/images/strat_bot_recording.jpg"> <img src="/images/strat_bot_recording.jpg" alt="" height="450" /> </a><br>
 [3.3.15] <del>Match info ingame for ingames</del> <strong>(merged into 3.3.10)</strong><br>
 [3.3.16] Shotgun rebalance 2 (new conditions to avoid long shots and close range hits - in testing)<br>
-    <a href="/images/shotgun.png"> <img src="/images/shotgun.png" alt="" /> </a><br><br>
+    <a href="/images/shotgun.png"> <img src="/images/shotgun.png" alt="" /> </a><br>(when rebalanced shotgun is enabled, you can print info about shots via cmd <b>/rcon set sg_debug 1</b>)<br><br>
 [3.3.17] Scoreboard menu, player's stats. Visible in menu and at the end of the map.<br>
     <a href="/images/scoreboard_ingame.jpg"> <img src="/images/scoreboard_ingame.jpg" alt="" height="600" /> </a><br><br>
     <a href="/images/scoreboard.jpg"> <img src="/images/scoreboard.jpg" alt="" height="450" /> </a><br>
@@ -202,7 +228,12 @@ Added posibilito to call bash mode from menu.<br>
 [3.3.20] Player's score is restored when he reconnect in middle of game. To purposely reset score, name must be changed.<br>
 [3.3.21] Secondary weapon replacement to pistol - if you click the same weapon in the menu you already have selected, your secondary weapon will be replaced by pistol (in start time). This could be useful for example if you have good spawn to rush, but you have two heavy weapons.<br>
 [3.3.22] Message "Server lag detected" will be printed to all players if server have performence lags. (it will not detect network lags, just performence lags)<br>
-[3.3.23] Auto-spectating mode - if you are in spectator team, you can toggle auto mode. It will automatically switch spectated player according to action in game. For example, if some player start shooting, it will be automaticlly switched to this player.
+[3.3.23] Auto-spectating mode - if you are in spectator team, you can toggle auto mode. It will automatically switch spectated player according to action in game. For example, if some player start shooting, it will be automaticlly switched to this player.<br>
+[3.3.24] Fullscreen image of map with warning is showed when important cvars (like com_maxfps) are not in allowed range. (this is kind of replace of cvar checks when punkbuster is off)<br>
+<a href="/images/cvar_check.jpg"><img src="/images/cvar_check.jpg" height="100" /></a><br>
+[3.3.25] In readyup, sound "Time to go get movin" is played to last not-ready player (only if it is 3v3 or more).<br>
+[3.3.26] Prone peak fix (off by default) - when you go from prone to crouch position, you are allowed to prone again after a small delay. This should avoid these situations: you are proned, leaned left/right and you peak behind the wall by going to crouch and back to prone as fast as possible. For enemy its difficult to shoot, because character animation is bugged and moving too fast.
+
 </sub>
 
 #### 3.4 Other

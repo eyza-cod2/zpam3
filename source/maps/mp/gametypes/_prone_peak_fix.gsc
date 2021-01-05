@@ -1,12 +1,9 @@
 #include maps\mp\gametypes\_callbacksetup;
 
-Init() // TODO delete
+Init()
 {
-	return;
-
 	addEventListener("onConnected",     ::onConnected);
 	addEventListener("onDisconnect",     ::onDisconnect);
-
 }
 
 onConnected()
@@ -41,6 +38,8 @@ cvarChanged()
 pronePeakFix()
 {
 	self endon("disconnect");
+
+	wait level.frame;
 
 	// Spawn collision cylinder, that will block player from proning
 	self.pronePeakTag = spawn("script_model", (999999, 999999, 999999));
@@ -133,7 +132,7 @@ pronePeakFix()
 						linked = true;
 						self linkto(self.pronePeakTag);
 
-						if (issubstr(self.name, "eyza"))
+						//if (issubstr(self.name, "eyza"))
 							self iprintln("^1Preventing prone peak");
 
 						// Reset timer
@@ -141,7 +140,7 @@ pronePeakFix()
 					}
 					else
 					{
-						if (issubstr(self.name, "eyza"))
+						//if (issubstr(self.name, "eyza"))
 							self iprintln("^3Next prone peak will be prevented!");
 					}
 				}
@@ -150,7 +149,7 @@ pronePeakFix()
 		if (linked)
 		{
 			// Unlink if time expired, player is standing or player is proning again or is not zoomed
-			if (time_in_crouch > 0.6 || stanceHeight >= 45 || stanceHeight < 20 || (zoom < 0.4 && zoomDirection < 0))
+			if (time_in_crouch > 0.4 || stanceHeight >= 45 || stanceHeight < 20 || (zoom < 0.4 && zoomDirection < 0))
 			{
 				// Unlink
 				linked = false;

@@ -28,8 +28,7 @@ lagThread()
       for(i = 0; i < players.size; i++)
     	{
     		player = players[i];
-        //if (issubstr(player.name, "eyza") || getcvar("debug") != "") // TODO
-          player iprintln("Server lag detected! ("+int(count)+" frames)");
+          	player iprintln("Server lag detected! ("+int(count)+" frames)");
     	}
     }
 

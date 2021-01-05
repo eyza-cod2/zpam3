@@ -48,6 +48,16 @@ onStartGameType()
 		maps\mp\gametypes\_precache::Precache();
 	}
 
+	// Main scores (not needed in DM, but needed for other scripts)
+	game["allies_score"] = 0;
+	game["axis_score"] = 0;
+	game["half_1_allies_score"] = 0;
+	game["half_1_axis_score"] = 0;
+	game["half_2_allies_score"] = 0;
+	game["half_2_axis_score"] = 0;
+	game["Team_1_Score"] = 0;
+	game["Team_2_Score"] = 0;
+
 
 	// Other variables
 	if(!isdefined(game["state"]))
@@ -57,7 +67,8 @@ onStartGameType()
 	// Inicialize all of the script files functions
 	maps\mp\gametypes\_init::initAllFunctions();
 
-
+	// Gametype specific variables
+	level.mapended = false;
 
 	game["gametypeStarted"] = true;
 
@@ -80,15 +91,28 @@ onStartGameType()
 		spawnpoints[i] PlaceSpawnpoint();
 
 
-	allowed[0] = "sd";
-	allowed[1] = "bombzone";
-	maps\mp\gametypes\_gameobjects::main(allowed);
+
+	// If map supports SD, show SD objects instead
+	spawnpointname = "mp_sd_spawn_attacker";
+	spawnpoints = getentarray(spawnpointname, "classname");
+	if(spawnpoints.size)
+	{
+		allowed[0] = "sd";
+		allowed[1] = "bombzone";
+		maps\mp\gametypes\_gameobjects::main(allowed);
+		thread bombzones();
+	}
+
 
 	setClientNameMode("auto_change");
 
-	thread bombzones();
-
 	serverInfo();
+
+
+	if (!level.in_readyup)
+	{
+		thread startGame();
+	}
 }
 
 
@@ -139,6 +163,17 @@ onConnected()
 		// Print "<NAME> Connected" to all
 		iprintln(&"MP_CONNECTED", self.name);
 	}
+
+	// Define default variables specific for this gametype
+
+	// Set score and deaths
+	if(!isdefined(self.pers["score"]))
+		self.pers["score"] = 0;
+	self.score = self.pers["score"];
+
+	if(!isdefined(self.pers["deaths"]))
+		self.pers["deaths"] = 0;
+	self.deaths = self.pers["deaths"];
 }
 
 /*================
@@ -154,7 +189,8 @@ onDisconnect()
 
 onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
 {
-
+	if (level.mapended)
+		return true;
 }
 
 /*
@@ -190,6 +226,8 @@ Return true to prevent the kill.
 */
 onPlayerKilling(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
 {
+	if (level.mapended)
+		return true;
 }
 
 
@@ -215,7 +253,10 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 	self.statusicon = "hud_status_dead";
 
 	if(!isdefined(self.switching_teams))
-		self.deaths++;
+	{
+		self.pers["deaths"]++;
+		self.deaths = self.pers["deaths"];
+	}
 
 	doKillcam = false;
 	attackerNum = -1;
@@ -226,25 +267,28 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 			doKillcam = false;
 
 			if(!isdefined(self.switching_teams))
-				attacker.score--;
+			{
+				attacker.pers["score"]--;
+				attacker.score = attacker.pers["score"];
+			}
 		}
 		else
 		{
 			doKillcam = true;
 			attackerNum = attacker getEntityNumber();
 
-			attacker.score++;
-		}
+			attacker.pers["score"]++;
+			attacker.score = attacker.pers["score"];
 
-		attacker notify("update_playerhud_score");
+			attacker checkScoreLimit();
+		}
 	}
 	else // If you weren't killed by a player, you were in the wrong place at the wrong time
 	{
 		doKillcam = false;
 
-		self.score--;
-
-		attacker notify("update_playerhud_score");
+		self.pers["score"]--;
+		self.score = self.pers["score"];
 	}
 
 
@@ -368,7 +412,10 @@ spawnSpectator(origin, angles)
 		if(isdefined(spawnpoint))
 			self spawn(spawnpoint.origin, spawnpoint.angles);
 		else
+		{
+			self spawn((0,0,0), (0,0,0));
 			maps\mp\_utility::error("NO " + spawnpointname + " SPAWNPOINTS IN MAP");
+		}
 	}
 
 	// Notify "spawned" notifications
@@ -377,8 +424,136 @@ spawnSpectator(origin, angles)
 
 spawnIntermission()
 {
-	assertMsg("Not needed");
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
+
+	// Stop shellshock and rumble
+	self stopShellshock();
+	self stoprumble("damage_heavy");
+
+	self.sessionstate = "intermission";
+	self.spectatorclient = -1;
+	self.archivetime = 0;
+	self.psoffsettime = 0;
+	self.friendlydamage = undefined;
+
+	spawnpointname = "mp_global_intermission";
+	spawnpoints = getentarray(spawnpointname, "classname");
+	spawnpoint = maps\mp\gametypes\_spawnlogic::getSpawnpoint_Random(spawnpoints);
+
+	if(isDefined(spawnpoint))
+		self spawn(spawnpoint.origin, spawnpoint.angles);
+	else
+	{
+		self spawn((0,0,0), (0,0,0));
+		maps\mp\_utility::error("NO " + spawnpointname + " SPAWNPOINTS IN MAP");
+	}
+
+	// Notify "spawned" notifications
+	self notify("spawned");
+	self notify("spawned_intermission");
 }
+
+
+
+startGame()
+{
+	level.starttime = getTime();
+
+	// Used in scoreboard info at the end of the round
+	if (!isDefined(game["matchStartTime"]))
+		game["matchStartTime"] = getTime();
+
+	if(level.timelimit > 0)
+	{
+		level.clock = newHudElem();
+		level.clock.horzAlign = "center_safearea";
+		level.clock.vertAlign = "top";
+		level.clock.x = -25;
+		level.clock.y = 450;
+		level.clock.font = "default";
+		level.clock.fontscale = 2;
+		level.clock setTimer(level.timelimit * 60);
+
+		for(;;)
+		{
+			checkTimeLimit();
+			wait level.fps_multiplier * 1;
+		}
+	}
+}
+
+
+checkTimeLimit()
+{
+	if(level.timelimit <= 0)
+		return;
+
+	timepassed = (getTime() - level.starttime) / 1000;
+	timepassed = timepassed / 60.0;
+
+	if(timepassed < level.timelimit)
+		return;
+
+	if(level.mapended) return;
+	level.mapended = true;
+
+	iprintln(&"MP_TIME_LIMIT_REACHED");
+
+	if (level.halftime_enabled && !game["is_halftime"])
+	{
+		thread maps\mp\gametypes\_halftime::Do_Half_Time();
+		level.mapended = true;
+	}
+	else
+	{
+		level thread endMap();
+		level.mapended = true;
+	}
+}
+
+
+checkScoreLimit()
+{
+	waittillframeend;
+
+	if(level.mapended) return;
+
+
+	/* Is it a score-based Halftime? */
+	if(level.halftime_enabled && !game["is_halftime"] && level.halfscorelimit > 0)
+	{
+		if(self.score >= level.halfscorelimit || self.score >= level.halfscorelimit)
+		{
+			thread maps\mp\gametypes\_halftime::Do_Half_Time();
+			level.mapended = true;
+			return;
+		}
+	}
+
+
+	/* Match Score Check */
+	if (level.scorelimit > 0)
+	{
+		if(self.score < level.scorelimit && self.score < level.scorelimit)
+			return;
+
+		iprintln(&"MP_SCORE_LIMIT_REACHED");
+
+		thread endMap();
+		level.mapended = true;
+	}
+}
+
+
+
+endMap()
+{
+	level thread maps\mp\gametypes\_end_of_map::Do_Map_End();
+}
+
+
+
 
 
 menuAutoAssign()
@@ -425,7 +600,6 @@ menuAutoAssign()
 		self suicide();
 	}
 
-	self.sessionteam = assignment;
 	self.pers["team"] = assignment;
 	self.pers["weapon"] = undefined;
 	self.pers["savedmodel"] = undefined;
@@ -454,7 +628,6 @@ menuAllies()
 		self suicide();
 	}
 
-	self.sessionteam = "allies";
 	self.pers["team"] = "allies";
 	self.pers["weapon"] = undefined;
 	self.pers["savedmodel"] = undefined;

@@ -399,7 +399,10 @@ spawnSpectator(origin, angles)
 		if(isdefined(spawnpoint))
 			self spawn(spawnpoint.origin, spawnpoint.angles);
 		else
+		{
+			self spawn((0,0,0), (0,0,0));
 			maps\mp\_utility::error("NO " + spawnpointname + " SPAWNPOINTS IN MAP");
+		}
 	}
 
 	// Notify "spawned" notifications

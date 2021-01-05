@@ -65,7 +65,7 @@ Rules()
 	setcvar("scr_recording", 0); 						// Starts automatically recording when match starts
 	setcvar("scr_diagonal_fix", 0); 					// Enable diagonal bug fix (disables leaning for players when strafing)
 	setcvar("scr_fast_reload_fix", 1);				// Prevent players from shoting faster via double-scroll bug
-	setcvar("scr_prone_peak_fix", 1);					// Prevent players from doing fast peaks from prone (time, after player can prone again will be increased)
+	setcvar("scr_prone_peak_fix", 0);					// Prevent players from doing fast peaks from prone (time, after player can prone again will be increased)
 	setcvar("scr_matchinfo", 1); 						// Show match info in menu (1 = without team names, 2 = with team names)
 	setcvar("scr_map_vote", 0);							// Open voting system so players can vote about next map
 	setcvar("scr_map_vote_replay", 0);					// Show option to replay this map in voting system

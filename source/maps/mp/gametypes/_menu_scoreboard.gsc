@@ -367,7 +367,6 @@ generatePlayerList()
 				else
 					wait level.fps_multiplier * 1;
 
-				// TODO
 				//self iprintln("updating scoreboard...");
 		}
 }

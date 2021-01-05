@@ -179,6 +179,25 @@ itemDef \
 	decoration \
 }
 
+#define	DRAW_GRADIENT_FOR_SUBMENU(x, y, w, h, alpha) \
+itemDef \
+{ \
+	style			WINDOW_STYLE_SHADER \
+	rect			x y w h 0 0 \
+	background		"gradient" \
+	forecolor		1 1 1 alpha \
+	visible			1 \
+	decoration \
+} \
+itemDef  \
+{ \
+	style			WINDOW_STYLE_FILLED \
+	rect			x y 1 h 0 0 \
+	backcolor		.631 .666 .698 .2 \
+	visible			1 \
+	decoration \
+} \
+
 #define DRAW_BARS \
 itemDef  \
 { \
@@ -670,5 +689,35 @@ itemDef \
 	text			textstring \
 	dvartest		dvarstring \
 	dvarvisible \
+	decoration \
+}
+
+
+#define DVAR_CHECK(textstring, dvartotest, dvarshowhide) \
+itemDef \
+{ \
+	rect 			-128 0 896 480 0 0 \
+	visible 		1 \
+	backcolor 		1 1 1 1 \
+	style 			WINDOW_STYLE_FILLED \
+	background 		"$levelBriefing" \
+	dvartest		dvartotest \
+	dvarshowhide \
+	decoration \
+} \
+itemDef \
+{ \
+	rect			0 0 200 50 0 0 \
+	origin			320 100 \
+	type			ITEM_TYPE_TEXT \
+	text			textstring \
+	visible			1 \
+	forecolor		1 0 0 1 \
+	textfont		UI_FONT_NORMAL \
+	textscale		0.6 \
+	textalign		ITEM_ALIGN_CENTER \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvartest		dvartotest \
+	dvarshowhide \
 	decoration \
 }

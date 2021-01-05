@@ -5,6 +5,7 @@ load()
 	{
 		case "sd": Get_SD_Rules(); break;
 		case "dm": Get_DM_Rules(); break;
+		case "tdm": Get_TDM_Rules(); break;
 		case "strat": Get_Strat_Rules(); break;
 	}
 
@@ -12,6 +13,7 @@ load()
     game["loaded_pam_mode"] = level.pam_mode;
 }
 
+// Called when pam_mode cvar is initialized
 getListOfRuleSets(gametype)
 {
     valid_mode = [];
@@ -25,13 +27,20 @@ getListOfRuleSets(gametype)
 		valid_mode[4] = "cg";
 		valid_mode[5] = "mr3";
 		valid_mode[6] = "mr10";
-    valid_mode[7] = "mr12";
+    	valid_mode[7] = "mr12";
 		valid_mode[8] = "mr15";
 		valid_mode[9] = "fun";
 	}
     else if (gametype == "dm")
 	{
-		// Deatmatch have all modes valid (it doesnt matter)
+		valid_mode[0] = "pub";
+		valid_mode[1] = "warmup";
+		valid_mode[2] = "pcw";
+	}
+    else if (gametype == "tdm")
+	{
+		valid_mode[0] = "pub";
+		valid_mode[1] = "pcw";
 	}
     else if (gametype == "strat")
 	{
@@ -73,14 +82,50 @@ Get_SD_Rules()
 			maps\pam\rules\sd\fun::Rules();
 			break;
 		case "pub":
-		default:
 			maps\pam\rules\sd\pub::Rules();
+			break;/*
+		default:
+			level.pam_mode = "cg";
+			setCvar("pam_mode", "cg");
+			maps\pam\rules\sd\cg::Rules();*/
 	}
 }
 
 Get_DM_Rules()
 {
-    maps\pam\rules\dm\dm::Rules();
+	switch (level.pam_mode)
+	{
+		case "pcw":
+			maps\pam\rules\dm\pcw::Rules();
+			break;
+		case "warmup":
+			maps\pam\rules\dm\warmup::Rules();
+			break;
+		case "pub":
+			maps\pam\rules\dm\pub::Rules();
+			break;/*
+		default:
+			level.pam_mode = "pcw";
+			setCvar("pam_mode", "pcw");
+			maps\pam\rules\dm\pcw::Rules();*/
+	}
+}
+
+Get_TDM_Rules()
+{
+	switch (level.pam_mode)
+	{
+		case "pcw":
+			maps\pam\rules\tdm\pcw::Rules();
+			break;
+		case "pub":
+			maps\pam\rules\tdm\pub::Rules();
+			break;/*
+		default:
+			level.pam_mode = "pcw";
+			setCvar("pam_mode", "pcw");
+			maps\pam\rules\tdm\pcw::Rules();*/
+	}
 }
 
 Get_Strat_Rules()

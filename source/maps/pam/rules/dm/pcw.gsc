@@ -1,8 +1,12 @@
 Rules()
 {
-    // Match Style
-	setcvar("scr_dm_timelimit", 0);
-	setcvar("scr_dm_scorelimit", 0);
+	// Match Style
+	setcvar("scr_dm_timelimit", 15);		// Time limit. When halftime is enabled, its time limit per half. 0=disabled (minutes)
+	setcvar("scr_dm_half_score", 0);		// Number of score when half-time starts. Has no effect when halftime is disabled.
+	setcvar("scr_dm_end_score", 0);		// Number of score when map ends. 0=ignored
+
+	// Halftime
+	setcvar("scr_dm_halftime", 0);			// Do halftime. When 1, scr_tdm_timelimit means time per half
 
 	// Are there OT Rules?
 	setcvar("scr_overtime", 0);
@@ -12,9 +16,9 @@ Rules()
 	*******************************/
 
 	// Readyup
-	setcvar("scr_readyup", 0); 				// Enable readyup [0, 1] 0 = disbled  1 = enabled
-	//setcvar("scr_readyup_autoresume", 5); 	// Minutes to auto-resume halftime [0 - 10] 0 = disabled
-	//setcvar("scr_half_start_timer", 10); 	// Count-down timer when First-half starting / Second-half starting / Timeout ending
+	setcvar("scr_readyup", 1); 				// Enable readyup [0, 1] 0 = disbled  1 = enabled
+	setcvar("scr_readyup_autoresume", 5); 	// Minutes to auto-resume halftime [0 - 10] 0 = disabled
+	setcvar("scr_half_start_timer", 10); 	// Count-down timer when First-half starting / Second-half starting / Timeout ending
 
 	// Time-out
 	setcvar("scr_timeouts", 0);						// Total timeouts for one team
@@ -43,12 +47,12 @@ Rules()
 
 	setcvar("scr_allow_shellshock", 0);					// Create shell shock effect when player is hitted
 	setcvar("scr_replace_russian", 1); 					// Replace russians with Americans / Brisith
-	setcvar("scr_shotgun_rebalance", 1);				// Enable shotgun rebalance to fix long shot kills and short range hits
+	setcvar("scr_shotgun_rebalance", 0);				// Enable shotgun rebalance to fix long shot kills and short range hits
 	setcvar("scr_blackout", 0); 						// If match is in progress, show map background all over the screen and disable sounds for connected player
 	setcvar("scr_recording", 0); 						// Starts automatically recording when match starts
 	setcvar("scr_diagonal_fix", 0); 					// Enable diagonal bug fix (disables leaning for players when strafing)
 	setcvar("scr_fast_reload_fix", 1);				// Prevent players from shoting faster via double-scroll bug
-	setcvar("scr_prone_peak_fix", 1);					// Prevent players from doing fast peaks from prone (time, after player can prone again will be increased)
+	setcvar("scr_prone_peak_fix", 0);					// Prevent players from doing fast peaks from prone (time, after player can prone again will be increased)
 	setcvar("scr_matchinfo", 0); 						// Show match info in menu (1 = without team names, 2 = with team names)
 	setcvar("scr_map_vote", 0);							// Open voting system so players can vote about next map
 	setcvar("scr_map_vote_replay", 0);					// Show option to replay this map in voting system
@@ -61,7 +65,7 @@ Rules()
 	setcvar("scr_friendlyfire", 0);
 	setcvar("scr_drawfriend", 0);
 	setcvar("scr_teambalance", 0);
-	setcvar("scr_killcam", 1);
+	setcvar("scr_killcam", 0);
 	setcvar("scr_spectatefree", 0);
 	setcvar("scr_spectateenemy", 0);
 
@@ -157,5 +161,5 @@ Rules()
 
 	// DO NOT MODIFY BELOW THIS LINE!
 	game["leagueLogo"] = "";
-	game["leagueString"] = &"SD Deathmatch";
+	game["leagueString"] = &"PCW Deathmatch";
 }

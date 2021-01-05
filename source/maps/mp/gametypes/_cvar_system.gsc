@@ -24,7 +24,7 @@ addImportantCvar(method, cvar, type, defaultValue, minValue, maxValue)
 	game["cvars"][cvar]["value"] = getValueByType(cvar, type, defaultValue);         // Get value from original function according to cvar type
 
     // Set default, min and max value and return status
-    isOutsideLimit = limitCvar(game["cvars"][cvar]);
+    isOutsideLimit = limitCvar(game["cvars"][cvar], true); // true means that this is register time
 
     // if value was outside limit, limitCvar() set limited value - so update value also in array
     if (isOutsideLimit) {
@@ -56,7 +56,7 @@ addCvar(method, cvar, type, defaultValue, minValue, maxValue)
 	cvarArray = []; // create array
 	cvarArray["name"] = cvar;
 	cvarArray["type"] = type;
-    cvarArray["method"] = method; // S, R, "" (server, read-only, default)
+    cvarArray["method"] = method; // S, R, I, "" (server, read-only, important, default)
 	cvarArray["defaultValue"] = defaultValue;
 	cvarArray["minValue"] = minValue;  // may be undefined
 	cvarArray["maxValue"] = maxValue;  // may be undefined
@@ -131,10 +131,6 @@ resetScriptCvars()
 
 		if (cvar["method"] == "") // script (default) cvar
             setCvar(cvar["name"], cvar["defaultValue"]);
-
-        // "I" means cvar is important cvar - value was already loaded
-        else if (cvar["method"] == "I")
-            game["cvars"][cvar_name]["method"] = "";
 	}
 }
 
@@ -165,7 +161,7 @@ loadCvars()
         //println("Cvar: " + cvar_name + " = " + game["cvars"][cvar_name]["value"]);
 
         // Set default, min and max value and return status
-        isOutsideLimit = limitCvar(game["cvars"][cvar_name]);
+        isOutsideLimit = limitCvar(game["cvars"][cvar_name], true);
 
         if (isOutsideLimit) { // if value was outside limit, limitCvar() set limited value - so update value also in array
             game["cvars"][cvar_name]["value"] = getValueByType(cvar["name"], cvar["type"], cvar["defaultValue"]);
@@ -228,9 +224,9 @@ setClientCvarIfChanged(cvar, value)
 
 
 //Checks if cvar is in min and max limit and return true if value is not valid
-limitCvar(cvar)
+limitCvar(cvar, registerTime)
 {
-    print = true;
+    print = !registerTime;
 
     // This guarantees that STRING type cvar is defied
     if (getCvar(cvar["name"]) == "" && cvar["type"] == "STRING")
@@ -291,6 +287,11 @@ limitCvar(cvar)
             }
     	}
 
+		// Wait a bit when pam_mode is changed (if pam_mode is changed via rcon menu, value can be invalid for actual gametype, we have to wait a bit before map is changed)
+		if (!registerTime && cvar["name"] == "pam_mode" && isValid == false)
+			wait level.fps_multiplier * 2;
+
+		// Print not valid warning
         if (!isValid && print) {
             iprintln("^3DVAR change detected: ^2" + value_now + "^3 is not a valid value for dvar ^2" + cvar["name"]);
             iprintln("^3Following values are valid:");
@@ -355,7 +356,7 @@ monitorCvarChanges()
                     cancelCvarQuiet(cvar["name"]);
 
 				// Check if new value is in cvar limit, if is outside limit - restore value before
-                isOutsideLimit = limitCvar(cvar);
+                isOutsideLimit = limitCvar(cvar, false);
 
                 // Update only if value vas changed to correct value
                 if (!isOutsideLimit)
@@ -386,7 +387,7 @@ cvarsChangedFromRulesValues()
 		if (cvar["value"] != cvar["ruleValue"] && !isDefined(cvar["inQuiet"]) && (cvar["method"] == "S" || cvar["method"] == ""))
 		{
             someCvarChanged = true;
-            break;
+			break;
         }
 	}
     return someCvarChanged;

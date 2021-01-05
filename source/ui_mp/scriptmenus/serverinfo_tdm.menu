@@ -1,0 +1,65 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+{
+	menuDef
+	{
+		name			"serverinfo_tdm"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onOpen
+		{
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			open serverinfo_tdm_keys;
+
+			exec "vstr server16;" // server16 contains string with player's settings
+		}
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+
+		// Header: Teams
+		ITEM_TEXT_HEADING("@MPUI_TEAM_DEATHMATCH")
+
+		// INSTRUCTIONS
+		SERVERINFO_DRAW_OBJECTIVE("@MP_GAIN_POINTS_BY_ELIMINATING1_NOSCORE")
+
+		// SERVER SETTINGS
+		SERVERINFO_DRAW_PARAMETERS
+
+		// MESSAGE OF THE DAY
+		SERVERINFO_DRAW_MOTD
+
+		// Clickable quit button all over the screen
+		SERVERINFO_DRAW_QUIT
+
+
+		// Close menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, scriptMenuResponse "close")
+		// Main menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu", 135, 120, close serverinfo_tdm; open main)
+
+	}
+
+
+	// Key choices has to be in different menu if we are using submenus
+	// This keys is opened as last and will be in focus - so keys from this submenu will be accepted
+	menuDef
+	{
+		name			"serverinfo_tdm_keys"
+		rect			0 0 1 1
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		onEsc
+		{
+			exec "openscriptmenu serverinfo_tdm close";
+		}
+
+		execKeyInt 32 { play "mouse_click"; close ingame; open main; } // space
+	}
+}

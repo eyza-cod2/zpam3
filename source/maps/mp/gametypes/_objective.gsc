@@ -54,14 +54,50 @@ setPlayerObjective()
 
 	if (self.sessionstate == "intermission")
 	{
-        if(game["allies_score"] == game["axis_score"])
-    		text = &"MP_THE_GAME_IS_A_TIE";
-    	else if(game["allies_score"] > game["axis_score"])
-    		text = &"MP_ALLIES_WIN";
-    	else
-    		text = &"MP_AXIS_WIN";
+		if (level.gametype != "dm")
+		{
+	        if(game["allies_score"] == game["axis_score"])
+	    		text = &"MP_THE_GAME_IS_A_TIE";
+	    	else if(game["allies_score"] > game["axis_score"])
+	    		text = &"MP_ALLIES_WIN";
+	    	else
+	    		text = &"MP_AXIS_WIN";
 
-		self setClientCvar("cg_objectiveText", text);
+			self setClientCvar("cg_objectiveText", text);
+		}
+		else
+		{
+			// In DM find player with highest score
+			players = getentarray("player", "classname");
+			winner = undefined;
+			tied = false;
+			for(i = 0; i < players.size; i++)
+			{
+				player = players[i];
+
+				if(isdefined(player.pers["team"]) && player.pers["team"] == "spectator")
+					continue;
+
+				if(!isdefined(winner))
+				{
+					winner = players[i];
+					continue;
+				}
+
+				if(player.score > winner.score)
+				{
+					tied = false;
+					winner = players[i];
+				}
+				else if(player.score == winner.score)
+					tied = true;
+			}
+
+			if(tied == true)
+				self setClientCvar("cg_objectiveText", &"MP_THE_GAME_IS_A_TIE");
+			else if(isdefined(winner))
+				self setClientCvar("cg_objectiveText", &"MP_WINS", winner.name);
+		}
 		return;
 	}
 

@@ -5,6 +5,5 @@ gsc_help.txt
 gsc_changes.txt
 what_to_test.txt
 source_compiled
-*iwd
-zpam310_beta5
+/zpam310_beta6.iwd
 .gitattributes

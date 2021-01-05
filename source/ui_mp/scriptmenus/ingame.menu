@@ -248,15 +248,19 @@
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 
+		DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.5)
+
 		#include "ui_mp/scriptmenus/submenus/ingame_rcon_map.menu"
 	}
 
 	menuDef
 	{
 		name			"rcon_kick"
-		rect			260 84 430 350
+		rect			240 84 430 350
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
+
+		DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.5)
 
 		#include "ui_mp/scriptmenus/submenus/ingame_rcon_kick.menu"
 	}
@@ -264,9 +268,11 @@
 	menuDef
 	{
 		name			"aboutpam"
-		rect			240 60 430 350
+		rect			240 84 430 350
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
+
+		DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.5)
 
 		#include "ui_mp/scriptmenus/submenus/ingame_aboutpam.menu"
 	}

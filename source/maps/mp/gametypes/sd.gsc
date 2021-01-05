@@ -899,7 +899,10 @@ spawnSpectator(origin, angles)
 		if(isdefined(spawnpoint))
 			self spawn(spawnpoint.origin, spawnpoint.angles);
 		else
+		{
+			self spawn((0,0,0), (0,0,0));
 			maps\mp\_utility::error("NO " + spawnpointname + " SPAWNPOINTS IN MAP");
+		}
 	}
 
 
@@ -946,7 +949,10 @@ spawnIntermission()
 		self spawn(spawnpoint.origin, spawnpoint.angles);
 	}
 	else
+	{
+		self spawn((0,0,0), (0,0,0));
 		maps\mp\_utility::error("NO " + spawnpointname + " SPAWNPOINTS IN MAP");
+	}
 
 	// Specific for SD
 	if(isdefined(level.bombmodel))

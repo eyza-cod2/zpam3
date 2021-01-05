@@ -52,7 +52,7 @@ checkAlive()
     // Check cvars that can be se
     if ((getCvar("pam_pbsv_loaded") != "" && getCvarInt("pam_pbsv_loaded") == 1) ||
         getCvarInt("pam_pbsv_alive") != level.pbAliveSeed ||
-		getCvar("pam_pbsv_version") != "3")
+		getCvar("pam_pbsv_version") != "4")
     {
         game["pbsv_not_loaded"] = true;
 

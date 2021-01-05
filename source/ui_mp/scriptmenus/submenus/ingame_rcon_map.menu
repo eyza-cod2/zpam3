@@ -11,9 +11,9 @@ itemDef \
 	type 				ITEM_TYPE_TEXT \
 	text 				textstring \
 	origin 			origin_choice \
-	textaligny	16 \
+	textaligny		14 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
-	textscale		0.3 \
+	textscale		0.26 \
 	forecolor		1 1 1 1 \
 	visible			1 \
 	decoration \
@@ -29,9 +29,9 @@ itemDef  \
 	type			ITEM_TYPE_BUTTON \
 	text			textstring \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.23 \
+	textscale		0.21 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
-	textaligny		14 \
+	textaligny		11 \
 	dvartest		dvarstring \
 	hideDvar    {dvarvalue, "-1", "-2"} \
 	onFocus \
@@ -55,9 +55,9 @@ itemDef  \
 	type			ITEM_TYPE_TEXT \
 	text			textstring \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.23 \
+	textscale		0.21 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
-	textaligny		14 \
+	textaligny		11 \
 	dvartest		dvarstring \
 	showDvar    {"-2"} \
 	decoration \
@@ -70,9 +70,9 @@ itemDef  \
 	type			ITEM_TYPE_TEXT \
 	text			textstring \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.25 \
+	textscale		0.21 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
-	textaligny		15 \
+	textaligny		11 \
 	dvartest		dvarstring \
 	showDvar    {dvarvalue} \
 	decoration \
@@ -92,36 +92,40 @@ itemDef
 
 
 
+
+
+
 ITEM_MAP_OPTIONS_HEADING(3 6, "Map:")
 
-ITEM_GAMETYPE_ONDVAR(86 6, 40, "Toujane",      "ui_rcon_map_map", "mp_toujane", exec "openscriptmenu ingame rcon_map_map_mp_toujane")
-ITEM_GAMETYPE_ONDVAR(86 24, 48, "Burgundy",     "ui_rcon_map_map", "mp_burgundy",  exec "openscriptmenu ingame rcon_map_map_mp_burgundy")
-ITEM_GAMETYPE_ONDVAR(86 42, 49, "Dawnville",    "ui_rcon_map_map", "mp_dawnville",  exec "openscriptmenu ingame rcon_map_map_mp_dawnville")
-ITEM_GAMETYPE_ONDVAR(86 60, 47, "Matmata",     "ui_rcon_map_map", "mp_matmata",  exec "openscriptmenu ingame rcon_map_map_mp_matmata")
+ITEM_GAMETYPE_ONDVAR(86 06, 40, "Toujane",      "ui_rcon_map_map", "mp_toujane", exec "openscriptmenu ingame rcon_map_map_mp_toujane")
+ITEM_GAMETYPE_ONDVAR(86 22, 48, "Burgundy",     "ui_rcon_map_map", "mp_burgundy",  exec "openscriptmenu ingame rcon_map_map_mp_burgundy")
+ITEM_GAMETYPE_ONDVAR(86 38, 49, "Dawnville",    "ui_rcon_map_map", "mp_dawnville",  exec "openscriptmenu ingame rcon_map_map_mp_dawnville")
+ITEM_GAMETYPE_ONDVAR(86 54, 47, "Matmata",     "ui_rcon_map_map", "mp_matmata",  exec "openscriptmenu ingame rcon_map_map_mp_matmata")
 
 ITEM_GAMETYPE_ONDVAR(155 06, 45, "Carentan",      "ui_rcon_map_map", "mp_carentan", exec "openscriptmenu ingame rcon_map_map_mp_carentan")
-ITEM_GAMETYPE_ONDVAR(155 24, 59, "Trainstation", "ui_rcon_map_map", "mp_trainstation", exec "openscriptmenu ingame rcon_map_map_mp_trainstation")
-ITEM_GAMETYPE_ONDVAR(155 42, 31, "Rhine",        "ui_rcon_map_map", "mp_rhine", exec "openscriptmenu ingame rcon_map_map_mp_rhine")
-ITEM_GAMETYPE_ONDVAR(155 60, 53, "Farmhouse",    "ui_rcon_map_map", "mp_farmhouse",  exec "openscriptmenu ingame rcon_map_map_mp_farmhouse")
+ITEM_GAMETYPE_ONDVAR(155 22, 59, "Trainstation", "ui_rcon_map_map", "mp_trainstation", exec "openscriptmenu ingame rcon_map_map_mp_trainstation")
+ITEM_GAMETYPE_ONDVAR(155 38, 31, "Rhine",        "ui_rcon_map_map", "mp_rhine", exec "openscriptmenu ingame rcon_map_map_mp_rhine")
+ITEM_GAMETYPE_ONDVAR(155 54, 53, "Farmhouse",    "ui_rcon_map_map", "mp_farmhouse",  exec "openscriptmenu ingame rcon_map_map_mp_farmhouse")
 
 ITEM_GAMETYPE_ONDVAR(236 06, 50, "Leningrad",    "ui_rcon_map_map", "mp_leningrad",  exec "openscriptmenu ingame rcon_map_map_mp_leningrad")
-ITEM_GAMETYPE_ONDVAR(236 24, 41, "Railyard",     "ui_rcon_map_map", "mp_railyard", exec "openscriptmenu ingame rcon_map_map_mp_railyard")
-ITEM_GAMETYPE_ONDVAR(236 42, 36, "Harbor",       "ui_rcon_map_map", "mp_harbor",  exec "openscriptmenu ingame rcon_map_map_mp_harbor")
-ITEM_GAMETYPE_ONDVAR(236 60, 53, "Downtown",     "ui_rcon_map_map", "mp_downtown",  exec "openscriptmenu ingame rcon_map_map_mp_downtown")
+ITEM_GAMETYPE_ONDVAR(236 22, 41, "Railyard",     "ui_rcon_map_map", "mp_railyard", exec "openscriptmenu ingame rcon_map_map_mp_railyard")
+ITEM_GAMETYPE_ONDVAR(236 38, 36, "Harbor",       "ui_rcon_map_map", "mp_harbor",  exec "openscriptmenu ingame rcon_map_map_mp_harbor")
+ITEM_GAMETYPE_ONDVAR(236 54, 53, "Downtown",     "ui_rcon_map_map", "mp_downtown",  exec "openscriptmenu ingame rcon_map_map_mp_downtown")
 
 ITEM_GAMETYPE_ONDVAR(308 06, 45, "Breakout",     "ui_rcon_map_map", "mp_breakout",  exec "openscriptmenu ingame rcon_map_map_mp_breakout")
-ITEM_GAMETYPE_ONDVAR(308 24, 41, "Brecourt",     "ui_rcon_map_map", "mp_brecourt",  exec "openscriptmenu ingame rcon_map_map_mp_brecourt")
-ITEM_GAMETYPE_ONDVAR(308 42, 36, "Decoy",        "ui_rcon_map_map", "mp_decoy",  exec "openscriptmenu ingame rcon_map_map_mp_decoy")
-ITEM_GAMETYPE_ONDVAR(308 60, 60, "<Fast Restart>", "ui_rcon_map_map", "fast_restart",  exec "openscriptmenu ingame rcon_map_map_fast_restart")
+ITEM_GAMETYPE_ONDVAR(308 22, 41, "Brecourt",     "ui_rcon_map_map", "mp_brecourt",  exec "openscriptmenu ingame rcon_map_map_mp_brecourt")
+ITEM_GAMETYPE_ONDVAR(308 38, 36, "Decoy",        "ui_rcon_map_map", "mp_decoy",  exec "openscriptmenu ingame rcon_map_map_mp_decoy")
+ITEM_GAMETYPE_ONDVAR(308 54, 60, "<Fast Restart>", "ui_rcon_map_map", "fast_restart",  exec "openscriptmenu ingame rcon_map_map_fast_restart")
 
 
 
-ITEM_MAP_OPTIONS_HEADING(3 91, "Gametype:")
+ITEM_MAP_OPTIONS_HEADING(3 86, "Gametype:")
 
 
-ITEM_GAMETYPE_ONDVAR(86 91, 108, "Search and Destroy",  "ui_rcon_map_gametype", "sd", exec "openscriptmenu ingame rcon_map_gametype_sd")
-ITEM_GAMETYPE_ONDVAR(210 91, 80, "Deatmatch",  					"ui_rcon_map_gametype", "dm", exec "openscriptmenu ingame rcon_map_gametype_dm")
-ITEM_GAMETYPE_ONDVAR(300 91, 35, "Strat",  							"ui_rcon_map_gametype", "strat", exec "openscriptmenu ingame rcon_map_gametype_strat")
+ITEM_GAMETYPE_ONDVAR(86 87, 85, "Search and Destroy",  "ui_rcon_map_gametype", "sd", exec "openscriptmenu ingame rcon_map_gametype_sd")
+ITEM_GAMETYPE_ONDVAR(190 87, 50, "Deatmatch",  			"ui_rcon_map_gametype", "dm", exec "openscriptmenu ingame rcon_map_gametype_dm")
+ITEM_GAMETYPE_ONDVAR(260 87, 70, "Team Deatmatch",  	"ui_rcon_map_gametype", "tdm", exec "openscriptmenu ingame rcon_map_gametype_tdm")
+ITEM_GAMETYPE_ONDVAR(350 87, 35, "Strat",  				"ui_rcon_map_gametype", "strat", exec "openscriptmenu ingame rcon_map_gametype_strat")
 
 
 
@@ -132,15 +136,21 @@ ITEM_GAMETYPE_ONDVAR(86 121, 39, "pcw",          "ui_rcon_map_pam_sd", "pcw", ex
 ITEM_GAMETYPE_ONDVAR(121 121, 22, "cg",          "ui_rcon_map_pam_sd", "cg", exec "openscriptmenu ingame rcon_map_pam_cg")
 ITEM_GAMETYPE_ONDVAR(147 121, 51, "cg_mr12",    "ui_rcon_map_pam_sd", "cg_mr12", exec "openscriptmenu ingame rcon_map_pam_cg_mr12")
 ITEM_GAMETYPE_ONDVAR(202 121, 37, "cg_2v2",     "ui_rcon_map_pam_sd", "cg_2v2", exec "openscriptmenu ingame rcon_map_pam_cg_2v2")
-ITEM_GAMETYPE_ONDVAR(86 139, 26, "mr3",         "ui_rcon_map_pam_sd", "mr3", exec "openscriptmenu ingame rcon_map_pam_mr3")
-ITEM_GAMETYPE_ONDVAR(118 139, 31, "mr10",       "ui_rcon_map_pam_sd", "mr10", exec "openscriptmenu ingame rcon_map_pam_mr10")
-ITEM_GAMETYPE_ONDVAR(154 139, 30, "mr12",       "ui_rcon_map_pam_sd", "mr12", exec "openscriptmenu ingame rcon_map_pam_mr12")
-ITEM_GAMETYPE_ONDVAR(190 139, 30, "mr15",       "ui_rcon_map_pam_sd", "mr15", exec "openscriptmenu ingame rcon_map_pam_mr15")
-ITEM_GAMETYPE_ONDVAR(226 139, 25, "fun",   		"ui_rcon_map_pam_sd", "fun", exec "openscriptmenu ingame rcon_map_pam_fun")
-ITEM_GAMETYPE_ONDVAR(255 139, 37, "pub",        "ui_rcon_map_pam_sd", "pub", exec "openscriptmenu ingame rcon_map_pam_pub")
+ITEM_GAMETYPE_ONDVAR(86 137, 26, "mr3",         "ui_rcon_map_pam_sd", "mr3", exec "openscriptmenu ingame rcon_map_pam_mr3")
+ITEM_GAMETYPE_ONDVAR(118 137, 31, "mr10",       "ui_rcon_map_pam_sd", "mr10", exec "openscriptmenu ingame rcon_map_pam_mr10")
+ITEM_GAMETYPE_ONDVAR(154 137, 30, "mr12",       "ui_rcon_map_pam_sd", "mr12", exec "openscriptmenu ingame rcon_map_pam_mr12")
+ITEM_GAMETYPE_ONDVAR(190 137, 30, "mr15",       "ui_rcon_map_pam_sd", "mr15", exec "openscriptmenu ingame rcon_map_pam_mr15")
+ITEM_GAMETYPE_ONDVAR(226 137, 25, "fun",   		"ui_rcon_map_pam_sd", "fun", exec "openscriptmenu ingame rcon_map_pam_fun")
+//ITEM_GAMETYPE_ONDVAR(255 137, 37, "pub",        "ui_rcon_map_pam_sd", "pub", exec "openscriptmenu ingame rcon_map_pam_pub")
 
-//Start
-ITEM_GAMETYPE_ONDVAR(86 121, 0, "- ignored -",          "ui_rcon_map_pam_dm", "start", exec "openscriptmenu ingame rcon_map_pam_dm")
+//DM
+ITEM_GAMETYPE_ONDVAR(86 121, 39, "pcw",          "ui_rcon_map_pam_dm", "pcw", exec "openscriptmenu ingame rcon_map_pam_pcw")
+ITEM_GAMETYPE_ONDVAR(121 121, 51, "warmup",      "ui_rcon_map_pam_dm", "warmup", exec "openscriptmenu ingame rcon_map_pam_warmup")
+//ITEM_GAMETYPE_ONDVAR(165 121, 37, "pub",         "ui_rcon_map_pam_dm", "pub", exec "openscriptmenu ingame rcon_map_pam_pub")
+
+//TDM
+ITEM_GAMETYPE_ONDVAR(86 121, 39, "pcw",          "ui_rcon_map_pam_tdm", "pcw", exec "openscriptmenu ingame rcon_map_pam_pcw")
+//ITEM_GAMETYPE_ONDVAR(121 121, 37, "pub",         "ui_rcon_map_pam_tdm", "pub", exec "openscriptmenu ingame rcon_map_pam_pub")
 
 //Start
 ITEM_GAMETYPE_ONDVAR(86 121, 0, "- ignored -",          "ui_rcon_map_pam_strat", "start", exec "openscriptmenu ingame rcon_map_pam_strat")
@@ -156,19 +166,21 @@ ITEM_GAMETYPE_ONDVAR(86 121, 0, "- ignored -",          "ui_rcon_map_pam_strat",
 
 
 // Extra options in zPAM
-ITEM_MAP_OPTIONS_HEADING(3 200, "Fast reload:")
-ITEM_GAMETYPE_ONDVAR(86 200, 40, "Enable",  "ui_rcon_map_fast_reload_fix", "0", exec "openscriptmenu ingame rcon_map_fast_reload_fix_0")
-ITEM_GAMETYPE_ONDVAR(135 200, 60, "Prevent",   "ui_rcon_map_fast_reload_fix", "1",  exec "openscriptmenu ingame rcon_map_fast_reload_fix_1")
+ITEM_MAP_OPTIONS_HEADING(3 179, "Fast reload:")
+ITEM_GAMETYPE_ONDVAR(86 180, 40, "Enable",  "ui_rcon_map_fast_reload_fix", "0", exec "openscriptmenu ingame rcon_map_fast_reload_fix_0")
+ITEM_GAMETYPE_ONDVAR(135 180, 60, "Prevent",   "ui_rcon_map_fast_reload_fix", "1",  exec "openscriptmenu ingame rcon_map_fast_reload_fix_1")
 
-ITEM_MAP_OPTIONS_HEADING(3 220, "Diagonal:")
-ITEM_GAMETYPE_ONDVAR(86 220, 40, "Enable",  "ui_rcon_map_diagonal_fix", "0", exec "openscriptmenu ingame rcon_map_diagonal_fix_0")
-ITEM_GAMETYPE_ONDVAR(135 220, 60, "Prevent",   "ui_rcon_map_diagonal_fix", "1",  exec "openscriptmenu ingame rcon_map_diagonal_fix_1")
+ITEM_MAP_OPTIONS_HEADING(3 199, "Diagonal:")
+ITEM_GAMETYPE_ONDVAR(86 200, 40, "Enable",  "ui_rcon_map_diagonal_fix", "0", exec "openscriptmenu ingame rcon_map_diagonal_fix_0")
+ITEM_GAMETYPE_ONDVAR(135 200, 60, "Prevent",   "ui_rcon_map_diagonal_fix", "1",  exec "openscriptmenu ingame rcon_map_diagonal_fix_1")
 
-ITEM_MAP_OPTIONS_HEADING(3 240, "Shotgun:")
-ITEM_GAMETYPE_ONDVAR(86 240, 40, "Classic",  "ui_rcon_map_shotgun_rebalance", "0", exec "openscriptmenu ingame rcon_map_shotgun_rebalance_0")
-ITEM_GAMETYPE_ONDVAR(135 240, 80, "Rebalanced",   "ui_rcon_map_shotgun_rebalance", "1",  exec "openscriptmenu ingame rcon_map_shotgun_rebalance_1")
+ITEM_MAP_OPTIONS_HEADING(3 219, "Shotgun:")
+ITEM_GAMETYPE_ONDVAR(86 220, 40, "Classic",  "ui_rcon_map_shotgun_rebalance", "0", exec "openscriptmenu ingame rcon_map_shotgun_rebalance_0")
+ITEM_GAMETYPE_ONDVAR(135 220, 80, "Rebalanced",   "ui_rcon_map_shotgun_rebalance", "1",  exec "openscriptmenu ingame rcon_map_shotgun_rebalance_1")
 
-
+ITEM_MAP_OPTIONS_HEADING(3 239, "Prone peak:")
+ITEM_GAMETYPE_ONDVAR(86 240, 40, "Enable",  "ui_rcon_map_prone_peak_fix", "0", exec "openscriptmenu ingame rcon_map_prone_peak_fix_0")
+ITEM_GAMETYPE_ONDVAR(135 240, 80, "Prevent",   "ui_rcon_map_prone_peak_fix", "1",  exec "openscriptmenu ingame rcon_map_prone_peak_fix_1")
 
 
 // Apply

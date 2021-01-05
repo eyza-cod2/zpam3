@@ -134,7 +134,7 @@ Rules()
 	setcvar("scr_recording", 0); 						// Starts automatically recording when match starts
 	setcvar("scr_shotgun_rebalance", 1);				// Enable shotgun rebalance to fix long shot kills and short range hits
 	setcvar("scr_diagonal_fix", 0); 					// Enable diagonal bug fix (disables leaning for players when strafing)
-	setcvar("scr_prone_peak_fix", 1);					// Prevent players from doing fast peaks from prone (time, after player can prone again will be increased)
+	setcvar("scr_prone_peak_fix", 0);					// Prevent players from doing fast peaks from prone (time, after player can prone again will be increased)
 	setcvar("scr_fast_reload_fix", 1);				// Prevent players from shoting faster via double-scroll bug
 	setcvar("scr_bash", 0);															// Bash mode can be called via menu in readyup
 

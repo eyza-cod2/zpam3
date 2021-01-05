@@ -69,12 +69,12 @@ Rules()
 
 	setcvar("scr_allow_shellshock", 0);					// Create shell shock effect when player is hitted
 	setcvar("scr_replace_russian", 1); 					// Replace russians with Americans / Brisith
-	setcvar("scr_shotgun_rebalance", 1);				// Enable shotgun rebalance to fix long shot kills and short range hits
+	setcvar("scr_shotgun_rebalance", 0);				// Enable shotgun rebalance to fix long shot kills and short range hits
 	setcvar("scr_blackout", 1); 						// If match is in progress, show map background all over the screen and disable sounds for connected player
 	setcvar("scr_recording", 1); 						// Starts automatically recording when match starts
 	setcvar("scr_diagonal_fix", 0); 					// Enable diagonal bug fix (disables leaning for players when strafing)
 	setcvar("scr_fast_reload_fix", 1);				// Prevent players from shoting faster via double-scroll bug
-	setcvar("scr_prone_peak_fix", 1);					// Prevent players from doing fast peaks from prone (time, after player can prone again will be increased)
+	setcvar("scr_prone_peak_fix", 0);					// Prevent players from doing fast peaks from prone (time, after player can prone again will be increased)
 	setcvar("scr_matchinfo", 2); 						// Show match info in menu (1 = without team names, 2 = with team names)
 	setcvar("scr_map_vote", 0);							// Open voting system so players can vote about next map
 	setcvar("scr_map_vote_replay", 0);					// Show option to replay this map in voting system

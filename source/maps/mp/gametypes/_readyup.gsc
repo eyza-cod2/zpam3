@@ -210,6 +210,7 @@ playerReadyUpThread()
 	// Default variables
 	self.pers["killer"] = 0;
 	self.isReady = false;
+	self.lastMan = false;
 
     // When player connects while the readyup ends (server is counting down timer to match start) show readyicon and exit
     if (level.playersready)
@@ -471,6 +472,7 @@ Update_Players_Count()
 	{
 		// Count player not ready up
 		notready = 0;
+		notReadyPlayer = undefined;
 		players = getentarray("player", "classname");
 		for(i = 0; i < players.size; i++)
 		{
@@ -478,6 +480,18 @@ Update_Players_Count()
 			if (!player.isReady)
 			{
 				notready++;
+
+				notReadyPlayer = player;
+			}
+		}
+
+		// Last man
+		if (players.size > 4)	// If its 3v3 or more
+		{
+			if (notready == 1 && notReadyPlayer.lastMan == false)
+			{
+				notReadyPlayer.lastMan = true;
+				notReadyPlayer thread playLastManSound();
 			}
 		}
 
@@ -968,7 +982,25 @@ playStartSound()
 	players = getentarray("player", "classname");
 	for(i = 0; i < players.size; i++)
 	{
-		if (players[i].sessionteam == "allies" || players[i].sessionteam == "axis")
+		if (players[i].sessionteam == "allies" || players[i].sessionteam == "axis" || (level.gametype == "dm" && players[i].sessionteam == "none"))
 			players[i] playLocalSound("hill400_assault_gr5_letsgoget");
 	}
+}
+
+
+playLastManSound()
+{
+	self endon("disconnect");
+
+	wait level.fps_multiplier * 3;
+
+	if (self.isReady == false)
+	{
+		self playLocalSound("US_0_order_move_generic_05");
+	}
+
+	// Next sound after 30 sec
+	wait level.fps_multiplier * 30;
+
+	self.lastMan = false;
 }

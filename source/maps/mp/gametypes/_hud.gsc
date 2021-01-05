@@ -93,6 +93,9 @@ PAM_Header_Kill()
 // Is called in: next_round, is_halftime or map_ends
 ScoreBoard(is_halftime_or_mapend)
 {
+	if (level.gametype == "dm")
+		return;
+
     scorby = level.hud_scoreboard_offsetY;
 	teamsy = level.hud_scoreboard_offsetY + 20;
 	half1y = level.hud_scoreboard_offsetY + 35;
@@ -353,12 +356,15 @@ Matchover(isOvertime)
     teamwin = maps\mp\gametypes\_hud_system::addHUD(level.hud_scoreboard_offsetX-50, level.hud_scoreboard_offsetY -20, 1.2, (1,1,0), "center", "middle", "right");
 	teamwin maps\mp\gametypes\_hud_system::showHUDSmooth(1);
 
-	if (game["allies_score"] == game["axis_score"])
-		teamwin setText(game["STRING_ITS_TIE"]);
-	else if (game["axis_score"] > game["allies_score"])
-		teamwin setText(game["STRING_AXIS_WIN"]);
-	else
-		teamwin setText(game["STRING_ALLIES_WIN"]);
+	if (level.gametype != "dm")
+	{
+		if (game["allies_score"] == game["axis_score"])
+			teamwin setText(game["STRING_ITS_TIE"]);
+		else if (game["axis_score"] > game["allies_score"])
+			teamwin setText(game["STRING_AXIS_WIN"]);
+		else
+			teamwin setText(game["STRING_ALLIES_WIN"]);
+	}
 
     // Going to scoreboard || Going to overtime
     goingto = maps\mp\gametypes\_hud_system::addHUD(level.hud_scoreboard_offsetX-50, level.hud_scoreboard_offsetY +90, 1.2, (1,1,0), "center", "middle", "right");
