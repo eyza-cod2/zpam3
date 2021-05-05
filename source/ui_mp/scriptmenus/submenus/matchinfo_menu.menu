@@ -1,61 +1,48 @@
-itemDef
-{
-	style			WINDOW_STYLE_FILLED
-	rect			-113 1 90 12 0 0
-	backcolor		.3 .3 .3 .5
-	visible			1
-	dvartest		"ui_matchinfo_show"
-	showDvar		{ "1" }
-	decoration
-}
-itemDef
-{
-	style			WINDOW_STYLE_FILLED
-	rect			22 1 90 12 0 0
-	backcolor		.3 .3 .3 .5
-	visible			1
-	dvartest		"ui_matchinfo_show"
-	showDvar		{ "1" }
-	decoration
-}
-itemDef
-{
-	style			WINDOW_STYLE_FILLED
-	rect			-22 1 18 12 0 0
-	backcolor		.3 .3 .3 .5
-	visible			1
-	dvartest		"ui_matchinfo_show"
-	showDvar		{ "1" }
-	decoration
-}
-itemDef
-{
-	style			WINDOW_STYLE_FILLED
-	rect			3 1 18 12 0 0
-	backcolor		.3 .3 .3 .5
-	visible			1
-	dvartest		"ui_matchinfo_show"
-	showDvar		{ "1" }
-	decoration
-}
+// Team color bg
+MATCHINFO_BGCOLOR(-131 0 130 15, 0.3 0 0 .8, "ui_matchinfo_team1_sideColor", showDvar { "1" }) // Red
+MATCHINFO_BGCOLOR(-131 0 130 15, .0 0.4 .0 .8, "ui_matchinfo_team1_sideColor", showDvar { "2" }) // Green
+MATCHINFO_BGCOLOR(-131 0 130 15, 0.3 0.3 0.9 .9, "ui_matchinfo_team1_sideColor", showDvar { "3" }) // Blue
+MATCHINFO_BGCOLOR(-131 0 130 15, .3 .3 .3 .9, "ui_matchinfo_team1_sideColor", showDvar { "4" }) // Gray
+// Team background
+MATCHINFO_BGCOLOR(-131 0 130 14, .1 .1 .1 .8, "ui_matchinfo_team1_sideColor", showDvar { "1"; "2"; "3"; "4" })
+// Icon
+MATCHINFO_ICON(-128 1, "hudicon_russian", "ui_matchinfo_team1_sideColor", showDvar { "1" } )
+MATCHINFO_ICON(-128 1, "hudicon_american", "ui_matchinfo_team1_sideColor", showDvar { "2" } )
+MATCHINFO_ICON(-128 1, "hudicon_british", "ui_matchinfo_team1_sideColor", showDvar { "3" } )
+MATCHINFO_ICON(-128 1, "hudicon_german", "ui_matchinfo_team1_sideColor", showDvar { "4" } )
 
-// Team names text
-ITEM_DVAR_DVAR("ui_matchinfo_team1_name", -67, 12, .2, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
-ITEM_DVAR_DVAR("ui_matchinfo_team2_name", 67, 12, .2, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
-// Team scores text
-ITEM_DVAR_DVAR("ui_matchinfo_team1_score", -14, 11, .21, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
-ITEM_DVAR_DVAR("ui_matchinfo_team2_score", 12, 11, .21, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
-// :
-ITEM_TEXT_DVAR(":", -1, 10, .18, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
+
+
+
+// Team color bg
+MATCHINFO_BGCOLOR(1 0 130 15, 0.3 0 0 .8, "ui_matchinfo_team2_sideColor", showDvar { "1" }) // Red
+MATCHINFO_BGCOLOR(1 0 130 15, .0 0.4 .0 .8, "ui_matchinfo_team2_sideColor", showDvar { "2" }) // Green
+MATCHINFO_BGCOLOR(1 0 130 15, 0.3 0.3 0.9 .9, "ui_matchinfo_team2_sideColor", showDvar { "3" }) // Blue
+MATCHINFO_BGCOLOR(1 0 130 15, .3 .3 .3 .9, "ui_matchinfo_team2_sideColor", showDvar { "4" }) // Gray
+// Team background
+MATCHINFO_BGCOLOR(1 0 130 14, .1 .1 .1 .8, "ui_matchinfo_team2_sideColor", showDvar { "1"; "2"; "3"; "4" })
+// Icon
+MATCHINFO_ICON(3 1, "hudicon_russian", "ui_matchinfo_team2_sideColor", showDvar { "1" } )
+MATCHINFO_ICON(3 1, "hudicon_american", "ui_matchinfo_team2_sideColor", showDvar { "2" } )
+MATCHINFO_ICON(3 1, "hudicon_british", "ui_matchinfo_team2_sideColor", showDvar { "3" } )
+MATCHINFO_ICON(3 1, "hudicon_german", "ui_matchinfo_team2_sideColor", showDvar { "4" } )
+
+
+
+ITEM_DVAR_DVAR("ui_matchinfo_team1_name", -115, 12, .2, ITEM_ALIGN_LEFT, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
+ITEM_DVAR_DVAR("ui_matchinfo_team2_name", 16, 12, .2, ITEM_ALIGN_LEFT, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
+
+
+
 // Round
-ITEM_DVAR_DVAR("ui_matchinfo_round", 0, 21, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
-// Map history 1
-ITEM_DVAR_DVAR("ui_matchinfo_map1_score", -188, 10, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
-ITEM_DVAR_DVAR("ui_matchinfo_map1_name", -188, 18, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
-// Map history 2
-ITEM_DVAR_DVAR("ui_matchinfo_map2_score", 138, 10, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
-ITEM_DVAR_DVAR("ui_matchinfo_map2_name", 138, 18, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
+ITEM_DVAR_DVAR("ui_matchinfo_round", 0, 24, .18, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
 
-// Play time
-ITEM_DVAR_DVAR("ui_matchinfo_matchtime_text", -140, 10, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
-ITEM_DVAR_DVAR("ui_matchinfo_matchtime_value", -140, 18, .16, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
+// Match time
+ITEM_DVAR_DVAR("ui_matchinfo_matchtime", -67, 24, .18, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
+// Half info
+ITEM_DVAR_DVAR("ui_matchinfo_halfInfo", 67, 24, .18, ITEM_ALIGN_CENTER, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
+
+// Map history 1
+ITEM_DVAR_DVAR("ui_matchinfo_map1", -195, 10, .18, ITEM_ALIGN_LEFT, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })
+// Map history 2
+ITEM_DVAR_DVAR("ui_matchinfo_map2", -195, 19, .18, ITEM_ALIGN_LEFT, 1 1 1 1, "ui_matchinfo_show", showDvar { "1" })

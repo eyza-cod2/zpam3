@@ -1,51 +1,78 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
+
+// Bash mode can be called only in first readyup
+// Every team can call bash mode only twice
+// Team can cancel bash mode called by opposite team
 
 init()
 {
-    level.in_bash = false;
+	addEventListener("onCvarChanged", ::onCvarChanged);
 
-    // Bash mode can be called only in first readyup
-    // Every team can call bash mode only twice
-    // Team can cancel bash mode called by opposite team
+	registerCvar("scr_bash", "BOOL", 0);
 
-    if (!isDefined(game["bash_called_team"]))
-        game["bash_called_team"] = "default";
-    if (!isDefined(game["allies_called_bashes"]))
-        game["allies_called_bashes"] = 0;
-    if (!isDefined(game["axis_called_bashes"]))
-        game["axis_called_bashes"] = 0;
+	if(game["firstInit"])
+	{
+		precacheString2("STRING_BASH_MODE", &"Pistol bash");
+	}
 
+	if(game["firstInit"])
+	{
+		game["do_bash"] = false;
+	}
 
-    // Define game default variables
-    if (!isDefined(game["do_bash"]))
-        game["do_bash"] = false;
+	game["allies_called_bashes"] = 0;
+	game["axis_called_bashes"] = 0;
+	level.in_bash = false;
+	level.lastCallTime = 0;
 
-    // If this flag is set to true, we know bash will be runned
-    if (game["do_bash"])
-    {
-      level.in_bash = true;
-    	game["do_bash"] = false;	// reset request flag
+	// If this flag is set to true, we know bash will be runned
+	if (game["do_bash"])
+	{
+		level.in_bash = true;
+		game["do_bash"] = false;	// reset request flag
+	}
 
-      HUD_Bash_mode();
-    }
+	// Register notifications catchup
+	addEventListener("onConnected",     ::onConnected);
+	addEventListener("onSpawned",     ::onSpawned);
+	addEventListener("onMenuResponse",  ::onMenuResponse);
+}
 
-
-    // Register notifications catchup
-    addEventListener("onConnected",     ::onConnected);
-    addEventListener("onSpawned",     ::onSpawned);
-	  addEventListener("onMenuResponse",  ::onMenuResponse);
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_bash": 		level.scr_bash = value; return true;
+	}
+	return false;
 }
 
 onConnected()
 {
     // Set actual bash mode status on player connect + when round restart in SD
-    self setClientCvar("ui_allow_bash", self Validate_bash(false));
+    self setClientCvar2("ui_allow_bash", self Validate_bash(false));
 }
 
 onSpawned()
 {
-    // Set actual bash mode status on player connect + when round restart in SD
-    self setClientCvar("ui_allow_bash", self Validate_bash(false));
+	// Set actual bash mode status on player connect + when round restart in SD
+	self setClientCvar2("ui_allow_bash", self Validate_bash(false));
+
+	if (level.in_bash)
+	{
+		if (isDefined(self.bashPrinted))
+			return;
+
+		self iprintlnbold("^3Pistol bash");
+		self iprintlnbold("^7 ");
+		self iprintlnbold("^7 ");
+
+		// Awoid again print if spectator is spawned after player is killed
+		self.bashPrinted = true;
+	}
 }
 
 /*
@@ -57,10 +84,15 @@ onMenuResponse(menu, response)
 {
 	if (menu == game["menu_ingame"] && response == "bash")
 	{
-		self closeMenu();
-		self closeInGameMenu();
-		self callbash();
-		return true;
+		time = gettime();
+		if (level.lastCallTime + 3000 < time) // allow next action after 3 sec to avoid unwanted cancellation if 2 players call bash mode at once
+		{
+			self closeMenu();
+			self closeInGameMenu();
+			self callbash();
+			level.lastCallTime = time;
+			return true;
+		}
 	}
 }
 
@@ -76,25 +108,28 @@ callbash()
 	{
 		game["do_bash"] = false;
 
-    HUD_Bash_mode();
+		iprintlnbold(self.name + " ^7canceled a bash mode.");
+
+		HUD_Bash();
 	}
 
 
 	// bash called, so print message to all players
 	if (action == "ok")
 	{
-    game["do_bash"] = true;
+    		game["do_bash"] = true;
 
 		// Increase number of calls
 		game[self.pers["team"] + "_called_bashes"]++;
-		game["bash_called_team"] = self.pers["team"];
 
 		iprintln(self.name + " ^7called a bash mode.");
 		iprintln("Going to bash mode after the ready-up mode.");
 
-    HUD_Bash_mode();
+		iprintlnbold(self.name + " ^7called a bash mode.");
 
 		logPrint("BASH_CALL;" + self.pers["team"] + ";" + self.name + "\n");
+
+		HUD_Bash();
 	}
 
 
@@ -104,11 +139,28 @@ callbash()
 		players = getentarray("player", "classname");
 		for(i = 0; i < players.size; i++)
 		{
-			 players[i] setClientCvar("ui_allow_bash", players[i] Validate_bash(false));
+			 players[i] setClientCvar2("ui_allow_bash", players[i] Validate_bash(false));
 		}
 	}
 
 }
+
+
+HUD_Bash()
+{
+	// Bash info
+	if (!isDefined(level.bash_hud_info))
+	{
+		level.bash_hud_info = addHUD(-20, 39, 1, (1,1,0), "right", "top", "right");
+		level.bash_hud_info setText(game["STRING_BASH_MODE"]);
+	}
+	else
+	{
+		level.bash_hud_info removeHUD();
+		level.bash_hud_info = undefined;
+	}
+}
+
 
 Validate_bash(print)
 {
@@ -182,25 +234,4 @@ Validate_bash(print)
 		else return 4; // Cancel bash
 	}
 
-}
-
-
-HUD_Bash_mode()
-{
-  if (game["do_bash"] || level.in_bash)
-  {
-    if (!isDefined(level.hud_bashmode))
-    {
-        level.hud_bashmode = maps\mp\gametypes\_hud_system::addHUD(0, 20, 1.4, (1,1,0), "center", "top", "center");
-        level.hud_bashmode setText(game["STRING_BASH_MODE"]);
-    }
-  }
-  else
-  {
-    if (isDefined(level.hud_bashmode))
-    {
-        level.hud_bashmode thread maps\mp\gametypes\_hud_system::removeHUD();
-        level.hud_bashmode = undefined;
-    }
-  }
 }

@@ -17,12 +17,45 @@
 
 		onOpen
 		{
+			uiScript openMenuOnDvar ui_quickmessage_spectatormode "0" quickmessage_default;
+			uiScript openMenuOnDvar ui_quickmessage_spectatormode "1" quickmessage_spectatingsystem_menu;
+
+			close quickmessage
+		}
+	}
+
+
+	menuDef
+	{
+	  	name quickmessage_spectatingsystem_menu
+	  	fullScreen 0
+	  	visible 0
+	    	rect 0 0 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+
+		#include "ui_mp/scriptmenus/spectatingsystem.menu"
+	}
+
+
+
+	menuDef
+	{
+		name "quickmessage_default"
+		visible 0
+		fullscreen 0
+		rect 0 0 640 480
+		focuscolor 1 1 1 1
+		disablecolor 0 0 0 0
+		style WINDOW_STYLE_EMPTY
+
+		onOpen
+		{
 			setDvar cl_bypassMouseInput "1"
 		}
 		onClose
 		{
 			setDvar cl_bypassMouseInput "0"
 		}
+
 
 // WINDOW BACKGROUND
 		itemDef
@@ -113,24 +146,24 @@
 
 
 		QUICKMESSAGE_LINE_TEXT(20, "@QUICKMESSAGE_1_COMMANDS", 1 1 1 1)
-		execKey "1" { close quickmessage; open quickcommands }
+		execKey "1" { close quickmessage_default; quickmessage_default; open quickcommands }
 
 		QUICKMESSAGE_LINE_TEXT(36, "@QUICKMESSAGE_2_STATEMENTS", 1 1 1 1)
-		execKey "2" { close quickmessage; open quickstatements }
+		execKey "2" { close quickmessage_default; open quickstatements }
 
 		QUICKMESSAGE_LINE_TEXT(52, "@QUICKMESSAGE_3_RESPONSES", 1 1 1 1)
-		execKey "3" { close quickmessage; open quickresponses }
+		execKey "3" { close quickmessage_default; open quickresponses }
 
 
 		QUICKMESSAGE_LINE_TEXT(100, "6. Settings", 1 1 1 1)
-		execKey "6" { close quickmessage; open quicksettings }
+		execKey "6" { close quickmessage_default; open quicksettings }
 
 		QUICKMESSAGE_LINE_TEXT_DVAR(116, "7. Call pistol bash", .35 .35 .35 1, 	"ui_allow_bash", showDvar { "0" }) 	// 0 = "" (invisible)
 		QUICKMESSAGE_LINE_TEXT_DVAR(116, "7. Call pistol bash", 1 1 1 1, 				"ui_allow_bash", showDvar { "1" }) 	// 1 = "Call bash"
 		QUICKMESSAGE_LINE_TEXT_DVAR(116, "7. Call pistol bash", .35 .35 .35 1, 	"ui_allow_bash", showDvar { "2" }) 	// 2 = "Call bash" (disabled)
 		QUICKMESSAGE_LINE_TEXT_DVAR(116, "7. Call pistol bash", .35 .35 .35 1, 	"ui_allow_bash", showDvar { "3" }) 	// 3 = "In bash" (disabled)
 		QUICKMESSAGE_LINE_TEXT_DVAR(116, "7. Cancel pistol bash", 1 1 1 1, 			"ui_allow_bash", showDvar { "4" }) 	// 4 = "Cancel bash"
-		execKey "7" { close quickmessage; exec "openscriptmenu ingame bash" }
+		execKey "7" { close quickmessage_default; exec "openscriptmenu ingame bash" }
 
 
 		QUICKMESSAGE_LINE_TEXT_DVAR(132, "8. Call timeout", .35 .35 .35 1, 			"ui_allow_timeout", showDvar { "0" }) // Disabled
@@ -139,7 +172,7 @@
 		QUICKMESSAGE_LINE_TEXT_DVAR(132, "8. Timeout called", .35 .35 .35 1, 		"ui_allow_timeout", showDvar { "3" }) //  Already called
 		QUICKMESSAGE_LINE_TEXT_DVAR(132, "8. Already in timeout", .35 .35 .35 1, "ui_allow_timeout", showDvar { "4" }) // In timeout
 		QUICKMESSAGE_LINE_TEXT_DVAR(132, "8. Cancel timeout", 1 1 1 1, 					"ui_allow_timeout", showDvar { "5" }) // Cancel timeout
-		execKey "8" { close quickmessage; exec "openscriptmenu ingame timeout" }
+		execKey "8" { close quickmessage_default; exec "openscriptmenu ingame timeout" }
 
 
 		QUICKMESSAGE_LINE_TEXT(148, "@QUICKMESSAGE_ESC_EXIT", 1 1 1 1)

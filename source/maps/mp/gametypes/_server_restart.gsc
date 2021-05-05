@@ -1,4 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 // This will make sure when last player disconnect from server, fast_restart is applied
 

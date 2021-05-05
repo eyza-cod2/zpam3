@@ -1,4 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 main()
 {

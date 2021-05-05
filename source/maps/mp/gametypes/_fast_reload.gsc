@@ -1,11 +1,43 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
-    level.fastReload_startTime = getTime();
+	addEventListener("onCvarChanged", ::onCvarChanged);
 
-    addEventListener("onConnected",     ::onConnected);
+	registerCvarEx("C", "scr_fast_reload_fix", "BOOL", 0);
+
+
+	level.fastReload_startTime = getTime();
+
+	addEventListener("onConnected",     ::onConnected);
 }
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_fast_reload_fix":
+			level.scr_fast_reload_fix = value;
+			if (!isRegisterTime)
+			{
+				if (level.scr_fast_reload_fix) // changed to 1
+			  	{
+			    		players = getentarray("player", "classname");
+			    		for(i = 0; i < players.size; i++)
+			    		{
+			      			player = players[i];
+			      			player onConnected();
+			    		}
+			  	}
+			}
+			return true;
+	}
+	return false;
+}
+
 
 onConnected()
 {
@@ -15,19 +47,6 @@ onConnected()
     self thread manageWeaponCycleDelay();
 }
 
-// Called if cvar scr_fast_reload_fix changes
-cvarChanged()
-{
-  	if (level.scr_fast_reload_fix) // changed to 1
-  	{
-    		players = getentarray("player", "classname");
-    		for(i = 0; i < players.size; i++)
-    		{
-      			player = players[i];
-      			player onConnected();
-    		}
-  	}
-}
 
 getCurrentWeaponSlot()
 {
@@ -82,8 +101,8 @@ manageWeaponCycleDelay()
 
             if (cycleDelayTime <= 0)
             {
-                //self iprintln("^2Fast reload bug ok");
-                self setClientCvar("cg_weaponCycleDelay", "0");
+                if (level.debug_fastreload) self iprintln("^2Fast reload bug ok");
+                self setClientCvar2("cg_weaponCycleDelay", "0");
 
                 cycleDelayActivated = false;
                 cycleDelayTime = 0;
@@ -130,8 +149,8 @@ manageWeaponCycleDelay()
                 // Send command after a few frames (this may help fix fps drop when player fire from weapon)
                 wait level.frame*3;
 
-  	            //self iprintln("^1Preventing fast reload bug");
-  	            self setClientCvar("cg_weaponCycleDelay", "200");	// time in ms when player can change weapon again
+  	            if (level.debug_fastreload) self iprintln("^1Preventing fast reload bug"); 
+  	            self setClientCvar2("cg_weaponCycleDelay", "200");	// time in ms when player can change weapon again
       			}
         }
 

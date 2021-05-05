@@ -1,3 +1,4 @@
+
 //==========================================================================
 //
 // Character Animation Script     M U L T I P L A Y E R
@@ -417,7 +418,6 @@ STATE COMBAT
 		}
 	}
 
-
 	walk
 	{
 		playerAnimType none
@@ -436,25 +436,6 @@ STATE COMBAT
 		{
 			both pb_combatwalk_forward_loop_pistol
 		}
-
-		// Player walks -> if weapon position is hip (not ads), it means we are leaning left/right
-		// Originally player appears in ads even he just walk and lean to left/right
-		// This forces player weapon position to be in hip location
-		WEAPON_POSITION hip, strafing left
-		{
-			both pb_combatrun_left_loop
-		}
-		WEAPON_POSITION hip, strafing right
-		{
-			both pb_combatrun_right_loop
-		}
-		WEAPON_POSITION hip
-		{
-			both pb_combatrun_forward_loop
-		}
-
-
-		// Movement to strict left/right
 		strafing left
 		{
 			both pb_stand_shoot_walk_left
@@ -463,8 +444,6 @@ STATE COMBAT
 		{
 			both pb_stand_shoot_walk_right
 		}
-
-
 		default // two handed rifle type weapon
 		{
 			both pb_stand_shoot_walk_forward
@@ -503,8 +482,6 @@ STATE COMBAT
 		{
 			both pb_crouch_walk_forward_pistol
 		}
-
-
 		strafing left
 		{
 			both pb_crouch_shoot_run_left
@@ -589,7 +566,6 @@ STATE COMBAT
 			both pb_prone_crawl_back
 		}
 	}
-
 	run
 	{
 		playerAnimType none
@@ -1022,7 +998,7 @@ prone_to_crouch
 {
 	default
 	{
-		both pb_prone2crouch duration 0
+		both pb_prone2crouch duration 1
 	}
 }
 
@@ -1030,7 +1006,7 @@ crouch_to_prone
 {
 	default
 	{
-		both pb_crouch2prone duration 0
+		both pb_crouch2prone duration 1
 	}
 }
 

@@ -1,10 +1,37 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
-    addEventListener("onConnected",     ::onConnected);
-    addEventListener("onJoinedTeam",    ::onJoinedTeam);
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	registerCvar("scr_blackout", "BOOL", 0);
+
+
+	if (game["firstInit"])
+	{
+		precacheString2("STRING_BLACKOUT_PROTECTION", &"Blackout Protection");
+		precacheString2("STRING_BLACKOUT_INFO", &"You see this map background because match is in progress.");
+
+		precacheStatusIcon("icon_blackout");
+	}
+
+	addEventListener("onConnected",     ::onConnected);
+	addEventListener("onJoinedTeam",    ::onJoinedTeam);
 }
+
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_blackout": level.scr_blackout = value; return true;
+	}
+	return false;
+}
+
 
 onConnected()
 {
@@ -12,7 +39,7 @@ onConnected()
     self.in_blackout = false;
 
 	// Make sure cvar is on 0 as default
-	self setClientCvar("ui_blackout", "0");
+	self setClientCvar2("ui_blackout", "0");
 }
 
 
@@ -42,7 +69,7 @@ spawnBlackout()
 	self.statusicon = "icon_blackout";
 
 	// Shows map background
-    self setClientCvar("ui_blackout", "1");
+    self setClientCvar2("ui_blackout", "1");
 
 	// Show player in none team
 	self showWarningMessage();
@@ -55,7 +82,7 @@ showWarningMessage()
 {
     if (!isDefined(self.blackout_bg))
     {
-		self.blackout_bg = newClientHudElem(self);
+		self.blackout_bg = newClientHudElem2(self);
 		self.blackout_bg.horzAlign = "center_safearea"; //
 		self.blackout_bg.vertAlign = "center_safearea"; // subtop top middle bottom fullscreen noscale alignto480 center_safearea
 		self.blackout_bg.alignx = "center";
@@ -66,7 +93,7 @@ showWarningMessage()
 		self.blackout_bg.foreground = false;
 		self.blackout_bg setShader("$levelBriefing", 896, 480);
 
-		self.blackout_info1 = newClientHudElem(self);
+		self.blackout_info1 = newClientHudElem2(self);
 		self.blackout_info1.alignx = "center";
 		self.blackout_info1.aligny = "top";
 		self.blackout_info1.x = 320;
@@ -76,9 +103,9 @@ showWarningMessage()
 		self.blackout_info1.sort = -2;
 		self.blackout_info1.color = (1, 1, 0);
 		self.blackout_info1.foreground = true;
-		self.blackout_info1 SetText(game["blackout_protection"]);
+		self.blackout_info1 SetText(game["STRING_BLACKOUT_PROTECTION"]);
 
-		self.blackout_info2 = newClientHudElem(self);
+		self.blackout_info2 = newClientHudElem2(self);
 		self.blackout_info2.alignx = "center";
 		self.blackout_info2.aligny = "top";
 		self.blackout_info2.x = 320;
@@ -88,7 +115,7 @@ showWarningMessage()
 		self.blackout_info2.sort = -1;
 		self.blackout_info2.color = (1, 1, 0);
 		self.blackout_info2.foreground = true;
-		self.blackout_info2 SetText(game["blackout_info"]);
+		self.blackout_info2 SetText(game["STRING_BLACKOUT_INFO"]);
     }
 }
 
@@ -97,14 +124,14 @@ removeBlackout()
 	if (self.statusicon == "icon_blackout")
 		self.statusicon = "";
 
-    self setClientCvar("ui_blackout", "0");
+    self setClientCvar2("ui_blackout", "0");
 
 	self.in_blackout = false;
 
     if (isDefined(self.blackout_bg))
-        self.blackout_bg destroy();
+        self.blackout_bg destroy2();
     if (isDefined(self.blackout_info1))
-        self.blackout_info1 destroy();
+        self.blackout_info1 destroy2();
     if (isDefined(self.blackout_info2))
-        self.blackout_info2 destroy();
+        self.blackout_info2 destroy2();
 }

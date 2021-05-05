@@ -1,94 +1,70 @@
+#include maps\mp\gametypes\global\_global;
+
 init()
 {
-	level.pam_folder = "mods/zpam310_beta6";
-
-	level.pam_mode_change = false;
-
-	if (!isInstalledCorrectly())
+	if(game["firstInit"])
 	{
-		// Is printed only for developer...
-		println("^1------------ zPAM Errors -----------");
-	    println(game["STRING_NOT_INSTALLED_CORRECTLY_1"]);
-	    println(game["STRING_NOT_INSTALLED_CORRECTLY_2"]);
-		println(level.fs_game + " != " + level.pam_folder);
-	    println("^1------------------------------------");
-
-		// Show error to all
-		level showError();
+		precacheString2("STRING_VERSION_INFO", &"zPAM 3.20"); // ZPAM_RENAME
 	}
 }
 
-isInstalledCorrectly()
+
+// Info about PAM, league name
+// Is removed at readyup after all players are ready
+PAM_Header(fadein)
 {
-	// If we are in listening mode, dont show bad installating error
-	if (getCvar("dedicated") == "0")
-		return true;
+	// Another thread is running..
+	if (isDefined(level.pam_header_visible))
+		return;
+	level.pam_header_visible = true;
 
-	// TODO - eyza 1337 safe
-	//if (getCvar("eyza") != "1337")
-	//	return false;
+	if (!isDefined(fadein))
+		fadein = false;
 
-	return tolower(level.fs_game) == tolower(level.pam_folder);
+
+
+	stringToShow = game["leagueString"];
+	if (isDefined(game["leagueStringOvertime"]) && game["overtime_active"])
+		stringToShow = game["leagueStringOvertime"];
+
+
+	leaguelogo = undefined;
+	pammode = undefined;
+	if (game["leagueLogo"] == "")
+	{
+		// Cyber gamer SD league
+		pammode = addHUD(10, 2, 1.2, (1,1,0), "left", "top", "left");
+		if (fadein) pammode showHUDSmooth(.5);
+		pammode setText(stringToShow);
+	}
+	else
+	{
+		leaguelogo = addHUD(7, 3, undefined, undefined, "left", "top", "left", "top");
+		if (fadein) leaguelogo showHUDSmooth(.5);
+		leaguelogo SetShader(game["leagueLogo"], 111, 28);
+
+		pammode = addHUD(33, 15, 0.45, (1,1,1), "left", "top", "left");
+		if (fadein) pammode showHUDSmooth(.5);
+		pammode.font = "bigfixed"; // default bigfixed smallfixed
+		pammode setText(stringToShow);
+	}
+
+	// zPAM v3.00
+	pam_version = addHUD(-20, 25, 1.2, (0.8,1,1), "right", "top", "right");
+	if (fadein) pam_version showHUDSmooth(.5);
+	pam_version setText(game["STRING_VERSION_INFO"]);
+
+	level waittill("pam_hud_delete");
+
+	if (isDefined(leaguelogo)) leaguelogo thread removeHUDSmooth(0.5);
+	if (isDefined(pammode)) pammode thread removeHUDSmooth(0.5);
+	pam_version thread removeHUDSmooth(0.5);
+
+	level.pam_header_visible = undefined;
 }
 
-showError()
+
+PAM_Header_Delete()
 {
-	bg = NewHudElem();
-	bg.horzAlign = "fullscreen";
-	bg.vertAlign = "fullscreen";
-	bg.alignx = "left";
-	bg.aligny = "top";
-	bg.alpha = 1;
-	bg.sort = -3;
-	bg.foreground = true;
-	bg setShader("black", 640, 480);
-
-	text1 = NewHudElem();
-	text1.alignx = "center";
-	text1.aligny = "top";
-	text1.x = 320;
-	text1.y = 180;
-	text1.fontscale = 1.9;
-	text1.alpha = 1;
-	text1.sort = -2;
-	text1.foreground = true;
-	text1.color = (1, .5, .5);
-	text1 SetText(game["STRING_NOT_INSTALLED_CORRECTLY_1"]);
-
-	text2 = NewHudElem();
-	text2.alignx = "center";
-	text2.aligny = "top";
-	text2.x = 320;
-	text2.y = 205;
-	text2.fontscale = 1.4;
-	text2.alpha = 1;
-	text2.sort = -1;
-	text2.foreground = true;
-	text2.color = (1, .5, .5);
-	text2 SetText(game["STRING_NOT_INSTALLED_CORRECTLY_2"]);
-
-	text3 = NewHudElem();
-	text3.alignx = "center";
-	text3.aligny = "top";
-	text3.x = 320;
-	text3.y = 235;
-	text3.fontscale = 1.2;
-	text3.alpha = 1;
-	text3.sort = -1;
-	text3.foreground = true;
-	text3.color = (1, .5, .5);
-	text3 SetText(game["STRING_GITHUB_URL_HELP"]);
-}
-
-ChangeTo(mode)
-{
-	// Will disable all comming map-restrat (so pam_mode can be changed correctly)
-	level.pam_mode_change = true;
-
-	iprintlnbold("^3zPAM mode changing to ^2" + mode);
-	iprintlnbold("^3Please wait...");
-
-	wait level.fps_multiplier * 3;
-
-	map_restart(false); // fast_restart
+	level notify("pam_hud_delete");
 }

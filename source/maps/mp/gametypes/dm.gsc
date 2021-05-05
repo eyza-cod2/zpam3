@@ -1,9 +1,12 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 main()
 {
-	InitCallbacks();
+	// Initialize global systems (scripts for events, cvars, hud, player...)
+	InitSystems();
 
+
+	// Register events that should be caught
 	addEventListener("onStartGameType", ::onStartGameType);
 	addEventListener("onConnecting", ::onConnecting);
 	addEventListener("onConnected", ::onConnected);
@@ -12,6 +15,12 @@ main()
 	addEventListener("onPlayerDamaged", ::onPlayerDamaged);
 	addEventListener("onPlayerKilling", ::onPlayerKilling);
 	addEventListener("onPlayerKilled", ::onPlayerKilled);
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	// Events for this gametype that are called last after all events are processed
+	level.onAfterConnected = ::onAfterConnected;
+	level.onAfterPlayerDamaged = ::onAfterPlayerDamaged;
+	level.onAfterPlayerKilled = ::onAfterPlayerKilled;
 
 	// Same functions across gametypes
 	level.autoassign = ::menuAutoAssign;
@@ -23,20 +32,58 @@ main()
 	level.spawnPlayer = ::spawnPlayer;
 	level.spawnSpectator = ::spawnSpectator;
 	level.spawnIntermission = ::spawnIntermission;
+
+
+	// Define gametype specific cvars here
+	// Default values of these variables are overwrited by rules
+	// Event onCvarChanged is called on every cvar registration
+	// Make sure that onCvarChanged event is added first before cvar registration
+	registerCvar("scr_dm_timelimit", "INT", 0, 0, 99999);
+	registerCvar("scr_dm_half_score", "INT", 0, 0, 99999);
+	registerCvar("scr_dm_end_score", "INT", 0, 0, 99999);
+	registerCvar("scr_dm_halftime", "BOOL", 1);
+
+
+	// Precache gametype specific stuff
+	if (game["firstInit"])
+		precache();
+
+	// Init all shared modules in this pam (scripts with underscore)
+	InitModules();
+}
+
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_dm_timelimit": 	level.timelimit = value; 	return true;
+		case "scr_dm_half_score": 	level.halfscorelimit = value; 	return true;
+		case "scr_dm_end_score": 	level.scorelimit = value; 	return true;
+		case "scr_dm_halftime": 	level.halftime_enabled = value; return true;
+	}
+	return false;
 }
 
 
 
-/*================
-Called by code after the level's main script function has run.
+// Precache specific stuff for this gametype
+// Is called only once per map
+precache()
+{
 
-Called again for every round in round-based gameplay
-================*/
+}
+
+
+// Called after the <gametype>.gsc::main() and <map>.gsc::main() scripts are called
+// At this point game specific variables are defined (like game["allies"], game["axis"], game["american_soldiertype"], ...)
+// Called again for every round in round-based gameplay
 onStartGameType()
 {
-	// First call of StartGameType() -> in SD is caled every round
-	// if this is a fresh map start, set nationalities based on cvars, otherwise leave game variable nationalities as set in the level script
-	if(!isdefined(game["gametypeStarted"]))
+	if(game["firstInit"])
 	{
 		// defaults if not defined in level script
 		if(!isdefined(game["allies"]))
@@ -44,8 +91,8 @@ onStartGameType()
 		if(!isdefined(game["axis"]))
 			game["axis"] = "german";
 
-		// Set up all the PAM Precache Goodies!
-		maps\mp\gametypes\_precache::Precache();
+		// Other variables
+		game["state"] = "playing";
 	}
 
 	// Main scores (not needed in DM, but needed for other scripts)
@@ -55,23 +102,10 @@ onStartGameType()
 	game["half_1_axis_score"] = 0;
 	game["half_2_allies_score"] = 0;
 	game["half_2_axis_score"] = 0;
-	game["Team_1_Score"] = 0;
-	game["Team_2_Score"] = 0;
 
-
-	// Other variables
-	if(!isdefined(game["state"]))
-		game["state"] = "playing";
-
-
-	// Inicialize all of the script files functions
-	maps\mp\gametypes\_init::initAllFunctions();
 
 	// Gametype specific variables
 	level.mapended = false;
-
-	game["gametypeStarted"] = true;
-
 
 
 
@@ -176,6 +210,41 @@ onConnected()
 	self.deaths = self.pers["deaths"];
 }
 
+// This function is called as last after all events are processed
+onAfterConnected()
+{
+	// If the game is at the post game state (scoreboard) the connecting player should spawn into intermission
+	if (game["state"] == "intermission")
+		spawnIntermission();
+
+	// If player is just connected and blackout needs to be activated
+	else if (self.pers["team"] == "none")
+	{
+		if (self maps\mp\gametypes\_blackout::isBlackoutNeeded())
+			self maps\mp\gametypes\_blackout::spawnBlackout();
+		else
+			spawnSpectator(); // spawn spec but no movement
+	}
+
+	// Spectator team
+	else if (self.pers["team"] == "spectator")
+		spawnSpectator();
+
+	// If team is selected
+	else if (self.pers["team"] == "allies" || self.pers["team"] == "axis")
+	{
+		// If player have choozen weapon
+		if(isDefined(self.pers["weapon"]))
+			spawnPlayer();
+		// If player have choosen team, but have not choosen weapon (he is selecting from weapons menu)
+		else
+			spawnSpectator();
+	}
+
+	else
+		assertMsg("Unknown team");
+}
+
 /*================
 Called when a player drops from the server.
 Will not be called between levels.
@@ -199,6 +268,11 @@ self is the player that took damage.
 */
 onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
 {
+}
+
+// Called as last funtction after all onPlayerDamaged events are processed
+onAfterPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
+{
 	if(!(iDFlags & level.iDFLAGS_NO_PROTECTION))
 	{
 		// Make sure at least one point of damage is done
@@ -210,7 +284,6 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 
 		// Shellshock/Rumble
 		self thread maps\mp\gametypes\_shellshock::shellshockOnDamage(sMeansOfDeath, iDamage);
-		self playrumble("damage_heavy");
 	}
 
 	// LOG stuff
@@ -236,6 +309,11 @@ Called when player is killed
 self is the player that was killed.
 */
 onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
+{
+}
+
+// Called as last funtction after all onPlayerKilled events are processed
+onAfterPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
 {
 	self endon("disconnect");
 	self endon("spawned");
@@ -313,7 +391,7 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 		body delete();
 
 	if(doKillcam && level.scr_killcam)
-		self maps\mp\gametypes\_killcam::killcam(attackerNum, -3, psOffsetTime, true);
+		self maps\mp\gametypes\_killcam::killcam(attackerNum, 4, 5, psOffsetTime, true);
 
 	if(isDefined(self.pers["weapon"]))
 		self thread spawnPlayer();
@@ -373,8 +451,8 @@ spawnPlayer()
 	self giveMaxAmmo(self.pers["weapon"]);
 
 	maps\mp\gametypes\_weapons::givePistol();
-	maps\mp\gametypes\_weapons::giveSmoke();
-	maps\mp\gametypes\_weapons::giveGrenade();
+	maps\mp\gametypes\_weapons::giveSmokesFor(self.pers["weapon"]);
+	maps\mp\gametypes\_weapons::giveGrenadesFor(self.pers["weapon"]);
 	maps\mp\gametypes\_weapons::giveBinoculars();
 
 	self setSpawnWeapon(self.pers["weapon"]);
@@ -460,13 +538,9 @@ startGame()
 {
 	level.starttime = getTime();
 
-	// Used in scoreboard info at the end of the round
-	if (!isDefined(game["matchStartTime"]))
-		game["matchStartTime"] = getTime();
-
 	if(level.timelimit > 0)
 	{
-		level.clock = newHudElem();
+		level.clock = newHudElem2();
 		level.clock.horzAlign = "center_safearea";
 		level.clock.vertAlign = "top";
 		level.clock.x = -25;
@@ -719,7 +793,7 @@ menuWeapon(response)
 
 
 	// After selecting a weapon, show "ingame" menu when ESC is pressed
-	self setClientCvar("g_scriptMainMenu", game["menu_ingame"]);
+	self setClientCvar2("g_scriptMainMenu", game["menu_ingame"]);
 
 	// If new selected weapon is same as actualy selected weapon, do nothing
 	if(isdefined(self.pers["weapon"]) && self.pers["weapon"] == weapon)

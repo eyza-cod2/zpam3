@@ -1,9 +1,12 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 main()
 {
-	InitCallbacks();
+	// Initialize global systems (scripts for events, cvars, hud, player...)
+	InitSystems();
 
+
+	// Register events that should be caught
 	addEventListener("onStartGameType", ::onStartGameType);
 	addEventListener("onConnecting", ::onConnecting);
 	addEventListener("onConnected", ::onConnected);
@@ -12,6 +15,11 @@ main()
 	addEventListener("onPlayerDamaged", ::onPlayerDamaged);
 	addEventListener("onPlayerKilling", ::onPlayerKilling);
 	addEventListener("onPlayerKilled", ::onPlayerKilled);
+
+	// Events for this gametype that are called last after all events are processed
+	level.onAfterConnected = ::onAfterConnected;
+	level.onAfterPlayerDamaged = ::onAfterPlayerDamaged;
+	level.onAfterPlayerKilled = ::onAfterPlayerKilled;
 
 	// Same functions across gametypes
 	level.autoassign = ::menuAutoAssign;
@@ -23,20 +31,32 @@ main()
 	level.spawnPlayer = ::spawnPlayer;
 	level.spawnSpectator = ::spawnSpectator;
 	level.spawnIntermission = ::spawnIntermission;
+
+	// Precache gametype specific stuff
+	if (game["firstInit"])
+		precache();
+
+	// Init all shared modules in this pam (scripts with underscore)
+	InitModules();
 }
 
+// Precache specific stuff for this gametype
+// Is called only once per map
+precache()
+{
+	precacheString2("STRING_FLY_ENABLED", &"Enabled");
+	precacheString2("STRING_FLY_DISABLED", &"Disabled");
+	precacheString2("STRING_ENABLE_HOLD_SHIFT", &"Enable: Hold ^3Bash");
+	precacheString2("STRING_DISABLE_HOLD_SHIFT", &"Disable: Hold ^3Bash");
+	precacheString2("STRING_GRENADE_EXPLODES_IN", &"Grenade explodes in");
+}
 
-
-/*================
-Called by code after the level's main script function has run.
-
-Called again for every round in round-based gameplay
-================*/
+// Called after the <gametype>.gsc::main() and <map>.gsc::main() scripts are called
+// At this point game specific variables are defined (like game["allies"], game["axis"], game["american_soldiertype"], ...)
+// Called again for every round in round-based gameplay
 onStartGameType()
 {
-	// First call of StartGameType() -> in SD is caled every round
-	// if this is a fresh map start, set nationalities based on cvars, otherwise leave game variable nationalities as set in the level script
-	if(!isdefined(game["gametypeStarted"]))
+	if(game["firstInit"])
 	{
 		// defaults if not defined in level script
 		if(!isdefined(game["allies"]))
@@ -48,38 +68,18 @@ onStartGameType()
 		if(!isdefined(game["defenders"]))
 			game["defenders"] = "axis";
 
-		precachestring(&"Grenade explodes in");
 
-		// Set up all the PAM Precache Goodies!
-		maps\mp\gametypes\_precache::Precache();
-	}
-
-
-	// Main scores
-	if(!isdefined(game["allies_score"]))
+		// Main scores
 		game["allies_score"] = 0;
-	setTeamScore("allies", game["allies_score"]);
+		setTeamScore("allies", game["allies_score"]);
 
-	if(!isdefined(game["axis_score"]))
 		game["axis_score"] = 0;
-	setTeamScore("axis", game["axis_score"]);
+		setTeamScore("axis", game["axis_score"]);
 
 
-	// Other variables
-	if(!isdefined(game["state"]))
+		// Other variables
 		game["state"] = "playing";
-
-
-
-
-	// Inicialize all of the script files functions
-	maps\mp\gametypes\_init::initAllFunctions();
-
-
-
-	game["gametypeStarted"] = true;
-
-
+	}
 
 
 
@@ -104,7 +104,7 @@ onStartGameType()
 
 
 
-	thread maps\mp\gametypes\_hud::PAM_Header();
+	thread maps\mp\gametypes\_pam::PAM_Header();
 	level Show_HUD_Global();
 
 	setClientNameMode("auto_change");
@@ -169,6 +169,28 @@ onConnected()
 	self thread Run_Strat();
 }
 
+// This function is called as last after all events are processed
+onAfterConnected()
+{
+	// Spectator team
+	if (self.pers["team"] == "none" || self.pers["team"] == "spectator")
+		spawnSpectator();
+
+	// If team is selected
+	else if (self.pers["team"] == "allies" || self.pers["team"] == "axis")
+	{
+		// If player have choozen weapon
+		if(isDefined(self.pers["weapon"]))
+			spawnPlayer();
+		// If player have choosen team, but have not choosen weapon (he is selecting from weapons menu)
+		else
+			spawnSpectator();
+	}
+	else
+		assertMsg("Unknown team");
+}
+
+
 /*================
 Called when a player drops from the server.
 Will not be called between levels.
@@ -177,6 +199,16 @@ self is the player that is disconnecting.
 onDisconnect()
 {
 	iprintln(&"MP_DISCONNECTED", self.name);
+
+	if (isDefined(self.bot))
+	{
+		kick(self.bot getEntityNumber());
+	}
+
+	if (isDefined(self.botLockPosition))
+	{
+		self.botLockPosition delete();
+	}
 }
 
 
@@ -214,6 +246,12 @@ self is the player that took damage.
 */
 onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
 {
+
+}
+
+// Called as last funtction after all onPlayerDamaged events are processed
+onAfterPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
+{
 	if(!(iDFlags & level.iDFLAGS_NO_PROTECTION))
 	{
 		// Make sure at least one point of damage is done
@@ -225,7 +263,6 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 
 		// Shellshock/Rumble
 		self thread maps\mp\gametypes\_shellshock::shellshockOnDamage(sMeansOfDeath, iDamage);
-		self playrumble("damage_heavy");
 	}
 
 	// LOG stuff
@@ -249,6 +286,12 @@ Called when player is killed
 self is the player that was killed.
 */
 onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
+{
+
+}
+
+// Called as last funtction after all onPlayerKilled events are processed
+onAfterPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
 {
 	self endon("disconnect");
 	self endon("spawned");
@@ -295,7 +338,6 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 	if(isDefined(self.pers["weapon"]))
 		self thread spawnPlayer();
 }
-
 
 
 
@@ -364,7 +406,7 @@ spawnPlayer()
 	self setSpawnWeapon(self.pers["weapon"]);
 
 	if (!maps\mp\gametypes\_bots::isBot())
-		self thread Watch_Grenade_Throw();
+		self thread Watch_Grenade_Throw(true);
 
 	// Notify "spawned" notifications
 	self notify("spawned");
@@ -581,7 +623,7 @@ menuWeapon(response)
 
 
 	// After selecting a weapon, show "ingame" menu when ESC is pressed
-	self setClientCvar("g_scriptMainMenu", game["menu_ingame"]);
+	self setClientCvar2("g_scriptMainMenu", game["menu_ingame"]);
 
 	// If new selected weapon is same as actualy selected weapon, do nothing
 	if(isdefined(self.pers["weapon"]) && self.pers["weapon"] == weapon)
@@ -692,7 +734,7 @@ Key_Toggle_FlyMode()
 	for(;;)
 	{
 		waittime = 0;
-		while (self meleebuttonpressed() && !self useButtonPressed())
+		while (self meleebuttonpressed() && !self useButtonPressed() && self playerAds() == 0)
 		{
 			waittime += level.frame;
 
@@ -854,7 +896,7 @@ Key_PlayRecord()
 
 
 // This is called when player spawns
-Watch_Grenade_Throw()
+Watch_Grenade_Throw(is_strat)
 {
 	self endon("disconnect");
 
@@ -865,11 +907,14 @@ Watch_Grenade_Throw()
 	nadename = self maps\mp\gametypes\_weapons::GetGrenadeTypeName();
 	smokename = self maps\mp\gametypes\_weapons::GetSmokeTypeName();
 
-	self giveWeapon(nadename);
-	self giveWeapon(smokename);
+	if (is_strat)
+	{
+		self giveWeapon(nadename);
+		self giveWeapon(smokename);
 
-	self setWeaponClipAmmo(nadename, 1);
-	self setWeaponClipAmmo(smokename, 1);
+		self setWeaponClipAmmo(nadename, 1);
+		self setWeaponClipAmmo(smokename, 1);
+	}
 
 	grenade_count_old	 = self maps\mp\gametypes\_weapons::getFragGrenadeCount();
 	smokegrenade_count_old = self maps\mp\gametypes\_weapons::getSmokeGrenadeCount();
@@ -881,13 +926,17 @@ Watch_Grenade_Throw()
 
 		if(grenade_count != grenade_count_old || smokegrenade_count != smokegrenade_count_old) {
 
-			// Refill grenades
-			self setWeaponClipAmmo(self maps\mp\gametypes\_weapons::GetGrenadeTypeName(), 1);
-			self setWeaponClipAmmo(self maps\mp\gametypes\_weapons::GetSmokeTypeName(), 1);
 
-			// Show explode in timer text
-			if (grenade_count != grenade_count_old)
-				self thread HUD_Grenade_Releases_In();
+			if (is_strat)
+			{
+				// Refill grenades
+				self setWeaponClipAmmo(self maps\mp\gametypes\_weapons::GetGrenadeTypeName(), 1);
+				self setWeaponClipAmmo(self maps\mp\gametypes\_weapons::GetSmokeTypeName(), 1);
+
+				// Show explode in timer text
+				if (grenade_count != grenade_count_old)
+					self thread HUD_Grenade_Releases_In();
+			}
 
 			// Follow nade if enabled
 			if (self.flaying_enabled)
@@ -1028,49 +1077,49 @@ savePos()
 
 Show_HUD_Global()
 {
-	level.granade1 = maps\mp\gametypes\_hud_system::addHUD(-35, 80, 1.2, (.8,1,1), "right", "top", "right");
+	level.granade1 = addHUD(-35, 80, 1.2, (.8,1,1), "right", "top", "right");
 	level.granade1 setText(&"Grenade flying");
 
 	// Enabled / Disabled
 	// Disable: Hold Shift / Enable: Hold Shift
 
-	level.granade2 = maps\mp\gametypes\_hud_system::addHUD(-35, 130, .9, (.8,1,1), "right", "top", "right");
-	level.granade2 setText(&"Stop: Press ^3[{+attack}]");
+	level.granade2 = addHUD(-35, 130, .9, (.8,1,1), "right", "top", "right");
+	level.granade2 setText(&"Stop: Press ^3Left mouse");
 
-	level.granade3 = maps\mp\gametypes\_hud_system::addHUD(-35, 140, .9, (.8,1,1), "right", "top", "right");
-	level.granade3 setText(&"Return: Press ^3[{+activate}]");
+	level.granade3 = addHUD(-35, 140, .9, (.8,1,1), "right", "top", "right");
+	level.granade3 setText(&"Return: Press ^3Use");
 
 
 
-	level.positionlogo = maps\mp\gametypes\_hud_system::addHUD(-35, 180, 1.2, (.8,1,1), "right", "top", "right");
+	level.positionlogo = addHUD(-35, 180, 1.2, (.8,1,1), "right", "top", "right");
 	level.positionlogo setText(&"Position");
 
-	level.savelogo = maps\mp\gametypes\_hud_system::addHUD(-35, 200, .9, (.8,1,1), "right", "top", "right");
-	level.savelogo setText(&"Save: Press ^3[{+melee_breath}] ^7twice");
+	level.savelogo = addHUD(-35, 200, .9, (.8,1,1), "right", "top", "right");
+	level.savelogo setText(&"Save: Press ^3Bash ^7twice");
 
-	level.loadlogo = maps\mp\gametypes\_hud_system::addHUD(-35, 210, .9, (.8,1,1), "right", "top", "right");
-	level.loadlogo setText(&"Load: Press ^3[{+activate}] ^7twice");
-
-
+	level.loadlogo = addHUD(-35, 210, .9, (.8,1,1), "right", "top", "right");
+	level.loadlogo setText(&"Load: Press ^3Use ^7twice");
 
 
-	level.trainingdummy = maps\mp\gametypes\_hud_system::addHUD(-35, 250, 1.2, (.8,1,1), "right", "top", "right");
+
+
+	level.trainingdummy = addHUD(-35, 250, 1.2, (.8,1,1), "right", "top", "right");
 	level.trainingdummy setText(&"Training Bot");
 
 	if (getCvarInt("sv_punkbuster") == 0)
 	{
-		level.trainingdummykey = maps\mp\gametypes\_hud_system::addHUD(-35, 270, .9, (.8,1,1), "right", "top", "right");
-		level.trainingdummykey setText(&"Spawn: Hold ^3[{+melee_breath}] ^7+ ^3[{+activate}]");
+		level.trainingdummykey = addHUD(-35, 270, .9, (.8,1,1), "right", "top", "right");
+		level.trainingdummykey setText(&"Spawn: Hold ^3Bash ^7+ ^3Use");
 
-		level.trainingdummyrecord = maps\mp\gametypes\_hud_system::addHUD(-35, 280, .9, (.8,1,1), "right", "top", "right");
-		level.trainingdummyrecord setText(&"Record: Hold ^3[{+attack}] ^7+ ^3[{+activate}]");
+		level.trainingdummyrecord = addHUD(-35, 280, .9, (.8,1,1), "right", "top", "right");
+		level.trainingdummyrecord setText(&"Record: Hold ^3Left mouse ^7+ ^3Use");
 
-		level.trainingdummyplay = maps\mp\gametypes\_hud_system::addHUD(-35, 290, .9, (.8,1,1), "right", "top", "right");
-		level.trainingdummyplay setText(&"Play: Hold ^3[{+activate}]");
+		level.trainingdummyplay = addHUD(-35, 290, .9, (.8,1,1), "right", "top", "right");
+		level.trainingdummyplay setText(&"Play: Hold ^3Use");
 	}
 	else
 	{
-		level.trainingdummywarn = maps\mp\gametypes\_hud_system::addHUD(-35, 270, .9, (1,1,0), "right", "top", "right");
+		level.trainingdummywarn = addHUD(-35, 270, .9, (1,1,0), "right", "top", "right");
 		level.trainingdummywarn setText(&"Disable Punkbuster!");
 	}
 }
@@ -1081,25 +1130,25 @@ Show_HUD_Player()
 	self endon("disconnect");
 
 	// Enabled / Disabled
-	self.nadelogo = maps\mp\gametypes\_hud_system::addHUDClient(self, -35, 100, 1.2, (1,1,1), "right", "top", "right");
+	self.nadelogo = addHUDClient(self, -35, 100, 1.2, (1,1,1), "right", "top", "right");
 
 	// Disable: Hold Shift
 	// Enable: Hold Shift
-	self.pressad = maps\mp\gametypes\_hud_system::addHUDClient(self, -35, 120, .9, (0.8,1,1), "right", "top", "right");
+	self.pressad = addHUDClient(self, -35, 120, .9, (0.8,1,1), "right", "top", "right");
 
 	for(;;)
 	{
 		if (self.flaying_enabled)
 		{
 			self.nadelogo.color = (.73, .99, .73);
-			self.nadelogo setText(game["flyenabled"]);
-			self.pressad setText(game["todisable"]);
+			self.nadelogo setText(game["STRING_FLY_ENABLED"]);
+			self.pressad setText(game["STRING_DISABLE_HOLD_SHIFT"]);
 		}
 		else
 		{
 			self.nadelogo.color = (1, .66, .66);
-			self.nadelogo setText(game["flydisabled"]);
-			self.pressad setText(game["toenable"]);
+			self.nadelogo setText(game["STRING_FLY_DISABLED"]);
+			self.pressad setText(game["STRING_ENABLE_HOLD_SHIFT"]);
 		}
 		wait level.frame * 3;
 	}
@@ -1114,20 +1163,20 @@ HUD_Grenade_Releases_In()
 	self endon("end_hud_grenade_explode");
 
 	if (isdefined(self.c))
-		self.c maps\mp\gametypes\_hud_system::removeHUD();
+		self.c removeHUD();
 	if(isdefined(self.exin))
-		self.exin maps\mp\gametypes\_hud_system::removeHUD();
+		self.exin removeHUD();
 
-	self.exin = maps\mp\gametypes\_hud_system::addHUDClient(self, -80, 310, 1.2, (.8,1,1), "right", "top", "right");
-	self.exin setText(&"Grenade explodes in");
+	self.exin = addHUDClient(self, -80, 310, 1.2, (.8,1,1), "right", "top", "right");
+	self.exin setText(game["STRING_GRENADE_EXPLODES_IN"]);
 
-	self.c = maps\mp\gametypes\_hud_system::addHUDClient(self, -35, 310, 1.2, (.8,1,1), "right", "top", "right");
+	self.c = addHUDClient(self, -35, 310, 1.2, (.8,1,1), "right", "top", "right");
 	self.c settenthsTimer(3.5);
 
 	wait level.fps_multiplier * 3.5;
 
-	self.c maps\mp\gametypes\_hud_system::removeHUD();
-	self.exin maps\mp\gametypes\_hud_system::removeHUD();
+	self.c removeHUD();
+	self.exin removeHUD();
 }
 
 
@@ -1209,7 +1258,7 @@ handle_bot(player)
 
 obj()
 {
-	newobjpoint = newHudElem();
+	newobjpoint = newHudElem2();
 	newobjpoint.name = "A";
 	newobjpoint.x = self.origin[0];
 	newobjpoint.y = self.origin[1];
@@ -1223,6 +1272,12 @@ obj()
 	{
 		wait level.frame;
 
+		if (!isDefined(self)) // obj was deleted
+		{
+			newobjpoint destroy();
+			break;
+		}
+
 		newobjpoint.x = self.origin[0];
 		newobjpoint.y = self.origin[1];
 		newobjpoint.z = self.origin[2];
@@ -1235,7 +1290,7 @@ record()
 	self endon("disconnect");
 
 	// Show black bar
-	self.kc_topbar = newClientHudElem(self);
+	self.kc_topbar = newClientHudElem2(self);
 	self.kc_topbar.archived = false;
 	self.kc_topbar.x = 0;
 	self.kc_topbar.y = 0;
@@ -1245,7 +1300,7 @@ record()
 	self.kc_topbar.sort = 99;
 	self.kc_topbar setShader("black", 640, 80);
 
-	self.kc_bottombar = newClientHudElem(self);
+	self.kc_bottombar = newClientHudElem2(self);
 	self.kc_bottombar.archived = false;
 	self.kc_bottombar.x = 0;
 	self.kc_bottombar.y = 400;
@@ -1266,8 +1321,8 @@ record()
 
 		if (distance(self.origin, origin_old) > 20)
 		{
-			self.kc_topbar destroy();
-			self.kc_bottombar destroy();
+			self.kc_topbar destroy2();
+			self.kc_bottombar destroy2();
 
 			self iprintlnbold("^3Record canceled. You moved!");
 
@@ -1309,8 +1364,8 @@ record()
 
 	self iprintlnbold("^2Recording saved");
 
-	self.kc_topbar destroy();
-	self.kc_bottombar destroy();
+	self.kc_topbar destroy2();
+	self.kc_bottombar destroy2();
 }
 
 playRecord()
@@ -1333,13 +1388,22 @@ playRecord()
 		return;
 	}
 
+	if (self.recording)
+	{
+		self iprintlnbold("^1Cannot play record while recording!");
+		return;
+	}
+
 	self iprintlnbold("Playing record...");
 	self iprintlnbold(" ");
 	self iprintlnbold(" ");
 	self iprintlnbold(" ");
 	self iprintlnbold(" ");
 
-	self.clock = newClientHudElem(self);
+	if (isDefined(self.clock))
+		self.clock destroy2();
+
+	self.clock = newClientHudElem2(self);
 	self.clock.font = "default";
 	self.clock.fontscale = 2;
 	self.clock.horzAlign = "center_safearea";
@@ -1349,19 +1413,20 @@ playRecord()
 	self.clock.y = 445;
 	self.clock setTimer(2 * 60);
 
+
 	bot = self.bot;
 	for (i = 0; i < self.recordsPos.size; i++)
 	{
+		// Cancel playing if bot is killed
+		if (!isDefined(self.bot) || !isAlive(bot))
+			break;
+
 		// MoveTo( <point>, <time>, <acceleration time>, <deceleration time> )
 		bot.botLockPosition moveto(self.recordsPos[i], 0.25);
 		bot SetPlayerAngles(self.recordsAngle[i]);
 
-		// Cancel playing if bot is killed
-		if (!isAlive(bot))
-			break;
-
 		wait level.fps_multiplier * 0.25;
 	}
 
-	self.clock destroy();
+	self.clock destroy2();
 }

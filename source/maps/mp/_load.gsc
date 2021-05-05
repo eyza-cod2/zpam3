@@ -1,5 +1,8 @@
 main()
 {
+	if (!isdefined(level._effect))
+		level._effect = [];
+		
 	thread maps\mp\_minefields::minefields();
 	thread maps\mp\_shutter::main();
 

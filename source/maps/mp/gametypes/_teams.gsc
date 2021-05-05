@@ -1,41 +1,105 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
-	precacheString(&"MP_AMERICAN");
-	precacheString(&"MP_BRITISH");
-	precacheString(&"MP_RUSSIAN");
+	addEventListener("onCvarChanged", ::onCvarChanged);
 
-	switch(game["allies"])
+	registerCvar("scr_teambalance", "INT", 0); 	        // Auto Team Balancing - number of difference between number of players // NOTE: restart needed
+
+
+	addEventListener("onStartGameType", 	::onStartGameType);
+	addEventListener("onConnected",    	::onConnected);
+    	addEventListener("onDisconnect",    	::onDisconnect);
+    	addEventListener("onJoinedAlliesAxis",  ::onJoinedAlliesAxis);
+        addEventListener("onJoinedSpectator",   ::onJoinedSpectator);
+}
+
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
 	{
-	case "american":
-		precacheShader("mpflag_american");
-		break;
-
-	case "british":
-		precacheShader("mpflag_british");
-		break;
-
-	case "russian":
-		precacheShader("mpflag_russian");
-		break;
+		case "scr_teambalance": 	level.scr_teambalance = value; return true;
 	}
+	return false;
+}
 
-	assert(game["axis"] == "german");
-	precacheShader("mpflag_german");
-	precacheShader("mpflag_spectator");
+// Called after the <gametype>.gsc::main() and <map>.gsc::main() scripts are called
+// At this point game specific variables are defined (like game["allies"], game["axis"], game["american_soldiertype"], ...)
+// Called again for every round in round-based gameplay
+onStartGameType()
+{
+	if (game["firstInit"])
+	{
+		precacheString(&"MP_AMERICAN");
+		precacheString(&"MP_BRITISH");
+		precacheString(&"MP_RUSSIAN");
+
+		switch(game["allies"])
+		{
+			case "american":
+				precacheShader("mpflag_american");
+				break;
+
+			case "british":
+				precacheShader("mpflag_british");
+				break;
+
+			case "russian":
+				precacheShader("mpflag_russian");
+				break;
+		}
+
+		assert(game["axis"] == "german");
+		precacheShader("mpflag_german");
+		precacheShader("mpflag_spectator");
+	}
 
 	level.teambalancetimer = 0;
 
-	level.maxclients = getCvarInt("sv_maxclients");
-
+	// Precache players character models
 	setPlayerModels();
 
-    addEventListener("onConnected",    	 	::onConnected);
-	addEventListener("onDisconnect",    	::onDisconnect);
-	addEventListener("onJoinedAlliesAxis",  ::onJoinedAlliesAxis);
-    addEventListener("onJoinedSpectator",   ::onJoinedSpectator);
+	// Monitor teams for rebalance
+	thread watchBalance();
+}
 
+
+onConnected()
+{
+	self updateAutoAssignCvar();
+	level thread updateTeamChangeCvars();
+}
+
+onDisconnect()
+{
+	// Fixed bug, when max team limit is reached and player disconnect, other players was unable to select team
+	level thread updateTeamChangeCvars();
+}
+
+onJoinedAlliesAxis()
+{
+	self updateTeamTime();
+
+	self updateAutoAssignCvar();
+	level thread updateTeamChangeCvars();
+}
+
+onJoinedSpectator()
+{
+	self.pers["teamTime"] = undefined;
+
+	self updateAutoAssignCvar();
+	level thread updateTeamChangeCvars();
+}
+
+
+
+watchBalance()
+{
 	if(level.gametype != "dm")
 	{
 		level.teamlimit = level.maxclients / 2;
@@ -69,7 +133,7 @@ init()
 					if(!getTeamBalance())
 					{
 						iprintlnbold(&"MP_AUTOBALANCE_SECONDS", 15);
-					    wait level.fps_multiplier * 15;
+					    	wait level.fps_multiplier * 15;
 
 						if(!getTeamBalance())
 							level balanceTeams();
@@ -84,33 +148,7 @@ init()
 	}
 }
 
-onConnected()
-{
-	self updateAutoAssignCvar();
-	level thread updateTeamChangeCvars();
-}
 
-onDisconnect()
-{
-	// Fixed bug, when max team limit is reached and player disconnect, other players was unable to select team
-	level thread updateTeamChangeCvars();
-}
-
-onJoinedAlliesAxis()
-{
-	self updateTeamTime();
-
-	self updateAutoAssignCvar();
-	level thread updateTeamChangeCvars();
-}
-
-onJoinedSpectator()
-{
-	self.pers["teamTime"] = undefined;
-
-	self updateAutoAssignCvar();
-	level thread updateTeamChangeCvars();
-}
 
 
 
@@ -288,13 +326,13 @@ updateTeamChangeCvars()
 				if(!isdefined(player.allow_joinallies) || player.allow_joinallies != 2)
 				{
 					player.allow_joinallies = 2;
-					player setClientCvar("ui_allow_joinallies", player.allow_joinallies);
+					player setClientCvar2("ui_allow_joinallies", player.allow_joinallies);
 				}
 
 				if(!isdefined(player.allow_joinaxis) || player.allow_joinaxis != joinaxis)
 				{
 					player.allow_joinaxis = joinaxis;
-					player setClientCvar("ui_allow_joinaxis", player.allow_joinaxis);
+					player setClientCvar2("ui_allow_joinaxis", player.allow_joinaxis);
 				}
 			}
 			else if(player.pers["team"] == "axis")
@@ -302,13 +340,13 @@ updateTeamChangeCvars()
 				if(!isdefined(player.allow_joinallies) || player.allow_joinallies != joinallies)
 				{
 					player.allow_joinallies = joinallies;
-					player setClientCvar("ui_allow_joinallies", player.allow_joinallies);
+					player setClientCvar2("ui_allow_joinallies", player.allow_joinallies);
 				}
 
 				if(!isdefined(player.allow_joinaxis) || player.allow_joinaxis != 2)
 				{
 					player.allow_joinaxis = 2;
-					player setClientCvar("ui_allow_joinaxis", player.allow_joinaxis);
+					player setClientCvar2("ui_allow_joinaxis", player.allow_joinaxis);
 				}
 			}
 		}
@@ -317,13 +355,13 @@ updateTeamChangeCvars()
 			if(!isdefined(player.allow_joinallies) || player.allow_joinallies != joinallies)
 			{
 				player.allow_joinallies = joinallies;
-				player setClientCvar("ui_allow_joinallies", player.allow_joinallies);
+				player setClientCvar2("ui_allow_joinallies", player.allow_joinallies);
 			}
 
 			if(!isdefined(player.allow_joinaxis) || player.allow_joinaxis != joinaxis)
 			{
 				player.allow_joinaxis = joinaxis;
-				player setClientCvar("ui_allow_joinaxis", player.allow_joinaxis);
+				player setClientCvar2("ui_allow_joinaxis", player.allow_joinaxis);
 			}
 		}
 	}
@@ -333,9 +371,9 @@ updateAutoAssignCvar()
 {
 	// If we are in allies or axis team, disable auto-assing
 	if(self.pers["team"] == "allies" || self.pers["team"] == "axis")
-		self setClientCvar("ui_allow_joinauto", "2"); // disable
+		self setClientCvar2("ui_allow_joinauto", "2"); // disable
 	else
-		self setClientCvar("ui_allow_joinauto", "1"); // enable
+		self setClientCvar2("ui_allow_joinauto", "1"); // enable
 }
 
 
@@ -426,4 +464,9 @@ CountPlayers()
 	players["allies"] = allies;
 	players["axis"] = axis;
 	return players;
+}
+
+// This is for compatibility reasons only - some custom maps call this function
+addTestClients()
+{
 }

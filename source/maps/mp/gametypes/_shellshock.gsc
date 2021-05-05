@@ -1,11 +1,30 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 // Source from maps/mp/pam/shellshock.gsc
 // content moved here
 
 init()
 {
-	precacheShellShock("default");
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	registerCvar("scr_allow_shellshock", "BOOL", 1);
+
+	if(game["firstInit"])
+	{
+		precacheShellShock("default");
+	}
+}
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_allow_shellshock": 		level.scr_allow_shellshock = value; return true;
+	}
+	return false;
 }
 
 shellshockOnDamage(cause, damage)

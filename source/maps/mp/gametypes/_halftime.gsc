@@ -1,18 +1,22 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
-	if (!isDefined(game["is_halftime"]))
+	if(game["firstInit"])
+	{
 		game["is_halftime"] = false;
+
+		precacheString2("STRING_HALFTIME", &"Halftime");
+		precacheString2("STRING_TEAM_AUTO_SWITCH", &"Team Auto-Switch");
+	}
 }
+
 
 // called at the end of last half-round (after last player is killed)
 Do_Half_Time()
 {
 	// Show pam header, scoreboard + info about halftime
-	thread maps\mp\gametypes\_hud::PAM_Header();
-	thread maps\mp\gametypes\_hud::ScoreBoard(true); // call this before game["is_halftime"] is set to true
-	thread maps\mp\gametypes\_hud::TeamSwap();
+	HUD_TeamSwap();
 
 	wait level.fps_multiplier * 4;
 
@@ -39,9 +43,17 @@ Do_Half_Time()
 
 
 	// Switch team for match info
-	match_team1_side = game["match_team1_side"];
-	game["match_team1_side"] = game["match_team2_side"];
-	game["match_team2_side"] = match_team1_side;
+	if (game["scr_matchinfo"] == 1 || game["scr_matchinfo"] == 2)
+	{
+		match_team1_side = game["match_team1_side"];
+		game["match_team1_side"] = game["match_team2_side"];
+		game["match_team2_side"] = match_team1_side;
+	}
+
+	// Switch score progress For spectators
+	allies_score_history = game["allies_score_history"];
+	game["allies_score_history"] = game["axis_score_history"] + "^7|";
+	game["axis_score_history"] = allies_score_history + "^7|";
 
 
 	axissavedmodel = undefined;
@@ -101,4 +113,26 @@ Do_Half_Time()
 
 	if (!level.pam_mode_change)
 		map_restart(true);
+}
+
+/*
+        Halftime
+    Team auto switch
+*/
+// Called when halftime is called at the end of the round
+HUD_TeamSwap()
+{
+	x = -85;
+	y = 240;
+
+	// Halftime
+	halftime = addHUD(x, y, 1.2, (1,1,0), "center", "middle", "right");
+	halftime showHUDSmooth(.5);
+	halftime setText(game["STRING_HALFTIME"]);
+	y += 20;
+
+	// Team auto switch
+	switching = addHUD(x, y, 1.2, (1,1,0), "center", "middle", "right");
+	switching showHUDSmooth(.5);
+	switching setText(game["STRING_TEAM_AUTO_SWITCH"]);
 }

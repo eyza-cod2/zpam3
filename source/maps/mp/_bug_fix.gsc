@@ -1,4 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 // Called in echa map inicialization
 // Spawning xmodels to fix a bugs
@@ -263,25 +263,6 @@ carentan()
 
 	window1_collision = spawn("trigger_radius", window1.origin, 0, 8 , 50);
 	window1_collision setcontents(1);
-
-//TODO
-/*
-  // A walls
-  precacheModel("xmodel/prop_door_wood");
-  wall = spawn("script_model",(-934,1885,-8));
-  wall.angles = (0,312,0);
-  wall setmodel("xmodel/prop_door_wood");
-
-  wall maps\mp\gametypes\__developer::moving_obj("");*/
-
-
-/*
-  // spawn(<classname>, <origin>, <flags>, <radius>, <height>)
-	jump = spawn("trigger_radius", (651, 557, 190), 0, 8, 30);
-	jump setcontents(1);
-  jump = spawn("trigger_radius", (651, 500, 190), 0, 8, 30);
-	jump setcontents(1);
-*/
 }
 
 

@@ -1,10 +1,214 @@
-#include maps\mp\gametypes\_callbacksetup;
-
-#include maps\mp\_utility;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
-	precacheWeapons();
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	registerCvars();
+
+	addEventListener("onStartGameType", ::onStartGameType);
+}
+
+// Called from start_gametype when registring cvars
+registerCvars()
+{
+	var = ::registerCvar;
+
+	// Nade spawn counts for each class
+	[[var]]("scr_boltaction_nades", "INT", 3, 0, 99);
+	[[var]]("scr_semiautomatic_nades", "INT", 2, 0, 99);
+	[[var]]("scr_smg_nades", "INT", 1, 0, 99);
+	[[var]]("scr_sniper_nades", "INT", 3, 0, 99);
+	[[var]]("scr_mg_nades", "INT", 2, 0, 99);
+	[[var]]("scr_shotgun_nades", "INT", 1, 0, 99);
+
+	// Smoke spawn counts for each class
+	[[var]]("scr_boltaction_smokes", "INT", 0, 0, 99);
+	[[var]]("scr_semiautomatic_smokes", "INT", 0, 0, 99);
+	[[var]]("scr_smg_smokes", "INT", 1, 0, 99);
+	[[var]]("scr_sniper_smokes", "INT", 0, 0, 99);
+	[[var]]("scr_mg_smokes", "INT", 0, 0, 99);
+	[[var]]("scr_shotgun_smokes", "INT", 1, 0, 99);
+
+	// Weapon Limits by class per team
+	[[var]]("scr_boltaction_limit", "INT", 99, 0, 99);
+	[[var]]("scr_sniper_limit", "INT", 99, 0, 99);
+	[[var]]("scr_semiautomatic_limit", "INT", 99, 0, 99);
+	[[var]]("scr_smg_limit", "INT", 99, 0, 99);
+	[[var]]("scr_mg_limit", "INT", 99, 0, 99);
+	[[var]]("scr_shotgun_limit", "INT", 99, 0, 99);
+
+	// Allow weapon drop when player die
+	[[var]]("scr_boltaction_allow_drop", "BOOL", 1);
+	[[var]]("scr_sniper_allow_drop", "BOOL", 1);
+	[[var]]("scr_semiautomatic_allow_drop", "BOOL", 1);
+	[[var]]("scr_smg_allow_drop", "BOOL", 1);
+	[[var]]("scr_mg_allow_drop", "BOOL", 1);
+	[[var]]("scr_shotgun_allow_drop", "BOOL", 1);
+
+
+
+	// Allow/Disallow Weapons
+	[[var]]("scr_allow_greasegun", "BOOL", 1);
+	[[var]]("scr_allow_m1carbine", "BOOL", 1);
+	[[var]]("scr_allow_m1garand", "BOOL", 1);
+	[[var]]("scr_allow_springfield", "BOOL", 1);
+	[[var]]("scr_allow_thompson", "BOOL", 1);
+	[[var]]("scr_allow_bar", "BOOL", 1);
+	[[var]]("scr_allow_sten", "BOOL", 1);
+	[[var]]("scr_allow_enfield", "BOOL", 1);
+	[[var]]("scr_allow_enfieldsniper", "BOOL", 1);
+	[[var]]("scr_allow_bren", "BOOL", 1);
+	[[var]]("scr_allow_pps42", "BOOL", 1);
+	[[var]]("scr_allow_nagant", "BOOL", 1);
+	[[var]]("scr_allow_svt40", "BOOL", 1);
+	[[var]]("scr_allow_nagantsniper", "BOOL", 1);
+	[[var]]("scr_allow_ppsh", "BOOL", 1);
+	[[var]]("scr_allow_mp40", "BOOL", 1);
+	[[var]]("scr_allow_kar98k", "BOOL", 1);
+	[[var]]("scr_allow_g43", "BOOL", 1);
+	[[var]]("scr_allow_kar98ksniper", "BOOL", 1);
+	[[var]]("scr_allow_mp44", "BOOL", 1);
+	[[var]]("scr_allow_shotgun", "BOOL", 1);
+
+
+
+	// Allow grenade / smoke drop when player die
+	[[var]]("scr_allow_grenade_drop", "BOOL", 1); 	// level.allow_nadedrops
+	[[var]]("scr_allow_smoke_drop", "BOOL", 1); 	// level.allow_smokedrops
+
+
+
+	[[var]]("scr_allow_pistols", "BOOL", 1); 	// level.allow_pistols // NOTE: in sd next round
+	[[var]]("scr_allow_turrets", "BOOL", 1); 	// level.allow_turrets // NOTE: after map/round reset
+
+
+	[[var]]("scr_no_oneshot_pistol_kills", "BOOL", 0); 	//level.prevent_single_shot_pistol // Single Shot Kills
+	[[var]]("scr_no_oneshot_ppsh_kills", "BOOL", 0); 	//level.prevent_single_shot_ppsh // Single Shot Kills
+	[[var]]("scr_balance_ppsh_distance", "BOOL", 0); 	//level.balance_ppsh //ppsh -> tommy balance
+
+
+	registerCvarEx("C", "scr_shotgun_rebalance", "BOOL", 0);	// level.scr_shotgun_rebalance
+	registerCvarEx("C", "scr_hand_hitbox_fix", "BOOL", 0);		// level.scr_hand_hitbox_fix
+}
+
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		// Nothing get updated because we are getting value directly from getCvar()
+		case "scr_boltaction_nades":
+		case "scr_boltaction_smokes":
+		case "scr_semiautomatic_nades":
+		case "scr_semiautomatic_smokes":
+		case "scr_smg_nades":
+		case "scr_smg_smokes":
+		case "scr_sniper_nades":
+		case "scr_sniper_smokes":
+		case "scr_mg_nades":
+		case "scr_mg_smokes":
+		case "scr_shotgun_nades":
+		case "scr_shotgun_smokes":
+		return true;
+
+		// If class limit changed, update all weapons
+		case "scr_boltaction_limit":
+		case "scr_sniper_limit":
+		case "scr_semiautomatic_limit":
+		case "scr_smg_limit":
+		case "scr_mg_limit":
+		case "scr_shotgun_limit":
+			if (!isRegisterTime)
+			{
+				thread updateLimit(cvar, value);
+				thread maps\mp\gametypes\_weapon_limiter::Update_All_Weapon_Limits();
+			}
+		return true;
+
+
+		// Allow weapon drop if player dead
+		case "scr_boltaction_allow_drop":
+		case "scr_sniper_allow_drop":
+		case "scr_semiautomatic_allow_drop":
+		case "scr_smg_allow_drop":
+		case "scr_mg_allow_drop":
+		case "scr_shotgun_allow_drop":
+            		if (!isRegisterTime) thread updateDrop(cvar, value);
+			return true;
+
+
+
+		// If some wepaons was enabled/disabled
+		case "scr_allow_greasegun":
+		case "scr_allow_m1carbine":
+		case "scr_allow_m1garand":
+		case "scr_allow_springfield":
+		case "scr_allow_thompson":
+		case "scr_allow_bar":
+		case "scr_allow_sten":
+		case "scr_allow_enfield":
+		case "scr_allow_enfieldsniper":
+		case "scr_allow_bren":
+		case "scr_allow_pps42":
+		case "scr_allow_nagant":
+		case "scr_allow_svt40":
+		case "scr_allow_nagantsniper":
+		case "scr_allow_ppsh":
+		case "scr_allow_mp40":
+		case "scr_allow_kar98k":
+		case "scr_allow_g43":
+		case "scr_allow_kar98ksniper":
+		case "scr_allow_mp44":
+		case "scr_allow_shotgun":
+			if (!isRegisterTime) thread updateAllowed(cvar, value);
+		return true;
+
+
+
+		case "scr_allow_grenade_drop": 		level.allow_nadedrops = value; return true;
+        	case "scr_allow_smoke_drop": 		level.allow_smokedrops = value; return true;
+
+
+
+
+
+		case "scr_allow_pistols": 		level.allow_pistols = value; return true;
+		case "scr_allow_turrets": 		level.allow_turrets = value; return true;
+
+
+		case "scr_no_oneshot_pistol_kills": 		level.prevent_single_shot_pistol = value; return true;
+		case "scr_no_oneshot_ppsh_kills": 		level.prevent_single_shot_ppsh = value; return true;
+		case "scr_balance_ppsh_distance": 		level.balance_ppsh = value; return true;
+
+
+		case "scr_shotgun_rebalance":
+			level.scr_shotgun_rebalance = value;
+			return true;
+
+		case "scr_hand_hitbox_fix":
+			level.scr_hand_hitbox_fix = value;
+			return true;
+
+	}
+
+
+	return false;
+}
+
+
+// Called after the <gametype>.gsc::main() and <map>.gsc::main() scripts are called
+// At this point game specific variables are defined (like game["allies"], game["axis"], game["american_soldiertype"], ...)
+// Called again for every round in round-based gameplay
+onStartGameType()
+{
+	if(game["firstInit"])
+	{
+		precacheWeapons();
+	}
 
 	// Weapons & Limits
 	maps\mp\gametypes\_weapons::defineWeapons();
@@ -17,17 +221,6 @@ init()
 	}
 }
 
-
-
-deletePlacedEntity(entity)
-{
-	entities = getentarray(entity, "classname");
-	for(i = 0; i < entities.size; i++)
-	{
-		//println("DELETED: ", entities[i].classname);
-		entities[i] delete();
-	}
-}
 
 precacheWeapons()
 {
@@ -221,86 +414,15 @@ addClass(className, cvarLimit, cvarNades, cvarSmokes, cvarAllowDrop)
 }
 
 
-// Called from start_gametype when registring cvars
-loadWeaponCvars()
+
+deletePlacedEntity(entity)
 {
-	var = maps\mp\gametypes\_cvar_system::addScriptCvar;
-
-	// Nade spawn counts for each class
-	[[var]]("scr_boltaction_nades", "INT", 3, 0, 99);
-	[[var]]("scr_semiautomatic_nades", "INT", 2, 0, 99);
-	[[var]]("scr_smg_nades", "INT", 1, 0, 99);
-	[[var]]("scr_sniper_nades", "INT", 3, 0, 99);
-	[[var]]("scr_mg_nades", "INT", 2, 0, 99);
-	[[var]]("scr_shotgun_nades", "INT", 1, 0, 99);
-
-	// Smoke spawn counts for each class
-	[[var]]("scr_boltaction_smokes", "INT", 0, 0, 99);
-	[[var]]("scr_semiautomatic_smokes", "INT", 0, 0, 99);
-	[[var]]("scr_smg_smokes", "INT", 1, 0, 99);
-	[[var]]("scr_sniper_smokes", "INT", 0, 0, 99);
-	[[var]]("scr_mg_smokes", "INT", 0, 0, 99);
-	[[var]]("scr_shotgun_smokes", "INT", 1, 0, 99);
-
-	// Weapon Limits by class per team
-	[[var]]("scr_boltaction_limit", "INT", 99, 0, 99);
-	[[var]]("scr_sniper_limit", "INT", 99, 0, 99);
-	[[var]]("scr_semiautomatic_limit", "INT", 99, 0, 99);
-	[[var]]("scr_smg_limit", "INT", 99, 0, 99);
-	[[var]]("scr_mg_limit", "INT", 99, 0, 99);
-	[[var]]("scr_shotgun_limit", "INT", 99, 0, 99);
-
-	// Allow weapon drop when player die
-	[[var]]("scr_boltaction_allow_drop", "BOOL", 1);
-	[[var]]("scr_sniper_allow_drop", "BOOL", 1);
-	[[var]]("scr_semiautomatic_allow_drop", "BOOL", 1);
-	[[var]]("scr_smg_allow_drop", "BOOL", 1);
-	[[var]]("scr_mg_allow_drop", "BOOL", 1);
-	[[var]]("scr_shotgun_allow_drop", "BOOL", 1);
-
-
-
-	// Allow/Disallow Weapons
-	[[var]]("scr_allow_greasegun", "BOOL", 1);
-	[[var]]("scr_allow_m1carbine", "BOOL", 1);
-	[[var]]("scr_allow_m1garand", "BOOL", 1);
-	[[var]]("scr_allow_springfield", "BOOL", 1);
-	[[var]]("scr_allow_thompson", "BOOL", 1);
-	[[var]]("scr_allow_bar", "BOOL", 1);
-	[[var]]("scr_allow_sten", "BOOL", 1);
-	[[var]]("scr_allow_enfield", "BOOL", 1);
-	[[var]]("scr_allow_enfieldsniper", "BOOL", 1);
-	[[var]]("scr_allow_bren", "BOOL", 1);
-	[[var]]("scr_allow_pps42", "BOOL", 1);
-	[[var]]("scr_allow_nagant", "BOOL", 1);
-	[[var]]("scr_allow_svt40", "BOOL", 1);
-	[[var]]("scr_allow_nagantsniper", "BOOL", 1);
-	[[var]]("scr_allow_ppsh", "BOOL", 1);
-	[[var]]("scr_allow_mp40", "BOOL", 1);
-	[[var]]("scr_allow_kar98k", "BOOL", 1);
-	[[var]]("scr_allow_g43", "BOOL", 1);
-	[[var]]("scr_allow_kar98ksniper", "BOOL", 1);
-	[[var]]("scr_allow_mp44", "BOOL", 1);
-	[[var]]("scr_allow_shotgun", "BOOL", 1);
-
-
-
-	// Allow grenade / smoke drop when player die
-	[[var]]("scr_allow_grenade_drop", "BOOL", 1); 	// level.allow_nadedrops
-	[[var]]("scr_allow_smoke_drop", "BOOL", 1); 	// level.allow_smokedrops
-
-	// Player's weapon drop
-	[[var]]("scr_allow_primary_drop", "BOOL", 0); 	// level.allow_primary_drop
-	[[var]]("scr_allow_secondary_drop", "BOOL", 0); 	// level.allow_secondary_drop
-
-
-	[[var]]("scr_allow_pistols", "BOOL", 1); 	// level.allow_pistols // NOTE: in sd next round
-	[[var]]("scr_allow_turrets", "BOOL", 1); 	// level.allow_turrets // NOTE: after map/round reset
-
-
-	[[var]]("scr_no_oneshot_pistol_kills", "BOOL", 0); 	//level.prevent_single_shot_pistol // Single Shot Kills
-	[[var]]("scr_no_oneshot_ppsh_kills", "BOOL", 0); 	//level.prevent_single_shot_ppsh // Single Shot Kills
-	[[var]]("scr_balance_ppsh_distance", "BOOL", 0); 	//level.balance_ppsh //ppsh -> tommy balance
+	entities = getentarray(entity, "classname");
+	for(i = 0; i < entities.size; i++)
+	{
+		//println("DELETED: ", entities[i].classname);
+		entities[i] delete();
+	}
 }
 
 
@@ -378,7 +500,7 @@ GetSmokeTypeName()
 }
 
 
-giveGrenade(count)
+giveGrenadesFor(weapon, count)
 {
 	// remove all grenades
 	self takeWeapon("frag_grenade_american_mp");
@@ -387,7 +509,7 @@ giveGrenade(count)
 	self takeWeapon("frag_grenade_german_mp");
 
 	grenadetype = self GetGrenadeTypeName();
-	fraggrenadecount = getWeaponBasedGrenadeCount(self.pers["weapon"]);
+	fraggrenadecount = getWeaponBasedGrenadeCount(weapon);
 
 	if(fraggrenadecount)
 	{
@@ -401,7 +523,7 @@ giveGrenade(count)
 	self switchtooffhand(grenadetype);
 }
 
-giveSmoke(count)
+giveSmokesFor(weapon, count)
 {
 	// remove all smokes
 	self takeWeapon("smoke_grenade_american_mp");
@@ -410,7 +532,7 @@ giveSmoke(count)
 	self takeWeapon("smoke_grenade_german_mp");
 
 	smokegrenadetype = self GetSmokeTypeName();
-	smokegrenadecount = getWeaponBasedSmokeGrenadeCount(self.pers["weapon"]);
+	smokegrenadecount = getWeaponBasedSmokeGrenadeCount(weapon);
 
 	if(smokegrenadecount)
 	{
@@ -466,7 +588,7 @@ dropWeapon()
 	{
 		weapon_class = level.weapons[current].classname;
 
-		if (!maps\mp\gametypes\_cvars::getValue(level.weaponclass[weapon_class].cvarAllowDrop))
+		if (getCvarInt(level.weaponclass[weapon_class].cvarAllowDrop) == 0)
 			return;
 	}
 
@@ -562,7 +684,7 @@ getWeaponBasedGrenadeCount(weapon)
 	className = level.weapons[weapon].classname;
 	cvarNades = level.weaponclass[className].cvarNades;
 
-	return maps\mp\gametypes\_cvars::getValue(cvarNades);
+	return getCvarInt(cvarNades);
 }
 
 getWeaponBasedSmokeGrenadeCount(weapon)
@@ -570,7 +692,7 @@ getWeaponBasedSmokeGrenadeCount(weapon)
 	className = level.weapons[weapon].classname;
 	cvarSmokes = level.weaponclass[className].cvarSmokes;
 
-	return maps\mp\gametypes\_cvars::getValue(cvarSmokes);
+	return getCvarInt(cvarSmokes);
 }
 
 getFragGrenadeCount()
@@ -776,7 +898,7 @@ updateAllowed(cvarName, cvarValue)
 			players = getentarray("player", "classname");
 			for(i = 0; i < players.size; i++)
 			{
-				players[i] setClientCvar(level.weapons[weaponname].client_allowcvar, cvarvalue);
+				players[i] setClientCvar2(level.weapons[weaponname].client_allowcvar, cvarvalue);
 			}
 
 			break;

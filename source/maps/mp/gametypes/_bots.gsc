@@ -1,27 +1,67 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 Init()
 {
-	level thread bots_add();
-	level thread bots_remove();
-	level thread bots_removeAll();
-	level thread bots_autoFill();
-
 	addEventListener("onConnecting",    ::onConnecting);
-    addEventListener("onConnected",     ::onConnected);
+	addEventListener("onConnected",     ::onConnected);
+	addEventListener("onCvarChanged", ::onCvarChanged);
 
+	// Define cvars here
+	// Default values of these variables are overwrited by rules
+	// Event onCvarChanged is called on every cvar registration, make sure that onCvarChanged event is added first before cvar registration
+
+	registerCvarEx("I", "scr_bots_add", "INT", 0, 0, 64); 		// add <num> bots to the server
+	registerCvarEx("I", "scr_bots_remove", "INT", 0, 0, 64); 	// remove <num> bots from the server
+	registerCvarEx("I", "scr_bots_removeAll", "BOOL", 0);		// remove all bots from server
+	registerCvarEx("I", "scr_bots_fillEnabled", "BOOL", 0);		// enable / disable fill the server with bots automaticly up to limit
+	registerCvarEx("I", "scr_bots_fillMaxBots", "INT", 6, 0, 64); 	// maximum number of bots
+
+	// Watch cvar change
+	level thread bots_autoFill();
 }
 
-/*
-scr_bots_add <num>   // add <num> bots to the server
-scr_bots_remove <num>  // number of bots to remove
-scr_bots_removeAll = 1
 
-scr_bots_fillEnabled = 1 	// fill the server with bots automaticly up to limit
-scr_bots_fillMaxBots = 6
-scr_bots_fillAutoBalance = 1
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_bots_add":
+			if (value > 0)
+			{
+				iprintln("Adding " + value + " bots to the server.");
+				addBots(value);
+				changeCvarQuiet("scr_bots_add", 0);
+			}
+			return true;
 
-*/
+
+		case "scr_bots_remove":
+			if(value > 0) {
+				iprintln("Removing " + value + " bots from the server.");
+				removeBots(value);
+				changeCvarQuiet("scr_bots_remove", 0);
+			}
+			return true;
+
+
+		case "scr_bots_removeall":
+			if(value == 1)
+			{
+				iprintln("Removing all bots from the server.");
+				removeBots(64);
+				changeCvarQuiet("scr_bots_removeAll", 0);
+			}
+			return true;
+
+		case "scr_bots_fillenabled": 		level.bots_fillEnabled = value;		return true;
+		case "scr_bots_fillmaxbots": 		level.bots_fillMaxBots = value;		return true;
+	}
+	return false;
+}
+
 
 onConnecting()
 {
@@ -130,56 +170,6 @@ removeBots(number)
 }
 
 
-bots_add()
-{
-	for(;;)
-	{
-		wait level.fps_multiplier * 1;
-
-		testclients = getCvarInt("scr_bots_add");
-		if(testclients > 0) {
-			setCvar("scr_bots_add", 0);
-
-			iprintln("Adding " + testclients + " bots to the server.");
-
-			addBots(testclients);
-		}
-	}
-}
-
-bots_removeAll()
-{
-	for(;;)
-	{
-		wait level.fps_multiplier * 1;
-
-		removeAll = getCvarInt("scr_bots_removeAll");
-		if(removeAll == 1) {
-			setCvar("scr_bots_removeAll", 0);
-
-			iprintln("Removing all bots from the server.");
-
-			removeBots(64);
-		}
-	}
-}
-
-bots_remove()
-{
-	for(;;)
-	{
-		wait level.fps_multiplier * 1;
-
-		testclients = getCvarInt("scr_bots_remove");
-		if(testclients > 0) {
-			setCvar("scr_bots_remove", 0);
-
-			iprintln("Removing " + testclients + " bots from the server.");
-
-			removeBots(testclients);
-		}
-	}
-}
 
 bots_autoFill()
 {

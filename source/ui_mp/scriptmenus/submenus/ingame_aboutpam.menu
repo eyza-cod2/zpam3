@@ -70,7 +70,7 @@ itemDef
 	visible			1
 	origin			0 136
 	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"Join us on discord ^9CyberGamer Europe ^7in ^9#cod2-zpam-3 ^7channel."
+	text			"Join us on discord ^9LetsPlay Europe ^7in ^9#cod2-zpam-3 ^7channel."
 	textfont		UI_FONT_NORMAL
 	textscale		0.25
 	textstyle		ITEM_TEXTSTYLE_SHADOWED

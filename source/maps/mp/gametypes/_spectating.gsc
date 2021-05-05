@@ -1,9 +1,36 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	registerCvar("scr_spectatefree", "BOOL", 0);
+	registerCvar("scr_spectateenemy", "BOOL", 0);
+
 	addEventListener("onJoinedTeam",    ::onJoinedTeam);
-    addEventListener("onSpawned",    ::onSpawned);
+	addEventListener("onSpawned",    ::onSpawned);
+}
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_spectatefree":
+			level.scr_spectatefree = value;
+			if (!isRegisterTime)
+				level thread setSpectatePermissionsToAll();
+			return true;
+
+		case "scr_spectateenemy":
+			level.scr_spectateenemy = value;
+			if (!isRegisterTime)
+				level thread setSpectatePermissionsToAll();
+			return true;
+	}
+	return false;
 }
 
 // On player join a team

@@ -51,8 +51,7 @@
 		ITEM_BUTTON 				(ORIGIN_CHOICE6, "6. About PAM", ;, 		CLOSE_ALL; open aboutpam; open ingame_keys;)
 		ITEM_BUTTON 				(ORIGIN_CHOICE7, "7. Leave Game", ;, 		CLOSE_ALL; close ingame; open leavegame;)
 
-		// TODO: disable in final release
-		//ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE9, "Debug", "debug", showDvar{"1"}, ;, scriptMenuResponse "debug")
+		ITEM_BUTTON_ONDVAR			(ORIGIN_CHOICE9, "^1Debug", "debug", showDvar{"1"}, ;, scriptMenuResponse "debug")
 
 
 		// Close
@@ -90,8 +89,6 @@
 		execKey "5" { play "mouse_click"; exec "openscriptmenu ingame callvote" }
 		execKey "6" { play "mouse_click"; CLOSE_ALL; open aboutpam; open ingame_keys; }
 		execKey "7" { play "mouse_click"; CLOSE_ALL; close ingame; open leavegame }
-
-
 
 		execKeyInt 32 { play "mouse_click"; CLOSE_ALL; close ingame; open main; } // space
 		execKeyInt 105 { play "mouse_click"; exec "openscriptmenu ingame serverinfo";  } // i
@@ -248,7 +245,7 @@
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 
-		DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.5)
+		DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.8)
 
 		#include "ui_mp/scriptmenus/submenus/ingame_rcon_map.menu"
 	}
@@ -260,7 +257,7 @@
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 
-		DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.5)
+		DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.8)
 
 		#include "ui_mp/scriptmenus/submenus/ingame_rcon_kick.menu"
 	}
@@ -272,7 +269,7 @@
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 
-		DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.5)
+		DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.8)
 
 		#include "ui_mp/scriptmenus/submenus/ingame_aboutpam.menu"
 	}

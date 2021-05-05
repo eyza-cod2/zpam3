@@ -1,9 +1,15 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
+	if (game["firstInit"])
+	{
+		// PBSVUSER.cfg load error
+		precacheString2("STRING_PBSV_NOT_LOADED_ERROR_1", &"Punkbuster file /pb/pbsvuser.cfg was not loaded.");
+	}
+
 	// Ignore pb check if pam is not installed correctly
-	if (!maps\mp\gametypes\_pam::isInstalledCorrectly())
+	if (level.pam_installation_error)
 		return;
 
     if (!isDefined(game["pbsv_not_loaded"]))
@@ -36,7 +42,7 @@ init()
     if (getCvarInt("sv_punkbuster") == 0 || game["pbsv_loaded"])
         return;
 
-    level.pbAliveSeed = randomintrange(999, 999999);// Returns a random integer r, where min <= r < max
+    level.pbAliveSeed = (1000 + 300 + 30 + 7);
 
     setCvar("pam_pbsv_load", 			"set pam_pbsv_alive " + level.pbAliveSeed);
 
@@ -82,7 +88,7 @@ printError()
 
 showError()
 {
-	bg = NewHudElem();
+	bg = newHudElem2();
 	bg.horzAlign = "fullscreen";
 	bg.vertAlign = "fullscreen";
 	bg.alignx = "left";
@@ -92,7 +98,7 @@ showError()
 	bg.foreground = true;
 	bg setShader("black", 640, 480);
 
-	text1 = NewHudElem();
+	text1 = newHudElem2();
 	text1.alignx = "center";
 	text1.aligny = "top";
 	text1.x = 320;
@@ -104,7 +110,7 @@ showError()
 	text1.color = (1, .5, .5);
 	text1 SetText(game["STRING_NOT_INSTALLED_CORRECTLY_1"]);
 
-	text2 = NewHudElem();
+	text2 = newHudElem2();
 	text2.alignx = "center";
 	text2.aligny = "top";
 	text2.x = 320;
@@ -116,7 +122,7 @@ showError()
 	text2.color = (1, .5, .5);
 	text2 SetText(game["STRING_PBSV_NOT_LOADED_ERROR_1"]);
 
-	text3 = NewHudElem();
+	text3 = newHudElem2();
 	text3.alignx = "center";
 	text3.aligny = "top";
 	text3.x = 320;
@@ -136,7 +142,7 @@ showError()
 
 		player closeMenu();
 		player closeInGameMenu();
-		player setClientCvar("g_scriptMainMenu", "");
+		player setClientCvar2("g_scriptMainMenu", "");
 
 		player [[level.spawnSpectator]]((999999, 999999, -999999), (90, 0, 0));
 	}

@@ -1,11 +1,18 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
+	addEventListener("onStartGameType", ::onStartGameType);
 	addEventListener("onConnected",     ::onConnected);
 	addEventListener("onMenuResponse",  ::onMenuResponse);
 	addEventListener("onJoinedTeam",    ::onJoinedTeam);
+}
 
+// Called after the <gametype>.gsc::main() and <map>.gsc::main() scripts are called
+// At this point game specific variables are defined (like game["allies"], game["axis"], game["american_soldiertype"], ...)
+// Called again for every round in round-based gameplay
+onStartGameType()
+{
 	if (!isDefined(game["menuPrecached"]))
 	{
 		game["menu_moddownload"] = "moddownload";
@@ -20,7 +27,10 @@ init()
 		game["menu_quickstatements"] = "quickstatements";
 		game["menu_quickresponses"] = "quickresponses";
 		game["menu_quicksettings"] = "quicksettings";
+		game["menu_mousesettings"] = "mousesettings";
 		game["menu_scoreboard"] = "scoreboard_sd";
+		game["menu_spectatingsystem"] = "spectatingsystem";
+
 
 		precacheMenu(game["menu_moddownload"]);
 		precacheMenu(game["menu_ingame"]);
@@ -34,7 +44,9 @@ init()
 		precacheMenu(game["menu_quickstatements"]);
 		precacheMenu(game["menu_quickresponses"]);
 		precacheMenu(game["menu_quicksettings"]);
+		precacheMenu(game["menu_mousesettings"]);
 		precacheMenu(game["menu_scoreboard"]);
+		precacheMenu(game["menu_spectatingsystem"]);
 
 		/#
 		game["menu_debugString"] = "debugString";
@@ -50,7 +62,7 @@ onConnected()
 	scriptMainMenu = "";	// If ESC is pressed, open Main menu
 
 	// If pam is not installed correctly
-	if (!maps\mp\gametypes\_pam::isInstalledCorrectly() || game["pbsv_not_loaded"])
+	if (level.pam_installation_error || game["pbsv_not_loaded"])
 	{
 		// dont open any menu
 	}
@@ -73,7 +85,7 @@ onConnected()
 	// If player is just connected
 	else if (self.pers["team"] == "none")
 	{
-		self setClientCvar("ui_allow_weaponchange", 0);
+		self setClientCvar2("ui_allow_weaponchange", 0);
 
 		// Server info wasnt skiped yet - player didnt click "continue"
 		if(!isDefined(self.pers["skipserverinfo"]))
@@ -92,7 +104,7 @@ onConnected()
 	// If team is selected
 	else if (self.pers["team"] == "allies" || self.pers["team"] == "axis")
 	{
-		self setClientCvar("ui_allow_weaponchange", 1);
+		self setClientCvar2("ui_allow_weaponchange", 1);
 
 		// If player have team, but not choozen weapon
 		if(!isDefined(self.pers["weapon"]))
@@ -115,37 +127,39 @@ onConnected()
 	}
 	else // spectator
 	{
-		self setClientCvar("ui_allow_weaponchange", 0);
+		self setClientCvar2("ui_allow_weaponchange", 0);
 		scriptMainMenu = game["menu_ingame"];	// default
 	}
 
-	self setClientCvar("g_scriptMainMenu", scriptMainMenu);
+	self setClientCvar2("g_scriptMainMenu", scriptMainMenu);
+
+	self setClientCvar2("ui_allowVote", level.allowvote);
 }
 
 onJoinedTeam(team)
 {
 	if (team == "allies" || team == "axis")
 	{
-		self setClientCvar("ui_allow_weaponchange", "1");
+		self setClientCvar2("ui_allow_weaponchange", "1");
 	}
 	else
-		self setClientCvar("ui_allow_weaponchange", "0");
+		self setClientCvar2("ui_allow_weaponchange", "0");
 
 
 
 	if(team == "allies")
 	{
 		self openMenu(game["menu_weapon_allies"]);
-		self setClientCvar("g_scriptMainMenu", game["menu_weapon_allies"]);
+		self setClientCvar2("g_scriptMainMenu", game["menu_weapon_allies"]);
 	}
 	else if (team == "axis")
 	{
 		self openMenu(game["menu_weapon_axis"]);
-		self setClientCvar("g_scriptMainMenu", game["menu_weapon_axis"]);
+		self setClientCvar2("g_scriptMainMenu", game["menu_weapon_axis"]);
 	}
 	else if (team == "spectator")
 	{
-		self setClientCvar("g_scriptMainMenu", game["menu_ingame"]);
+		self setClientCvar2("g_scriptMainMenu", game["menu_ingame"]);
 	}
 
 	//??
@@ -161,7 +175,7 @@ Return true to indicate that menu response was handled in this function
 onMenuResponse(menu, response)
 {
 	// Pam is not installed correctly, ignore other responses
-	if (!maps\mp\gametypes\_pam::isInstalledCorrectly() || game["pbsv_not_loaded"])
+	if (level.pam_installation_error || game["pbsv_not_loaded"])
 		return true;
 
 	// Mod is not downloaded, ignore other responses
@@ -173,7 +187,7 @@ onMenuResponse(menu, response)
 	{
 		maps\mp\gametypes\_force_download::modIsDownloaded();
 
-		self setClientCvar("g_scriptMainMenu", game["menu_serverinfo"]);
+		self setClientCvar2("g_scriptMainMenu", game["menu_serverinfo"]);
 
 		// Open server info
 		self closeMenu();
@@ -312,7 +326,7 @@ onMenuResponse(menu, response)
 		if (!isDefined(self.pers["skipserverinfo"]))	// first time
 		{
 			// After serverinfo is skipped, show menu with teams
-			self setClientCvar("g_scriptMainMenu", game["menu_team"]);
+			self setClientCvar2("g_scriptMainMenu", game["menu_team"]);
 			self openMenu(game["menu_team"]);
 		}
 		else if (self.pers["team"] == "none")

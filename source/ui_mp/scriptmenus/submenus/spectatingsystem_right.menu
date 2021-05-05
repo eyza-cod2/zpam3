@@ -1,0 +1,7 @@
+// Using preprocessor from spectatingsystem_right.menu
+
+ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team2_player0", -150, 0)
+ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team2_player1", -150, 16)
+ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team2_player2", -150, 32)
+ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team2_player3", -150, 48)
+ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team2_player4", -150, 64)

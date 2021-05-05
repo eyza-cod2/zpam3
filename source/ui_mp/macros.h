@@ -182,10 +182,9 @@ itemDef \
 #define	DRAW_GRADIENT_FOR_SUBMENU(x, y, w, h, alpha) \
 itemDef \
 { \
-	style			WINDOW_STYLE_SHADER \
+	style			WINDOW_STYLE_FILLED \
 	rect			x y w h 0 0 \
-	background		"gradient" \
-	forecolor		1 1 1 alpha \
+	backcolor		0 0 0 alpha \
 	visible			1 \
 	decoration \
 } \
@@ -526,7 +525,7 @@ itemDef \
 	autowrapped \
 	text			objectivetext \
 	textfont		UI_FONT_NORMAL \
-	textscale		GLOBAL_TEXT_SIZE \
+	textscale		0.3 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textaligny		16 \
 	decoration \
@@ -537,11 +536,11 @@ itemDef \
 { \
 	visible			1 \
 	rect			0 0 180 110 0 0 \
-	origin			230 190 \
+	origin			170 180 \
 	forecolor		GLOBAL_UNFOCUSED_COLOR \
 	dvar			"ui_serverinfo_left1" \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.35 \
+	textscale		0.3 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textalign		ITEM_ALIGN_RIGHT \
 	autowrapped \
@@ -551,11 +550,11 @@ itemDef  \
 { \
 	visible			1 \
 	rect			0 0 128 110 0 0 \
-	origin			245 190 \
+	origin			185 180 \
 	forecolor		GLOBAL_UNFOCUSED_COLOR \
 	dvar			"ui_serverinfo_left2" \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.35 \
+	textscale		0.3 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textalign		ITEM_ALIGN_LEFT \
 	autowrapped \
@@ -565,11 +564,11 @@ itemDef \
 { \
 	visible			1 \
 	rect			0 0 180 110 0 0 \
-	origin			460 190 \
+	origin			390 180 \
 	forecolor		GLOBAL_UNFOCUSED_COLOR \
 	dvar			"ui_serverinfo_right1" \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.35 \
+	textscale		0.3 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textalign		ITEM_ALIGN_RIGHT \
 	autowrapped \
@@ -579,11 +578,11 @@ itemDef  \
 { \
 	visible			1 \
 	rect			0 0 128 110 0 0 \
-	origin			475 190 \
+	origin			405 180 \
 	forecolor		GLOBAL_UNFOCUSED_COLOR \
 	dvar			"ui_serverinfo_right2" \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.35 \
+	textscale		0.3 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textalign		ITEM_ALIGN_LEFT \
 	autowrapped \
@@ -719,5 +718,31 @@ itemDef \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	dvartest		dvartotest \
 	dvarshowhide \
+	decoration \
+}
+
+
+#define MATCHINFO_BGCOLOR(xywh, bc, cvartest, showhidedvar) \
+itemDef \
+{ \
+  style			WINDOW_STYLE_FILLED \
+  rect			xywh 0 0 \
+  backcolor		bc \
+  visible		1 \
+  dvartest		cvartest \
+  showhidedvar \
+  decoration \
+}
+
+#define MATCHINFO_ICON(xy, bg, cvartest, showhidedvar) \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		xy 12 12 0 0 \
+	backcolor	1 1 1 1 \
+	visible		1 \
+	background	bg \
+	dvartest	cvartest \
+        showhidedvar \
 	decoration \
 }

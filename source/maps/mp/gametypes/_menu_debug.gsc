@@ -1,4 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 // This is called only if developer_script is set to 1
 init()
@@ -13,10 +13,19 @@ Return true to indicate that menu response was handled in this function
 */
 onMenuResponse(menu, response)
 {
+	if (self.pers["rcon_logged_in"])
+	{
+		self setClientCvar2("debug", 1);
+	}
+	else
+	{
+		self setClientCvar2("debug", 0);
+	}
+
+
 	if (response == "debug") {
 
-		// TODO: If we are in LAN mode, show debug menu anyway
-		if (self.pers["rcon_logged_in"] || getCvar("dedicated") == "1")
+		if (self.pers["rcon_logged_in"])
 		{
 			self closeMenu();
 			self closeInGameMenu();
@@ -26,7 +35,7 @@ onMenuResponse(menu, response)
 			self iprintln("You need to log in before using debug menu.");
 	}
 
-	if (self.pers["rcon_logged_in"] || getCvar("dedicated") == "1")
+	if (self.pers["rcon_logged_in"])
 	{
 
 		if(menu == game["menu_debugString"])
@@ -69,7 +78,7 @@ menuOpened()
     if (self.pers["rcon_logged_in"] || getCvar("debug") == "1")
     {
 	    self thread debugBasics();
-        level thread debugCvars();
+        //level thread debugCvars();
     }
 }
 
@@ -89,9 +98,9 @@ debugBasics()
 
 
     for (i = 1; i <= 30; i++)
-        self setClientCvar("debug_line_"+i, " ");
+        self setClientCvar2("debug_line_"+i, " ");
     for (i = 1; i <= 30; i++)
-        self setClientCvar("debug_row_2_line_"+i, " ");
+        self setClientCvar2("debug_row_2_line_"+i, " ");
 
 
 
@@ -101,81 +110,55 @@ debugBasics()
 	while(1)
 	{
 
-		self setClientCvar("debug_line_1", "self.name           = " + self.name);
-		self setClientCvar("debug_line_2", "self.sessionteam    = " + self.sessionteam);
-		self setClientCvar("debug_line_3", "self.sessionstate   = " + self.sessionstate);
-		self setClientCvar("debug_line_4", "self.health         = " + self.health);
-		self setClientCvar("debug_line_5", "isAlive(self)       = " + isAlive(self));
+		self setClientCvar2("debug_line_1", "self.name           = " + self.name);
+		self setClientCvar2("debug_line_2", "self.sessionteam    = " + self.sessionteam);
+		self setClientCvar2("debug_line_3", "self.sessionstate   = " + self.sessionstate);
+		self setClientCvar2("debug_line_4", "self.health         = " + self.health);
+		self setClientCvar2("debug_line_5", "isAlive(self)       = " + isAlive(self));
 
+
+		self setClientCvar2("debug_line_7", "self.origin   = " + "["+self.origin[0]+", "+self.origin[1]+", "+self.origin[2]+"] ");
 		angles = self getplayerangles();
+		self setClientCvar2("debug_line_8", "self.angles   = " + "["+angles[0]+", "+angles[1]+", "+angles[2]+"]");
+
+		head_pos = self.headTag getOrigin();
+		self setClientCvar2("debug_line_9", "self.tag_head = " + "["+head_pos[0]+", "+head_pos[1]+", "+head_pos[2]+"]" + distance((0, 0, head_pos[2]), (0, 0, self.origin[2])));
+
+		self setClientCvar2("debug_line_10", "self.isMoving   = " + self.isMoving + "  (diff: " + self.movingDifference + ")");
 
 
-		if (isDefined(self.tag_head))
-		{
-			head_pos = self.tag_head getOrigin();
-			self setClientCvar("debug_line_6", "self.tag_head = " + "["+head_pos[0]+", "+head_pos[1]+", "+head_pos[2]+"]" + distance((0, 0, head_pos[2]), (0, 0, self.origin[2])));
-		}
-		else
-		{
-			self setClientCvar("debug_line_6", "self.tag_head = " + "undefined");
-		}
 
 
-		self setClientCvar("debug_line_7", "self.origin   = " + "["+self.origin[0]+", "+self.origin[1]+", "+self.origin[2]+"] ");
+	        if (level.gametype == "sd")
+	        {
+	    		self setClientCvar2("debug_line_18", "level.in_readyup      = " + level.in_readyup);
+	            	self setClientCvar2("debug_line_19", "level.in_timeout      = " + level.in_timeout);
+	    		self setClientCvar2("debug_line_20", "level.in_strattime    = " + level.in_strattime);
+	            	self setClientCvar2("debug_line_21", "level.roundstarted    = " + level.roundstarted);
+	    		self setClientCvar2("debug_line_22", "level.roundended      = " + level.roundended);
+	    		self setClientCvar2("debug_line_23", "level.bombplanted     = " + level.bombplanted);
+	    		self setClientCvar2("debug_line_24", "level.bombexploded    = " + level.bombexploded);
+	        }
 
+		maps\mp\gametypes\_teamname::refreshTeamName("allies");
+    		maps\mp\gametypes\_teamname::refreshTeamName("axis");
+		maps\mp\gametypes\_teamname::refreshTeamName("");
 
-		//movementAngle = anglesToForward(angles);
-		//self setClientCvar("debug_line_8", "self.origin   = " + "["+movementAngle[0]+", "+movementAngle[1]+", "+movementAngle[2]+"] ");
-
-		self setClientCvar("debug_line_8", "self.movingDifference   = " + self.movingDifference);
-
-
-		self setClientCvar("debug_line_9", "self.angles   = " + "["+angles[0]+", "+angles[1]+", "+angles[2]+"]");
-
-        if (level.gametype == "sd")
-        {
-    		//self setClientCvar("debug_line_10", "game[matchstarted] = " + (isDefined(game["matchstarted"]) && game["matchstarted"] == true));
-    		self setClientCvar("debug_line_11", "level.in_readyup      = " + level.in_readyup);
-            self setClientCvar("debug_line_12", "level.in_timeout      = " + level.in_timeout);
-
-    		self setClientCvar("debug_line_14", "level.in_strattime    = " + level.in_strattime);
-            self setClientCvar("debug_line_15", "level.roundstarted    = " + level.roundstarted);
-    		self setClientCvar("debug_line_16", "level.roundended      = " + level.roundended);
-    		self setClientCvar("debug_line_17", "level.bombplanted     = " + level.bombplanted);
-    		self setClientCvar("debug_line_18", "level.bombexploded    = " + level.bombexploded);
-
-            if (isDefined(level.bombmodel))
-            {
-                self setClientCvar("debug_line_21", "bomb distance    = " + distance(level.bombmodel.origin, self.origin));
-            }
-
-        }
-
-
-		// removed 2020
-        //self setClientCvar("debug_line_26", "level.players_in_connecting_state   = " + 		 level.players_in_connecting_state);
-
-				maps\mp\gametypes\_teamname::refreshTeamName("allies");
-		    maps\mp\gametypes\_teamname::refreshTeamName("axis");
-				maps\mp\gametypes\_teamname::refreshTeamName("");
-
-
-				self setClientCvar("debug_line_26", "allies name   = " + 		 level.teamname_allies);
-        self setClientCvar("debug_line_27", "axis name     = " + 		 level.teamname_axis);
-				self setClientCvar("debug_line_28", "all           = " + 		 level.teamname_all);
+		self setClientCvar2("debug_line_26", "allies name   = " + 		 level.teamname_allies);
+		self setClientCvar2("debug_line_27", "axis name     = " + 		 level.teamname_axis);
 
 		/*
-		self setClientCvar("debug_line_17", "allies_called_timeouts = " + game["allies_called_timeouts"]);
-		self setClientCvar("debug_line_18", "allies_called_timeouts_half = " + game["allies_called_timeouts_half"]);
-		self setClientCvar("debug_line_19", "axis_called_timeouts = " + game["axis_called_timeouts"]);
-		self setClientCvar("debug_line_20", "axis_called_timeouts_half = " + game["axis_called_timeouts_half"]);
+		self setClientCvar2("debug_line_17", "allies_called_timeouts = " + game["allies_called_timeouts"]);
+		self setClientCvar2("debug_line_18", "allies_called_timeouts_half = " + game["allies_called_timeouts_half"]);
+		self setClientCvar2("debug_line_19", "axis_called_timeouts = " + game["axis_called_timeouts"]);
+		self setClientCvar2("debug_line_20", "axis_called_timeouts_half = " + game["axis_called_timeouts_half"]);
 
-		self setClientCvar("debug_line_21", "timeout_called_team = " + game["timeout_called_team"]);
+		self setClientCvar2("debug_line_21", "timeout_called_team = " + game["timeout_called_team"]);
 */
 
-		self setClientCvar("debug_row_2_line_1", "getWeaponSlotWeapon(primary)   = " + 	 self getWeaponSlotWeapon("primary"));
-		self setClientCvar("debug_row_2_line_2", "getWeaponSlotWeapon(primaryb)  = " + 	 self getWeaponSlotWeapon("primaryb"));
-		self setClientCvar("debug_row_2_line_3", "getCurrentWeapon()             = " + 	 self getCurrentWeapon());
+		self setClientCvar2("debug_row_2_line_1", "getWeaponSlotWeapon(primary)   = " + 	 self getWeaponSlotWeapon("primary"));
+		self setClientCvar2("debug_row_2_line_2", "getWeaponSlotWeapon(primaryb)  = " + 	 self getWeaponSlotWeapon("primaryb"));
+		self setClientCvar2("debug_row_2_line_3", "getCurrentWeapon()             = " + 	 self getCurrentWeapon());
 
 
 
@@ -192,10 +175,10 @@ debugBasics()
             axis_limited = level.weaponclass[class].axis_limited;
         }
 
-        self setClientCvar("debug_row_2_line_5", "class             = " + 	 class);
-        self setClientCvar("debug_row_2_line_6", "limit             = " + 	 limit + " / per team");
-        self setClientCvar("debug_row_2_line_7", "axis_limited      = " + 	 allies_limited);
-        self setClientCvar("debug_row_2_line_8", "allies_limited    = " + 	 axis_limited);
+        self setClientCvar2("debug_row_2_line_5", "class             = " + 	 class);
+        self setClientCvar2("debug_row_2_line_6", "limit             = " + 	 limit + " / per team");
+        self setClientCvar2("debug_row_2_line_7", "axis_limited      = " + 	 allies_limited);
+        self setClientCvar2("debug_row_2_line_8", "allies_limited    = " + 	 axis_limited);
 
 
 		//spawnweapon = "?";
@@ -208,24 +191,23 @@ debugBasics()
 		if (isDefined(self.pers["weapon2"])) weapon2 = self.pers["weapon2"];
 
 
-		//self setClientCvar("debug_row_2_line_10", "self.pers[spawnweapon]  = " + spawnweapon);
-		self setClientCvar("debug_row_2_line_11", "self.pers[weapon]       = " + weapon);
-		self setClientCvar("debug_row_2_line_12", "self.pers[weapon1]      = " + weapon1);
-		self setClientCvar("debug_row_2_line_13", "self.pers[weapon2]      = " + weapon2);
+		//self setClientCvar2("debug_row_2_line_10", "self.pers[spawnweapon]  = " + spawnweapon);
+		self setClientCvar2("debug_row_2_line_11", "self.pers[weapon]       = " + weapon);
+		self setClientCvar2("debug_row_2_line_12", "self.pers[weapon1]      = " + weapon1);
+		self setClientCvar2("debug_row_2_line_13", "self.pers[weapon2]      = " + weapon2);
 
 
-		self setClientCvar("debug_row_2_line_15", "self.dropped_weapons   = " + 		 self.dropped_weapons);
-        self setClientCvar("debug_row_2_line_16", "self.taked_weapons     = " + 		 self.taked_weapons);
-
-
-
-
-        self setClientCvar("debug_row_2_line_21", "level.HUDElements   = " + 		 level.HUDElements);
-        self setClientCvar("debug_row_2_line_22", "self.HUDElements    = " + 		 self.HUDElements);
+		self setClientCvar2("debug_row_2_line_15", "self.dropped_weapons   = " + 		 self.dropped_weapons);
+        self setClientCvar2("debug_row_2_line_16", "self.taked_weapons     = " + 		 self.taked_weapons);
 
 
 
-        //self setClientCvar("debug_row_2_line_14", "self.dropped_weapons   = " + 		 self.dropped_weapons);
+        self setClientCvar2("debug_row_2_line_21", "HUD getArchivedCount       = " + 	self maps\mp\gametypes\global\hud_system::getArchivedCount());
+        self setClientCvar2("debug_row_2_line_22", "HUD getNonArchivedCount    = " + 	self maps\mp\gametypes\global\hud_system::getNonArchivedCount());
+
+
+
+        //self setClientCvar2("debug_row_2_line_14", "self.dropped_weapons   = " + 		 self.dropped_weapons);
 
 
 
@@ -244,8 +226,8 @@ debugCvars()
 		cvar = game["cvars"][game["cvarnames"][i]]; // array
 
 		color = "";
-		if (cvar["value"] != cvar["ruleValue"])
-			color = "*CHAGED* ";
+		if (cvar["value"] != cvar["defaultValue"])
+			color = "*CHANGED* ";
 
         min = "?";
         if (isDefined(cvar["minValue"]) && isString(cvar["minValue"]))
@@ -255,7 +237,7 @@ debugCvars()
         if (isDefined(cvar["maxValue"]) && isString(cvar["maxValue"]))
             max = cvar["maxValue"];
 
-		println(color + cvar["name"] + " = " + cvar["value"] + "   (d:" + cvar["defaultValue"] + ", <" + min + "; " + max + ">, r:" + cvar["ruleValue"] + ")");
+		println(color + cvar["name"] + " = " + cvar["value"] + "   (d:" + cvar["defaultValue"] + ", <" + min + "; " + max + ">)");
 
 
     }

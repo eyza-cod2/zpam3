@@ -1,4 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 /*
 This script is used just to identify of some of the player is logged into rcon
@@ -34,7 +34,7 @@ onConnected()
     if (!isDefined(self.pers["rcon_logged_in"]))
     {
         self.pers["rcon_logged_in"] = false;
-        self setClientCvar("ui_rcon_logged_in", "0");
+        self setClientCvar2("ui_rcon_logged_in", "0");
     }
 
 	self generateUUID();
@@ -72,12 +72,12 @@ generateUUID()
 
         self.pers["rcon_uuid"] = hash;
 
-        self setClientCvar("ui_rcon_hash", "rcon set "+level.rconCvar+" "+ hash);
+        self setClientCvar2("ui_rcon_hash", "rcon set "+level.rconCvar+" "+ hash);
     }
     else
     {
         // Update vstr cvar because level.rconCvar may be changed
-        self setClientCvar("ui_rcon_hash", "rcon set "+level.rconCvar+" "+ self.pers["rcon_uuid"]);
+        self setClientCvar2("ui_rcon_hash", "rcon set "+level.rconCvar+" "+ self.pers["rcon_uuid"]);
     }
 }
 
@@ -109,7 +109,7 @@ checkingRconCvarThread()
 
         			player iprintln("You are logged via rcon!");
 
-        			player setClientCvar("ui_rcon_logged_in", "1");
+        			player setClientCvar2("ui_rcon_logged_in", "1");
 
                     break;
                 }

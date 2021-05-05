@@ -1,0 +1,135 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+{
+	menuDef
+	{
+		name "connect"
+  		rect -128 0 896 480
+		fullScreen MENU_FALSE
+		visible MENU_FALSE
+		backcolor 1 1 1 1
+		style WINDOW_STYLE_FILLED
+ 		background "$levelBriefing"
+	      	focusColor GLOBAL_FOCUSED_COLOR
+		itemDef
+		{
+			name background_top_bar
+//			style WINDOW_STYLE_SHADER
+			style			WINDOW_STYLE_FILLED
+			rect 0 0 896 64 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+//			background "black"
+			backcolor		0 0 0 0.75
+			visible 1
+			decoration
+		}
+		itemDef
+		{
+			name background_bottom_bar
+//			style WINDOW_STYLE_SHADER
+			style			WINDOW_STYLE_FILLED
+			rect 0 416 896 64 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+//			background "black"
+			backcolor		0 0 0 0.75
+			visible 1
+			decoration
+		}
+
+		// lines
+		itemDef
+		{
+			name background_top_bar
+			style			WINDOW_STYLE_FILLED
+			rect			0 64 896 2 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+			backcolor		.9 .9 .9 1
+			visible			1
+			decoration
+		}
+		itemDef
+		{
+			name background_bottom_bar
+			style			WINDOW_STYLE_FILLED
+			rect			0 416 896 2 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+			backcolor		.9 .9 .9 1
+			visible			1
+			decoration
+		}
+
+		// the loading bar
+		itemDef
+		{
+			name "loadbar"
+			decoration
+			visible 1
+			rect 317 421 262 16
+			style WINDOW_STYLE_SHADER
+	 		background "loadbar_background"
+			dvartest "com_expectedhunkusage"
+			hidedvar { "0" }
+		}
+
+		itemDef
+		{
+			name "loadbar"
+			decoration
+			visible 1
+			rect 320 425 256 8
+			style WINDOW_STYLE_LOADBAR
+	 		background "white"
+			dvartest "com_expectedhunkusage"
+			hidedvar { "0" }
+		}
+
+/*
+		itemDef
+		{
+			visible			1
+			origin			447 15
+			forecolor		1 1 0 1
+			text			"You are playing on testing version of zPAM"
+			textfont		UI_FONT_NORMAL
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_CENTER
+			decoration
+		}
+		itemDef
+		{
+			visible			1
+			origin			447 30
+			forecolor		1 1 0 1
+			text			"Please report bugs on discord ^2LetsPlay Europe ^7in ^2#cod2-zpam-3 ^7channel."
+			textfont		UI_FONT_NORMAL
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_CENTER
+			decoration
+		}
+*/
+		itemDef
+		{
+			visible			1
+			origin			447 15
+			forecolor		1 1 1  1
+			text			"You are playing on server with ^2zPAM3.20"
+			textfont		UI_FONT_NORMAL
+			textscale		0.2
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_CENTER
+			decoration
+		}
+		itemDef
+		{
+			visible			1
+			origin			447 28
+			forecolor		1 1 1 0.8
+			text			"For more info visit ^2github.com/eyza-cod2/zpam3"
+			textfont		UI_FONT_NORMAL
+			textscale		0.2
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_CENTER
+			decoration
+		}
+
+	}
+}

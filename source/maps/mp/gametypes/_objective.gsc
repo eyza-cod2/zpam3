@@ -1,4 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
@@ -63,7 +63,7 @@ setPlayerObjective()
 	    	else
 	    		text = &"MP_AXIS_WIN";
 
-			self setClientCvar("cg_objectiveText", text);
+			self setClientCvar2("cg_objectiveText", text);
 		}
 		else
 		{
@@ -94,21 +94,21 @@ setPlayerObjective()
 			}
 
 			if(tied == true)
-				self setClientCvar("cg_objectiveText", &"MP_THE_GAME_IS_A_TIE");
+				self setClientCvar2("cg_objectiveText", &"MP_THE_GAME_IS_A_TIE");
 			else if(isdefined(winner))
-				self setClientCvar("cg_objectiveText", &"MP_WINS", winner.name);
+				self setClientCvar2("cg_objectiveText", &"MP_WINS", winner.name);
 		}
 		return;
 	}
 
 	if (level.in_timeout)
 	{
-		self setClientCvar("cg_objectiveText", game["objective_timeout"]);
+		self setClientCvar2("cg_objectiveText", game["objective_timeout"]);
 		return;
 	}
 
 	if (level.in_readyup) {
-		self setClientCvar("cg_objectiveText", game["objective_readyup"]);
+		self setClientCvar2("cg_objectiveText", game["objective_readyup"]);
 		return;
 	}
 
@@ -117,58 +117,58 @@ setPlayerObjective()
 	{
 	case "ctf":
 		if(level.scorelimit > 0)
-			self setClientCvar("cg_objectiveText", &"MP_CTF_OBJ_TEXT", level.scorelimit);
+			self setClientCvar2("cg_objectiveText", &"MP_CTF_OBJ_TEXT", level.scorelimit);
 		else
-			self setClientCvar("cg_objectiveText", &"MP_CTF_OBJ_TEXT_NOSCORE");
+			self setClientCvar2("cg_objectiveText", &"MP_CTF_OBJ_TEXT_NOSCORE");
 		break;
 	case "dm":
 		if(level.scorelimit > 0)
-			self setClientCvar("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING", level.scorelimit);
+			self setClientCvar2("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING", level.scorelimit);
 		else
-			self setClientCvar("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING_NOSCORE");
+			self setClientCvar2("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING_NOSCORE");
 
 		break;
 	case "hq":
 		if(level.scorelimit > 0)
-			self setClientCvar("cg_objectiveText", &"MP_OBJ_TEXT", level.scorelimit);
+			self setClientCvar2("cg_objectiveText", &"MP_OBJ_TEXT", level.scorelimit);
 		else
-			self setClientCvar("cg_objectiveText", &"MP_OBJ_TEXT_NOSCORE");
+			self setClientCvar2("cg_objectiveText", &"MP_OBJ_TEXT_NOSCORE");
 
 		break;
 	case "tdm":
 		if(level.scorelimit > 0)
-			self setClientCvar("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING1", level.scorelimit);
+			self setClientCvar2("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING1", level.scorelimit);
 		else
-			self setClientCvar("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING1_NOSCORE");
+			self setClientCvar2("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING1_NOSCORE");
 
 		break;
 	case "sd":
 
 		if (level.in_bash)
 		{
-			self setClientCvar("cg_objectiveText", "Eliminate your enemy, then choose side/map.");
+			self setClientCvar2("cg_objectiveText", "Eliminate your enemy, then choose side/map.");
 		}
 		else
 		{
 			if(level.scorelimit > 0)
 			{
 				if(self.pers["team"] == game["attackers"])
-					self setClientCvar("cg_objectiveText", &"MP_OBJ_ATTACKERS", level.scorelimit);
+					self setClientCvar2("cg_objectiveText", &"MP_OBJ_ATTACKERS", level.scorelimit);
 				else if(self.pers["team"] == game["defenders"])
-					self setClientCvar("cg_objectiveText", &"MP_OBJ_DEFENDERS", level.scorelimit);
+					self setClientCvar2("cg_objectiveText", &"MP_OBJ_DEFENDERS", level.scorelimit);
 			}
 			else
 			{
 				if(self.pers["team"] == game["attackers"])
-					self setClientCvar("cg_objectiveText", &"MP_OBJ_ATTACKERS_NOSCORE");
+					self setClientCvar2("cg_objectiveText", &"MP_OBJ_ATTACKERS_NOSCORE");
 				else if(self.pers["team"] == game["defenders"])
-					self setClientCvar("cg_objectiveText", &"MP_OBJ_DEFENDERS_NOSCORE");
+					self setClientCvar2("cg_objectiveText", &"MP_OBJ_DEFENDERS_NOSCORE");
 			}
 		}
 		break;
 	case "start":
 
-		self setClientCvar("cg_objectiveText", "Special mode used for practicing grenades or smoke, strategic plan making, jump learning and overall game testing.");
+		self setClientCvar2("cg_objectiveText", "Special mode used for practicing grenades or smoke, strategic plan making, jump learning and overall game testing.");
 	}
 
 

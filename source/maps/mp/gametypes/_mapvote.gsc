@@ -1,14 +1,41 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 Init()
 {
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	registerCvar("scr_map_vote", "BOOL", 1);
+	registerCvar("scr_map_vote_replay", "BOOL", 0);
+
+	if(game["firstInit"])
+	{
+		precacheString2("STRING_MAPVOTE_PRESS_FIRE", &"Press ^2FIRE^7 to vote                           Votes");
+		precacheString2("STRING_MAPVOTE_TIME_LEFT", &"Time Left: ");
+		precacheString2("STRING_MAPVOTE_HEADER", &"Next Map Vote");
+	}
+
 	// Map voting
 	if(!level.mapvote)
 		return;
 
 	level.mapvotetime = 13;
 	//level.mapvotereplay	= 0;
+
 }
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_map_vote": 		level.mapvote = value; return true;
+		case "scr_map_vote_replay": 	level.mapvotereplay = value; return true;
+	}
+	return false;
+}
+
 
 Initialize()
 {
@@ -36,7 +63,7 @@ Initialize()
 
 CreateHud()
 {
-	level.vote_hud_bgnd = newHudElem();
+	level.vote_hud_bgnd = newHudElem2();
 	level.vote_hud_bgnd.archived = false;
 	level.vote_hud_bgnd.alpha = .7;
 	level.vote_hud_bgnd.x = 205;
@@ -45,7 +72,7 @@ CreateHud()
 	level.vote_hud_bgnd.color = (0,0,0);
 	level.vote_hud_bgnd setShader("white", 260, 140);
 
-	level.vote_header = newHudElem();
+	level.vote_header = newHudElem2();
 	level.vote_header.archived = false;
 	level.vote_header.alpha = .3;
 	level.vote_header.x = 208;
@@ -53,15 +80,15 @@ CreateHud()
 	level.vote_header.sort = 9001;
 	level.vote_header setShader("white", 254, 21);
 
-	level.vote_headerText = newHudElem();
+	level.vote_headerText = newHudElem2();
 	level.vote_headerText.archived = false;
 	level.vote_headerText.x = 210;
 	level.vote_headerText.y = level.mapvotehudoffset + 21;
 	level.vote_headerText.sort = 9998;
-	level.vote_headerText.label = game["MapVoteHeader"];
+	level.vote_headerText.label = game["STRING_MAPVOTE_HEADER"];
 	level.vote_headerText.fontscale = 1.3;
 
-	level.vote_leftline = newHudElem();
+	level.vote_leftline = newHudElem2();
 	level.vote_leftline.archived = false;
 	level.vote_leftline.alpha = .3;
 	level.vote_leftline.x = 207;
@@ -69,7 +96,7 @@ CreateHud()
 	level.vote_leftline.sort = 9001;
 	level.vote_leftline setShader("white", 1, 135);
 
-	level.vote_rightline = newHudElem();
+	level.vote_rightline = newHudElem2();
 	level.vote_rightline.archived = false;
 	level.vote_rightline.alpha = .3;
 	level.vote_rightline.x = 462;
@@ -77,7 +104,7 @@ CreateHud()
 	level.vote_rightline.sort = 9001;
 	level.vote_rightline setShader("white", 1, 135);
 
-	level.vote_bottomline = newHudElem();
+	level.vote_bottomline = newHudElem2();
 	level.vote_bottomline.archived = false;
 	level.vote_bottomline.alpha = .3;
 	level.vote_bottomline.x = 207;
@@ -85,50 +112,50 @@ CreateHud()
 	level.vote_bottomline.sort = 9001;
 	level.vote_bottomline setShader("white", 256, 1);
 
-	level.vote_hud_timeleft = newHudElem();
+	level.vote_hud_timeleft = newHudElem2();
 	level.vote_hud_timeleft.archived = false;
 	level.vote_hud_timeleft.x = 400;
 	level.vote_hud_timeleft.y = level.mapvotehudoffset + 26;
 	level.vote_hud_timeleft.sort = 9998;
 	level.vote_hud_timeleft.fontscale = .8;
-	level.vote_hud_timeleft.label = game["TimeLeft"];
+	level.vote_hud_timeleft.label = game["STRING_MAPVOTE_TIME_LEFT"];
 	level.vote_hud_timeleft setValue( level.mapvotetime );
 
-	level.vote_hud_instructions = newHudElem();
+	level.vote_hud_instructions = newHudElem2();
 	level.vote_hud_instructions.archived = false;
 	level.vote_hud_instructions.x = 340;
 	level.vote_hud_instructions.y = level.mapvotehudoffset + 56;
 	level.vote_hud_instructions.sort = 9998;
 	level.vote_hud_instructions.fontscale = 1;
-	level.vote_hud_instructions.label = game["MapVote"];
+	level.vote_hud_instructions.label = game["STRING_MAPVOTE_PRESS_FIRE"];
 	level.vote_hud_instructions.alignX = "center";
 	level.vote_hud_instructions.alignY = "middle";
 
-	level.vote_map1 = newHudElem();
+	level.vote_map1 = newHudElem2();
 	level.vote_map1.archived = false;
 	level.vote_map1.x = 434;
 	level.vote_map1.y = level.mapvotehudoffset + 69;
 	level.vote_map1.sort = 9998;
 
-	level.vote_map2 = newHudElem();
+	level.vote_map2 = newHudElem2();
 	level.vote_map2.archived = false;
 	level.vote_map2.x = 434;
 	level.vote_map2.y = level.mapvotehudoffset + 85;
 	level.vote_map2.sort = 9998;
 
-	level.vote_map3 = newHudElem();
+	level.vote_map3 = newHudElem2();
 	level.vote_map3.archived = false;
 	level.vote_map3.x = 434;
 	level.vote_map3.y = level.mapvotehudoffset + 101;
 	level.vote_map3.sort = 9998;
 
-	level.vote_map4 = newHudElem();
+	level.vote_map4 = newHudElem2();
 	level.vote_map4.archived = false;
 	level.vote_map4.x = 434;
 	level.vote_map4.y = level.mapvotehudoffset + 117;
 	level.vote_map4.sort = 9998;
 
-	level.vote_map5 = newHudElem();
+	level.vote_map5 = newHudElem2();
 	level.vote_map5.archived = false;
 	level.vote_map5.x = 434;
 	level.vote_map5.y = level.mapvotehudoffset + 133;
@@ -219,24 +246,24 @@ onConnected()
 
 DeleteHud()
 {
-	level.vote_headerText destroy();
-	level.vote_hud_timeleft destroy();
-	level.vote_hud_instructions destroy();
-	level.vote_map1 destroy();
-	level.vote_map2 destroy();
-	level.vote_map3 destroy();
-	level.vote_map4 destroy();
-	level.vote_map5 destroy();
-	level.vote_hud_bgnd destroy();
-	level.vote_header destroy();
-	level.vote_leftline destroy();
-	level.vote_rightline destroy();
-	level.vote_bottomline destroy();
+	level.vote_headerText destroy2();
+	level.vote_hud_timeleft destroy2();
+	level.vote_hud_instructions destroy2();
+	level.vote_map1 destroy2();
+	level.vote_map2 destroy2();
+	level.vote_map3 destroy2();
+	level.vote_map4 destroy2();
+	level.vote_map5 destroy2();
+	level.vote_hud_bgnd destroy2();
+	level.vote_header destroy2();
+	level.vote_leftline destroy2();
+	level.vote_rightline destroy2();
+	level.vote_bottomline destroy2();
 
 	players = getentarray("player", "classname");
 	for(i = 0; i < players.size; i++)
 		if(isdefined(players[i].vote_indicator))
-			players[i].vote_indicator destroy();
+			players[i].vote_indicator destroy2();
 }
 
 //Displays the map candidates
@@ -264,7 +291,7 @@ PlayerVote()
 	self [[level.spawnSpectator]]();
 
 	//remove the scoreboard
-	self setClientCvar("g_scriptMainMenu", "");
+	self setClientCvar2("g_scriptMainMenu", "");
 	self closeMenu();
 
 	self allowSpectateTeam("allies", false);
@@ -279,7 +306,7 @@ PlayerVote()
 	colors[3] = (0  ,  1,0.5);
 	colors[4] = (0  ,  1,  0);
 
-	self.vote_indicator = newClientHudElem( self );
+	self.vote_indicator = newClientHudElem2( self );
 	self.vote_indicator.alignY = "middle";
 	self.vote_indicator.x = 208;
 	self.vote_indicator.y = level.mapvotehudoffset + 75;

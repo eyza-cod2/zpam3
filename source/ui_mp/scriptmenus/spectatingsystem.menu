@@ -1,0 +1,39 @@
+onOpen
+{
+	setDvar cl_bypassMouseInput "1"
+}
+onClose
+{
+	setDvar cl_bypassMouseInput "0"
+}
+
+itemDef
+{
+	name			"window_background"
+	visible			1
+	rect			-150 120 300 200
+	origin			0 0
+	style			WINDOW_STYLE_FILLED
+	forecolor		1 1 1 1
+	backcolor		0 0 0 0.7975
+	decoration
+}
+
+ITEM_TEXT("Actions to replay:", -130, 145, 0.3, ITEM_ALIGN_LEFT, 1 1 1 1)
+
+ITEM_DVAR("ui_spectatorsystem_menu_text", -130, 170, .25, ITEM_ALIGN_LEFT, 1 1 1 1)
+
+execKey "1" { close quickmessage_spectatingsystem_menu; close quickmessage; exec "openscriptmenu spectatingsystem killcam_1" }
+execKey "2" { close quickmessage_spectatingsystem_menu; close quickmessage; exec "openscriptmenu spectatingsystem killcam_2" }
+execKey "3" { close quickmessage_spectatingsystem_menu; close quickmessage; exec "openscriptmenu spectatingsystem killcam_3" }
+execKey "4" { close quickmessage_spectatingsystem_menu; close quickmessage; exec "openscriptmenu spectatingsystem killcam_4" }
+execKey "5" { close quickmessage_spectatingsystem_menu; close quickmessage; exec "openscriptmenu spectatingsystem killcam_5" }
+execKey "6" { close quickmessage_spectatingsystem_menu; close quickmessage; exec "openscriptmenu spectatingsystem killcam_6" }
+execKey "7" { close quickmessage_spectatingsystem_menu; close quickmessage; exec "openscriptmenu spectatingsystem killcam_7" }
+execKey "8" { close quickmessage_spectatingsystem_menu; close quickmessage; exec "openscriptmenu spectatingsystem killcam_8" }
+execKey "9" { close quickmessage_spectatingsystem_menu; close quickmessage; exec "openscriptmenu spectatingsystem killcam_9" }
+execKey "0" { close quickmessage_spectatingsystem_menu; close quickmessage; exec "openscriptmenu spectatingsystem killcam_10" }
+
+ITEM_TEXT("(only 40 seconds of history can be saved)", -130, 285, 0.2, ITEM_ALIGN_LEFT, 1 1 1 0.5)
+
+ITEM_TEXT("@QUICKMESSAGE_ESC_EXIT", -130, 300, 0.25, ITEM_ALIGN_LEFT, 1 1 1 1)

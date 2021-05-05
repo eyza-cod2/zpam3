@@ -1,11 +1,18 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 // Source from maps/mp/pam/objpoints.gsc
 // content moved here
 
 init()
 {
-	precacheShader("objpoint_default");
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	registercvar("scr_show_objective_icons", "BOOL", 1); 	 // NOTE: after reset
+
+	if(game["firstInit"])
+	{
+		precacheShader("objpoint_default");
+	}
 
 	level.objpoints_allies = spawnstruct();
 	level.objpoints_allies.array = [];
@@ -17,10 +24,22 @@ init()
 
 	level.objpoint_scale = 7;
 
-    addEventListener("onConnected",     ::onConnected);
-    addEventListener("onJoinedTeam",        ::onJoinedTeam);
-    addEventListener("onSpawnedPlayer",     ::onSpawnedPlayer);
-    addEventListener("onPlayerKilled",   ::onPlayerKilled);
+	addEventListener("onConnected",     ::onConnected);
+	addEventListener("onJoinedTeam",        ::onJoinedTeam);
+	addEventListener("onSpawnedPlayer",     ::onSpawnedPlayer);
+	addEventListener("onPlayerKilled",   ::onPlayerKilled);
+}
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_show_objective_icons": 		level.scr_show_objective_icons = value; return true;
+	}
+	return false;
 }
 
 onConnected()
@@ -106,7 +125,7 @@ addTeamObjpoint(origin, name, team, material)
 		{
 			objpoint = objpoints.array[j];
 
-			newobjpoint = newHudElem();
+			newobjpoint = newHudElem2();
 			newobjpoint.name = objpoint.name;
 			newobjpoint.x = objpoint.x;
 			newobjpoint.y = objpoint.y;
@@ -134,7 +153,7 @@ addTeamObjpoint(origin, name, team, material)
 				{
 					objpoint = objpoints.array[j];
 
-					newobjpoint = newClientHudElem(player);
+					newobjpoint = newClientHudElem2(player);
 					newobjpoint.name = objpoint.name;
 					newobjpoint.x = objpoint.x;
 					newobjpoint.y = objpoint.y;
@@ -178,7 +197,7 @@ removeTeamObjpoints(team)
 		assert(isdefined(level.objpoints_allplayers.hudelems));
 		level.objpoints_allplayers.array = [];
 		for (i=0;i<level.objpoints_allplayers.hudelems.size;i++)
-			level.objpoints_allplayers.hudelems[i] destroy();
+			level.objpoints_allplayers.hudelems[i] destroy2();
 		level.objpoints_allplayers.hudelems = [];
 		return;
 	}
@@ -219,7 +238,7 @@ updatePlayerObjpoints()
 		{
 			objpoint = objpoints.array[i];
 
-			newobjpoint = newClientHudElem(self);
+			newobjpoint = newClientHudElem2(self);
 			newobjpoint.name = objpoint.name;
 			newobjpoint.x = objpoint.x;
 			newobjpoint.y = objpoint.y;
@@ -237,7 +256,7 @@ updatePlayerObjpoints()
 clearPlayerObjpoints()
 {
 	for(i = 0; i < self.objpoints.size; i++)
-		self.objpoints[i] destroy();
+		self.objpoints[i] destroy2();
 
 	self.objpoints = [];
 }
@@ -245,7 +264,7 @@ clearPlayerObjpoints()
 clearGlobalObjpoints()
 {
 	for(i = 0; i < level.objpoints_allplayers.hudelems.size; i++)
-		level.objpoints_allplayers.hudelems[i] destroy();
+		level.objpoints_allplayers.hudelems[i] destroy2();
 
 	level.objpoints_allplayers.hudelems = [];
 }
@@ -257,6 +276,6 @@ clearGlobalObjpoints()
 //		objpoint = self.objpoints[i];
 //
 //		if(isdefined(objpoint.name) && objpoint.name == name)
-//			objpoint destroy();
+//			objpoint destroy2();
 //	}
 //}

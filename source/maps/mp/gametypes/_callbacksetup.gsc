@@ -2,99 +2,49 @@
 //	This script provides the hooks from code into script for the gametype callback functions.
 
 /*
-zPAM 3.1
+	Order of loading scripts:
 
-This script implements new event system
-Basicly script that need do some action based on some event will register function for that event
-and if event happends, that function is called
+		1. Init game cvars:
+			\fs_game\PAM2016\g_antilag\1\g_gametype\sd\gamename\Call of Duty 2\mapname\mp_toujane\protocol\118\shortversion\1.3\sv_allowAnonymous\0\sv_floodProtect\1\sv_hostname\CoD2Host\sv_maxclients\20\sv_maxPing\0\sv_maxRate\0\sv_minPing\0\sv_privateClients\0\sv_punkbuster\0\sv_pure\1\sv_voice\0
 
-(by eyza)
+		2. Call gametype:
+			maps/mp/gametypes/<gametype>.gsc :: main()
 
+		3. Call map:
+			maps/mp/<map>.gsc :: main()
+
+		4. Call callbacks: (called by game engine)
+			CodeCallback_StartGameType,
+			CodeCallback_PlayerConnect,
+			CodeCallback_PlayerDisconnect,
+			CodeCallback_PlayerDamage,
+			CodeCallback_PlayerKilled
+
+
+	Example of loading:
+		------- Game Initialization -------
+		gamename: Call of Duty 2
+		gamedate: May  1 2006
+		-----------------------------------
+		Call: sd.gsc::main()
+		Call: mp_toujane.gsc::main()
+		Call: sd.gsc::StartGametype
+		-----------------------------------
+		Call: sd.gsc::PlayerConnect
+
+
+	Menu loading order:
+		1. ui_mp/menus.txt	- loads classic menus for Join Game, Start New Server, Options, ..
+		2. ui_mp/ingame.txt   	- menus in this file are loaded when map is loaded
+		3. ui_mp/hud.txt	- loads hud.menu if map is loaded
+		4. ui_mp/scriptmenus  	- thease menus are loaded individually by script
 
 */
 
-// This function needs to be called from gametype script main()
-InitCallbacks()
+
+Init()
 {
-	level.events = spawnstruct();
-	level.events.onStartGameType = [];
-	level.events.onConnecting = [];
-	level.events.onConnected = [];
-	level.events.onConnectedAll = [];
-	level.events.onDisconnect = [];
-	level.events.onSpawned = [];
-	level.events.onSpawnedPlayer = [];
-	level.events.onSpawnedSpectator = [];
-	level.events.onSpawnedIntermission = [];
-	level.events.onJoinedTeam = [];
-	level.events.onJoinedAlliesAxis = [];
-	level.events.onJoinedSpectator = [];
-	level.events.onPlayerDamaging = [];
-	level.events.onPlayerDamaged = [];
-	level.events.onPlayerKilling = [];
-	level.events.onPlayerKilled = [];
-	level.events.onCvarChanged = [];
-	level.events.onMenuResponse = [];
-
-	level thread _onCvarChanged();
-
-	// Init cvars
-	// Must be init here, because cvars are used in map script
-	level maps\mp\gametypes\_cvars::Init();
-
 	SetupCallbacks();
-}
-
-
-addEventListener(eventName, funcPointer)
-{
-	if (eventName == "onStartGameType")
-		level.events.onStartGameType[level.events.onStartGameType.size] = funcPointer;
-
-	else if (eventName == "onConnecting")
-		level.events.onConnecting[level.events.onConnecting.size] = funcPointer;
-	else if (eventName == "onConnected")
-		level.events.onConnected[level.events.onConnected.size] = funcPointer;
-	else if (eventName == "onConnectedAll")
-		level.events.onConnectedAll[level.events.onConnectedAll.size] = funcPointer;
-	else if (eventName == "onDisconnect")
-		level.events.onDisconnect[level.events.onDisconnect.size] = funcPointer;
-
-	else if (eventName == "onSpawned")
-		level.events.onSpawned[level.events.onSpawned.size] = funcPointer;
-	else if (eventName == "onSpawnedPlayer")
-		level.events.onSpawnedPlayer[level.events.onSpawnedPlayer.size] = funcPointer;
-	else if (eventName == "onSpawnedSpectator")
-		level.events.onSpawnedSpectator[level.events.onSpawnedSpectator.size] = funcPointer;
-	else if (eventName == "onSpawnedIntermission")
-		level.events.onSpawnedIntermission[level.events.onSpawnedIntermission.size] = funcPointer;
-
-	else if (eventName == "onJoinedTeam")
-		level.events.onJoinedTeam[level.events.onJoinedTeam.size] = funcPointer;
-	else if (eventName == "onJoinedAlliesAxis")
-		level.events.onJoinedAlliesAxis[level.events.onJoinedAlliesAxis.size] = funcPointer;
-	else if (eventName == "onJoinedSpectator")
-		level.events.onJoinedSpectator[level.events.onJoinedSpectator.size] = funcPointer;
-
-	else if (eventName == "onPlayerDamaging")
-		level.events.onPlayerDamaging[level.events.onPlayerDamaging.size] = funcPointer;
-	else if (eventName == "onPlayerDamaged")
-		level.events.onPlayerDamaged[level.events.onPlayerDamaged.size] = funcPointer;
-
-	else if (eventName == "onPlayerKilling")
-		level.events.onPlayerKilling[level.events.onPlayerKilling.size] = funcPointer;
-	else if (eventName == "onPlayerKilled")
-		level.events.onPlayerKilled[level.events.onPlayerKilled.size] = funcPointer;
-
-	else if (eventName == "onCvarChanged")
-		level.events.onCvarChanged[level.events.onCvarChanged.size] = funcPointer;
-
-	else if (eventName == "onMenuResponse")
-		level.events.onMenuResponse[level.events.onMenuResponse.size] = funcPointer;
-
-
-	else
-		assertMsg("Unknown event listener");
 }
 
 //=============================================================================
@@ -105,12 +55,18 @@ Called by code after the level's main script function has run.
 ================*/
 CodeCallback_StartGameType()
 {
+	/#
+	println("### Call: maps/mp/gametypes/_callback.gsc::CodeCallback_StartGameType()");
+	#/
+
 	// If the gametype has not beed started, run the startup
 	if(!isDefined(level.gametypestarted) || !level.gametypestarted)
 	{
 		// Process onStartGameType events
 		for (i = 0; i < level.events.onStartGameType.size; i++)
+		{
 			self thread [[level.events.onStartGameType[i]]]();
+		}
 
 		level.gametypestarted = true; // so we know that the gametype has been started up
 	}
@@ -149,98 +105,37 @@ CodeCallback_PlayerConnect()
 {
 	self endon("disconnect");
 
+	/#
+	if (isDefined(self.alreadyConnected))
+		assertMsg("Duplicated connection for " + self.name);
+	self.alreadyConnected = true;
+	println("### Connecting: " + self.name);
+	#/
+
 	self.sessionteam = "none"; // show player in "none" team in scoreboard while connecting
 
-	self thread notifyConnecting();
+	self thread maps\mp\gametypes\global\events::notifyConnecting();
 
 	// Wait here until player is fully connected
 	self waittill("begin");
 
-	// Notify connected
-	self thread notifyConnected();
-}
+	self thread maps\mp\gametypes\global\events::notifyConnected();
 
-notifyConnecting()
-{
-	for (i = 0; i < level.events.onConnecting.size; i++)
-		self thread [[level.events.onConnecting[i]]]();
-}
+	// If pam is not installed correctly, spawn outside
+	if (level.pam_installation_error || game["pbsv_not_loaded"])
+		[[level.spawnSpectator]]((999999, 999999, -999999), (90, 0, 0)); // Spawn spectator outside map
 
-notifyConnected()
-{
-	self endon("disconnect");
+	// Mod is not downloaded
+	else if (self maps\mp\gametypes\_force_download::modIsNotDownloadedForSure())
+		self maps\mp\gametypes\_force_download::spawnModNotDownloaded();
 
-	// Create player entity - so getentarray("player", "classname"); can be used in "onConnected" event
-	//self spawn((0, 0, 0),(0, 0, 0));
-
-	self thread IsMoving();
-
-	// Additional events what need to be watched
-	self thread _onSpawned();
-	self thread _onSpawnedPlayer();
-	self thread _onSpawnedSpectator();
-	self thread _onSpawnedIntermission();
-
-	self thread _onJoinedTeam();
-	self thread _onJoinedAlliesAxis();
-	self thread _onJoinedSpectator();
-
-	self thread _onMenuResponse();
-
-	// Process onConnected events
-	for (i = 0; i < level.events.onConnected.size; i++)
+	else
 	{
-		self thread [[level.events.onConnected[i]]]();
+
+
+		[[level.onAfterConnected]]();
 	}
 
-  // Wait for other players to connect
-  waittillframeend;
-
-	// Notify "all_connected" once
-	if (!isDefined(level.allPlayersConnected))
-	{
-		level.allPlayersConnected = true;
-
-		// Process onConnectedAll events
-		for (i = 0; i < level.events.onConnectedAll.size; i++)
-			level thread [[level.events.onConnectedAll[i]]]();
-	}
-}
-
-
-// Is also called on every player if cvar is changed in middle of game
-IsMoving()
-{
-	self endon("disconnect");
-
-	self.isMoving = false;
-	self.movingDifference = 0;
-
-	origin = self getOrigin();
-	origin_old = origin;
-
-	for (;;)
-	{
-		wait level.fps_multiplier * .1;
-
-		origin = self getOrigin();
-
-		self.movingDifference = distance(origin, origin_old);
-		if (self.movingDifference > 5.0)
-		{/*
-		  if (!self.isMoving)
-			self iprintln("Moving");*/
-		  self.isMoving = true;
-		}
-		else
-		{/*
-		  if (self.isMoving)
-			self iprintln("^1Stopped");*/
-		  self.isMoving = false;
-		}
-
-		origin_old = origin;
-	}
 }
 
 
@@ -253,9 +148,7 @@ CodeCallback_PlayerDisconnect()
 {
 	self notify("disconnect");
 
-	// Process events
-	for (i = 0; i < level.events.onDisconnect.size; i++)
-		self thread [[level.events.onDisconnect[i]]]();
+	self thread maps\mp\gametypes\global\events::notifyDisconnect();
 }
 
 
@@ -264,100 +157,51 @@ CodeCallback_PlayerDisconnect()
 Called when a player has taken damage.
 self is the player that took damage.
 Return undefined to prevent damage
+
+sMeansOfDeath
+	MOD_PISTOL_BULLET = pistol / shotgun / thompson
+	MOD_RIFLE_BULLET
+	MOD_MELEE = bash
+	MOD_GRENADE_SPLASH = grenade
+	MOD_SUICIDE = killed by script (used only in PlayerKilled callback, not damage)
+
+sHitLoc
+	head
+	neck
+	torso_upper
+	torso_lower
+	left_arm_upper
+	left_arm_lower
+	left_hand
+	right_arm_upper
+	right_arm_lower
+	right_hand
+	left_leg_upper
+	left_leg_lower
+	left_foot
+	right_leg_upper
+	right_leg_lower
+	right_foot
+
 ================*/
 CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset)
 {
 	self endon("disconnect");
 
-	damageFeedback = 1;
-
-
-
-	// Shotgun rebalance
-	if (level.scr_shotgun_rebalance && // Shotgun rebalance can be turned on/off by command
-		isDefined(eAttacker) && isPlayer(eAttacker) && isDefined(sHitLoc) && isDefined(sMeansOfDeath) &&
-		isDefined(sWeapon) && sWeapon == "shotgun_mp" && sMeansOfDeath == "MOD_PISTOL_BULLET")
-	{
-		/*
-		  MOD_PISTOL_BULLET = pistol / shotgun / thompson
-			MOD_RIFLE_BULLET
-			MOD_MELEE = bash
-			MOD_GRENADE_SPLASH = grenade
-		*/
-
-		// count distance
-		dist = distance(self getOrigin(), eAttacker getOrigin());
-
-		// Reset counters after this frame ends
-		if (!isDefined(eAttacker._shotgunShotID))
-		{
-			eAttacker._shotgunTotalDamage = 0;
-			eAttacker._shotgunShotID = 0;
-			eAttacker thread shotgunCounterAutoRestart();
-		}
-		eAttacker._shotgunShotID++;
-		eAttacker._shotgunTotalDamage += iDamage;
-
-
-		//eAttacker iprintln("Shotgun damage to " + self.name + " damage:" + iDamage + " hitLoc:" + sHitLoc + " distance:" + dist);
-		//setCvar("sg_debug", 1);
-
-		// Range 1 (very close range)
-		// 1 bulled does kill if you are moving
-		// 1 bullet do 90 damage if you are staying
-		if (dist < 280)
-		{
-			// If player is moving, do kill
-			if (eAttacker.isMoving)
-			{
-				iDamage = 100; // do kill
-				if(getCvar("sg_debug")=="1") eAttacker iprintln("^1Range 1 | is moving = kill (distance: " + int(dist) + " bullet id: " + eAttacker._shotgunShotID + ")");
-					damageFeedback = 2; // Do big damage feedback, because this bullet kills the player and the others are canceled due to this
-			}
-			else
-			{
-			  iDamage = 90; // do just big hit
-				if(getCvar("sg_debug")=="1") eAttacker iprintln("^1Range 1 | "+iDamage+"hp damage (distance: " + int(dist) + " bullet id: " + eAttacker._shotgunShotID + ")");
-			}
-		}
-
-		// Range 2
-		// Keep original damage
-		else if (dist < 550)
-		{
-			if(getCvar("sg_debug")=="1") eAttacker iprintln("Range 2 | original " + iDamage + "hp damage (distance:" + int(dist) + " bullet id: " + eAttacker._shotgunShotID + " totDmg: " + eAttacker._shotgunTotalDamage + ")");
-
-			// Fix the hit sound feedback, because if you hit player with 3 bullets with 15 HP, its the same feeling like if you hit with 3 bullets with 30HP - but everytime different damage!
-			if (eAttacker._shotgunShotID >= 2 && eAttacker._shotgunTotalDamage < 100)
-			  damageFeedback = 0; // cancel damage feedback
-		}
-
-		// Range 4
-		// Keep original damage
-		// Maximum damage is 99 (you can not kill player with single shot - this is fixing long range kills)
-		else
-		{
-			if (eAttacker._shotgunTotalDamage >= 100)  // Make sure you have to hit player twice to kill him
-			{
-				if(getCvar("sg_debug")=="1") eAttacker iprintln("^9Range 3, ^1CANCELED ^9" + iDamage + "hp damage (distance:" + int(dist) + " bullet id: " + eAttacker._shotgunShotID + " totDmg: " + eAttacker._shotgunTotalDamage + ")");
-						return; // cancel damage
-			}
-		  	else
-				if(getCvar("sg_debug")=="1") eAttacker iprintln("^9Range 3, " + iDamage + "hp damage (distance:" + int(dist) + " bullet id: " + eAttacker._shotgunShotID + " totDmg: " + eAttacker._shotgunTotalDamage + ")");
-
-			// Fix the hit sound feedback, because if you hit player with 3 bullets with 15 HP, its the same feeling like if you hit with 3 bullets with 30HP - but everytime different damage!
-			if (eAttacker._shotgunShotID >= 2 && eAttacker._shotgunTotalDamage < 100)
-				damageFeedback = 0; // cancel damage feedback
-		}
-	}
-
 	// Do debug print if it's enabled
 	if(getCvarInt("g_debugDamage"))
 	{
-		println("client:" + self getEntityNumber() + " health:" + self.health + " damage:" + iDamage + " hitLoc:" + sHitLoc + " iDFlags:" + iDFlags + " sMeansOfDeath: " + sMeansOfDeath);
+		dist = -1; if (isDefined(eAttacker) && isPlayer(eAttacker)) dist = int(distance(self getOrigin(), eAttacker getOrigin()));
+		strAttacker = "undefined"; if (isDefined(eAttacker)) if (isPlayer(eAttacker)) strAttacker = "#" + (eAttacker getEntityNumber()) + " " + eAttacker.name; else strAttacker = "-entity-";
+		sPoint = "undefined";	if (isDefined(vPoint)) sPoint = vPoint;
+		println("#Damage " + getTime() + " " + strAttacker + " -> #" + self getEntityNumber() + " " + self.name + " health:" + self.health + " damage:" + iDamage + " hitLoc:" + sHitLoc + " iDFlags:" + iDFlags +
+		" sMeansOfDeath:" + sMeansOfDeath + " sWeapon:" + sWeapon + " vPoint:" + sPoint + " distance:" + dist);
 
-		eAttacker iprintln("You inflicted " + iDamage + " damage to " + self.name + " (" + sHitLoc + ", "+ sMeansOfDeath +")");
-		self iprintln("You recieved " + iDamage + " damage from " + eAttacker.name + " (" + sHitLoc + ", "+ sMeansOfDeath +")");
+		//client:client_2  health:100 damage:90 hitLoc:torso_lower iDFlags:32 sMeansOfDeath: MOD_RIFLE_BULLET sWeapon: m1garand_mp vPoint: (-61.1327, 1090.97, 25.2369) vDir: (0.651344, -0.728131, -0.213485) timeOffset: 0
+		//client:client_2  health:55 damage:45 hitLoc:torso_lower iDFlags:0 sMeansOfDeath: MOD_PISTOL_BULLET sWeapon: webley_mp vPoint: (-189.78, 1102.76, 39.3595) vDir: (0.140321, -0.958474, -0.248269) timeOffset: 0
+
+		eAttacker iprintln("You inflicted " + iDamage + " damage to " + self.name + " (" + sHitLoc + ", "+ sMeansOfDeath +", distance "+dist+")");
+		self iprintln("You recieved " + iDamage + " damage from " + eAttacker.name + " (" + sHitLoc + ", "+ sMeansOfDeath +", distance "+dist+")");
 	}
 
 	// Protection - players in spectator inflict damage
@@ -367,6 +211,111 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	// Don't do knockback if the damage direction was not specified
 	if(!isdefined(vDir))
 		iDFlags |= level.iDFLAGS_NO_KNOCKBACK;
+
+	damageFeedback = 1;
+
+
+	// Hitbox rebalance
+	if (level.scr_hand_hitbox_fix &&
+		isDefined(sWeapon) && isDefined(sHitLoc) && isDefined(eAttacker) && isPlayer(eAttacker))
+	{
+		// Player is in ads and is shoted to left arm with rifle or scope
+		if (self playerAds() > 0.5 &&
+		    sHitLoc == "left_arm_lower" &&
+		    (sWeapon == "kar98k_mp" || sWeapon == "enfield_mp" || sWeapon == "mosin_nagant_mp" ||
+		     sWeapon == "springfield_mp" || sWeapon == "enfield_scope_mp" || sWeapon == "kar98k_sniper_mp" || sWeapon == "mosin_nagant_sniper_mp"))
+		{
+			// If players are looking to each other, make shot to arm a kill
+			distance = distance(self.origin, eAttacker.origin);
+			angleDiff = angleDiff(self, eAttacker);
+			if (distance > 200 && anglediff > -20 && anglediff < 20)
+			{
+				if (level.debug_handhitbox) iprintln("^1Hitbox fix - making damage as kill");
+				iDamage = 135;
+			}
+		}
+	}
+
+	// Shotgun rebalance
+	if (level.scr_shotgun_rebalance && // Shotgun rebalance can be turned on/off by command
+		isDefined(eAttacker) && isPlayer(eAttacker) && isDefined(sHitLoc) && isDefined(sMeansOfDeath) && isDefined(sHitLoc) &&
+		isDefined(sWeapon) && sWeapon == "shotgun_mp" && sMeansOfDeath == "MOD_PISTOL_BULLET")
+	{
+		// count distance
+		dist = distance(self.origin, eAttacker.origin);
+
+		// Reset counters after this frame ends
+		if (!isDefined(eAttacker.shotgunHit))
+			eAttacker.shotgunHit = [];
+
+		self_num = self getEntityNumber();
+		if (!isDefined(eAttacker.shotgunHit[self_num]))
+		{
+			hit = spawnstruct();
+			hit.id = 0;
+			hit.totalDamage = 0;
+			eAttacker.shotgunHit[self_num] = hit;
+			eAttacker thread shotgunCounterAutoRestart();
+		}
+		eAttacker.shotgunHit[self_num].id++;
+		eAttacker.shotgunHit[self_num].totalDamage += iDamage;
+		hitInfo = eAttacker.shotgunHit[self_num];
+
+
+		//eAttacker iprintln("Shotgun damage to " + self.name + " damage:" + iDamage + " hitLoc:" + sHitLoc + " distance:" + dist);
+
+
+		// Range 0-384
+		if (dist < 384)
+		{
+			// Do linear damage 100hp - 50hp
+			iDamage = int(50 + (50 - (dist / 384) * 50)); // damage 0 - 50 accorging to distance
+
+			// Hit to main parts of body at distance < 200 change to kill
+			doKill = false;
+			if (dist < 200)
+			{
+				switch(sHitLoc)
+				{
+					case "head": case "neck": case "left_arm_upper": case "right_arm_upper":
+					case "torso_upper": case "torso_lower": case "left_leg_upper": case "right_leg_upper":
+						doKill = true;
+				}
+			}
+
+			if (doKill)
+			{
+				iDamage = 100;
+				damageFeedback = 2; // Do big damage feedback, because this bullet kills the player and the others are canceled due to this
+				if (level.debug_shotgun) eAttacker iprintln("^1Distance " + int(dist) + " | close range 0-200 : Hit to " + sHitLoc+ " = KILL");
+			}
+			else
+				if (level.debug_shotgun) eAttacker iprintln("^3Distance " + int(dist) + " | close range 0-384 : Hit to " + sHitLoc+ " = "+iDamage+"hp damage (bullet id: " + hitInfo.id + ")");
+		}
+
+		// Range 384-500
+		else if (dist < 500)
+		{
+			if (level.debug_shotgun) eAttacker iprintln("Distance " + int(dist) + " | range 384-500 : original " + iDamage + "hp damage (bullet id: " + hitInfo.id + " totDmg: " + hitInfo.totalDamage + ")");
+		}
+
+		// Range 550 - 800
+		// Limit damage to 99 (you can not kill player with single shot - this is fixing long range kills)
+		else
+		{
+			if (hitInfo.totalDamage >= 100)  // Make sure you have to hit player twice to kill him
+			{
+				if (level.debug_shotgun) eAttacker iprintln("^9Distance " + int(dist) + " | far range 500-800 : ^9" + iDamage + "hp damage ^1CANCELED (bullet id: " + hitInfo.id + " totDmg: " + hitInfo.totalDamage + ")");
+				return; // cancel damage
+			}
+		  	else
+				if (level.debug_shotgun) eAttacker iprintln("^9Distance " + int(dist) + " | far range 500-800 : original " + iDamage + "hp damage (bullet id: " + hitInfo.id + " totDmg: " + hitInfo.totalDamage + ")");
+		}
+
+		// Fix the hit sound feedback, because if you hit player with 3 bullets with 15 HP, its the same feeling like if you hit with 3 bullets with 30HP - but everytime different damage!
+		if (hitInfo.id >= 2 && hitInfo.totalDamage < 100)
+		  damageFeedback = 0; // cancel damage feedback
+	}
 
 
 	if (level.balance_ppsh && isDefined(sWeapon) && sWeapon == "ppsh_mp")
@@ -383,48 +332,78 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	iDamage = int(iDamage * .9);
 
 
-
-
-	// First loop onPlayerDamaging events that can prevent from the damage
-	return_value = [];
-	for (i = 0; i < level.events.onPlayerDamaging.size; i++)
-		return_value[i] = self thread [[level.events.onPlayerDamaging[i]]](eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
-
-	for (i = 0; i < return_value.size; i++)
-		if (isDefined(return_value[i]) && return_value[i])
-			return; // prevent damage
+	//println("##################### " + "notifyDamaging");
+	// Call onDamage event and return if damage was prevented
+	ret = maps\mp\gametypes\global\events::notifyDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
+	if (ret) return;
 
 
 	// Damage feedback
 	for (i = 0; i < damageFeedback; i++)
 	{
-	//eAttacker iprintln("^6DMG" + i);
-		if(isdefined(eAttacker) && eAttacker != self && !(iDFlags & level.iDFLAGS_NO_PROTECTION))
+		//eAttacker iprintln("^6DMG feedback" + i);
+		if(isPlayer(eAttacker) && eAttacker != self && !(iDFlags & level.iDFLAGS_NO_PROTECTION))
 			eAttacker thread maps\mp\gametypes\_damagefeedback::updateDamageFeedback();
 	}
 
+	//println("##################### " + "notifyDamage");
+	// Call onPlayerDamaged event
+	maps\mp\gametypes\global\events::notifyDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
 
-	// Do onPlayerDamaged event
-	for (i = 0; i < level.events.onPlayerDamaged.size; i++)
-		self thread [[level.events.onPlayerDamaged[i]]](eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
+	// Call gametype specific event that is called as last
+	[[level.onAfterPlayerDamaged]](eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
 }
 
 shotgunCounterAutoRestart()
 {
-  waittillframeend;
-	self._shotgunTotalDamage = undefined;
-  self._shotgunShotID = undefined;
+	waittillframeend;
+	self.shotgunHit = undefined;
 }
 
+angleDiff(player, eAttacker)
+{
+	myAngle = player.angles[1]; // -180 <-> +180
+	myAngle += 180; // flip direction, now in range 0 <-> 360
+	if (myAngle > 180) myAngle -= 360; // back to range -180 <-> +180
+
+	enemyAngle = eAttacker.angles[1];
+
+	anglediff = myAngle - enemyAngle;
+	if (anglediff > 180)		anglediff -= 360;
+	else if (anglediff < -180)	anglediff += 360;
+
+	//iprintln(anglediff);
+
+	return anglediff;
+}
 
 
 /*================
 Called when a player has been killed.
 self is the player that was killed.
+
+
+This function is called if:
+	finishPlayerDamage is called and that damage applied leads to <= 0 health
+	RadiusDamage is called and that damage applied leads to <= 0 health
+	suicide is called
+	player kills himself via /kill
+
+After this function is executed, weapons are removed (getcurrentweapon will return none when the current frame ends)
+
+
 ================*/
 CodeCallback_PlayerKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration)
 {
 	self endon("disconnect");
+
+	// Do debug print if it's enabled
+	if(getCvarInt("g_debugDamage"))
+	{
+		strAttacker = "undefined"; if (isDefined(eAttacker)) if (isPlayer(eAttacker)) strAttacker = "#" + (eAttacker getEntityNumber()) + " " + eAttacker.name; else strAttacker = "-entity-";
+		println("#Kill " + getTime() + " " + strAttacker + " -> #" + self getEntityNumber() + " " + self.name + " health:" + self.health + " damage:" + iDamage + " hitLoc:" + sHitLoc +
+		" sMeansOfDeath:" + sMeansOfDeath + " sWeapon:" + sWeapon + " sessionstate:" + self.sessionstate + " timeOffset:" + timeOffset);
+	}
 
 	// Player in spectator cannot be killed
 	if(self.sessionteam == "spectator")
@@ -461,175 +440,18 @@ CodeCallback_PlayerKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon
 
 
 
-	// First loop onPlayerKilling events that can prevent from the kill
-	return_value = [];
-	for (i = 0; i < level.events.onPlayerKilling.size; i++)
-		return_value[i] = self thread [[level.events.onPlayerKilling[i]]](eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration);
-
-	for (i = 0; i < return_value.size; i++)
-		if (isDefined(return_value[i]) && return_value[i])
-			return; // prevent kill
-
+	// Call onKilling event and return if kill was prevented
+	ret = maps\mp\gametypes\global\events::notifyKilling(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration);
+	if (ret) return;
 
 	// If kill is not prevented, do onPlayerKilled event
-	for (i = 0; i < level.events.onPlayerKilled.size; i++)
-	{
-		self thread [[level.events.onPlayerKilled[i]]](eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration);
-	}
+	maps\mp\gametypes\global\events::notifyKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration);
+
+	// Call gametype specific event that is called as last
+	[[level.onAfterPlayerKilled]](eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration);
 }
 
 
-_onSpawned()
-{
-	self endon("disconnect");
-	for(;;)
-	{
-		self waittill("spawned");
-		self thread _onSpawnedCallEvents();
-	}
-}
-_onSpawnedCallEvents()
-{
-	for (i = 0; i < level.events.onSpawned.size; i++)
-		self thread [[level.events.onSpawned[i]]]();
-}
-
-
-_onSpawnedPlayer()
-{
-	self endon("disconnect");
-	for(;;)
-	{
-		self waittill("spawned_player");
-		self thread _onSpawnedPlayerCallEvents();
-	}
-}
-_onSpawnedPlayerCallEvents()
-{
-	for (i = 0; i < level.events.onSpawnedPlayer.size; i++)
-		self thread [[level.events.onSpawnedPlayer[i]]]();
-}
-
-
-_onSpawnedSpectator()
-{
-	self endon("disconnect");
-	for(;;)
-	{
-		self waittill("spawned_spectator");
-		self thread _onSpawnedSpectatorCallEvents();
-	}
-}
-_onSpawnedSpectatorCallEvents()
-{
-	for (i = 0; i < level.events.onSpawnedSpectator.size; i++)
-		self thread [[level.events.onSpawnedSpectator[i]]]();
-}
-
-
-_onSpawnedIntermission()
-{
-	self endon("disconnect");
-	for(;;)
-	{
-		self waittill("spawned_intermission");
-		self thread _onSpawnedIntermissionCallEvents();
-	}
-}
-_onSpawnedIntermissionCallEvents()
-{
-	for (i = 0; i < level.events.onSpawnedIntermission.size; i++)
-		self thread [[level.events.onSpawnedIntermission[i]]]();
-}
-
-
-_onJoinedTeam()
-{
-	self endon("disconnect");
-	for(;;)
-	{
-		self waittill("joined", teamName);
-		self thread _onJoinedTeamCallEvents(teamName);
-	}
-}
-_onJoinedTeamCallEvents(teamName)
-{
-	for (i = 0; i < level.events.onJoinedTeam.size; i++)
-		self thread [[level.events.onJoinedTeam[i]]](teamName);
-}
-
-
-_onJoinedAlliesAxis()
-{
-	self endon("disconnect");
-	for(;;)
-	{
-		self waittill("joined_allies_axis");
-		self thread _onJoinedAlliesAxisCallEvents();
-	}
-}
-_onJoinedAlliesAxisCallEvents()
-{
-	for (i = 0; i < level.events.onJoinedAlliesAxis.size; i++)
-		self thread [[level.events.onJoinedAlliesAxis[i]]]();
-}
-
-
-_onJoinedSpectator()
-{
-	self endon("disconnect");
-	for(;;)
-	{
-		self waittill("joined_spectators");
-		self thread _onJoinedSpectatorCallEvents();
-	}
-}
-_onJoinedSpectatorCallEvents()
-{
-	for (i = 0; i < level.events.onJoinedSpectator.size; i++)
-		self thread [[level.events.onJoinedSpectator[i]]]();
-}
-
-
-_onMenuResponse()
-{
-	self endon("intermission");
-	self endon("disconnect");
-
-	for(;;)
-	{
-		self waittill("menuresponse", menu, response);
-
-		// Process events
-		self thread _onMenuResponseCallEvents(menu, response);
-	}
-}
-_onMenuResponseCallEvents(menu, response)
-{
-	// Call events one by one and if true is returned, it means menuresponse was handled and no other events need to be called
-	for (i = 0; i < level.events.onMenuResponse.size; i++)
-	{
-		handled = self [[level.events.onMenuResponse[i]]](menu, response);
-		if (isDefined(handled) && handled)
-			break;
-	}
-}
-
-
-
-_onCvarChanged()
-{
-	for(;;)
-	{
-		level waittill("onCvarChanged", cvar, value);
-		self thread _onCvarChangedCallEvents(cvar, value);
-	}
-}
-_onCvarChangedCallEvents(cvar, value)
-{
-	for (i = 0; i < level.events.onCvarChanged.size; i++)
-		level thread [[level.events.onCvarChanged[i]]](cvar, value);
-}
 
 //=============================================================================
 
@@ -676,7 +498,7 @@ AbortLevel()
 	level.callbackPlayerDamage = ::callbackVoid;
 	level.callbackPlayerKilled = ::callbackVoid;
 
-	setcvar("g_gametype", "sd");	// only sd is supported now
+	setcvar("g_gametype", "dm");
 
 	exitLevel(false);
 }
@@ -686,32 +508,3 @@ AbortLevel()
 callbackVoid()
 {
 }
-
-/*
-// TODO remove
-setClientCvar(cvar, value, aaa, bbb, ccc)
-{
-  if (cvar == "cg_objectiveText")
-	println("### " + getTime() + " ### " + self.name + " ### " + cvar + " = " + "...localized string...");
-  else
-	println("### " + getTime() + " ### " + self.name + " ### " + cvar + " = \"" + value + "\"");
-
-
-
-  if (!isDefined(self.pers["aaa"]))
-  {
-	self.pers["aaa"] = [];
-	self.pers["sended_cvars"] = 0;
-  }
-
-  if (!isDefined(self.pers["aaa"][cvar]))
-  {
-	self.pers["aaa"][cvar] = 1;
-	self.pers["sended_cvars"]++;
-
-	println("### new cvars:" + self.pers["sended_cvars"] + "  " + cvar);
-  }
-
-  self setClientCvar(cvar, value);
-}
-*/

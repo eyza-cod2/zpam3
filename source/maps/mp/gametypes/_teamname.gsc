@@ -1,4 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 
 Init()
@@ -6,20 +6,16 @@ Init()
 	// Team names
 	level.teamname_allies = "";
 	level.teamname_axis = "";
-	level.teamname_all = "";
 
-  level.teamname["allies"] = "";
-  level.teamname["axis"] = "";
+	level.teamname["allies"] = "";
+	level.teamname["axis"] = "";
 
-  // Wait untill all players are spawned
-  waittillframeend;
-
-  // Generate team names
-  refreshTeamName("allies");
-  refreshTeamName("axis");
+	// Team names are updated only if its needed for other functions (matchinfo, recording, ...)
 }
 
+
 // Generate team names for specified team
+// Called from multiple places
 refreshTeamName(team)
 {
   if (team == "allies")
@@ -34,18 +30,7 @@ refreshTeamName(team)
     level.teamname["axis"] = level.teamname_axis;
     return level.teamname_axis;
   }
-  else if (team == "")
-  {
-    level.teamname_all = getTeamName(team);
-    return level.teamname_all;
-  }
   return "";
-}
-
-// Generate team name base on all players
-refreshTeamNameForAll()
-{
-  refreshTeamName("");
 }
 
 
@@ -55,39 +40,18 @@ getTeamName(team)
 
 	names = [];
 
-    players = getentarray("player", "classname");
-    for(i = 0; i < players.size; i++)
-    {
-    	player = players[i];
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		player = players[i];
 
 		// If team is not set, generate team name from all players
-        if (isDefined(player.pers["team"]) && (player.pers["team"] == team || team == ""))
-        {
-            name = player.name; // name may be like:    "ahoj^1kokos^^33pica^^^777neco__^nic^^kokos"
-            name_clean = "";    // name clean:      	"ahojkokospica^7neco__^nic^^kokos"
-
-            ignoreNumber = 0;
-            for (j = 0; j < name.size; j++)
-            {
-                char = name[j];
-
-                if (ignoreNumber > 0 && (char == "0" || char == "1" || char == "2" || char == "3" || char == "4" || char == "5" || char == "6" || char == "7" || char == "8" || char == "9"))
-                {
-                    ignoreNumber--;
-
-                } else if (char == "^" && ignoreNumber < 2)
-                {
-                    ignoreNumber++;
-                }
-                else
-                {
-                    name_clean += char;
-                }
-            }
-
-            names[names.size] = name_clean;
-        }
-    }
+		if (isDefined(player.pers["team"]) && (player.pers["team"] == team || team == ""))
+		{
+			name_clean = removeColorsFromString(player.name);
+			names[names.size] = name_clean;
+		}
+	}
 
 
 
@@ -97,7 +61,7 @@ getTeamName(team)
     }
     else if (names.size == 1)
     {
-        return getSecureString(names[0]);
+        return names[0];
     }
 
 
@@ -269,14 +233,38 @@ getTeamName(team)
 	index = int(count * perc);
 	final_word = most_used_extended[index];
 
+	// Remove unallowed chars
+	final_word = getSecureString(final_word);
 
-    final_word_secure = getSecureString(final_word);
+    return final_word;
+}
 
+getSecureString(string)
+{
+	// Remove chars that cannot be used in team name
+	string_secure = "";
+	allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    // Debug
-	//println("\n\nSelected name of team: \"" + final_word +"\" : " + index + "    --- secured: \"" + final_word_secure + "\"");
+	for (j = 0; j < string.size; j++)
+	{
+		if (string_secure != "" && (string[j] == "-" || string[j] == "|" || string[j] == "_"))
+		{
+			string_secure += " ";
+			continue;
+		}
 
-    return final_word_secure;
+		saveChar = false;
+		for (i = 0; i < allowedChars.size; i++)
+		{
+			if (allowedChars[i] == string[j])
+				saveChar = true;
+		}
+
+		if (saveChar)
+			string_secure += string[j];
+	}
+
+	return string_secure;
 }
 
 removeSameItems(array)
@@ -305,40 +293,4 @@ removeSameItems(array)
     }
 
     return array_to_return;
-}
-
-
-getSecureString(string)
-{
-    // Remove chars that cannot be used in filename on Windows (for recording purposes)
-    string_secure = "";
-    allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-
-    for (j = 0; j < string.size; j++)
-    {
-        saveChar = false;
-        for (i = 0; i < allowedChars.size; i++)
-        {
-            if (allowedChars[i] == string[j])
-                saveChar = true;
-        }
-
-        if (saveChar)
-            string_secure += string[j];
-    }
-
-    // Remove spaces from beginid and ending
-	if (string_secure.size > 0)
-	{
-	    while(string_secure[0] == " ")
-	        string_secure = getsubstr(string_secure, 1);
-		while(string_secure[string_secure.size-1] == " ")
-	        string_secure = getsubstr(string_secure, 0, string_secure.size - 1);
-	}
-
-    // Limit to 15 chars
-    string_secure = getsubstr(string_secure, 0, 15);
-
-    return string_secure;
 }

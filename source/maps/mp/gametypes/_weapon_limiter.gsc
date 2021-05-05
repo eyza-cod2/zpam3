@@ -1,5 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
-#include maps\mp\gametypes\_cvar_system;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
@@ -7,10 +6,6 @@ init()
     addEventListener("onConnectedAll",     ::onConnectedAll);
     addEventListener("onDisconnect",    ::onDisconnect);
     addEventListener("onJoinedTeam",    ::onJoinedTeam);
-    addEventListener("onPlayerKilled",    ::onPlayerKilled);
-
-    level thread onWeaponDropped();
-    level thread onWeaponTaked();
 }
 
 onConnected()
@@ -49,13 +44,6 @@ onJoinedTeam(teamName)
 	}
 }
 
-// TODO
-onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
-{/*
-    if (self.pers["team"] == "allies" || self.pers["team"] == "axis")
-        level thread Update_All_Weapon_Limits(); //(self.pers["team"]);*/
-}
-
 onWeaponChanged()
 {
     for(;;)
@@ -72,31 +60,6 @@ onWeaponChanged()
 
         level thread Update_All_Weapon_Limits();
     }
-}
-
-// TODO
-onWeaponDropped()
-{/*
-    for(;;)
-    {
-        level waittill("weapon_dropped", weaponname, player);
-
-        if (isDefined(level.weapons[weaponname]) && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
-            level thread Update_All_Weapon_Limits(); //(player.pers["team"]);
-    }*/
-}
-
-// TODO
-// Can be called even if just ammo is taked from weapon
-onWeaponTaked()
-{/*
-    for(;;)
-    {
-        level waittill("weapon_taked", weaponname, player);
-
-        if (isDefined(level.weapons[weaponname]) && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
-            level thread Update_All_Weapon_Limits(); //(player.pers["team"]);
-    }*/
 }
 
 
@@ -284,8 +247,8 @@ isWeaponDropable(weaponname)
 
 isWeaponPickable(weaponname)
 {
-	// This weapon is weapon that player was spawned with, he can pick it back
-	if (isDefined(self.spawnedWeapon) && self.spawnedWeapon == weaponname)
+	// This weapon is weapon that player starts the round with, he can pick it back
+	if (isDefined(self.selectedWeaponOnRoundStart) && self.selectedWeaponOnRoundStart == weaponname)
 		return true;
 
 	// If weapon is allowed for drop, it can be also picked up
@@ -436,9 +399,6 @@ Update_Client_Weapon(player, weaponname, team)
     slot[0] = player getWeaponSlotWeapon("primary");
     slot[1] = player getWeaponSlotWeapon("primaryb");
 
-    i_have_weapon_of_this_class_in_slot = (isDefined(level.weapons[slot[0]]) && level.weapons[slot[0]].classname == weaponclass) ||
-                                          (isDefined(level.weapons[slot[1]]) && level.weapons[slot[1]].classname == weaponclass);
-
 
 	cvarValue = -1;
 
@@ -452,14 +412,14 @@ Update_Client_Weapon(player, weaponname, team)
 
 		else if (team == "allies")
 		{
-			if(level.weaponclass[weaponclass].allies_limited && !i_have_weapon_of_this_class/* && !i_have_weapon_of_this_class_in_slot*/)
+			if(level.weaponclass[weaponclass].allies_limited && !i_have_weapon_of_this_class)
 				cvarValue = 2; // 2 = disabled
 			else
 				cvarValue = 1; // 1 = visible
 		}
 		else if (team == "axis")
 		{
-			if(level.weaponclass[weaponclass].axis_limited && !i_have_weapon_of_this_class/* && !i_have_weapon_of_this_class_in_slot*/)
+			if(level.weaponclass[weaponclass].axis_limited && !i_have_weapon_of_this_class)
 				cvarValue = 2; // 2 = disabled
 			else
 				cvarValue = 1; // 1 = visible
@@ -470,7 +430,7 @@ Update_Client_Weapon(player, weaponname, team)
 		if (i_have_this_weapon)
 			cvarValue = 3; // 3 = selected
 
-		else if (allowed || i_have_weapon_of_this_class /*|| i_have_weapon_of_this_class_in_slot*/) // TODO
+		else if (allowed || i_have_weapon_of_this_class)
 			cvarValue = 1; // 1 = visible
 
 		else

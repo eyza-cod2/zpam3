@@ -316,3 +316,13 @@ abs (num)
 
 	return num;
 }
+
+deletePlacedEntity(entity)
+{
+	entities = getentarray(entity, "classname");
+	for(i = 0; i < entities.size; i++)
+	{
+		//println("DELETED: ", entities[i].classname);
+		entities[i] delete();
+	}
+}

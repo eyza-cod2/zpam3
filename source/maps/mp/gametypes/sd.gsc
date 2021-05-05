@@ -1,4 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 // Rallypoints should be destroyed on leaving your team/getting killed
 // Compass icons need to be looked at
@@ -84,8 +84,11 @@
 
 main()
 {
-	InitCallbacks();
+	// Initialize global systems (scripts for events, cvars, hud, player...)
+	InitSystems();
 
+
+	// Register events that should be caught
 	addEventListener("onStartGameType", ::onStartGameType);
 	addEventListener("onConnecting", ::onConnecting);
 	addEventListener("onConnected", ::onConnected);
@@ -94,6 +97,12 @@ main()
 	addEventListener("onPlayerDamaged", ::onPlayerDamaged);
 	addEventListener("onPlayerKilling", ::onPlayerKilling);
 	addEventListener("onPlayerKilled", ::onPlayerKilled);
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	// Events for this gametype that are called last after all events are processed
+	level.onAfterConnected = ::onAfterConnected;
+	level.onAfterPlayerDamaged = ::onAfterPlayerDamaged;
+	level.onAfterPlayerKilled = ::onAfterPlayerKilled;
 
 	// Same functions across gametypes
 	level.autoassign = ::menuAutoAssign;
@@ -105,16 +114,129 @@ main()
 	level.spawnPlayer = ::spawnPlayer;
 	level.spawnSpectator = ::spawnSpectator;
 	level.spawnIntermission = ::spawnIntermission;
+
+
+	// Define gametype specific cvars here
+	// Default values of these variables are overwrited by rules
+	// Event onCvarChanged is called on every cvar registration
+	// Make sure that onCvarChanged event is added first before cvar registration
+	registerCvar("scr_sd_timelimit", "FLOAT", 0, 0, 1440); 	// Total Time limit per map
+	registerCvar("scr_sd_half_round", "INT", 0, 0, 99999);	// Round limit for 1st half (0 means there is no half time)
+	registerCvar("scr_sd_half_score", "INT", 0, 0, 99999);	// Score limit for 1st half (0 means there is no half time)
+	registerCvar("scr_sd_end_round", "INT", 20, 0, 99999);	// Total round limit for map
+	registerCvar("scr_sd_end_score", "INT", 0, 0, 99999);	// Total score limit for map
+
+	registerCvar("scr_sd_strat_time", "FLOAT", 0, 0, 15);	// Time before round starts (sec) (0 - 10, default 0)
+	registerCvar("scr_sd_roundlength", "FLOAT", 4, 0, 10);	// Time length of each round (min) (0 - 10, default 4)
+	registerCvar("scr_sd_end_time", "FLOAT", 0, 0, 15);		// Timer at the end of the round
+	registerCvar("scr_sd_count_draws", "BOOL", 1);		// Count Draws? (may happend if last players from allies and axis are killed in same time)
+
+	registerCvar("scr_sd_bombtimer", "FLOAT", 60, 0, 60);	// Time untill bomb explodes. (seconds)
+	registerCvar("scr_sd_bombtimer_show", "BOOL", 1);		// Show bombtimr stopwatch
+	registerCvar("scr_sd_planttime", "FLOAT", 5, 0, 10);
+	registerCvar("scr_sd_defusetime", "FLOAT", 10, 0, 10);
+	registerCvar("scr_sd_plant_points", "INT", 0, 0, 10);	// Points for planter
+	registerCvar("scr_sd_defuse_points", "INT", 0, 0, 10);	// Points for defuser
+
+	registerCvar("scr_auto_deadchat", "BOOL", 0);
+
+
+	// Precache gametype specific stuff
+	if (game["firstInit"])
+		precache();
+
+	// Init all shared modules in this pam (scripts with underscore)
+	InitModules();
 }
 
-/*================
-Called by code after the level's main script function has run.
 
-Called again for every round in round-based gameplay
-================*/
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_sd_timelimit": 		level.timelimit = value; return true;
+		case "scr_sd_half_round": 		level.halfround = value; return true;
+		case "scr_sd_half_score": 		level.halfscore = value; return true;
+		case "scr_sd_end_round": 		level.matchround = value; return true;
+		case "scr_sd_end_score": 		level.scorelimit = value; return true;
+
+		case "scr_sd_strat_time": 		level.strat_time = value; return true;
+		case "scr_sd_roundlength": 		level.roundlength = value; return true;
+		case "scr_sd_end_time": 		level.round_endtime = value; return true;
+		case "scr_sd_count_draws": 		level.countdraws = value; return true;
+
+		case "scr_sd_bombtimer": 		level.bombtimer = value; return true;
+		case "scr_sd_bombtimer_show": 		level.show_bombtimer = value; return true;
+		case "scr_sd_planttime": 		level.planttime = value; return true;
+		case "scr_sd_defusetime": 		level.defusetime = value; return true;
+		case "scr_sd_plant_points": 		level.bomb_plant_points = value; return true;
+		case "scr_sd_defuse_points": 		level.bomb_defuse_points = value; return true;
+
+
+		case "scr_auto_deadchat": 		level.scr_auto_deadchat = value; return true;
+	}
+
+
+
+	if (!isRegisterTime && !game["firstInit"])
+	{
+		thread serverInfo();
+	}
+
+
+	return false;
+}
+
+// Precache specific stuff for this gametype
+// Is called only once per map
+precache()
+{
+	precacheShader("plantbomb");
+	precacheShader("defusebomb");
+	precacheShader("objective");
+	precacheShader("objectiveA");
+	precacheShader("objectiveB");
+	precacheShader("bombplanted");
+	precacheShader("objpoint_bomb");
+	precacheShader("objpoint_A");
+	precacheShader("objpoint_B");
+	precacheShader("objpoint_star");
+	precacheString(&"MP_MATCHSTARTING");
+	precacheString(&"MP_MATCHRESUMING");
+	precacheString(&"MP_EXPLOSIVESPLANTED");
+	precacheString(&"MP_EXPLOSIVESDEFUSED");
+	precacheString(&"MP_ROUNDDRAW");
+	precacheString(&"MP_TIMEHASEXPIRED");
+	precacheString(&"MP_ALLIEDMISSIONACCOMPLISHED");
+	precacheString(&"MP_AXISMISSIONACCOMPLISHED");
+	precacheString(&"MP_ALLIESHAVEBEENELIMINATED");
+	precacheString(&"MP_AXISHAVEBEENELIMINATED");
+	precacheString(&"PLATFORM_HOLD_TO_PLANT_EXPLOSIVES");
+	precacheString(&"PLATFORM_HOLD_TO_DEFUSE_EXPLOSIVES");
+	precacheModel("xmodel/mp_tntbomb");
+	precacheModel("xmodel/mp_tntbomb_obj");
+
+	precacheString2("STRING_ROUND", &"Round");
+	precacheString2("STRING_ROUND_STARTING", &"Starting");
+
+	precacheString2("STRING_ROUND_FIRST", &"First Round");
+	precacheString2("STRING_ROUND_LAST_HALF", &"Last round before half");
+	precacheString2("STRING_ROUND_LAST", &"Last round");
+
+	// HUD: Strattime
+	precacheString2("STRING_STRAT_TIME", &"Strat Time");
+}
+
+// Called after the <gametype>.gsc::main() and <map>.gsc::main() scripts are called
+// At this point game specific variables are defined (like game["allies"], game["axis"], game["american_soldiertype"], ...)
+// Called again for every round in round-based gameplay
 onStartGameType()
 {
-	if(!isDefined(game["gametypeStarted"]))
+	if(game["firstInit"])
 	{
 		// defaults if not defined in level script
 		if(!isdefined(game["allies"]))
@@ -126,74 +248,36 @@ onStartGameType()
 		if(!isdefined(game["defenders"]))
 			game["defenders"] = "axis";
 
-		precacheShader("plantbomb");
-		precacheShader("defusebomb");
-		precacheShader("objective");
-		precacheShader("objectiveA");
-		precacheShader("objectiveB");
-		precacheShader("bombplanted");
-		precacheShader("objpoint_bomb");
-		precacheShader("objpoint_A");
-		precacheShader("objpoint_B");
-		precacheShader("objpoint_star");
-		precacheString(&"MP_MATCHSTARTING");
-		precacheString(&"MP_MATCHRESUMING");
-		precacheString(&"MP_EXPLOSIVESPLANTED");
-		precacheString(&"MP_EXPLOSIVESDEFUSED");
-		precacheString(&"MP_ROUNDDRAW");
-		precacheString(&"MP_TIMEHASEXPIRED");
-		precacheString(&"MP_ALLIEDMISSIONACCOMPLISHED");
-		precacheString(&"MP_AXISMISSIONACCOMPLISHED");
-		precacheString(&"MP_ALLIESHAVEBEENELIMINATED");
-		precacheString(&"MP_AXISHAVEBEENELIMINATED");
-		precacheString(&"PLATFORM_HOLD_TO_PLANT_EXPLOSIVES");
-		precacheString(&"PLATFORM_HOLD_TO_DEFUSE_EXPLOSIVES");
-		precacheModel("xmodel/mp_tntbomb");
-		precacheModel("xmodel/mp_tntbomb_obj");
 
-		maps\mp\gametypes\_precache::Precache();
-	}
-
-	// Main scores
-	if(!isdefined(game["allies_score"]))
+		// Main scores
 		game["allies_score"] = 0;
-	setTeamScore("allies", game["allies_score"]);
-
-	if(!isdefined(game["axis_score"]))
 		game["axis_score"] = 0;
-	setTeamScore("axis", game["axis_score"]);
 
-	// Half-separed scoresg
-	if(!isdefined(game["half_1_allies_score"]))
+		// For spectators
+		game["allies_score_history"] = "";
+		game["axis_score_history"] = "";
+
+		// Half-separed scoresg
 		game["half_1_allies_score"] = 0;
-	if(!isdefined(game["half_1_axis_score"]))
 		game["half_1_axis_score"] = 0;
-	if(!isdefined(game["half_2_allies_score"]))
 		game["half_2_allies_score"] = 0;
-	if(!isdefined(game["half_2_axis_score"]))
 		game["half_2_axis_score"] = 0;
 
-	// Total score for clan
-	if(!isdefined(game["Team_1_Score"]))
-		game["Team_1_Score"] = 0;				// Team_1 is: game["half_1_axis_score"] + game["half_2_allies_score"] ---- team who was as axis in first half
-	if(!isdefined(game["Team_2_Score"]))
-		game["Team_2_Score"] = 0;				// Team_2 is: game["half_2_axis_score"] + game["half_1_allies_score"] ----	team who was as allies in first half
-
-	// Other variables
-	if(!isdefined(game["state"]))
+		// Other variables
 		game["state"] = "playing";
-	if(!isdefined(game["roundsplayed"]))
 		game["roundsplayed"] = 0;
+		game["round"] = 0;
 
-	// Counts length of all rounds (used for scr_sd_timelimit)
-	if(!isdefined(game["timepassed"]))
+		// Counts length of all rounds (used for scr_sd_timelimit)
 		game["timepassed"] = 0;
+	}
 
-
+	setTeamScore("allies", game["allies_score"]);
+	setTeamScore("axis", game["axis_score"]);
 
 	// Gametype specific variables
 	level.matchStarted = false;
-	level.in_strattime = 0;
+	level.in_strattime = false;
 	level.starttime = 0;
 	level.roundstarted = false;
 	level.roundended = false;
@@ -211,12 +295,6 @@ onStartGameType()
 	level.didexist["axis"] = false;
 
 
-
-	// Inicialize all of the script files functions
-	maps\mp\gametypes\_init::initAllFunctions();
-
-
-	thread maps\mp\gametypes\_hud_teamscore::init();
 
 
 	// Spawn points
@@ -258,15 +336,12 @@ onStartGameType()
 	setClientNameMode("manual_change"); // name is changed after map restart ()
 
 
-	serverInfo();
+	thread serverInfo();
 
-/*
-	    game["state"] = "intermission";
-		level notify("intermission");
-*/
+
 
 	// Wait here untill there is atleast one player connected
-	if (!isDefined(game["gametypeStarted"]))
+	if (game["firstInit"])
 	{
 		for(;;)
 		{
@@ -277,7 +352,7 @@ onStartGameType()
 		}
 
 		// For public mode, wait untill most of player connect
-		if (level.pam_mode == "pub")
+		if (game["is_public_mode"])
 		{
 			for(;;)
 			{
@@ -319,15 +394,13 @@ onStartGameType()
 	level.matchStarted = true;
 
 
+	thread deadchat();
+
 	if (!level.in_readyup)
 	{
-		thread deadchat();
-
 		thread startRound();
 	}
 
-
-	game["gametypeStarted"] = true;
 }
 
 
@@ -395,6 +468,43 @@ onConnected()
 	self.deaths = self.pers["deaths"];
 }
 
+// This function is called as last after all events are processed
+onAfterConnected()
+{
+	// If the game is at the post game state (scoreboard) the connecting player should spawn into intermission
+	if (game["state"] == "intermission")
+		spawnIntermission();
+
+	// If player is just connected and blackout needs to be activated
+	else if (self.pers["team"] == "none")
+	{
+		if (self maps\mp\gametypes\_blackout::isBlackoutNeeded())
+			self maps\mp\gametypes\_blackout::spawnBlackout();
+		else
+			spawnSpectator();
+	}
+
+	// Spectator team
+	else if (self.pers["team"] == "spectator")
+		spawnSpectator();
+
+	// If team is selected
+	else if (self.pers["team"] == "allies" || self.pers["team"] == "axis")
+	{
+		// If player have choozen weapon
+		if(isDefined(self.pers["weapon"]))
+			spawnPlayer();
+		// If player have choosen team, but have not choosen weapon (he is selecting from weapons menu)
+		else
+			spawnSpectator();
+	}
+
+	else
+		assertMsg("Unknown team");
+}
+
+
+
 /*================
 Called when a player drops from the server.
 Will not be called between levels.
@@ -412,51 +522,7 @@ onDisconnect()
 
 
 	level thread updateTeamStatus(); // in thread because of wait 0
-
-/*
-	if (0) // TODO spawn virtual player?
-	{
-		if (level.roundstarted && isAlive(self))
-		{
-			body = self ClonePlayer(300000);
-			body setcontents(1);
-
-			body.name = self.name;
-			body.health = 100;
-			body.sessionstate = self.sessionstate;
-			body.sessionteam = self.sessionteam;
-
-			body thread virtualPlayer();
-
-			players = getentarray("player", "classname");
-			for(p = 0; p < players.size; p++)
-			{
-				player = players[i];
-				if (isAlive(player) && player != self)
-				{
-					player lookForVirtualPlayer(body);
-				}
-			}
-		}
-	}*/
 }
-
-/*
-virtualPlayer()
-{
-
-}
-
-lookForVirtualPlayer(body)
-{
-	forward = anglestoforward(self getplayerangles());
-	forwardTrace = Bullettrace(self getEye(),self getEye()+(forward[0]*100000, forward[1]*100000, forward[2]*100000),true,self);
-
-	if (isDefined(forwardTrace["entity"]) && forwardTrace["entity"] == body)
-	{
-	}
-}
-*/
 
 /*
 Called when player is about to take a damage.
@@ -492,6 +558,30 @@ self is the player that took damage.
 */
 onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
 {
+	// check for completely getting out of the damage
+	if(!(iDFlags & level.iDFLAGS_NO_PROTECTION))
+	{
+		// Player's stats - increase damage points (_player_stat.gsc)
+		if (isDefined(eAttacker) && isPlayer(eAttacker) && eAttacker != self && eAttacker.pers["team"] != self.pers["team"] && !level.in_readyup && level.roundstarted && !level.roundended)
+		{
+			eAttacker thread watchPlayerDamageForStats(self, iDamage);
+
+			// For assists
+			if (isDefined(self.lastAttacker) && self.lastAttacker != eAttacker)
+			{
+				self.lastAttacker2 = self.lastAttacker;
+				self.lastAttackerTime2 = self.lastAttackerTime;
+			}
+
+			self.lastAttacker = eAttacker;
+			self.lastAttackerTime = gettime();
+		}
+	}
+}
+
+// Called as last funtction after all onPlayerDamaged events are processed
+onAfterPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
+{
 	// If bomb explodes, set the planting player as the attacker of bomb explosion
 	if (level.bombKill && isDefined(level.planting_player) && isPlayer(level.planting_player) && eAttacker.classname == "worldspawn")
 	{
@@ -518,10 +608,9 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 
 				self finishPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime);
 				self notify("damaged_player", iDamage);
+
 				// Shellshock/Rumble
-				// PAM
 				self thread maps\mp\gametypes\_shellshock::shellshockOnDamage(sMeansOfDeath, iDamage);
-				self playrumble("damage_heavy");
 			}
 			else if(level.scr_friendlyfire == 2)
 			{
@@ -558,9 +647,7 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 				eAttacker.friendlydamage = undefined;
 
 				// Shellshock/Rumble
-				// PAM
 				self thread maps\mp\gametypes\_shellshock::shellshockOnDamage(sMeansOfDeath, iDamage);
-				self playrumble("damage_heavy");
 
 				isFriendlyFire = true;
 			}
@@ -571,32 +658,38 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 			if(iDamage < 1)
 				iDamage = 1;
 
-
-			// Player's stats - increase damage points (_player_stat.gsc)
-			if (isDefined(eAttacker) && eAttacker != self && !level.in_readyup && level.roundstarted && !level.roundended)
-			{
-				if (iDamage >= self.health)
-					dmg = self.health / 100;
-				else
-					dmg = iDamage / 100;
-				eAttacker maps\mp\gametypes\_player_stat::AddDamage(dmg);
-				eAttacker maps\mp\gametypes\_player_stat::AddScore(dmg);
-			}
-
-
 			self finishPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime);
 			self notify("damaged_player", iDamage);
 
 			// Shellshock/Rumble
-			// PAM
 			self thread maps\mp\gametypes\_shellshock::shellshockOnDamage(sMeansOfDeath, iDamage);
-			self playrumble("damage_heavy");
 		}
 	}
 
 
 	if(self.sessionstate != "dead" && !level.in_readyup)
 		level notify("log_damage", self, eAttacker, sWeapon, iDamage, sMeansOfDeath, sHitLoc, isFriendlyFire);
+}
+
+// Self if player who is hitting enemy
+watchPlayerDamageForStats(enemy, damage)
+{
+	self endon("disconnect");
+	enemy endon("disconnect");
+	enemy endon("killed_player"); // if enemy is killed, dont count damage
+
+	// Wait untill player starts healing
+	lastValue = enemy.health;
+	for(;;)
+	{
+		wait level.fps_multiplier * 1;
+		if (enemy.health > lastValue)
+			break;
+		lastValue = enemy.health;
+	}
+
+	// Enemy was not killed in 5sec, count damage
+	self maps\mp\gametypes\_player_stat::AddDamage(damage);
 }
 
 /*
@@ -621,6 +714,47 @@ self is the player that was killed.
 */
 onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
 {
+	// Add score to Deaths
+	if(!isdefined(self.switching_teams))
+	{
+		// Player's stats - increase kill points (_player_stat.gsc)
+		if (!level.in_readyup && level.roundstarted && !level.roundended)
+			self maps\mp\gametypes\_player_stat::AddDeath();
+	}
+
+	if(isPlayer(attacker) && attacker != self)
+	{
+		if(self.pers["team"] == attacker.pers["team"]) // killed by a friendly
+		{
+			// Player's stats - decrease score points (_player_stat.gsc)
+			if (!level.in_readyup && level.roundstarted && !level.roundended)
+				attacker maps\mp\gametypes\_player_stat::AddScore(-1);
+		}
+		else
+		{
+			// Player's stats - increase kill points (_player_stat.gsc)
+			if (!level.in_readyup && level.roundstarted && !level.roundended)
+			{
+				attacker maps\mp\gametypes\_player_stat::AddKill();
+				attacker maps\mp\gametypes\_player_stat::AddScore(1);
+
+				// For assists
+				if (isDefined(self.lastAttacker) && isDefined(self.lastAttacker2) && self.lastAttacker2 != attacker && (self.lastAttackerTime2 + 5000) > gettime())
+				{
+					self.lastAttacker2 thread maps\mp\gametypes\_damagefeedback::updateAssistsFeedback();
+
+					self.lastAttacker2 maps\mp\gametypes\_player_stat::AddAssist();
+					self.lastAttacker2 maps\mp\gametypes\_player_stat::AddScore(0.5);
+				}
+
+			}
+		}
+	}
+}
+
+// Called as last funtction after all onPlayerKilled events are processed
+onAfterPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
+{
 	self endon("disconnect");
 	self endon("spawned");
 
@@ -631,7 +765,6 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 
 	// Send out an obituary message to all clients about the kill
 	obituary(self, attacker, sWeapon, sMeansOfDeath);
-
 
 	// Weapon/Nade Drops
 	if (level.roundstarted && !level.roundended && !isDefined(self.switching_teams))
@@ -647,10 +780,6 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 	{
 		self.pers["deaths"]++;
 		self.deaths = self.pers["deaths"];
-
-		// Player's stats - increase kill points (_player_stat.gsc)
-		if (!level.in_readyup && level.roundstarted && !level.roundended)
-			self maps\mp\gametypes\_player_stat::AddDeath();
 	}
 
 	attackerNum = -1; // used for killcam
@@ -689,22 +818,11 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 			{
 				attacker.pers["score"]--;
 				attacker.score = attacker.pers["score"];
-
-				// Player's stats - decrease score points (_player_stat.gsc)
-				if (!level.in_readyup && level.roundstarted && !level.roundended)
-					attacker maps\mp\gametypes\_player_stat::AddScore(-1);
 			}
 			else
 			{
 				attacker.pers["score"]++;
 				attacker.score = attacker.pers["score"];
-
-				// Player's stats - increase kill points (_player_stat.gsc)
-				if (!level.in_readyup && level.roundstarted && !level.roundended)
-				{
-					attacker maps\mp\gametypes\_player_stat::AddKill();
-					attacker maps\mp\gametypes\_player_stat::AddScore(1);
-				}
 			}
 		}
 	}
@@ -740,16 +858,28 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 	self.switching_teams = undefined;
 
 
-
-
 	level thread updateTeamStatus(); // in thread because of wait 0
 
 
 	delay = 2;	// Delay the player becoming a spectator till after he's done dying
 	wait level.fps_multiplier * delay;	// ?? Also required for Callback_PlayerKilled to complete before killcam can execute
 
+
+	// Delete dead body if its close to bomb
+	if (isDefined(body) && isDefined(body.origin) && level.bombplanted && isDefined(level.bombmodel) && isDefined(level.bombmodel.origin))
+	{
+		distance = distance(body.origin, level.bombmodel.origin);
+
+		if (distance < 70.0)
+		{
+			//iprintln(distance);
+			body delete();
+		}
+	}
+
+
 	// If the last player on a team was just killed
-	if(!level.exist[self.pers["team"]])
+	if((self.pers["team"] == "allies" || self.pers["team"] == "axis") && !level.exist[self.pers["team"]])
 	{
 		// Dont do killcam
 		doKillcam = false;
@@ -758,7 +888,7 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 
 	// Do killcam - if enabled, wait here until killcam is done
 	if(doKillcam && level.scr_killcam && !level.roundended)
-		self maps\mp\gametypes\_killcam::killcam(attackerNum, delay, psOffsetTime);
+		self maps\mp\gametypes\_killcam::killcam(attackerNum, 7, 8, psOffsetTime);
 
 	// In SD - show score for dead player even if score is disabled
 	self maps\mp\gametypes\_hud_teamscore::showScore(0.5);
@@ -826,6 +956,8 @@ spawnPlayer()
 		self giveMaxAmmo(self.pers["weapon2"]);
 
 		self setSpawnWeapon(self.pers["weapon1"]);
+
+		self.spawnedWeapon = self.pers["weapon1"];
 	}
 	else
 	{
@@ -833,18 +965,20 @@ spawnPlayer()
 		self giveMaxAmmo(self.pers["weapon"]);
 
 		self setSpawnWeapon(self.pers["weapon"]);
+
+		self.spawnedWeapon = self.pers["weapon"];
 	}
 
 	// Give grenades only if we are in readyup
 	if(level.in_readyup)
 	{
-		maps\mp\gametypes\_weapons::giveSmoke(0);
-		maps\mp\gametypes\_weapons::giveGrenade();
+		maps\mp\gametypes\_weapons::giveSmokesFor(self.spawnedWeapon, 0);
+		maps\mp\gametypes\_weapons::giveGrenadesFor(self.spawnedWeapon, 0); // grenades are handled in readyup now
 	}
 	else
 	{
-		maps\mp\gametypes\_weapons::giveSmoke(0);
-		maps\mp\gametypes\_weapons::giveGrenade(0);	// grenades will be added after start time
+		maps\mp\gametypes\_weapons::giveSmokesFor(self.spawnedWeapon, 0);
+		maps\mp\gametypes\_weapons::giveGrenadesFor(self.spawnedWeapon, 0);	// grenades will be added after start time
 	}
 	maps\mp\gametypes\_weapons::givePistol();
 	maps\mp\gametypes\_weapons::giveBinoculars();
@@ -856,7 +990,7 @@ spawnPlayer()
 	}
 
 
-	self.spawnedWeapon = self.pers["weapon"]; // to determine is weapon was changed during round
+	self.selectedWeaponOnRoundStart = self.pers["weapon"]; // to determine is weapon was changed during round
 
 
 	// Hide score if it may be hidden
@@ -960,7 +1094,7 @@ spawnIntermission()
 
   // Open alternative scoreboard
 	self openMenu(game["menu_scoreboard"]);
-	self setClientCvar("g_scriptMainMenu", game["menu_ingame"]);
+	self setClientCvar2("g_scriptMainMenu", game["menu_ingame"]);
 
 	// Notify "spawned" notifications
 	self notify("spawned");
@@ -975,72 +1109,80 @@ startRound()
 	level endon("round_ended");
 
 
-	// Used in scoreboard info at the end of the round
-	if (!isDefined(game["matchStartTime"]))
-		game["matchStartTime"] = getTime();
-
-
-
-
 	logPrint("RoundStart;\n");
 
 
-	level.clock = newHudElem();
-	level.clock.font = "default";
-	level.clock.fontscale = 2;
-	level.clock.horzAlign = "center_safearea";
-	level.clock.vertAlign = "top";
-	level.clock.color = (1, 1, 1);
-	level.clock.x = -25;
-	level.clock.y = 445;
-	level.clock setTimer(level.roundlength * 60 + level.strat_time);
+	// Define round number
+	game["round"] = game["roundsplayed"] + 1;
 
 
+	// If is bash, there is no time-limit
+	if(level.in_bash)
+	{
+		objective_delete(0);
+		objective_delete(1);
+		maps\mp\gametypes\_weapons::deletePlacedEntity("misc_turret");
+		maps\mp\gametypes\_weapons::deletePlacedEntity("misc_mg42");
 
-	level.in_strattime = true;
+		wait level.fps_multiplier * 1;
 
+		// Hide score if it may be hidden
+		level maps\mp\gametypes\_hud_teamscore::hideScore(0.5);
+		thread sayObjective();
+
+		return;
+	}
+
+
+	// Show name of league + pam version
+	thread maps\mp\gametypes\_pam::PAM_Header();
+
+
+	timeToStart = 0;
+	level.in_strattime = false;
+
+	// Do strat time if is enabled and there is no bash mode
 	if (level.strat_time > 0)
 	{
-		// Strat Time HUD
-		thread maps\mp\gametypes\_hud::StratTime(level.strat_time);
-
-		// Hide clock while strattime
-		level.clock.alpha = 0;
+		timeToStart = level.strat_time;
+		level.in_strattime = true;
 
 		// Disable players movement
 		level thread stratTime_g_speed();
-
-		wait level.fps_multiplier * level.strat_time;
-
-		level.in_strattime = false;
-
-		// During a strat time may be called timeout, so if timeaut is active, dont continue more
-		if (level.in_timeout)
-			return;
-
-
-		level.clock FadeOverTime(0.5);
-		level.clock.alpha = 1;
-
-		level.clock.x = 20;
-		level.clock moveovertime(0.5);
-		level.clock.x = -25;
 	}
-	else
-		level.in_strattime = false;
 
+	// Show HUD stuff...
+	if (!level.in_timeout)
+	{
+		thread HUD_Clock(timeToStart, level.roundlength * 60 + timeToStart);
+		thread HUD_StratTime(timeToStart);
+		thread HUD_RoundInfo(timeToStart);
+	}
 
+	wait level.fps_multiplier * timeToStart;
 
+	// Out of strat time
+	level.in_strattime = false;
+
+	// Timeout was called, exit
+	if (level.in_timeout)
+		return;
+
+	// Round started
 	level.roundstarted = true;
 
 
 
-
+	// Hide pam info hud
+	thread maps\mp\gametypes\_pam::PAM_Header_Delete();
 	// Hide score if it may be hidden
 	level maps\mp\gametypes\_hud_teamscore::hideScore(0.5);
 
 
+
 	thread sayObjective();
+
+
 
 
 
@@ -1058,24 +1200,12 @@ startRound()
 			player.statusicon = "hud_status_dead";
 
 		// To all living player give grenades
-		if (isDefined(player.pers["weapon"]) && player.sessionstate == "playing" && (player.pers["team"] == "allies" || player.pers["team"] == "axis") && !level.in_bash)
+		if (isDefined(player.selectedWeaponOnRoundStart) && player.sessionstate == "playing" && (player.pers["team"] == "allies" || player.pers["team"] == "axis") && !level.in_bash)
 		{
-			player maps\mp\gametypes\_weapons::giveSmoke();
-			player maps\mp\gametypes\_weapons::giveGrenade();
+			player maps\mp\gametypes\_weapons::giveSmokesFor(player.selectedWeaponOnRoundStart);
+			player maps\mp\gametypes\_weapons::giveGrenadesFor(player.selectedWeaponOnRoundStart);
 		}
 
-	}
-
-
-	// If is bash, there is no time-limit
-	if(level.in_bash)
-	{
-		level.clock destroy();
-		objective_delete(0);
-		objective_delete(1);
-		maps\mp\gametypes\_weapons::deletePlacedEntity("misc_turret");
-		maps\mp\gametypes\_weapons::deletePlacedEntity("misc_mg42");
-		return;
 	}
 
 
@@ -1095,16 +1225,195 @@ startRound()
 		level thread endRound(game["defenders"]);
 }
 
+HUD_Clock(timeToShow, countDownTime)
+{
+	level.clock = newHudElem2();
+	level.clock.font = "default";
+	level.clock.fontscale = 2;
+	level.clock.horzAlign = "center_safearea";
+	level.clock.vertAlign = "top";
+	level.clock.alignX = "center";
+	level.clock.alignY = "top";
+	level.clock.color = (1, 1, 1);
+	level.clock.x = 0;
+	level.clock.y = 445;
+	level.clock setTimer(countDownTime);
+
+	if (timeToShow > 0)
+	{
+		// Hide clock while strattime
+		level.clock.alpha = 0;
+
+		// Wait untill time expired or timeout was called
+		wait level.fps_multiplier * timeToShow;
+
+		// During a strat time may be called timeout
+		// Timeout will remove level.clock!
+		if (level.in_timeout)
+			return;
+
+		level.clock FadeOverTime(0.5);
+		level.clock.alpha = 1;
+
+		level.clock.x = 40;
+		level.clock moveovertime(0.5);
+		level.clock.x = 0;
+	}
+}
+
+HUD_StratTime(time)
+{
+	if (time <= 0)
+		return;
+
+	// Strat Time
+	strattime = addHUD(0, 450, 2, (.98, .827, .58), "center", "bottom", "center_safearea", "top");
+	strattime setText(game["STRING_STRAT_TIME"]);
+
+	// 0:05
+	strat_clock = addHUD(0, 445, 2, (.98, .827, .58), "center", "top", "center_safearea", "top");
+	strat_clock setTimer(time);
+
+
+	// Wait untill time expired or timeout was called
+	timeWaited = 0;
+	while (timeWaited < time && !level.in_timeout)
+	{
+		wait level.fps_multiplier * 0.1;
+		timeWaited += 0.1;
+	}
+
+
+	strattime FadeOverTime(0.5);
+	strattime.alpha = 0;
+
+	strat_clock FadeOverTime(0.5);
+	strat_clock.alpha = 0;
+
+	strat_clock moveovertime(0.5);
+	strat_clock.x = -40;
+
+	wait level.fps_multiplier * 0.5;
+
+	strattime destroy2();
+	strat_clock destroy2();
+}
+
+
+HUD_RoundInfo(time)
+{
+	if (game["round"] == 1)
+	{
+		roundInfo = addHUD(0, 430, 1.3, (.8, 1, 1), "center", "bottom", "center_safearea", "top");
+		roundInfo setText(game["STRING_ROUND_FIRST"]);
+		roundInfo.y = 390;
+		roundInfo moveovertime(2.5);
+		roundInfo.y = 428;
+		wait level.fps_multiplier * time;
+		roundInfo thread removeHUDSmooth(.5);
+	}
+	// Last round before half
+	else if (level.halfround > 0 && !game["is_halftime"] && game["round"] >= level.halfround)
+	{
+		roundInfo = addHUD(0, 430, 1.3, (.8, 1, 1), "center", "bottom", "center_safearea", "top");
+		roundInfo setText(game["STRING_ROUND_LAST_HALF"]);
+		roundInfo.y = 390;
+		roundInfo moveovertime(2.5);
+		roundInfo.y = 428;
+		wait level.fps_multiplier * time;
+		roundInfo thread removeHUDSmooth(.5);
+	}
+	// Last match round
+	else if (level.matchround > 0 && game["is_halftime"] && game["round"] >= level.matchround)
+	{
+		roundInfo = addHUD(0, 430, 1.3, (.8, 1, 1), "center", "bottom", "center_safearea", "top");
+		roundInfo setText(game["STRING_ROUND_LAST"]);
+		roundInfo.y = 390;
+		roundInfo moveovertime(2.5);
+		roundInfo.y = 428;
+		wait level.fps_multiplier * time;
+		roundInfo thread removeHUDSmooth(.5);
+	}
+	else
+	{
+		roundInfo1 = addHUD(10, 428, 1.3, (.8, 1, 1), "right", "bottom", "center_safearea", "top");
+		roundInfo2 = addHUD(14, 428, 1.3, (.8, 1, 1), "left", "bottom", "center_safearea", "top");
+
+		roundInfo1 setText(game["STRING_ROUND"]);
+		roundInfo2 setValue(game["round"]);
+
+		wait level.fps_multiplier * time;
+
+		roundInfo1 thread removeHUDSmooth(.5);
+		roundInfo2 thread removeHUDSmooth(.5);
+	}
+
+
+}
+
+
+
+/*
+              __
+  Round     (    )
+    8      (  .   )
+ Starting   ( __ )
+*/
+HUD_NextRound()
+{
+	x = -90;
+        y = 270;
+
+	// Time to wait
+	time = level.round_endtime;
+
+	// Ccount-down stopwatch
+	stopwatch = addHUD(x+80, y, undefined, undefined, "right", "top", "right");
+	stopwatch showHUDSmooth(.5);
+	stopwatch.sort = 4;
+	stopwatch.foreground = true;  // above blackbg and visible if menu opened
+	stopwatch setClock(time, 60, "hudStopwatch", 60, 60); // count down for 5 of 60 seconds, size is 64x64
+
+	// Round
+    	round = addHUD(x, y, 1.2, (1,1,0), "center", "top", "right");
+	round showHUDSmooth(.5);
+	round setText(game["STRING_ROUND"]);
+	y += 27;
+
+	// 6
+    	roundnum = addHUD(x, y, 1.4, (1,1,0), "center", "middle", "right");
+	roundnum showHUDSmooth(.5);
+	roundnum setValue(game["roundsplayed"]+1);
+	y += 28;
+
+	// Starting
+    	starting = addHUD(x, y, 1.2, (1,1,0), "center", "bottom", "right");
+	starting showHUDSmooth(.5);
+	starting setText(game["STRING_ROUND_STARTING"]);
+
+
+	// Remove HUD in case timeout is called (new hud about timeout is whowed)
+	while (!game["do_timeout"])
+		wait level.fps_multiplier * 0.2;
+
+	round thread removeHUDSmooth(.5);
+	roundnum thread removeHUDSmooth(.5);
+	starting thread removeHUDSmooth(.5);
+	stopwatch thread removeHUDSmooth(.5);
+}
+
+
+
 
 stratTime_g_speed()
 {
 	// Disable players movement
-	maps\mp\gametypes\_cvar_system::restoreCvarQuiet("g_speed"); // - just to make sure cvar is not set quiet from last round
-	maps\mp\gametypes\_cvar_system::setCvarQuiet("g_speed", 0);
+	maps\mp\gametypes\global\cvar_system::restoreCvarQuiet("g_speed"); // - just to make sure cvar is not set quiet from last round
+	maps\mp\gametypes\global\cvar_system::setCvarQuiet("g_speed", 0);
 
 	wait level.fps_multiplier * level.strat_time;
 
-	maps\mp\gametypes\_cvar_system::restoreCvarQuiet("g_speed");
+	maps\mp\gametypes\global\cvar_system::restoreCvarQuiet("g_speed");
 }
 
 
@@ -1132,10 +1441,10 @@ endRound(roundwinner)
 		player = players[i];
 
 		if(isdefined(player.progressbackground))
-			player.progressbackground destroy();
+			player.progressbackground destroy2();
 
 		if(isdefined(player.progressbar))
-			player.progressbar destroy();
+			player.progressbar destroy2();
 
 		player unlink();
 		player enableWeapon();
@@ -1149,6 +1458,26 @@ endRound(roundwinner)
 
 
 
+	if (level.in_bash)
+	{
+		wait level.fps_multiplier * 4;
+
+		game["Do_Ready_up"] = undefined; // will restart readyup
+
+		for(i = 0; i < players.size; i++)
+		{
+			player = players[i];
+			player.pers["score"] = undefined;
+			player.pers["deaths"] = undefined;
+		}
+
+		if (!level.pam_mode_change)
+        		map_restart(true);
+		return;
+	}
+
+
+
 
 	if(roundwinner == "allies")
 	{
@@ -1156,6 +1485,8 @@ endRound(roundwinner)
 			game["half_2_allies_score"]++;
 		else
 			game["half_1_allies_score"]++;
+
+		game["allies_score"]++;
 	}
 	else if(roundwinner == "axis")
 	{
@@ -1163,26 +1494,31 @@ endRound(roundwinner)
 			game["half_2_axis_score"]++;
 		else
 			game["half_1_axis_score"]++;
-	}
 
-	// Team Scores:
-	game["Team_1_Score"] = game["half_1_axis_score"] + game["half_2_allies_score"];
-	game["Team_2_Score"] = game["half_2_axis_score"] + game["half_1_allies_score"];
-
-	if (game["is_halftime"])
-	{
-		game["allies_score"] = game["Team_1_Score"];
-		game["axis_score"] = game["Team_2_Score"];
-	}
-	else
-	{
-		game["allies_score"] = game["Team_2_Score"];
-		game["axis_score"] = game["Team_1_Score"];
+		game["axis_score"]++;
 	}
 
 	// Set Score
 	setTeamScore("allies", game["allies_score"]);
 	setTeamScore("axis", game["axis_score"]);
+
+	// History score for spectators
+	if(roundwinner == "allies")
+	{
+		game["allies_score_history"] += "^2^";
+		game["axis_score_history"] += "^1-";
+	}
+	else if(roundwinner == "axis")
+	{
+		game["allies_score_history"] += "^1-";
+		game["axis_score_history"] += "^2^";
+	}
+	else // draw
+	{
+		game["allies_score_history"] += "^7-";
+		game["axis_score_history"] += "^7-";
+	}
+
 
 	// Update score
 	level maps\mp\gametypes\_hud_teamscore::updateScore();
@@ -1206,19 +1542,14 @@ endRound(roundwinner)
 	wait level.fps_multiplier * 2;
 
 
+	thread maps\mp\gametypes\_pam::PAM_Header(true); // true = fadein
 
 	// Show score even if is disabled
 	level maps\mp\gametypes\_hud_teamscore::showScore(0.5);
 
 
-	if (level.in_bash)
-	{
-		wait level.fps_multiplier * 3;
-		if (!level.pam_mode_change)
-        map_restart(false);
-		return;
-	}
-
+	// Print damage stats
+	maps\mp\gametypes\_round_report::printToAll();
 
 
 	// In SD there are 3 checks: Time limit, Score limit and Round limit
@@ -1239,26 +1570,12 @@ endRound(roundwinner)
 
 
 
-
-
-
-
-	if(game["roundsplayed"] > 0)
-	{
-		thread maps\mp\gametypes\_hud::PAM_Header();
-		thread maps\mp\gametypes\_hud::ScoreBoard(false); // false means is_halftime_or_mapend
-	}
-
-
-
-
-
-	if(level.round_endtime > 0 && game["roundsplayed"] > 0)
+	if(level.round_endtime > 0)
 	{
 		if (game["do_timeout"] == true)
-			thread maps\mp\gametypes\_hud::Timeout(); // show at the end of the round we are going to timeout
+			thread maps\mp\gametypes\_timeout::HUD_Timeout(); // show at the end of the round we are going to timeout
 		else
-			thread maps\mp\gametypes\_hud::NextRound(level.round_endtime);
+			thread HUD_NextRound();
 
 
 		wait level.fps_multiplier * level.round_endtime;
@@ -1279,19 +1596,19 @@ endRound(roundwinner)
 		/*
 		Recoded weapon saving system:
 
-		Round start  | End of Round | Next round        | Case selected weapon is
-		Spawned weap | Weapon slots | Spawned weap      | changed to thompson during round
+		Round start  	| End of Round 	| Next round	| Case selected weapon is
+		Spawned weap 	| Weapon slots 	| Spawned weap	| changed to thompson during round
 		--------------------------------------------------------------------------------
-		M1			| M1	-		| M1	-			| thomp	-
-		M1			| -		M1		| M1	-			| thomp	-
-		M1			| M1	KAR		| M1	KAR			| thomp	KAR
-		M1			| KAR	M1		| KAR	M1		   +| thomp M1
-		M1			| KAR	MP44	| KAR	MP44		| thomp	MP44
-		M1			| KAR	-		| KAR	-			| thomp	-
-		M1			| -		KAR		| KAR	-			| thomp	-
-		M1			| M1	thomp	| M1	thomp		| thomp	-
-		M1			| thomp	M1		| thomp M1		   +| thomp M1
-		M1			| -		-		| M1	-			| thomp	-
+		M1		| M1	-	| M1	-	| thomp	-
+		M1		| -	M1	| M1	-	| thomp	-
+		M1		| M1	KAR	| M1	KAR	| thomp	KAR
+		M1		| KAR	M1	| KAR	M1	| thomp M1
+		M1		| KAR	MP44	| KAR	MP44	| thomp	MP44
+		M1		| KAR	-	| KAR	-	| thomp	-
+		M1		| -	KAR	| KAR	-	| thomp	-
+		M1		| M1	thomp	| M1	thomp	| thomp	-
+		M1		| thomp	M1	| thomp M1	| thomp M1
+		M1		| -	-	| M1	-	| thomp	-
 
 		*/
 
@@ -1308,7 +1625,7 @@ endRound(roundwinner)
 				weapon2 = "none";
 
 			// Give player selected weapon if selected weapon is changed
-			if (player.spawnedWeapon != player.pers["weapon"])
+			if (player.selectedWeaponOnRoundStart != player.pers["weapon"])
 			{
 				weapon1 = player.pers["weapon"];
 				// In case we change to weapon, that is actually in slot, avoid duplicate
@@ -1319,6 +1636,14 @@ endRound(roundwinner)
 			// Give player spawned weapon if there is no saveable weapons
 			if (weapon1 == "none" && weapon2 == "none")
 				weapon1 = player.pers["weapon"];
+
+			// Swap weapons if there is weapon in secondary slot only
+			if (weapon1 == "none" && weapon2 != "none")
+			{
+				temp = weapon1;
+				weapon1 = weapon2;
+				weapon2 = temp;
+			}
 
 			// Save spawned weapon
 			player.pers["weapon1"] = weapon1;
@@ -1685,14 +2010,14 @@ bombzone_think(bombzone_other)
 
 				// Bar - black background
 				if(!isdefined(player.progressbackground))
-					player.progressbackground = maps\mp\gametypes\_hud_system::addHUDClient(player, 0, 104, undefined, undefined, "center", "middle", "center_safearea", "center_safearea");
-				player.progressbackground maps\mp\gametypes\_hud_system::showHUDSmooth(0.2, 0, 0.5); // show from 0 to 0.5
+					player.progressbackground = addHUDClient(player, 0, 104, undefined, undefined, "center", "middle", "center_safearea", "center_safearea");
+				player.progressbackground showHUDSmooth(0.2, 0, 0.5); // show from 0 to 0.5
 				player.progressbackground setShader("black", (level.barsize + 4), 12);
 
 				// Bar - white bar progress
 				if(!isdefined(player.progressbar))
-					player.progressbar = maps\mp\gametypes\_hud_system::addHUDClient(player, int(level.barsize / (-2.0)), 104, undefined, undefined, "left", "middle", "center_safearea", "center_safearea");
-				player.progressbar maps\mp\gametypes\_hud_system::showHUDSmooth(0.2, 0, 1); // show from 0 to 1
+					player.progressbar = addHUDClient(player, int(level.barsize / (-2.0)), 104, undefined, undefined, "left", "middle", "center_safearea", "center_safearea");
+				player.progressbar showHUDSmooth(0.2, 0, 1); // show from 0 to 1
 				player.progressbar setShader("white", 0, 10);
 				player.progressbar scaleOverTime(level.planttime, level.barsize, 10);
 
@@ -1726,8 +2051,8 @@ bombzone_think(bombzone_other)
 				// If "F" was holded enoguht to plant bomb
 				if(self.progresstime >= level.planttime)
 				{
-					player.progressbackground destroy();
-					player.progressbar destroy();
+					player.progressbackground destroy2();
+					player.progressbar destroy2();
 					player enableWeapon();
 
 					if(isdefined(self.target))
@@ -1786,7 +2111,7 @@ bombzone_think(bombzone_other)
 
 					// Player's stats - increase plant points (_player_stat.gsc)
 					player maps\mp\gametypes\_player_stat::AddPlant();
-					player maps\mp\gametypes\_player_stat::AddScore(1);
+					player maps\mp\gametypes\_player_stat::AddScore(0.5);
 
 					iprintln(&"MP_EXPLOSIVESPLANTED");
 
@@ -1799,17 +2124,17 @@ bombzone_think(bombzone_other)
 
 					// Remove clock if bomb is planted
 					if (isDefined(level.clock))
-						level.clock maps\mp\gametypes\_hud_system::removeHUD();
+						level.clock removeHUD();
 
 					return;	//TEMP, script should stop after the wait level.frame
 				}
 				else
 				{
 					if(isdefined(player.progressbackground))
-						player.progressbackground maps\mp\gametypes\_hud_system::removeHUD();
+						player.progressbackground removeHUD();
 
 					if(isdefined(player.progressbar))
-						player.progressbar maps\mp\gametypes\_hud_system::removeHUD();
+						player.progressbar removeHUD();
 
 					player unlink();
 					player enableWeapon();
@@ -1906,14 +2231,14 @@ bomb_think()
 
 				// Bar - black background
 				if(!isdefined(player.progressbackground))
-					player.progressbackground = maps\mp\gametypes\_hud_system::addHUDClient(player, 0, 104, undefined, undefined, "center", "middle", "center_safearea", "center_safearea");
-				player.progressbackground maps\mp\gametypes\_hud_system::showHUDSmooth(0.2, 0, 0.5); // show from 0 to 0.5
+					player.progressbackground = addHUDClient(player, 0, 104, undefined, undefined, "center", "middle", "center_safearea", "center_safearea");
+				player.progressbackground showHUDSmooth(0.2, 0, 0.5); // show from 0 to 0.5
 				player.progressbackground setShader("black", (level.barsize + 4), 12);
 
 				// Bar - white bar progress
 				if(!isdefined(player.progressbar))
-					player.progressbar = maps\mp\gametypes\_hud_system::addHUDClient(player, int(level.barsize / (-2.0)), 104, undefined, undefined, "left", "middle", "center_safearea", "center_safearea");
-				player.progressbar maps\mp\gametypes\_hud_system::showHUDSmooth(0.2, 0, 1); // show from 0 to 1
+					player.progressbar = addHUDClient(player, int(level.barsize / (-2.0)), 104, undefined, undefined, "left", "middle", "center_safearea", "center_safearea");
+				player.progressbar showHUDSmooth(0.2, 0, 1); // show from 0 to 1
 				player.progressbar setShader("white", 0, 8);
 				player.progressbar scaleOverTime(level.defusetime, level.barsize, 8);
 
@@ -1947,8 +2272,8 @@ bomb_think()
 				// Bomb defused
 				if(self.progresstime >= level.defusetime && isAlive(player))
 				{
-					player.progressbackground destroy();
-					player.progressbar destroy();
+					player.progressbackground destroy2();
+					player.progressbar destroy2();
 					player enableWeapon();
 
 					objective_delete(0);
@@ -1976,7 +2301,7 @@ bomb_think()
 
 					// Player's stats - increase defuse points (_player_stat.gsc)
 					player maps\mp\gametypes\_player_stat::AddDefuse();
-					player maps\mp\gametypes\_player_stat::AddScore(1);
+					player maps\mp\gametypes\_player_stat::AddScore(0.5);
 
 					level thread endRound(player.pers["team"]);
 
@@ -1985,10 +2310,10 @@ bomb_think()
 				else
 				{
 					if(isdefined(player.progressbackground))
-						player.progressbackground destroy();
+						player.progressbackground destroy2();
 
 					if(isdefined(player.progressbar))
-						player.progressbar destroy();
+						player.progressbar destroy2();
 
 					player unlink();
 					player enableWeapon();
@@ -2026,8 +2351,8 @@ showBombTimers()
 {
 	timeleft = (level.bombtimer - (getTime() - level.bombtimerstart) / 1000);
 
-	level.bombtimerhud = maps\mp\gametypes\_hud_system::addHUD(6, 76, undefined, undefined, "left", "top", "left", "top");
-	level.bombtimerhud maps\mp\gametypes\_hud_system::showHUDSmooth(0.1);
+	level.bombtimerhud = addHUD(6, 76, undefined, undefined, "left", "top", "left", "top");
+	level.bombtimerhud showHUDSmooth(0.1);
 	//level.bombtimerhud.foreground = true;  // visible if menu opened
 	level.bombtimerhud setClock(timeleft, 60, "hudStopwatch", 48, 48);
 }
@@ -2035,7 +2360,7 @@ showBombTimers()
 deleteBombTimers()
 {
 	if (isDefined(level.bombtimerhud))
-		level.bombtimerhud maps\mp\gametypes\_hud_system::removeHUD();
+		level.bombtimerhud removeHUD();
 }
 
 announceWinner(winner, delay)
@@ -2074,11 +2399,6 @@ playSoundOnPlayers(sound, team)
 		for(i = 0; i < players.size; i++)
 			players[i] playLocalSound(sound);
 	}
-}
-
-showDeadIconIfDead()
-{
-
 }
 
 
@@ -2272,16 +2592,15 @@ menuWeapon(response)
 
 	weapon = response;
 
+	primary = self getWeaponSlotWeapon("primary");
+	primaryb = self getWeaponSlotWeapon("primaryb");
 
 	// After selecting a weapon, show "ingame" menu when ESC is pressed
-	self setClientCvar("g_scriptMainMenu", game["menu_ingame"]);
+	self setClientCvar2("g_scriptMainMenu", game["menu_ingame"]);
 
 	// If newly selected weapon is same as actualy selected weapon and is in player slot -> do nothing
 	if(isdefined(self.pers["weapon"]))
 	{
-		primary = self getWeaponSlotWeapon("primary");
-		primaryb = self getWeaponSlotWeapon("primaryb");
-
 		if (self.pers["weapon"] == weapon && primary == weapon && maps\mp\gametypes\_weapons::isPistol(primaryb))
 			return;
 	}
@@ -2302,11 +2621,11 @@ menuWeapon(response)
 		if(isDefined(self.pers["weapon"]))
 		{
 			self.pers["weapon"] = weapon;
-			self.spawnedWeapon = weapon; // to determine is weapon was changed during round
+			self.selectedWeaponOnRoundStart = weapon; // to determine is weapon was changed during round
 
 			// Remove weapon from slot (can be "none", takeWeapon() will take it)
-			self takeWeapon(self getWeaponSlotWeapon("primary"));
-			self takeWeapon(self getWeaponSlotWeapon("primaryb"));
+			self takeWeapon(primary);
+			self takeWeapon(primaryb);
 
 			// Give weapon to primary slot
 			self setWeaponSlotWeapon("primary", weapon);
@@ -2314,8 +2633,8 @@ menuWeapon(response)
 
 			// Give pistol to secondary slot + give grenades and smokes
 			maps\mp\gametypes\_weapons::givePistol();
-			maps\mp\gametypes\_weapons::giveSmoke(0);
-			thread giveGrenadesInReadyup();
+			maps\mp\gametypes\_weapons::giveSmokesFor(weapon, 0);
+			maps\mp\gametypes\_weapons::giveGrenadesFor(weapon, 0);
 
 			// Switch to main weapon
 			self switchToWeapon(weapon);
@@ -2330,31 +2649,81 @@ menuWeapon(response)
 
 	else
 	{
-		// Free weapon chaging is allowed in strat-time - only if player didnt take/drop weapon
-		if(!level.matchStarted || (level.in_strattime && self.dropped_weapons == 0 && self.taked_weapons == 0 && self.spawnsInStrattime < 2))
+		/*
+		| ------------------------ Strat time --------------------------| -----Round start -----|
+		| On spawm	| Action 1		| Action 2		| Final			|
+		|---------------|-----------------------|-----------------------|-----------------------|
+		| M1 pis	| Drop pistol		| Select thompson	| Thompson -
+		| M1 pis	| Take KAR, drop pis	| Select thompson	| Thompson KAR
+		| M1 pis	| Take KAR, drop M1	| Select thompson	| KAR pis (new weapon after next round)
+		| M1 pis	| Take KAR, drop M1	| pick M1, Select thomp	| KAR M1 (new weapon after next round)
+
+		| M1 pis	| Drop pistol		| Select M1		| M1 -
+		| M1 pis	| Take KAR, drop pis	| Select M1		| M1 pis
+		| M1 pis	| Take KAR, drop M1	| Select M1		| KAR pis (new weapon after next round)
+		| M1 pis	| Take KAR, drop M1	| pick M1, Select M1	| KAR M1 (new weapon after next round)
+
+		| M1 KAR	| Drop M1		| Select M1		| - KAR (new weapon after next round)
+
+		| KAR pis	| Drop M1		| Select M1		| M1 -
+
+		| BAB TOM	| Select thomson	| 			| M1 -
+
+		*/
+
+
+
+		allowedInStrattime = false;
+
+		if (!isDefined(self.pers["weapon"]))
+			allowedInStrattime = true;
+		else
+		{
+			if (level.in_strattime && /*self.dropped_weapons == 0 && self.taked_weapons == 0 && */self.spawnsInStrattime < 2)
+			{
+				// If weapon I spawned with is still in slot, allow change
+				if (self.spawnedWeapon == primary)
+				{
+					allowedInStrattime = true;
+				}
+			}
+		}
+
+		// Free weapon chaging - allowed in strat-time
+		if(!level.matchStarted || (level.in_strattime && allowedInStrattime))
 		{
 			if(isDefined(self.pers["weapon"]))
 			{
 				self.pers["weapon"] = weapon;
-				self.spawnedWeapon = weapon; // to determine is weapon was changed during round
-
-				primary = self getWeaponSlotWeapon("primary");
-				primaryb = self getWeaponSlotWeapon("primaryb");
+				self.selectedWeaponOnRoundStart = weapon; // to determine if weapon was changed during round
 
 				// Remove weapon from first slot
 				self takeWeapon(primary);
 
-				// If newly selected weapon is already in secondary slot, give pistol instead of duplicate weapon!
-				// If I select the same weapon that is already in slot, it means I want to remove secondary weapon to pistol
-				if (weapon == primaryb || (self.pers["weapon"] == weapon && (primary == weapon)))
+				// If newly selected weapon is already in secondary slot, remove it to avoid duplicate weapon!
+				if (weapon == primaryb)
 				{
-					self takeWeapon(primaryb);
+					self takeWeapon(primaryb); // Remove weapon
+
 					maps\mp\gametypes\_weapons::givePistol();
 				}
+
+				// If I select the same weapon that is already in slot, it means I want to remove secondary weapon to pistol
+				if (weapon == primary && maps\mp\gametypes\_weapons::isMainWeapon(primaryb))
+				{
+					self takeWeapon(primaryb); // Remove weapon
+					maps\mp\gametypes\_weapons::givePistol();
+				}
+
+				self.spawnedWeapon = weapon;
 
 				// Set new selected weapon into first slot
 				self setWeaponSlotWeapon("primary", weapon);
 				self giveMaxAmmo(weapon);
+
+				// Give empty grenade/smoke slots
+				self maps\mp\gametypes\_weapons::giveSmokesFor(weapon, 0);
+				self maps\mp\gametypes\_weapons::giveGrenadesFor(weapon, 0);
 
 				// Switch to new selected weapon
 				self switchToWeapon(weapon);
@@ -2406,35 +2775,6 @@ menuWeapon(response)
 }
 
 
-// Give grenades after a few seconds!
-giveGrenadesInReadyup()
-{
-	self endon("disconnect");
-	self endon("killed_player");
-	self endon("spawned");
-	self notify("kill_giveGrenadesInReadyup");
-	self endon("kill_giveGrenadesInReadyup");
-
-	if (!isDefined(self.lastWeaponChangeTime))
-		self.lastWeaponChangeTime = 0;
-
-	// Check timer
-	timeNow = getTime();
-	diffTime = timeNow - self.lastWeaponChangeTime;
-
-
-	// Give new grenade only after 5 sec!
-	grenades = self maps\mp\gametypes\_weapons::getFragGrenadeCount();
-
-	if (grenades == 0 && diffTime < 5000)
-		wait level.fps_multiplier * (diffTime / 1000);
-
-	self.lastWeaponChangeTime = getTime();
-
-	maps\mp\gametypes\_weapons::giveGrenade();
-}
-
-
 soundPlanted(player)
 {
 	if(game["allies"] == "british")
@@ -2448,6 +2788,7 @@ soundPlanted(player)
 
 	level playSoundOnPlayers(alliedsound, "allies");
 	level playSoundOnPlayers(axissound, "axis");
+	level playSoundOnPlayers(alliedsound, "spectator");
 
 	wait level.fps_multiplier * 1.5;
 
@@ -2482,9 +2823,11 @@ soundPlanted(player)
 
 serverInfo()
 {
+	waittillframeend; // wait untill cvar vlaues are changed
 
-	title = "PAM mode:\n";
-	value = level.pam_mode + "\n";
+
+	title = "";
+	value = "";
 
 
 	if (level.timelimit > 0)
@@ -2511,34 +2854,31 @@ serverInfo()
 	}
 	else
 	{
+		title +="Limit 1st half:\n";
 		if (level.halfscore != 0)
-		{
-			title +="Score limit 1st half:\n";
-			value += level.halfscore + "\n";
-		}
+			value += level.halfscore + " points\n";
 		else
-		{
-			title +="Round limit 1st half:\n";
-			value += level.halfround + "\n";
-		}
+			value += level.halfround + " rounds\n";
 
+		title +="Limit 2nd half:\n";
 		if (level.scorelimit != 0)
-		{
-			title +="Score limit 2nd half:\n";
-			value += level.scorelimit + "\n";
-		}
+			value += level.scorelimit + " points\n";
 		else
-		{
-			title +="Round limit 2nd half:\n";
-			value += level.matchround + "\n";
-		}
+			value += level.matchround + " rounds\n";
 	}
 
-	title +="Count round draws:\n";
-	if (level.countdraws == 0)
-		value += "No" + "\n";
-	else
-		value += "Yes" + "\n";
+
+	title += "Strat time:\n";
+	value += plural_s(level.strat_time, "second") + "\n";
+
+	title +="Plant time:\n";
+	value += plural_s(level.planttime, "second") + "\n";
+
+	title +="Defuse time:\n";
+	value += plural_s(level.defusetime, "second") + "\n";
+
+	title +="Round length:\n";
+	value += plural_s(level.roundlength, "minute") + "\n";
 
 
 	title +="Overtime:\n";
@@ -2560,21 +2900,65 @@ serverInfo()
 
 
 
+	title = "PAM mode:\n";
+	value = level.pam_mode + "\n";
 
-	title ="Strat time:\n";
-	value = plural_s(level.strat_time, "second") + "\n";
+	title +="Fast reload fix:\n";
+	changed = "^7"; if (maps\mp\gametypes\global\cvar_system::isCvarChangedFromRuleValue("scr_fast_reload_fix") && !game["is_public_mode"]) changed = "^3";
+	if (level.scr_fast_reload_fix) 	value += changed+"Enabled ^9Disabled^7" + "\n";
+	else				value += "^9Enabled "+changed+"Disabled^7" + "\n";
 
-	title +="Plant time:\n";
-	value += plural_s(level.planttime, "second") + "\n";
+	title +="Rebalanced shotgun:\n";
+	changed = "^7"; if (maps\mp\gametypes\global\cvar_system::isCvarChangedFromRuleValue("scr_shotgun_rebalance") && !game["is_public_mode"]) changed = "^3";
+	if (level.scr_shotgun_rebalance) 	value += changed+"Enabled ^9Disabled^7" + "\n";
+	else					value += "^9Enabled "+changed+"Disabled^7" + "\n";
 
-	title +="Defuse time:\n";
-	value += plural_s(level.defusetime, "second") + "\n";
+	title +="Hand hitbox fix:\n";
+	changed = "^7"; if (maps\mp\gametypes\global\cvar_system::isCvarChangedFromRuleValue("scr_hand_hitbox_fix") && !game["is_public_mode"]) changed = "^3";
+	if (level.scr_hand_hitbox_fix) 	value += changed+"Enabled ^9Disabled^7" + "\n";
+	else					value += "^9Enabled "+changed+"Disabled^7" + "\n";
 
-	title +="Round length:\n";
-	value += plural_s(level.roundlength, "minute") + "\n";
+	title +="Prone peek fix:\n";
+	changed = "^7"; if (maps\mp\gametypes\global\cvar_system::isCvarChangedFromRuleValue("scr_prone_peek_fix") && !game["is_public_mode"]) changed = "^3";
+	if (level.scr_prone_peek_fix) 		value += changed+"Enabled ^9Disabled^7" + "\n";
+	else					value += "^9Enabled "+changed+"Disabled^7" + "\n";
+
+	title +="MG clip fix:\n";
+	changed = "^7"; if (maps\mp\gametypes\global\cvar_system::isCvarChangedFromRuleValue("scr_mg_peek_fix") && !game["is_public_mode"]) changed = "^3";
+	if (level.scr_mg_peek_fix) 		value += changed+"Enabled ^9Disabled^7" + "\n";
+	else					value += "^9Enabled "+changed+"Disabled^7" + "\n";
+
+	title += "\n";
+	value += "\n";
 
 
+	if (game["is_public_mode"] == false)
+	{
+		str = "";
+		changedCvars = maps\mp\gametypes\global\cvar_system::getChangedCvarsString();
+		if (changedCvars.size > 0)
+		{
+			for(i = 0; i < changedCvars.size; i++)
+			{
+				switch(changedCvars[i])
+				{
+					case "scr_fast_reload_fix":
+					case "scr_shotgun_rebalance":
+					case "scr_prone_peek_fix":
+					case "scr_mg_peek_fix":
+					case "scr_hand_hitbox_fix":
+						continue;
+				}
 
+				str += changedCvars[i]+"\n";
+			}
+		}
+		if (str != "")
+		{
+			title += "^3Changed cvars:"+"\n";
+			value += str;
+		}
+	}
 
 	setCvar("ui_serverinfo_right1", title);
 	makeCvarServerInfo("ui_serverinfo_right1", title);
@@ -2637,15 +3021,15 @@ deadchat()
 
 		if ( (level.in_readyup || level.in_timeout || level.roundended) && dc == 0)
 		{
-			maps\mp\gametypes\_cvar_system::restoreCvarQuiet("g_deadChat");
-			maps\mp\gametypes\_cvar_system::setCvarQuiet("g_deadChat", 1); //setcvar("g_deadchat", 1);
+			maps\mp\gametypes\global\cvar_system::restoreCvarQuiet("g_deadChat");
+			maps\mp\gametypes\global\cvar_system::setCvarQuiet("g_deadChat", 1); //setcvar("g_deadchat", 1);
 		}
 
 
 		if ((level.roundstarted || level.in_strattime) && !level.roundended && dc == 1)
 		{
-			maps\mp\gametypes\_cvar_system::restoreCvarQuiet("g_deadChat");
-			maps\mp\gametypes\_cvar_system::setCvarQuiet("g_deadChat", 0); //setcvar("g_deadchat", 0);
+			maps\mp\gametypes\global\cvar_system::restoreCvarQuiet("g_deadChat");
+			maps\mp\gametypes\global\cvar_system::setCvarQuiet("g_deadChat", 0); //setcvar("g_deadchat", 0);
 		}
 
 		wait level.fps_multiplier * 1;

@@ -1,11 +1,14 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 // Source from maps/mp/pam/quickmessages.gsc
 // content moved here
 
 init()
 {
-	precacheHeadIcon("talkingicon");
+	if(game["firstInit"])
+	{
+		precacheHeadIcon("talkingicon");
+	}
 }
 
 quickcommands(response)

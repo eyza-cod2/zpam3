@@ -1,4 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
@@ -14,7 +14,6 @@ init()
     addEventListener("onDisconnect",      ::onDisconnect);
     addEventListener("onConnectedAll",    ::onConnectedAll);
 
-    // TODO temp
     //thread printThread();
 }
 
@@ -115,13 +114,7 @@ handleRename()
 getStatId()
 {
   handleRename();
-/*
-// TODO remove
-  if (self getEntityNumber() == 1)
-  {
-    return -1;
-  }
-*/
+
   return findData(self.name, self getEntityNumber());
 }
 
@@ -151,10 +144,11 @@ print()
       println("game[playerstats]["+i+"][lastTime]    = " + data["lastTime"]);
       println("game[playerstats]["+i+"][kills]       = " + data["kills"]);
       println("game[playerstats]["+i+"][damage]      = " + data["damage"]);
+      println("game[playerstats]["+i+"][assists]     = " + data["assists"]);
       println("game[playerstats]["+i+"][deaths]      = " + data["deaths"]);
       println("game[playerstats]["+i+"][kills]       = " + data["score"]);
-      println("game[playerstats]["+i+"][damage]      = " + data["plants"]);
-      println("game[playerstats]["+i+"][deaths]      = " + data["defuses"]);
+      println("game[playerstats]["+i+"][plants]      = " + data["plants"]);
+      println("game[playerstats]["+i+"][defuses]     = " + data["defuses"]);
     }
     else
     {
@@ -164,7 +158,7 @@ print()
   }
 }
 
-printThread() // TODO
+printThread()
 {
   setcvar("p", "0");
 
@@ -221,9 +215,10 @@ onConnected()
       game["playerstats"][newIndex]["isConnected"] = true;
       game["playerstats"][newIndex]["lastTime"] = getTime();
       game["playerstats"][newIndex]["kills"] = 0;
-      game["playerstats"][newIndex]["damage"] = 0.0;
+      game["playerstats"][newIndex]["assists"] = 0;
+      game["playerstats"][newIndex]["damage"] = 0;
       game["playerstats"][newIndex]["deaths"] = 0;
-      game["playerstats"][newIndex]["score"] = 0; // TODO dodelat vsude
+      game["playerstats"][newIndex]["score"] = 0.0;
       game["playerstats"][newIndex]["plants"] = 0;
       game["playerstats"][newIndex]["defuses"] = 0;
     }
@@ -270,6 +265,15 @@ AddScore(score)
     if (dataId >= 0)
     {
       game["playerstats"][dataId]["score"] += score;
+    }
+}
+
+AddAssist()
+{
+    dataId = self getStatId();
+    if (dataId >= 0)
+    {
+      game["playerstats"][dataId]["assists"] += 1;
     }
 }
 

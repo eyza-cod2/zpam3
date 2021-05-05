@@ -29,6 +29,58 @@
 
 
 
+	menuDef
+	{
+	  	name spectatingsystem_left
+	  	fullScreen MENU_FALSE
+	  	visible MENU_TRUE
+	    	rect 0 160 200 40 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+
+		#include "ui_mp/scriptmenus/submenus/spectatingsystem_left.menu"
+	}
+
+	menuDef
+	{
+	  	name spectatingsystem_right
+	  	fullScreen MENU_FALSE
+	  	visible MENU_TRUE
+	    	rect 0 160 200 40 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
+
+		#include "ui_mp/scriptmenus/submenus/spectatingsystem_right.menu"
+	}
+
+	menuDef
+	{
+	  	name spectatingsystem_players
+	  	fullScreen MENU_FALSE
+	  	visible MENU_TRUE
+	    	rect 0 0 200 80 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+
+
+		//ITEM_TEXT_DVAR("Score & players progress", -285, -53, .22, ITEM_ALIGN_LEFT, 1 1 1 1, "ui_spectatingsystem_team1_scoreProgress", hideDvar { "" })
+
+		ITEM_DVAR("ui_spectatingsystem_team1_scoreProgress", -285, -41, .2, ITEM_ALIGN_LEFT, 1 1 1 1)
+		ITEM_DVAR("ui_spectatingsystem_team2_scoreProgress", -285, -31, .2, ITEM_ALIGN_LEFT, 1 1 1 1)
+
+		ITEM_DVAR("ui_spectatingsystem_playerProgress", -285, -18, .18, ITEM_ALIGN_LEFT, 1 1 1 1)
+	}
+
+
+	menuDef
+	{
+	  	name enemylist
+	  	fullScreen MENU_FALSE
+	  	visible MENU_TRUE
+	    	rect -228 -70 200 80 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+
+
+		ITEM_DVAR("ui_playersleft_list", 0, 0, .18, ITEM_ALIGN_LEFT, 1 1 1 1)
+	}
+
+
+
+
+
 	// Mantle Hint (Press space to --> jump over)
 	menuDef
 	{
@@ -74,7 +126,6 @@
 
 
 	//	STANCE (icon next to compass)
-	/*
 	menuDef
 	{
     	name "stance"
@@ -94,7 +145,7 @@
 			ownerdraw CG_PLAYER_STANCE
 		}
 	}
-*/
+
 
 	// WEAPON INFO
 	menuDef
@@ -120,7 +171,7 @@
 		}
 //////////////////
 */
-
+/*
 		// weapon name
 		itemDef
 		{
@@ -145,7 +196,7 @@
 			visible MENU_TRUE
 			decoration
 		}
-
+*/
 		// weapon ammo counter background
 		itemDef
 		{
@@ -450,9 +501,9 @@
 		DVAR_CHECK("Set sc_enable to 0", "sc_enable", hideDvar { 0 } )
 		DVAR_CHECK("Set fx_sort to 1", "fx_sort", hideDvar { 1 } )
 		DVAR_CHECK("Set developer to 0", "developer", hideDvar { 0 } )
-		DVAR_CHECK("Set r_polygonOffsetScale to -1 or 4", "r_polygonOffsetScale", hideDvar { -1;4 } )
-		DVAR_CHECK("Set r_polygonOffsetBias to  -1 or 16", "r_polygonOffsetBias", hideDvar { -1;16 } )
-		DVAR_CHECK("Set cl_avidemo to 0", "cl_avidemo", hideDvar { 0 } )
+		DVAR_CHECK("Set r_polygonOffsetScale to -1 or 4", "r_polygonOffsetScale", hideDvar { "-1";"4" } )
+		DVAR_CHECK("Set r_polygonOffsetBias to  -1 or 16", "r_polygonOffsetBias", hideDvar { "-1";"16" } )
+		//DVAR_CHECK("Set cl_avidemo to 0", "cl_avidemo", hideDvar { 0 } )
 		DVAR_CHECK("Set mss_q3fs to 1", "mss_q3fs", hideDvar { 1 } )
 	}
 }

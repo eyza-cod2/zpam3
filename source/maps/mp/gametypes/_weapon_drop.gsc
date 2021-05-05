@@ -1,15 +1,35 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
-    // Add thread to all dropped weapon
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	// Player's weapon drop
+	registerCvar("scr_allow_primary_drop", "BOOL", 0);
+	registerCvar("scr_allow_secondary_drop", "BOOL", 0);
+
+
+	// Add thread to all dropped weapon
 	level thread Weapon_PickUp_Monitor();
 
-    addEventListener("onConnected",     ::onConnected);
+	addEventListener("onConnected",     ::onConnected);
 
-    // If is allwed to drop player's secondary weapon
-    if (level.allow_primary_drop || level.allow_secondary_drop)
-        addEventListener("onSpawnedPlayer",    ::onSpawnedPlayer);
+	// If is allwed to drop player's secondary weapon
+	if (level.allow_primary_drop || level.allow_secondary_drop)
+		addEventListener("onSpawnedPlayer",    ::onSpawnedPlayer);
+}
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_allow_primary_drop": 		level.allow_primary_drop = value; return true;
+        	case "scr_allow_secondary_drop": 	level.allow_secondary_drop = value; return true;
+	}
+	return false;
 }
 
 onConnected()
@@ -59,7 +79,7 @@ playersWeaponDrop()
                 // We can drop weapon only if we have 2 weapons
                 if (slot[0] == "none" || slot[1] == "none")
                 {
-                    self iprintlnbold("^3You can not drop your last weapon.");
+                    self iprintln("^3You can not drop your last weapon.");
                     break;
                 }
 
@@ -70,14 +90,14 @@ playersWeaponDrop()
                 // Check if current weapon can be dropped (snipers are disabled for example in cg)
                 if (!maps\mp\gametypes\_weapon_limiter::isWeaponDropable(current))
                 {
-                    self iprintlnbold("^3This weapon can not be dropped.");
+                    self iprintln("^3This weapon can not be dropped.");
                     break;
                 }
 
 				// Drop primary weapon only if weapon in secondary slot is big weapon
                 if (current == slot[0] && !isDefined(level.weapons[slot[1]]))
                 {
-                    self iprintlnbold("^3Primary weapon can be dropped only if there are 2 main weapons.");
+                    self iprintln("^3Primary weapon can be dropped only if there are 2 main weapons.");
                     break;
                 }
 
@@ -181,7 +201,7 @@ pickup_think(weaponname) {
     	// Check, if this picked up weapon is allowed to drop
     	if (!player maps\mp\gametypes\_weapon_limiter::isWeaponPickable(weaponname))
     	{
-			player iprintlnbold("^3You cannot pickup this limited weapon!");
+			player iprintln("^3You cannot pickup this limited weapon!");
 
 			// Drop back to ground
 			player dropItem(weaponname);

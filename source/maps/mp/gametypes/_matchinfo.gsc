@@ -1,5 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
-#include maps\mp\gametypes\_cvar_system;
+#include maps\mp\gametypes\global\_global;
 /*
 First we need to determine wich team will be first
  - do this by saving information who connect to this server first - his team will be first
@@ -12,16 +11,20 @@ Procces is splited to 2 parts
 Player names cannot be changed too much during match, othervise match info will reset
 
 */
-
 Init()
 {
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	registerCvar("scr_matchinfo", "INT", 0, 0, 2);					// level.scr_matchinfo
+	registerCvarEx("I", "scr_matchinfo_reset", "BOOL", 0);
+
 	addEventListener("onConnected",     ::onConnected);
 
 	// Save value of scr_matchinfo for entire map (if cvar scr_matchinfo is changed during match, it makes no effect until map change)
-	if (!isDefined(game["matchinfo"]))
-		game["matchinfo"] = level.scr_matchinfo;
+	if (!isDefined(game["scr_matchinfo"]))
+		game["scr_matchinfo"] = level.scr_matchinfo;
 
-	if (game["matchinfo"] == 0)
+	if (game["scr_matchinfo"] == 0)
 		return;
 
 	// Matchinfo cannot working without readyup...
@@ -29,13 +32,9 @@ Init()
 		return;
 
 
-	if (game["matchinfo"] == 2)
-	{
-		addEventListener("onConnectedAll",  ::onConnectedAll);
-	}
-
 	if (!isDefined(game["match_teams_set"]))
 	{
+		game["match_exists"] = false;
 		game["match_teams_set"] = false;
 
 		game["match_team1_name"] = "";
@@ -46,16 +45,46 @@ Init()
 		game["match_team2_side"] = "";
 
 		game["match_totaltime_text"] = "";
+
+		game["match_round"] = "";
 	}
 
 	// Once match start, save teams
 	if (!level.in_readyup)
+	{
+		game["match_exists"] = true;
 		game["match_teams_set"] = true;
+	}
 
 
 	addEventListener("onJoinedTeam",        ::onJoinedTeam);
 
 	level thread refresh();
+}
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_matchinfo": level.scr_matchinfo = value; return true;
+		case "scr_matchinfo_reset":
+		{
+			if (value == 1)
+			{
+				clear();
+				iprintln("Info about teams was cleared via rcon.");
+
+				changeCvarQuiet(cvar, 0);
+			}
+
+			return true;
+		}
+
+	}
+	return false;
 }
 
 
@@ -66,65 +95,66 @@ onConnected()
 	// Ingame match info bar
 	if (!isDefined(self.pers["matchinfo_ingame"]))
 	{
-			self.pers["matchinfo_ingame"] = false;
-			self.pers["matchinfo_ingame_visible"] = false;
+			// By default show match info ingame
+			self.pers["matchinfo_ingame"] = true;
+			self.pers["matchinfo_ingame_visible"] = true;
 			self.pers["matchinfo_showedForSpectator"] = false;
 
-			// always hide ingame bar on first connect - if is enabled by settings, it will be showed later
-			self setClientCvar("ui_matchinfo_ingame_show", "0");
+			// Show really only if enabled by rules
+			if (game["scr_matchinfo"] > 0)
+			{
+				self setClientCvarIfChanged("ui_matchinfo_ingame_show", "1");
+			}
+			else
+			{
+				self setClientCvarIfChanged("ui_matchinfo_ingame_show", "0");
+				self setClientCvarIfChanged("ui_matchinfo_ingame_team1_sideColor", 	""); // bg elements cannot be dependend on _show cvar, needs to be set separately
+				self setClientCvarIfChanged("ui_matchinfo_ingame_team2_sideColor", 	"");
+			}
 	}
 
 
-	if (game["matchinfo"] > 0)
+	if (game["scr_matchinfo"] > 0)
 	{
-		self setClientCvar("ui_matchinfo_show", "1");
+		self setClientCvar2("ui_matchinfo_show", "1");
 
 		if (!isDefined(self.pers["timeConnected"]))
 		{
 			self.pers["timeConnected"] = getTime();
+		}
 
-			// Update all team name only once
-			waittillframeend;
-			maps\mp\gametypes\_teamname::refreshTeamNameForAll(); // will update level.teamname_all
-
-			// Reset client cvars
-			self UpdatePlayerCvars();
+		if (game["scr_matchinfo"] == 2)
+		{
+			//waittillframeend;
+			// Update team names in scoreboard
+			self updateTeamNames();
 		}
 	}
 	else
 	{
 		wait level.fps_multiplier * 0.2;
-		self setClientCvar("ui_matchinfo_show", "0");
+		self setClientCvar2("ui_matchinfo_show", "0");
 	}
 
 }
 
-onConnectedAll()
-{
-	waittillframeend;
-
-	updateTeamNamesForPlayers();
-
-	//maps\mp\gametypes\_teamname::refreshTeamNameForAll(); // will update level.teamname_all
-}
-
 onJoinedTeam(teamName)
 {
-		// Always show for spectator, even if its not enabled in settings
-    if (teamName == "spectator")
+	// Always show for spectator, even if its not enabled in settings
+	if (teamName == "spectator")
+	{
+		self ingame_show();
+		self.pers["matchinfo_showedForSpectator"] = true;
+	}
+	else
+	{
+		if (self.pers["matchinfo_showedForSpectator"])
 		{
-			self ingame_show();
-			self.pers["matchinfo_showedForSpectator"] = true;
+			if (!ingame_isEnabled())
+				ingame_hide();
+			self.pers["matchinfo_showedForSpectator"] = false;
 		}
-		else
-		{
-			if (self.pers["matchinfo_showedForSpectator"])
-			{
-				if (!ingame_isEnabled())
-					ingame_hide();
-				self.pers["matchinfo_showedForSpectator"] = false;
-			}
-		}
+	}
 }
 
 
@@ -164,9 +194,9 @@ ingame_show()
 	if (!self.pers["matchinfo_ingame_visible"])
 	{
 		self.pers["matchinfo_ingame_visible"] = true;
-		if (game["matchinfo"] > 0)
+		if (game["scr_matchinfo"] > 0)
 		{
-			self setClientCvar("ui_matchinfo_ingame_show", 1);
+			self setClientCvarIfChanged("ui_matchinfo_ingame_show", "1");
 			self thread UpdatePlayerCvars();
 		}
 	}
@@ -178,47 +208,48 @@ ingame_hide()
 	if (self.pers["matchinfo_ingame_visible"])
 	{
 		self.pers["matchinfo_ingame_visible"] = false;
-		self setClientCvar("ui_matchinfo_ingame_show", 0);
-		if (game["matchinfo"] > 0)
+		self setClientCvarIfChanged("ui_matchinfo_ingame_show", "0");
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_sideColor", 	""); // bg elements cannot be dependend on _show cvar, needs to be set separately
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_sideColor", 	"");
+		if (game["scr_matchinfo"] > 0)
 			self thread UpdatePlayerCvars();
 	}
 }
 
 
 
-
-
-updateTeamNamesForPlayers()
+updateTeamNames()
 {
-	// Generate team names according to player names
-	maps\mp\gametypes\_teamname::refreshTeamName("allies"); // will update level.teamname_allies
-	maps\mp\gametypes\_teamname::refreshTeamName("axis"); // will update level.teamname_axis
+	//println("##updateTeamNames:"+game["match_team1_name"]);
 
-	alliesDef = "";
-	switch(game["allies"])
+	teamname_allies = game["match_team1_name"];
+	teamname_axis = game["match_team2_name"];
+	if (game["match_team1_side"] == "axis")
 	{
-		case "american": alliesDef = "MPUI_AMERICAN"; break;
-		case "british":  alliesDef = "MPUI_BRITISH"; break;
-		case "russian":  alliesDef = "MPUI_RUSSIAN"; break;
+		teamname_allies = game["match_team2_name"];
+		teamname_axis = game["match_team1_name"];
 	}
-	axisDef = "MPUI_GERMAN";
 
-	// for all players change team name in scoreboard
-	players = getentarray("player", "classname");
-	for(i = 0; i < players.size; i++)
+
+	if (teamname_allies != "")
+		self setClientCvar2("g_TeamName_Allies", teamname_allies);
+	else
 	{
-		player = players[i];
-
-		if (level.teamname_allies != "")
-			player setClientCvarIfChanged("g_TeamName_Allies", level.teamname_allies);
-		else
-			player setClientCvarIfChanged("g_TeamName_Allies", alliesDef);
-
-		if (level.teamname_axis != "")
-			player setClientCvarIfChanged("g_TeamName_Axis", level.teamname_axis);
-		else
-			player setClientCvarIfChanged("g_TeamName_Axis", axisDef);
+		alliesDef = "";
+		switch(game["allies"])
+		{
+			case "american": alliesDef = "MPUI_AMERICAN"; break;
+			case "british":  alliesDef = "MPUI_BRITISH"; break;
+			case "russian":  alliesDef = "MPUI_RUSSIAN"; break;
+		}
+		self setClientCvar2("g_TeamName_Allies", alliesDef);
 	}
+
+	if (teamname_axis != "")
+		self setClientCvar2("g_TeamName_Axis", teamname_axis);
+	else
+		self setClientCvar2("g_TeamName_Axis", "MPUI_GERMAN");
+
 }
 
 
@@ -251,8 +282,22 @@ processPreviousMapToHistory()
 }
 
 
+refreshTeamNames()
+{
+	// Generate allies and axis team names
+	// Generate team names according to player names
+	wait level.fps_multiplier * 0.1;
+	maps\mp\gametypes\_teamname::refreshTeamName("allies"); // will update level.teamname_allies
+	wait level.fps_multiplier * 0.1;
+	maps\mp\gametypes\_teamname::refreshTeamName("axis"); // will update level.teamname_axis
+	wait level.frame;
+}
+
+
 determineTeamByHistoryCvars()
 {
+	refreshTeamNames();
+
 	// Fill team names
 	game["match_team1_name"] = getCvar("sv_map1_team1");
 	game["match_team2_name"] = getCvar("sv_map1_team2");
@@ -278,6 +323,8 @@ determineTeamByHistoryCvars()
 
 determineTeamByFirstConnected()
 {
+	refreshTeamNames();
+
 	// Find first team by looking wich player connect
 	players = getentarray("player", "classname");
 	firstPlayer = undefined;
@@ -305,18 +352,6 @@ determineTeamByFirstConnected()
 	teamname2 = level.teamname[team2];
 
 
-	// Handle empty teams
-	if (teamname1 == "" && teamname2 == "")
-	{
-		teamname1 = level.teamname_all;
-		teamname2 = "?";
-	}
-	else if (teamname1 == "")
-		teamname1 = "?";
-	else if (teamname2 == "")
-		teamname2 = "?";
-
-
 	game["match_team1_name"] = teamname1;
 	game["match_team1_side"] = team1;
 	game["match_team2_name"] = teamname2;
@@ -333,14 +368,10 @@ resetAll()
 	setCvar("sv_map_totaltime", "");
 	setCvar("sv_map_players", "");
 
+	game["match_exists"] = false;
 	game["match_starttime"] = undefined;
-	game["match_timeprev"] = 0;
+	game["match_totaltime_prev"] = 0;
 
-	resetTeamInfo();
-}
-
-resetTeamInfo()
-{
 	// Reset cvars
 	for (i = 1; i <= 2; i++)
 	{
@@ -359,9 +390,9 @@ resetTeamInfo()
 	determineTeamByFirstConnected();
 }
 
-waitForPlayerOrReset(playersLast)
+waitForPlayerOrClear(playersLast)
 {
-	wait level.fps_multiplier * 30;
+	wait level.fps_multiplier * 25;
 
 	for(;;)
 	{
@@ -371,16 +402,31 @@ waitForPlayerOrReset(playersLast)
 
 		// reset matchinfo if 30% of players disconnect or there are no players or there was no players last map
 		players = getentarray("player", "classname");
-		if (((players.size * 1.0) < (playersLast * 0.7)) || ((players.size * 1.0) > (playersLast * 1.2)) || players.size == 0 || playersLast == 0)
+		if (((players.size * 1.0) < (playersLast * 0.7)) || ((players.size * 1.0) > (playersLast * 1.2)) || players.size <= 1 || playersLast <= 1)
 		{
+			clear();
 			iprintln("Info about teams was cleared.");
-			resetAll();
 			return;
 		}
 
-		wait level.fps_multiplier * 10;
+		wait level.fps_multiplier * 5;
 	}
 }
+
+clear()
+{
+	resetAll();
+
+	if (level.in_readyup)
+	{
+		// Stop demo recording if enabled
+		maps\mp\gametypes\_record::stopRecordingForAll();
+
+		//Reset Remaing Time in readyup to Clock
+		maps\mp\gametypes\_readyup::HUD_ReadyUp_ResumingIn_Delete();
+	}
+}
+
 
 // Well, COD2 dont have this function, so create it manually
 ToUpper(char)
@@ -419,6 +465,12 @@ ToUpper(char)
 
 GetMapName(mapname)
 {
+	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix_v1")		return "Toujane";
+	if (mapname == "mp_burgundy" || mapname == "mp_burgundy_fix_v1")		return "Burgundy";
+	if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix")		return "Dawnville";
+	if (mapname == "mp_matmata" || mapname == "mp_matmata_fix")		return "Matmata";
+	if (mapname == "mp_carentan" || mapname == "mp_carentan_fix")		return "Carentan";
+
 	if (mapname == "" || mapname.size < 3)
 		return mapname;
 
@@ -433,110 +485,161 @@ GetMapName(mapname)
 UpdatePlayerCvars()
 {
 
-	// Ingame match info bar
-	if (game["matchinfo"] == 2)
+
+	if (game["scr_matchinfo"] > 0)
 	{
-		// Set player's team always on left
-		team_left  = "team1";
-		team_right = "team2";
-		if (isDefined(self.pers["team"]) && self.pers["team"] == game["match_team2_side"])
+		side_left  = "";
+		side_right = "";
+
+		ui_name_left = "";
+		ui_name_right = "";
+
+		// Match info with team names
+		if (game["scr_matchinfo"] == 2)
 		{
-				team_left  = "team2";
-				team_right = "team1";
+			// Set player's team always on left
+			team_left  = "team1";
+			team_right = "team2";
+			if (isDefined(self.pers["team"]) && self.pers["team"] == game["match_team2_side"])
+			{
+					team_left  = "team2";
+					team_right = "team1";
+			}
+			side_left = game["match_"+team_left+"_side"];
+			side_right = game["match_"+team_right+"_side"];
+
+			name_left = game["match_"+team_left+"_name"];
+			name_right = game["match_"+team_right+"_name"];
+			// Handle empty teams
+			if (name_left == "")  name_left = "?";
+			if (name_right == "") name_right = "?";
+
+			ui_name_left = game["match_"+team_left+"_score"] + "    " + name_left;
+			ui_name_right = game["match_"+team_right+"_score"] + "    " + name_right;
 		}
-		matchtimetext = "Match time";
-		if (game["match_totaltime_text"] == "")
-			matchtimetext = "";
+
+		// Match info with default allies axis
+		else if (game["scr_matchinfo"] == 1)
+		{
+			// Set player's team always on left
+			side_left  = "allies";
+			side_right = "axis";
+			name_left  = "Allies";
+			name_right = "Axis";
+			if (isDefined(self.pers["team"]))
+			{
+				if (self.pers["team"] == "axis")
+				{
+					side_left  = "axis";
+					side_right = "allies";
+				}
+				if (self.pers["team"] == "allies" || self.pers["team"] == "axis")
+				{
+					name_left  = "My Team";
+					name_right = "Enemy";
+				}
+			}
+
+			ui_name_left = game[side_left+"_score"] + "    " + name_left;
+			ui_name_right = game[side_right+"_score"] + "    " + name_right;
+		}
+
+
+		side_left_color = "0";
+		side_right_color = "0";
+		if (side_left == "allies")
+		{
+			if(game["allies"] == "american")
+				side_left_color = "2"; // green
+			else if(game["allies"] == "british")
+				side_left_color = "3"; // blue
+			else if(game["allies"] == "russian")
+				side_left_color = "1"; // red
+
+			side_right_color = "4"; // gray
+		}
+		else
+		{
+			if(game["allies"] == "american")
+				side_right_color = "2"; // green
+			else if(game["allies"] == "british")
+				side_right_color = "3"; // blue
+			else if(game["allies"] == "russian")
+				side_right_color = "1"; // red
+
+			side_left_color = "4"; // gray
+		}
+
+		// Background color according to team
+		self setClientCvarIfChanged("ui_matchinfo_team1_sideColor", 	side_left_color);
+		self setClientCvarIfChanged("ui_matchinfo_team2_sideColor", 	side_right_color);
+
+		if (self.pers["matchinfo_ingame_visible"])
+		{
+			self setClientCvarIfChanged("ui_matchinfo_ingame_team1_sideColor", 	side_left_color);
+			self setClientCvarIfChanged("ui_matchinfo_ingame_team2_sideColor", 	side_right_color);
+		}
 
 		// Team names
-		self setClientCvarIfChanged("ui_matchinfo_team1_name", game["match_"+team_left+"_name"]);
-		self setClientCvarIfChanged("ui_matchinfo_team2_name", game["match_"+team_right+"_name"]);
-		// scores
-		self setClientCvarIfChanged("ui_matchinfo_team1_score", game["match_"+team_left+"_score"]);
-		self setClientCvarIfChanged("ui_matchinfo_team2_score", game["match_"+team_right+"_score"]);
+		self setClientCvarIfChanged("ui_matchinfo_team1_name", ui_name_left);
+		self setClientCvarIfChanged("ui_matchinfo_team2_name", ui_name_right);
+
+
+
+
+
+		matchtimetext = "";
+		halfInfo = "";
+		if (game["match_totaltime_text"] != "")
+		{
+			matchtimetext = "Match time:   " + game["match_totaltime_text"];
+
+			if (!game["readyup_first_run"] && !level.in_bash)
+			{
+				if (!game["is_halftime"])
+					halfInfo = "Rounds to half:   " + (level.halfround-game["round"]);
+				else
+					halfInfo = "First half score:   " + game["half_1_"+side_right+"_score"] + " : " + game["half_1_"+side_left+"_score"];
+			}
+		}
+
 		// Round
 		self setClientCvarIfChanged("ui_matchinfo_round", game["match_round"]);
+		// Half
+		self setClientCvarIfChanged("ui_matchinfo_halfInfo", halfInfo);
+		// Play time
+		self setClientCvarIfChanged("ui_matchinfo_matchtime", matchtimetext);
+
 		// Map history
 		for (j = 1; j <= 2; j++)
 		{
-			self setClientCvarIfChanged("ui_matchinfo_map" + j + "_name", GetMapName(getCvar("sv_map" + j + "_name")));
-			self setClientCvarIfChanged("ui_matchinfo_map" + j + "_score", getCvar("sv_map" + j + "_score"));
+			self setClientCvarIfChanged("ui_matchinfo_map" + j, GetMapName(getCvar("sv_map" + j + "_name")) + "  " + getCvar("sv_map" + j + "_score"));
 
-			//self setClientCvarIfChanged("ui_matchinfo_map" + j + "_name", "Toujane");
-			//self setClientCvarIfChanged("ui_matchinfo_map" + j + "_score", "13:7");
+			//self setClientCvarIfChanged("ui_matchinfo_map" + j, "Toujane  13:7");
 		}
-		// Play time
-		self setClientCvarIfChanged("ui_matchinfo_matchtime_text", matchtimetext);
-		self setClientCvarIfChanged("ui_matchinfo_matchtime_value", game["match_totaltime_text"]);
-
-
-	}
-	else if (game["matchinfo"] == 1)
-	{
-		// Set player's team always on left
-		team_left  = "allies";
-		team_right = "axis";
-		team_left_name  = "Allies";
-		team_right_name = "Axis";
-		if (isDefined(self.pers["team"]))
-		{
-			if (self.pers["team"] == "axis")
-			{
-				team_left  = "axis";
-				team_right = "allies";
-			}
-			if (self.pers["team"] == "allies" || self.pers["team"] == "axis")
-			{
-				team_left_name  = "My Team";
-				team_right_name = "Enemy";
-			}
-		}
-		matchtimetext = "Match time";
-		if (game["match_totaltime_text"] == "")
-			matchtimetext = "";
-
-		// Team names
-		self setClientCvarIfChanged("ui_matchinfo_team1_name", team_left_name);
-		self setClientCvarIfChanged("ui_matchinfo_team2_name", team_right_name);
-		// scores
-		self setClientCvarIfChanged("ui_matchinfo_team1_score", game[team_left+"_score"]);
-		self setClientCvarIfChanged("ui_matchinfo_team2_score", game[team_right+"_score"]);
-		// Round
-		self setClientCvarIfChanged("ui_matchinfo_round", game["match_round"]);
-
-		// Map history
-		for (j = 1; j <= 2; j++)
-		{
-			self setClientCvarIfChanged("ui_matchinfo_map" + j + "_name", GetMapName(getCvar("sv_map" + j + "_name")));
-			self setClientCvarIfChanged("ui_matchinfo_map" + j + "_score", getCvar("sv_map" + j + "_score"));
-
-			//self setClientCvarIfChanged("ui_matchinfo_map" + j + "_name", "Toujane");
-			//self setClientCvarIfChanged("ui_matchinfo_map" + j + "_score", "13:7");
-		}
-		// Play time
-		self setClientCvarIfChanged("ui_matchinfo_matchtime_text", matchtimetext);
-		self setClientCvarIfChanged("ui_matchinfo_matchtime_value", game["match_totaltime_text"]);
-
 	}
 	else
 	{
 		// Team names
 		self setClientCvarIfChanged("ui_matchinfo_team1_name", "");
 		self setClientCvarIfChanged("ui_matchinfo_team2_name", "");
-		// scores
-		self setClientCvarIfChanged("ui_matchinfo_team1_score", "");
-		self setClientCvarIfChanged("ui_matchinfo_team2_score", "");
+
+		self setClientCvarIfChanged("ui_matchinfo_team1_sideColor", "");
+		self setClientCvarIfChanged("ui_matchinfo_team2_sideColor", "");
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_sideColor", "");
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_sideColor", "");
+
 		// Round
 		self setClientCvarIfChanged("ui_matchinfo_round", "");
+		// Half
+		self setClientCvarIfChanged("ui_matchinfo_halfInfo", "");
 		// Map history
 		for (j = 1; j <= 2; j++)
 		{
-			self setClientCvarIfChanged("ui_matchinfo_map" + j + "_name", "");
-			self setClientCvarIfChanged("ui_matchinfo_map" + j + "_score", "");
+			self setClientCvarIfChanged("ui_matchinfo_map" + j, "");
 		}
 		// Play time
-		self setClientCvarIfChanged("ui_matchinfo_matchtime_text", "");
-		self setClientCvarIfChanged("ui_matchinfo_matchtime_value", "");
+		self setClientCvarIfChanged("ui_matchinfo_matchtime", "");
 	}
 }
 
@@ -556,6 +659,7 @@ UpdateCvarsForPlayers()
 }
 
 
+
 refresh()
 {
 	// Save previous map score to map history
@@ -569,159 +673,191 @@ refresh()
 		playersLast = getCvar("sv_map_players");
 		if (playersLast != "")
 		{
-			level thread waitForPlayerOrReset(int(playersLast));
+			level thread waitForPlayerOrClear(int(playersLast));
 			setcvar("sv_map_players", "");
 		}
 
 		// Save previous time left
 		if (getCvar("sv_map_totaltime") != "")
-			game["match_timeprev"] = getCvarInt("sv_map_totaltime");
+		{
+			game["match_totaltime_prev"] = getCvarInt("sv_map_totaltime");
+
+			// Via this cvar we determinate if match is set from previous map
+			game["match_exists"] = true;
+		}
 		else
-			game["match_timeprev"] = 0;
+			game["match_totaltime_prev"] = 0;
 
 		game["match_previous_map_processed"] = true;
 	}
 
-	wait level.frame * 2; // offset this thread from other threads
+
+	// On first run, offset thread from ther thread and this also make sure game["allies_score"] is defined
+	wait level.frame * 8; // offset thread from other threads
+
 
 	for (;;)
 	{
-			wait level.fps_multiplier * 1;
-
-			// Total time measuring
-			if (game["match_timeprev"] == 0 && !game["match_teams_set"])
-				game["match_totaltime"] = 0;
-			else
+		/***********************************************************************************************************************************
+		*** Determinate team names, side, score
+		/***********************************************************************************************************************************/
+		// Full team info
+		if (game["scr_matchinfo"] == 2)
+		{
+			// Keep updating data about team names, played maps,.. untill match start
+			// Called in every first readyup on every map
+			if (!game["match_teams_set"])
 			{
-				if (!isDefined(game["match_starttime"]))
-					game["match_starttime"] = getTime();
-
-				game["match_totaltime"] = game["match_timeprev"] + (getTime() - game["match_starttime"]);
-			}
-			setCvar("sv_map_totaltime", game["match_totaltime"]);
-
-
-
-			// Total time
-			if (game["match_totaltime"] > 0)
-			{
-				secTotal = int(game["match_totaltime"] / 1000);
-				min = int(secTotal / 60);
-				sec = secTotal % 60;
-
-				if (min < 10) min = "0" + min;
-				if (sec < 10) sec = "0" + sec;
-
-				game["match_totaltime_text"] = min + ":" + sec;
-			}
-			else
-			{
-				game["match_totaltime_text"] = "";
-			}
-
-
-			// Round
-			if (!isDefined(game["match_round"]))
-				game["match_round"] = "";
-			if (level.in_readyup)
-				game["match_round"] = "Ready-up";
-			else if (level.in_bash)
-				game["match_round"] = "Bash";
-			else if (!level.roundended) // to avoid increasing rounds player
-				game["match_round"] = "Round " + (game["roundsplayed"] + 1) + " / " + level.matchround;
-
-
-
-			// Full team info
-			if (game["matchinfo"] == 2)
-			{
-					// Keep updating data about team names, played maps,.. untill match start
-					if (!game["match_teams_set"])
-					{
-						// Generate allies and axis team names
-						updateTeamNamesForPlayers();
-
-						// If there is defined map, load teams from cvars. Othervise load team by first connected player
-						prevMap_map =   getCvar("sv_map1_name");
-						if (prevMap_map != "")
-							determineTeamByHistoryCvars();
-						else
-							determineTeamByFirstConnected();
-					}
-
-					// If game started and teams was not recognised, reset team info and do it it from scratch
-					// This may happend if player in both teams gets renamed
-					else
-					{
-						if (game["match_team1_side"] == "" || game["match_team2_side"] == "")
-						{
-							resetTeamInfo(); // reset map history
-
-							determineTeamByFirstConnected();
-						}
-					}
-
-					// Main score update
-					if (game["match_team1_side"] == "") 	game["match_team1_score"] = "?";
-					else 																	game["match_team1_score"] = game[game["match_team1_side"] + "_score"];
-					if (game["match_team2_side"] == "") 	game["match_team2_score"] = "?";
-					else 																	game["match_team2_score"] = game[game["match_team2_side"] + "_score"];
-			}
-
-			else if (game["matchinfo"] == 1) // basic info (no team names)
-			{
-				game["match_team1_name"] = "Allies";
-				game["match_team2_name"] = "Axis";
-
-				game["match_team1_side"] = "allies";
-				game["match_team2_side"] = "axis";
-
-				game["match_team1_score"] = game["allies_score"];
-				game["match_team2_score"] = game["axis_score"];
-			}
-
-
-			// Save data from this map for next map
-			if (game["match_teams_set"] || (game["matchinfo"] == 1 && (game["allies_score"] > 0 || game["axis_score"] > 0)))
-			{
-				setCvarIfChanged("sv_map_name", level.mapname);
-				setCvarIfChanged("sv_map_team1", game["match_team1_name"]);
-				setCvarIfChanged("sv_map_team2", game["match_team2_name"]);
-
-				// Dont update score if we are in overtime
-				if (!game["overtime_active"])
-				{
-					setCvarIfChanged("sv_map_score", game["match_team1_score"] + " : " + game["match_team2_score"]);
-				}
+				// If match exists, load teams from cvars. Othervise load team by first connected player
+				if (game["match_exists"])
+					determineTeamByHistoryCvars();
 				else
-				{
-					// TODO: set +1 score to winner of overtime
-				}
+					determineTeamByFirstConnected();
 
-				// Update number of player in this match
-				// Update this value only if it increases - avoid decreasing it for case when players disconnect in the middle of the match
-				// so next time map restart the info about match is properly reseted due to low number of players
+				// for all players change team name in scoreboard
 				players = getentarray("player", "classname");
-				if (players.size > GetCvarInt("sv_map_players"))
-					setCvarIfChanged("sv_map_players", players.size);
+				for(i = 0; i < players.size; i++)
+				{
+					players[i] updateTeamNames();
+				}
 			}
 
-			// Global server cvars visible via HLSW
-			if (game["match_team1_name"] != "") 	setCvarIfChanged("_match_team1", game["match_team1_name"]);
-			else																	setCvarIfChanged("_match_team1", "-");
-			if (game["match_team1_name"] != "") 	setCvarIfChanged("_match_team2", game["match_team2_name"]);
-			else																	setCvarIfChanged("_match_team2", "-");
+			// If game started and teams was not recognised, reset team info and do it it from scratch
+			// This may happend if player in both teams gets renamed
+			else
+			{
+				if (game["match_team1_side"] == "" || game["match_team2_side"] == "")
+				{
+					resetAll(); // reset map history and select team again
+				}
+			}
 
-			if (getcvar("sv_map_score") != "") 		setCvarIfChanged("_match_score", getcvar("sv_map_score"));
-			else																	setCvarIfChanged("_match_score", "-");
+			// Main score update
+			if (game["match_team1_side"] == "") 	game["match_team1_score"] = "?";
+			else 					game["match_team1_score"] = game[game["match_team1_side"] + "_score"];
+			if (game["match_team2_side"] == "") 	game["match_team2_score"] = "?";
+			else 					game["match_team2_score"] = game[game["match_team2_side"] + "_score"];
+		}
 
-			if (game["match_round"] != "") 				setCvarIfChanged("_match_round", game["match_round"]);
-			else																	setCvarIfChanged("_match_round", "-");
+		else if (game["scr_matchinfo"] == 1) // basic info (no team names)
+		{
+			game["match_team1_name"] = "Allies";
+			game["match_team2_name"] = "Axis";
+
+			game["match_team1_side"] = "allies";
+			game["match_team2_side"] = "axis";
+
+			game["match_team1_score"] = game["allies_score"];
+			game["match_team2_score"] = game["axis_score"];
+		}
 
 
-			thread UpdateCvarsForPlayers();
 
-	} // end 1 sec loop
+		/***********************************************************************************************************************************
+		*** Determinate match time, status, ...
+		/***********************************************************************************************************************************/
+
+		// Total time measuring
+		if (game["match_totaltime_prev"] == 0 && !game["match_teams_set"])
+			game["match_totaltime"] = 0;
+		else
+		{
+			if (!isDefined(game["match_starttime"]))
+				game["match_starttime"] = getTime();
+
+			game["match_totaltime"] = game["match_totaltime_prev"] + (getTime() - game["match_starttime"]);
+		}
+
+		if (game["match_exists"])
+			setCvarIfChanged("sv_map_totaltime", game["match_totaltime"]);
+
+
+
+		// Total time
+		if (game["match_totaltime"] > 0)
+		{
+			game["match_totaltime_text"] = formatTime(int(game["match_totaltime"] / 1000));
+		}
+		else
+		{
+			game["match_totaltime_text"] = "";
+		}
+
+
+		// Round
+		if (level.in_timeout)
+			game["match_round"] = "Timeout";
+		else if (level.in_readyup)
+			game["match_round"] = "Ready-up";
+		else if (level.in_bash)
+			game["match_round"] = "Bash";
+		else
+		{
+			game["match_round"] = "Round " + game["round"];
+
+			if (level.matchround > 0)
+				game["match_round"] += " / " + level.matchround;
+		}
+
+		if (game["overtime_active"])
+			game["match_round"] += " (OT)"; // overtime
+
+
+
+		/***********************************************************************************************************************************
+		*** Update history cvars to be able load info in next map
+		/***********************************************************************************************************************************/
+
+		// Save data from this map for next map
+		if ((game["match_teams_set"] || game["scr_matchinfo"] == 1) && (game["round"] >= 3)) // save map into hostory in 3. round
+		{
+			setCvarIfChanged("sv_map_name", level.mapname);
+			setCvarIfChanged("sv_map_team1", game["match_team1_name"]);
+			setCvarIfChanged("sv_map_team2", game["match_team2_name"]);
+
+			// Dont update score if we are in overtime
+			if (!game["overtime_active"])
+			{
+				setCvarIfChanged("sv_map_score", game["match_team1_score"] + " : " + game["match_team2_score"]);
+
+				game["match_team1_score_beforeOvertime"] = game["match_team1_score"];
+				game["match_team2_score_beforeOvertime"] = game["match_team2_score"];
+			}
+			else
+			{
+				team1add = int(game["match_team1_score"] > game["match_team2_score"]);
+				team2add = int(game["match_team1_score"] < game["match_team2_score"]);
+
+				setCvarIfChanged("sv_map_score", (game["match_team1_score_beforeOvertime"] + team1add) + " : " + (game["match_team2_score_beforeOvertime"] + team2add) + "  OT");
+			}
+
+			// Update number of player in this match
+			// Update this value only if it increases - avoid decreasing it for case when players disconnect in the middle of the match
+			// so next time map restart the info about match is properly reseted due to low number of players
+			players = getentarray("player", "classname");
+			if (players.size > GetCvarInt("sv_map_players"))
+				setCvarIfChanged("sv_map_players", players.size);
+		}
+
+		// Global server cvars visible via HLSW
+		if (game["match_team1_name"] != "") 	setCvarIfChanged("_match_team1", game["match_team1_name"]);
+		else					setCvarIfChanged("_match_team1", "-");
+		if (game["match_team2_name"] != "") 	setCvarIfChanged("_match_team2", game["match_team2_name"]);
+		else					setCvarIfChanged("_match_team2", "-");
+
+		if (getcvar("sv_map_score") != "") 	setCvarIfChanged("_match_score", getcvar("sv_map_score"));
+		else					setCvarIfChanged("_match_score", "-");
+
+		if (game["match_round"] != "") 		setCvarIfChanged("_match_round", game["match_round"]);
+		else					setCvarIfChanged("_match_round", "-");
+
+
+		thread UpdateCvarsForPlayers();
+
+
+
+		wait level.fps_multiplier * 1;
+	}
 
 
 }

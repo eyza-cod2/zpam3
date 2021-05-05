@@ -1,5 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
-#include maps\mp\gametypes\_cvar_system;
+#include maps\mp\gametypes\global\_global;
 
 /*
 This script will generate list of all players
@@ -141,7 +140,7 @@ generatePlayerList()
 
 		// None heading
 		self setClientCvarIfChanged("ui_playerlist_line_"+i+"_team", "4");
-		self setClientCvarIfChanged("ui_playerlist_line_"+i+"_name", "None team");
+		self setClientCvarIfChanged("ui_playerlist_line_"+i+"_name", "Selecting team");
 		i++;
 
 		for(p = 0; p < none.size; p++)

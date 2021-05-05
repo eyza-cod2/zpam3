@@ -1,30 +1,108 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 // Ready up can be called from startRound, _halftime, _timeout, _overtime
 
 init()
 {
-    // Define level default variables
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	registerCvar("scr_readyup", "BOOL", 0);
+	registerCvar("scr_readyup_autoresume", "FLOAT", 0, 0, 10);
+	registerCvar("scr_readyup_nadetraining", "BOOL", 0);
+	registerCvar("scr_half_start_timer", "FLOAT", 0, 0, 10);
+
+	if(game["firstInit"])
+	{
+		// Ready-up
+		precacheString2("STRING_READYUP_WAITING_ON", &"Waiting on");
+		precacheString2("STRING_READYUP_PLAYERS", &"Players");
+		precacheString2("STRING_READYUP_YOUR_STATUS", &"Your Status");
+		precacheString2("STRING_READYUP_READY", &"Ready");
+		precacheString2("STRING_READYUP_NOT_READY", &"Not Ready");
+		precacheString2("STRING_READYUP_CLOCK", &"Clock");
+
+		precacheString2("STRING_READYUP_MODE", &"Ready-Up Mode");
+		precacheString2("STRING_READYUP_MODE_HALF", &"Half-Time Ready-Up Mode");
+		precacheString2("STRING_READYUP_MODE_TIMEOUT", &"Time-Out Ready-Up Mode");
+		precacheString2("STRING_READYUP_MODE_OVERTIME", &"Overtime Ready-Up Mode");
+
+		// problem with precache...
+		game["STRING_READYUP_ALL_PlAYERS_ARE_READY"] = "All players are ready.";
+
+		// Readyup (problem with precache...)
+		game["readyup_team_allies"] = 		"^7You are on ^3Team Allies";
+		game["readyup_team_axis"] = 		"^7You are on ^3Team Axis";
+		game["readyup_team_spectator"] = 	"^7You are on ^3Team Spectator";
+		game["readyup_press_activate"] = 	"Press the ^3[{+activate}] ^7button to Ready-Up.";
+		game["readyup_hold_melee"] = 		"Double press the ^3[{+melee_breath}] ^7button to disable killing.";
+
+		game["readyup_timeExpired"] = 		"Time to ready-up is over.";
+		game["readyup_skip"] = 			"Set your team as ready to skip the Ready-Up.";
+
+		game["objective_readyup"] = game["readyup_press_activate"] + "\n" + game["readyup_hold_melee"];
+		game["objective_timeout"] = game["readyup_press_activate"];
+
+
+		precacheString2("STRING_READYUP_RESUMING_IN", &"Resuming In");
+		precacheString2("STRING_READYUP_KILLING_DISABLED", &"Disabled");
+		precacheString2("STRING_READYUP_KILLING_ENABLED", &"Enabled");
+		precacheString2("STRING_READYUP_KILLING", &"Killing");
+
+		// HUD: Half_Start
+		precacheString2("STRING_READYUP_MATCH_BEGINS_IN", &"Match begins in:");
+		precacheString2("STRING_READYUP_MATCH_CONTINUES_IN", &"Match continues in:");
+		precacheString2("STRING_READYUP_MATCH_RESUMES_IN", &"Match resumes in:");
+
+		// Readyup warnings
+		precacheString2("STRING_WARNING_PASSWORD_IS_NOT_SET", &"Warning: Server password is not set");
+		precacheString2("STRING_WARNING_CHEATS_ARE_ENABLED", &"Warning: Cheats are Enabled");
+		precacheString2("STRING_WARNING_PUNKBUSTER_IS_DISABLED", &"Warning: PunkBuster is Disabled");
+		precacheString2("STRING_WARNING_CVARS_ARE_CHANGED", &"Warning: Server CVAR values are not equal to league rules");
+		precacheString2("STRING_WARNING_SERVER_IS_CRACKED", &"Info: Server is cracked");
+
+		precacheStatusIcon("party_ready");
+		precacheStatusIcon("party_notready");
+	}
+
+
+
+
+	// Define level default variables
 	if (!isDefined(level.in_readyup))
 	{
-	    level.in_readyup = false;
-	    level.playersready = false;
+		level.in_readyup = false;
+		level.playersready = false;
 	}
 
-    // Define default variables
-    if (!isDefined(game["Do_Ready_up"]))
+	// Define default variables
+	if (!isDefined(game["Do_Ready_up"]))
 	{
-    	game["Do_Ready_up"] = false;		// request from other scripts to run readyup
-        game["readyup_first_run"] = level.scr_readyup;
+		game["Do_Ready_up"] = false;		// request from other scripts to run readyup
+		game["readyup_first_run"] = level.scr_readyup;
 	}
 
-    // Start readyup if is request (halftime, timeout, overtime) or is enabled by cvar on fresh start
+	// Start readyup if is request (halftime, timeout, overtime) or is enabled by cvar on fresh start
 	// and is not already running (called by timeout)
-    if (game["Do_Ready_up"] || game["readyup_first_run"])
-    {
+	if (game["Do_Ready_up"] || game["readyup_first_run"])
+	{
 		Start_Readyup_Mode(false);
-    }
+	}
 
+}
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_readyup": 		level.scr_readyup = value; return true;
+		case "scr_readyup_autoresume": 	level.scr_readyup_autoresume = value; return true;
+		case "scr_readyup_nadetraining":level.scr_readyup_nadetraining = value; return true;
+		case "scr_half_start_timer": 	level.scr_half_start_timer = value; return true;
+	}
+	return false;
 }
 
 // Runs readyup mode
@@ -34,6 +112,10 @@ Start_Readyup_Mode(runned_in_middle_of_game)
 {
 	level.in_readyup = true;
 	game["Do_Ready_up"] = 0;	// reset request flag
+
+	// HUD offsets
+	level.hud_readyup_offsetX = -50;
+	level.hud_readyup_offsetY = 20;
 
 	// Because readyup can be called in middle of game (timeout),
 	// attach readyup threads on existing players
@@ -45,8 +127,7 @@ Start_Readyup_Mode(runned_in_middle_of_game)
 		{
 			player = players[i];
 
-			// Main thread for player (monitoring F press)
-			player thread playerReadyUpThread();
+			player onConnected();
 			player PrintTeamAndHowToUse();
 		}
 	}
@@ -63,12 +144,13 @@ Start_Readyup_Mode(runned_in_middle_of_game)
 	// Wait here untill there is atleast one player connected
 	if (game["readyup_first_run"])
 	{
+		wait level.fps_multiplier * 0.1;
 		for(;;)
 		{
-			wait level.fps_multiplier * 1;
 			players = getentarray("player", "classname");
 			if (players.size > 0)
 				break;
+			wait level.fps_multiplier * 1;
 		}
 	}
 
@@ -92,6 +174,10 @@ onConnected()
 
     // Check if all players are ready
     level thread Check_All_Ready(); // Sets level.playersready = true if all players are ready
+
+    self.flying = false;
+    self.flaying_enabled = true;
+    self.readyupLastGrenadeThrowTime = 0;
 }
 
 onDisconnect()
@@ -107,6 +193,19 @@ onSpawned()
 	else				self.statusicon = "party_notready";
 
 	self PrintTeamAndHowToUse();
+
+
+        if (level.scr_readyup_nadetraining)
+        {
+		if (!level.in_timeout)
+		{
+			if (!maps\mp\gametypes\_bots::isBot())
+				self thread maps\mp\gametypes\strat::Watch_Grenade_Throw(false);
+
+	                // Keep adding grenades in readyup
+	                thread giveGrenadesInReadyup();
+		}
+        }
 }
 
 onJoinedTeam(teamName)
@@ -127,16 +226,15 @@ onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon
 	if (level.in_timeout || level.playersready)
 		return true;
 
+	if (self.flying)
+		return true;
+
 	if (isPlayer(eAttacker) && self != eAttacker)
 	{
-		eAttacker.pers["killer"] = 1;
+		if (eAttacker.flying)
+			return true;
 
-		// Update killing statuses
-		if (isDefined(eAttacker.ru_killing_status)) // may be deleted when readyup is ending
-		{
-			eAttacker.ru_killing_status.color = (.73, .99, .73);
-			eAttacker.ru_killing_status SetText(game["kenabled"]);
-		}
+		eAttacker enableKilling();
 	}
 
 	if (!self.pers["killer"])
@@ -200,6 +298,39 @@ respawnOnKilled(sWeapon, deathAnimDuration)
 
 
 
+// Give grenades after a few seconds!
+giveGrenadesInReadyup()
+{
+	self endon("disconnect");
+
+	// Make sure only 1 thred is running
+	self notify("end_giveGrenadesInReadyup");
+	self endon("end_giveGrenadesInReadyup");
+
+	grenadesLast = 0;
+	for(;;)
+	{
+		wait level.fps_multiplier * 0.5;
+
+		if (!isAlive(self) || !isDefined(self.pers["weapon"]))
+			continue;
+
+		// Give new grenade only after 5 sec!
+		grenades = self maps\mp\gametypes\_weapons::getFragGrenadeCount();
+
+		if (grenadesLast > 0 && grenades == 0)
+		{
+			self.readyupLastGrenadeThrowTime = gettime();
+		}
+
+		grenadesLast = grenades;
+
+		if (grenades == 0 && (self.readyupLastGrenadeThrowTime + 3500) < gettime())
+		{
+			maps\mp\gametypes\_weapons::giveGrenadesFor(self.pers["weapon"]);
+		}
+	}
+}
 
 
 // Main thread for player (monitoring F press)
@@ -257,29 +388,13 @@ playerReadyUpThread()
 		}
 
 
-
-		if(self useButtonPressed())
+		if(self useButtonPressed() && !self.flying)
 		{
 			if (!self.isReady)
-			{
-				self.isReady = true;
-				self.statusicon = "party_ready";
-
-				self.readyhud.color = (.73, .99, .73);
-				self.readyhud setText(game["STRING_READYUP_READY"]);
-
-				//logPrint(self.name + ";" + " is Ready Logfile;" + "\n");
-			}
+				setReady();
 			else
-			{
-				self.isReady = false;
-				self.statusicon = "party_notready";
+				unsetReady();
 
-				self.readyhud.color = (1, .66, .66);
-				self.readyhud setText(game["STRING_READYUP_NOT_READY"]);
-
-                //logPrint(self.name + ";" + " is Not Ready Logfile;" + "\n");
-			}
 
             // Check if all players are ready
 			level thread Check_All_Ready();
@@ -299,9 +414,7 @@ playerReadyUpThread()
 				if(catch_next && self meleeButtonPressed())
 				{
 					// Disable killing
-					self.pers["killer"] = false;
-					self.ru_killing_status.color = (1, .66, .66);
-					self.ru_killing_status SetText(game["kdisabled"]);
+					self disableKilling();
 
 					self iprintln("Killing was disabled");
 
@@ -321,13 +434,59 @@ playerReadyUpThread()
 
 	}
 
-		self iprintlnbold("Playing ^2"+level.pam_mode+"^7 mode");
-    self iprintlnbold(game["STRING_READYUP_ALL_PlAYERS_ARE_READY"]);
+	//self iprintlnbold("Playing ^2"+level.pam_mode+"^7 mode");
+    	self iprintlnbold(game["STRING_READYUP_ALL_PlAYERS_ARE_READY"]);
 
 
-	self.statusicon = "party_ready";
+	//self.statusicon = "party_ready";
 }
 
+setReady()
+{
+	self.isReady = true;
+	self.statusicon = "party_ready";
+
+	if (isDefined(self.readyhud))
+	{
+		self.readyhud.color = (.73, .99, .73);
+		self.readyhud setText(game["STRING_READYUP_READY"]);
+	}
+}
+
+unsetReady()
+{
+	self.isReady = false;
+	self.statusicon = "party_notready";
+
+	if (isDefined(self.readyhud))
+	{
+		self.readyhud.color = (1, .66, .66);
+		self.readyhud setText(game["STRING_READYUP_NOT_READY"]);
+	}
+}
+
+enableKilling()
+{
+	self.pers["killer"] = true;
+
+	// Update killing statuses
+	if (isDefined(self.ru_killing_status)) // may be deleted when readyup is ending
+	{
+		self.ru_killing_status.color = (.73, .99, .73);
+		self.ru_killing_status SetText(game["STRING_READYUP_KILLING_ENABLED"]);
+	}
+}
+
+disableKilling()
+{
+	self.pers["killer"] = false;
+
+	if (isDefined(self.ru_killing_status)) // may be deleted when readyup is ending
+	{
+		self.ru_killing_status.color = (1, .66, .66);
+		self.ru_killing_status SetText(game["STRING_READYUP_KILLING_DISABLED"]);
+	}
+}
 
 
 // Called every onPlayerConnect, onPlayerDisconnect or on player ready-state changed
@@ -400,10 +559,7 @@ End_Readyup_Mode()
 	level notify("rupover");
 
 	// Black background, countdowntime, First half starting with timer
-	thread maps\mp\gametypes\_hud::Half_Start(level.scr_half_start_timer);
-
-    // Remove PAM header smoothly
-    thread maps\mp\gametypes\_hud::PAM_Header_Kill();
+	thread HUD_Half_Start(level.scr_half_start_timer);
 
     // Coomon lets got that bastartdss blaballa
     thread playStartSound();
@@ -429,14 +585,68 @@ End_Readyup_Mode()
 ReadyUp_AutoResume()
 {
 	level endon("rupover");
+	level endon("readyup_removeAutoResume");
 
-    level thread HUD_ReadyUp_ResumingIn();
+	level thread HUD_ReadyUp_ResumingIn();
 
-    // Resume after scr_readyup_autoresume seconds (5 mins defaults)
+	// Resume after scr_readyup_autoresume seconds (5 mins defaults)
 	wait level.fps_multiplier * level.scr_readyup_autoresume * 60;
 
-	// After this time, set all player is ready
-	level.playersready = true;
+	// Set your team as ready to skip readyup
+	iprintlnbold(game["readyup_timeExpired"]);
+	iprintlnbold(game["readyup_skip"]);
+
+	level thread HUD_ReadyUp_ResumingIn_ExtraTime();
+
+
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		player = players[i];
+
+		if (player maps\mp\gametypes\_bots::isBot())
+			continue;
+
+		player unsetReady();
+
+	}
+
+	wait level.fps_multiplier * 3;
+
+	// If atleast one of the teams are ready, end readyup
+	for(;;)
+	{
+		alliesReady = true;
+		axisReady = true;
+		alliesCount = 0;
+		axisCount = 0;
+
+		players = getentarray("player", "classname");
+		for(i = 0; i < players.size; i++)
+		{
+			player = players[i];
+			if (!player.isReady)
+			{
+				if (player.pers["team"] == "allies")
+					alliesReady = false;
+				if (player.pers["team"] == "axis")
+					axisReady = false;
+			}
+			if (player.pers["team"] == "allies")
+				alliesCount++;
+			if (player.pers["team"] == "axis")
+				axisCount++;
+		}
+
+		if (alliesCount > 0 && axisCount > 0 && (alliesReady || axisReady))
+		{
+			// After this time, set all player is ready
+			level.playersready = true;
+			break;
+		}
+
+		wait level.fps_multiplier * 1;
+	}
 }
 
 Timeout_AutoResume()
@@ -450,18 +660,6 @@ Timeout_AutoResume()
 
 	// After this time, set all player is ready
 	level.playersready = true;
-}
-
-
-Shouldnt_this_match_start()
-{
-    level endon("rupover");
-
-	while(!level.playersready)
-	{
-		wait (level.fps_multiplier * 300);
-		iprintlnbold ("^7Shouldn't this match start?");
-	}
 }
 
 // keeps updates until level.playersready is false
@@ -537,7 +735,7 @@ check_Warnings()
     	}
 
         level.warning3.alpha = 0;
-        if (maps\mp\gametypes\_cvar_system::cvarsChangedFromRulesValues())
+        if (maps\mp\gametypes\global\cvar_system::cvarsChangedFromRulesValues())
         {
             level.warning3.y = 70 + line_offset;
             level.warning3.alpha = 1;
@@ -595,11 +793,7 @@ createLevelHUD()
 	level.playersready = false;
 
     // Show name of league + pam version
-    thread maps\mp\gametypes\_hud::PAM_Header();
-
-    // Shows top-left scores if disabled
-	if(!level.scr_show_scoreboard)
-		level.show_hud_scoreboard_anyway = true; // will show scoreboard anyway
+    thread maps\mp\gametypes\_pam::PAM_Header();
 
     // Show warning messages in top center (sv_cheats, no password, ...)
     if (game["readyup_first_run"])
@@ -612,25 +806,14 @@ createLevelHUD()
     level thread HUD_WaitingOn_X_Players();
 
 
-	// Add clock text and show "Sholdnt this match start?" every 5mins (only for first time)
-	if (game["readyup_first_run"])
-    {
-		level thread HUD_Clock();
-        level thread Shouldnt_this_match_start();
-    }
-    // Run auto-resume thread for second half and overtime
-	else if(!level.in_timeout && (game["is_halftime"] || game["overtime_active"]) && level.scr_readyup_autoresume > 0)
-		thread ReadyUp_AutoResume();
-
-	// Run auto-resume thread for timeout
-	else if (level.in_timeout && level.scr_timeout_length != 0)
+	if (level.in_timeout && level.scr_timeout_length != 0)
 		thread Timeout_AutoResume();
 
-	// If nothink, show atleast elapsed time
+	else if (!level.in_timeout && (game["is_halftime"] || game["overtime_active"] || (game["scr_matchinfo"] == 2 && game["match_exists"])) && level.scr_readyup_autoresume > 0)
+		thread ReadyUp_AutoResume();
+
 	else
 		level thread HUD_Clock();
-
-
 
 	//Remove MG nests (if is timeout remove only in sd)
     if (!level.in_timeout || (level.in_timeout && level.gametype == "sd"))
@@ -649,19 +832,19 @@ HUD_Player_Status()
     self endon("disconnect");
 
     // Your status
-    self.status = maps\mp\gametypes\_hud_system::addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 120, 1.2, (0.8,1,1), "center", "middle", "right");
+    self.status = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 120, 1.2, (0.8,1,1), "center", "middle", "right");
 	self.status setText(game["STRING_READYUP_YOUR_STATUS"]);
 
 	// Ready / Not ready
-    self.readyhud = maps\mp\gametypes\_hud_system::addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 135, 1.2, (1, .66, .66), "center", "middle", "right");
+    self.readyhud = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 135, 1.2, (1, .66, .66), "center", "middle", "right");
     self.readyhud.archived = false;         // show my status instead of spectating players status if im following another player
 	self.readyhud setText(game["STRING_READYUP_NOT_READY"]);
 
     level waittill("rupover");
 
     // Remove hud when RUP is over
-    self.status thread maps\mp\gametypes\_hud_system::removeHUDSmooth(1);
-    self.readyhud thread maps\mp\gametypes\_hud_system::removeHUDSmooth(1);
+    self.status thread removeHUDSmooth(1);
+    self.readyhud thread removeHUDSmooth(1);
 }
 
 // Killing: Enabled
@@ -669,11 +852,11 @@ HUD_Player_Killing_Status()
 {
     self endon("disconnect");
 
-    self.ru_killing_text = maps\mp\gametypes\_hud_system::addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 170, 1.2, (.7, 0.9, 0.9), "center", "middle", "right");
-    self.ru_killing_text SetText(game["killingt"]);
+    self.ru_killing_text = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 170, 1.2, (.7, 0.9, 0.9), "center", "middle", "right");
+    self.ru_killing_text SetText(game["STRING_READYUP_KILLING"]);
 
-    self.ru_killing_status = maps\mp\gametypes\_hud_system::addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 185, 1.2, (1, .66, .66), "center", "middle", "right");
-    self.ru_killing_status SetText(game["kdisabled"]);
+    self.ru_killing_status = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 185, 1.2, (1, .66, .66), "center", "middle", "right");
+    self.ru_killing_status SetText(game["STRING_READYUP_KILLING_DISABLED"]);
 
     level waittill("rupover");
 
@@ -684,15 +867,15 @@ HUD_Player_Killing_Status()
 
     wait level.fps_multiplier * 1;
 
-    self.ru_killing_text destroy();
-    self.ru_killing_status destroy();
+    self.ru_killing_text destroy2();
+    self.ru_killing_status destroy2();
 }
 
 
 HUD_Clock()
 {
 	// Clock
-	level.timertext = newHudElem();
+	level.timertext = newHudElem2();
 	level.timertext.x = level.hud_readyup_offsetX;
 	level.timertext.y = level.hud_readyup_offsetY + 220; //170
 	level.timertext.horzAlign = "right";
@@ -702,7 +885,7 @@ HUD_Clock()
 	level.timertext.color = (.8, 1, 1);
 	level.timertext SetText(game["STRING_READYUP_CLOCK"]);
 
-	level.stim = newHudElem();
+	level.stim = newHudElem2();
 	level.stim.x = level.hud_readyup_offsetX;
 	level.stim.y = level.hud_readyup_offsetY + 235; // 185
 	level.stim.horzAlign = "right";
@@ -721,15 +904,15 @@ HUD_Clock()
 
     wait level.fps_multiplier * 1;
 
-    level.timertext destroy();
-	level.stim destroy();
+    level.timertext destroy2();
+	level.stim destroy2();
 
 }
 
 // Ready-Uo Mode / Halft time Ready-Up Mode / Timeout Ready-Up Mode
 HUD_ReadyUpMode()
 {
-    level.readyup_mode = newHudElem();
+    level.readyup_mode = newHudElem2();
 	level.readyup_mode.alignX = "center";
 	level.readyup_mode.alignY = "top";
 	level.readyup_mode.color = (.8, 1, 1);
@@ -753,13 +936,13 @@ HUD_ReadyUpMode()
 
     wait level.fps_multiplier * 1;
 
-	level.readyup_mode destroy();
+	level.readyup_mode destroy2();
 }
 
 HUD_WaitingOn_X_Players()
 {
     // Waiting on
-	level.waitingon = newHudElem();
+	level.waitingon = newHudElem2();
 	level.waitingon.x = level.hud_readyup_offsetX;
 	level.waitingon.y = level.hud_readyup_offsetY + 45;
 	level.waitingon.horzAlign = "right";
@@ -771,7 +954,7 @@ HUD_WaitingOn_X_Players()
 	level.waitingon setText(game["STRING_READYUP_WAITING_ON"]);
 
 	// Number
-	level.notreadyhud = newHudElem();
+	level.notreadyhud = newHudElem2();
 	level.notreadyhud.x = level.hud_readyup_offsetX;
 	level.notreadyhud.y = level.hud_readyup_offsetY + 65;
 	level.notreadyhud.horzAlign = "right";
@@ -782,7 +965,7 @@ HUD_WaitingOn_X_Players()
 	level.notreadyhud.color = (.98, .98, .60);
 
 	// Players
-	level.playerstext = newHudElem();
+	level.playerstext = newHudElem2();
 	level.playerstext.x = level.hud_readyup_offsetX;
 	level.playerstext.y = level.hud_readyup_offsetY + 85;
 	level.playerstext.horzAlign = "right";
@@ -804,16 +987,16 @@ HUD_WaitingOn_X_Players()
 
     wait level.fps_multiplier * 1;
 
-	level.waitingon destroy();
-    level.notreadyhud destroy();
-	level.playerstext destroy();
+	level.waitingon destroy2();
+    level.notreadyhud destroy2();
+	level.playerstext destroy2();
 }
 
 // Punkbuster, Cheats, Password
 HUD_Warnings()
 {
     // Punkbuster
-    level.warning1 = newHudElem();
+    level.warning1 = newHudElem2();
     level.warning1.x = 320;
     level.warning1.y = 70 + 16;
     level.warning1.alignX = "center";
@@ -823,7 +1006,7 @@ HUD_Warnings()
     level.warning1.color = (1, 0, 0);
 
     // cheats
-    level.warning2 = newHudElem();
+    level.warning2 = newHudElem2();
     level.warning2.x = 320;
     level.warning2.y = 70 + 32;
     level.warning2.alignX = "center";
@@ -833,7 +1016,7 @@ HUD_Warnings()
     level.warning2.color = (1, 0, 0);
 
     // cvar changed
-    level.warning3 = newHudElem();
+    level.warning3 = newHudElem2();
     level.warning3.x = 320;
     level.warning3.y = 70 + 48;
     level.warning3.alignX = "center";
@@ -843,7 +1026,7 @@ HUD_Warnings()
     level.warning3.color = (1, 0, 0);
 
     // password
-    level.warning4 = newHudElem();
+    level.warning4 = newHudElem2();
     level.warning4.x = 320;
     level.warning4.y = 70 + 64;
     level.warning4.alignX = "center";
@@ -853,7 +1036,7 @@ HUD_Warnings()
     level.warning4.color = (1, 1, 0);
 
 		// cracked server
-    level.warning5 = newHudElem();
+    level.warning5 = newHudElem2();
     level.warning5.x = 320;
     level.warning5.y = 70 + 80;
     level.warning5.alignX = "center";
@@ -877,17 +1060,19 @@ HUD_Warnings()
 
     wait level.fps_multiplier * 1;
 
-	level.warning1 destroy();
-    level.warning2 destroy();
-    level.warning3 destroy();
-    level.warning4 destroy();
-    level.warning5 destroy();
+	level.warning1 destroy2();
+    level.warning2 destroy2();
+    level.warning3 destroy2();
+    level.warning4 destroy2();
+    level.warning5 destroy2();
 }
 
 // Halftime auto resume timer
 HUD_ReadyUp_ResumingIn()
 {
-    level.ht_resume = newHudElem();
+	level endon("readyup_removeAutoResume");
+
+    	level.ht_resume = newHudElem2();
 	level.ht_resume.x = level.hud_readyup_offsetX;
 	level.ht_resume.y = level.hud_readyup_offsetY + 220;
 	level.ht_resume.horzAlign = "right";
@@ -896,9 +1081,9 @@ HUD_ReadyUp_ResumingIn()
 	level.ht_resume.alignY = "middle";
 	level.ht_resume.font = "default";
 	level.ht_resume.fontscale = 1.2;
-	level.ht_resume setText(game["resuming"]);
+	level.ht_resume setText(game["STRING_READYUP_RESUMING_IN"]);
 
-	level.ht_resume_clock = newHudElem();
+	level.ht_resume_clock = newHudElem2();
 	level.ht_resume_clock.x = level.hud_readyup_offsetX;
 	level.ht_resume_clock.y = level.hud_readyup_offsetY + 235;
 	level.ht_resume_clock.horzAlign = "right";
@@ -909,24 +1094,77 @@ HUD_ReadyUp_ResumingIn()
 	level.ht_resume_clock.fontscale = 1.2;
 	level.ht_resume_clock setTimer(level.scr_readyup_autoresume * 60);
 
-    level waittill("rupover");
+	level waittill("rupover");
 
-    level.ht_resume FadeOverTime(1);
-    level.ht_resume.alpha = 0;
-    level.ht_resume_clock FadeOverTime(1);
-    level.ht_resume_clock.alpha = 0;
+	level.ht_resume FadeOverTime(1);
+	level.ht_resume.alpha = 0;
+	level.ht_resume_clock FadeOverTime(1);
+	level.ht_resume_clock.alpha = 0;
 
-    wait level.fps_multiplier * 1;
+	wait level.fps_multiplier * 1;
 
-	level.ht_resume destroy();
-	level.ht_resume_clock destroy();
+	level.ht_resume destroy2();
+	level.ht_resume_clock destroy2();
+}
+
+// Halftime auto resume timer
+HUD_ReadyUp_ResumingIn_ExtraTime()
+{
+	level endon("readyup_removeAutoResume");
+
+	level.ht_resume_clock_extra = newHudElem2();
+	level.ht_resume_clock_extra.x = level.hud_readyup_offsetX;
+	level.ht_resume_clock_extra.y = level.hud_readyup_offsetY + 248;
+	level.ht_resume_clock_extra.horzAlign = "right";
+	level.ht_resume_clock_extra.color = (.98, .2, .2);
+	level.ht_resume_clock_extra.alignX = "center";
+	level.ht_resume_clock_extra.alignY = "middle";
+	level.ht_resume_clock_extra.font = "default";
+	level.ht_resume_clock_extra.fontscale = 1.2;
+	level.ht_resume_clock_extra setTimerUp(0.1);
+
+    	level waittill("rupover");
+
+	level.ht_resume_clock_extra FadeOverTime(1);
+	level.ht_resume_clock_extra.alpha = 0;
+
+	wait level.fps_multiplier * 1;
+
+	level.ht_resume_clock_extra destroy2();
+
+}
+
+// Called from matchingo if teams info is cleared
+HUD_ReadyUp_ResumingIn_Delete()
+{
+	// Remove auto resume threads
+	level notify("readyup_removeAutoResume");
+
+	// Remove HUDS
+	if (isDefined(level.ht_resume))
+	{
+		level.ht_resume destroy2();
+		level.ht_resume_clock destroy2();
+
+		level.ht_resume = undefined;
+		level.ht_resume_clock = undefined;
+
+		// Show clock
+		level thread HUD_Clock();
+	}
+
+	if (isDefined(level.ht_resume_clock_extra))
+	{
+		level.ht_resume_clock_extra destroy2();
+		level.ht_resume_clock_extra = undefined;
+	}
 }
 
 
 HUD_Timeout_ResumingIn()
 {
     // Resuming in
-	level.to_resume = newHudElem();
+	level.to_resume = newHudElem2();
 	level.to_resume.x = level.hud_readyup_offsetX;
 	level.to_resume.y = level.hud_readyup_offsetY + 170;
 	level.to_resume.horzAlign = "right";
@@ -935,10 +1173,10 @@ HUD_Timeout_ResumingIn()
 	level.to_resume.alignY = "middle";
 	level.to_resume.font = "default";
 	level.to_resume.fontscale = 1.2;
-	level.to_resume setText(game["resuming"]);
+	level.to_resume setText(game["STRING_READYUP_RESUMING_IN"]);
 
 	// 2:50
-	level.to_clock = newHudElem();
+	level.to_clock = newHudElem2();
 	level.to_clock.x = level.hud_readyup_offsetX;
 	level.to_clock.y = level.hud_readyup_offsetY + 185;
 	level.to_clock.horzAlign = "right";
@@ -958,12 +1196,45 @@ HUD_Timeout_ResumingIn()
 
     wait level.fps_multiplier * 1;
 
-    level.to_resume destroy();
-	level.to_clock destroy();
+    level.to_resume destroy2();
+	level.to_clock destroy2();
 
 }
 
+// Black scren + timer countdown
+HUD_Half_Start(time)
+{
+	if ( time < 3 )
+		time = 3;
 
+	// Black fullscreen backgound with animation
+	blackbg = addHUD(0, 0, undefined, undefined, "left", "top", "fullscreen", "fullscreen");
+	blackbg.alpha = 0;
+	blackbg FadeOverTime(2);
+	blackbg.alpha = 0.75;
+	blackbg.sort = -3;
+	blackbg.foreground = true;
+	blackbg SetShader("black", 640, 480);
+
+	// Match begins in
+	blackbgtimertext = addHUD(0, 183, 1.35, (1,1,1), "center", "top", "center");
+	blackbgtimertext showHUDSmooth(1.5);
+	blackbgtimertext.sort = -2;
+	blackbgtimertext.foreground = true;
+	if (level.in_timeout)
+		blackbgtimertext SetText(game["STRING_READYUP_MATCH_RESUMES_IN"]);
+	else if (game["is_halftime"])
+		blackbgtimertext SetText(game["STRING_READYUP_MATCH_CONTINUES_IN"]);
+	else
+		blackbgtimertext SetText(game["STRING_READYUP_MATCH_BEGINS_IN"]);
+
+	// Count down timer
+	blackbgtimer = addHUD(0, 200, 1.35, (1,1,1), "center", "top", "center");
+	blackbgtimer showHUDSmooth(1.5);
+	blackbgtimer.sort = -1;
+	blackbgtimer.foreground = true;
+	blackbgtimer settimer(time-0.5);
+}
 
 
 deletePlacedEntity(entity)

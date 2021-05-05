@@ -1,17 +1,39 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	registerCvar("scr_allow_health_regen", "BOOL", 1); 	       	// NOTE: reset
+	registerCvar("scr_allow_regen_sounds", "BOOL", 1); 	       	// NOTE: imidietly
+	registerCvar("scr_regen_delay", "INT", 5000, 3000, 30000);  	// NOTE: imidietly
+
+	if(game["firstInit"])
+	{
+		precacheShader("overlay_low_health");
+	}
+
 	if(!level.scr_allow_health_regen)
 		return;
 
-
-	precacheShader("overlay_low_health");
-
 	addEventListener("onSpawnedPlayer",     ::onSpawnedPlayer);
-    addEventListener("onPlayerKilled",   			::onPlayerKilled);
+	addEventListener("onPlayerKilled",   	::onPlayerKilled);
 	addEventListener("onJoinedAlliesAxis",  ::onJoinedAlliesAxis);
-    addEventListener("onJoinedSpectator",   ::onJoinedSpectator);
+	addEventListener("onJoinedSpectator",   ::onJoinedSpectator);
+}
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_allow_health_regen": 		level.scr_allow_health_regen = value; return true;
+		case "scr_allow_regen_sounds": 		level.scr_allow_regen_sounds = value; return true;
+		case "scr_regen_delay": 		level.scr_regen_delay = value; return true;
+	}
+	return false;
 }
 
 onSpawnedPlayer()

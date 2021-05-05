@@ -1,5 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
-#include maps\mp\gametypes\_cvar_system;
+#include maps\mp\gametypes\global\_global;
 
 /*
 This script will generate scoreboard with players stats
@@ -20,9 +19,11 @@ init()
 onConnected()
 {
 	if (level.gametype == "sd")
-		self setClientCvar("ui_scoreboard_show", "sd");
+		self setClientCvar2("ui_scoreboard_show", "sd");
 	else
-		self setClientCvar("ui_scoreboard_show", "");
+		self setClientCvar2("ui_scoreboard_show", "");
+
+	self.pers["scoreboard_lines_players"] = [];
 }
 
 /*
@@ -40,9 +41,69 @@ onMenuResponse(menu, response)
 		self thread generatePlayerList();
 		return true;
 	}
+
+	if (startsWith(response, "scoreboard_setPlayer"))
+	{
+		substr = getSubstr(response, 20);
+
+		if (!isDigitalNumber(substr))
+			return true;
+
+		line = int(substr);
+
+		//self iprintln(line);
+
+		if (!isDefined(self.pers["scoreboard_lines_players"][line]))
+			return true;
+
+		clickedPlayer = self.pers["scoreboard_lines_players"][line];
+
+		if (!isPlayer(clickedPlayer))
+			return true;
+
+		//self iprintln(clickedPlayer.name);
+
+		if (!self canBeColorChanged(clickedPlayer))
+			return false;
+
+		if (!isDefined(clickedPlayer.pers["scoreboard_color"]))
+			clickedPlayer.pers["scoreboard_color"] = 1;
+		else if (clickedPlayer.pers["scoreboard_color"] < 2)
+			clickedPlayer.pers["scoreboard_color"]++;
+		else
+			clickedPlayer.pers["scoreboard_color"] = undefined;
+
+
+		self thread updatePlayerLists();
+
+		return true;
+	}
 }
 
+updatePlayerLists()
+{
+	// Refresh changed color
+	self thread generatePlayerList();
 
+	i = 1;
+	players = getentarray("player", "classname");
+	for(p = 0; p < players.size; p++)
+	{
+		player = players[p];
+		if (player.pers["team"] == self.pers["team"])
+		{
+			wait level.frame * i; // offset cvar sets
+
+			if (!isDefined(player)) // in case player disconnects during wait
+				continue;
+
+			// Update enemy list for me and my players
+			player thread maps\mp\gametypes\_players_left::updateEnemyList();
+
+			i++;
+		}
+	}
+}
 
 sort(players)
 {
@@ -110,24 +171,48 @@ sortTeamsByScore()
 	return teamplayers;
 }
 
-
-addLine(name, score, kills, deaths, damages, plants, defuses)
+canBeColorChanged(player)
 {
-	if (isDefined(name)) 		self.scoreboard.names +=	 	name;
-	if (isDefined(score)) 	self.scoreboard.scores += 	score;
-	if (isDefined(kills)) 	self.scoreboard.kills += 	  kills;
-	if (isDefined(deaths)) 	self.scoreboard.deaths += 	deaths;
-	if (isDefined(damages)) self.scoreboard.damages +=  damages;
-	if (isDefined(plants)) 	self.scoreboard.plants += 	plants;
-	if (isDefined(defuses)) self.scoreboard.defuses +=  defuses;
+	// Enable color change only if we are not in first readyup, only for opponent team
+	return !game["is_public_mode"] && !game["readyup_first_run"] && game["state"] != "intermission" &&
+		self.pers["team"] != player.pers["team"] &&
+		(self.pers["team"] == "allies" || self.pers["team"] == "axis") &&
+		(player.pers["team"] == "allies" || player.pers["team"] == "axis");
+}
 
-	self.scoreboard.names +=	 	"\n^7";
-	self.scoreboard.scores += 	"\n^7";
-	self.scoreboard.kills += 	  "\n^7";
-	self.scoreboard.deaths += 	"\n^7";
-	self.scoreboard.damages +=  "\n^7";
-	self.scoreboard.plants += 	"\n^7";
-	self.scoreboard.defuses +=  "\n^7";
+
+addLine(player, name, score, kills, deaths, assists, damages, plants, defuses)
+{
+	if (isDefined(player))
+		self.pers["scoreboard_lines_players"][self.scoreboard.i] = player;
+	else
+		self.pers["scoreboard_lines_players"][self.scoreboard.i] = undefined;
+
+	if (isDefined(player) && isDefined(player.pers["scoreboard_color"]) && self canBeColorChanged(player))
+	{
+		if (player.pers["scoreboard_color"] == 1)
+			self.scoreboard.names += "^1"; // red
+		else if (player.pers["scoreboard_color"] == 2)
+			self.scoreboard.names += "^4"; // blue
+	}
+
+	if (isDefined(name)) 	self.scoreboard.names +=	removeColorsFromString(name);
+	if (isDefined(score)) 	self.scoreboard.scores +=	score;
+	if (isDefined(kills)) 	self.scoreboard.kills +=	kills;
+	if (isDefined(deaths)) 	self.scoreboard.deaths +=	deaths;
+	if (isDefined(assists)) self.scoreboard.assists +=	assists;
+	if (isDefined(damages)) self.scoreboard.damages +=	damages;
+	if (isDefined(plants)) 	self.scoreboard.plants +=	plants;
+	if (isDefined(defuses)) self.scoreboard.defuses +=	defuses;
+
+	self.scoreboard.names +=	"\n^7";
+	self.scoreboard.scores +=	"\n^7";
+	self.scoreboard.kills +=	"\n^7";
+	self.scoreboard.deaths +=	"\n^7";
+	self.scoreboard.assists +=	"\n^7";
+	self.scoreboard.damages +=	"\n^7";
+	self.scoreboard.plants +=	"\n^7";
+	self.scoreboard.defuses +=	"\n^7";
 
 	self.scoreboard.i++;
 }
@@ -149,30 +234,59 @@ addTeamLine(teamname)
 	addEmptyLine();
 }
 
-addPlayerLine(player)
+addPlayerLine(team, player)
 {
 	// 0=hide; 1=show line odd; 2=show line even; 3=show line hightlighted; "string"=show team name
+	value = "";
 	if (self == player)
-		self setClientCvarIfChanged("ui_scoreboard_line_"+self.scoreboard.i, "3"); // highlight
+		value = "3"; // highlight
 	else if ((self.scoreboard.i % 2) == 0)
-		self setClientCvarIfChanged("ui_scoreboard_line_"+self.scoreboard.i, "2");
+		value = "2";
 	else
-		self setClientCvarIfChanged("ui_scoreboard_line_"+self.scoreboard.i, "1");
+		value = "1";
 
-	// Add line with player stats
-	stats = player maps\mp\gametypes\_player_stat::getStats();
-	if (isDefined(stats))
+	//added _ means that line can be clicked
+	if (self canBeColorChanged(player))
 	{
-		damage = int((stats["damage"]-stats["kills"]) * 10) / 10;
-		if (damage < 0)
-			damage = 0;
+		value = value + "_";
+	}
 
-		addLine(player.name, int(stats["score"]*10.0), stats["kills"], stats["deaths"], damage, stats["plants"], stats["defuses"]);
+	self setClientCvarIfChanged("ui_scoreboard_line_"+self.scoreboard.i, value);
+
+
+
+	if (team == "allies" || team == "axis")
+	{
+		// Add line with player stats
+		stats = player maps\mp\gametypes\_player_stat::getStats();
+		if (isDefined(stats))
+		{
+			damage = int(stats["damage"] / 10) / 10;
+			plants = "-";
+			defuses = "-";
+			if (self.sessionteam == team || self.sessionteam == "spectator" || game["state"] == "intermission") // dont show enemy's plants
+			{
+				plants = stats["plants"];
+				defuses = stats["defuses"];
+			}
+
+			score = int(stats["score"] * 10) / 10;
+
+			addLine(player, player.name, score, stats["kills"], stats["deaths"], stats["assists"], damage, plants, defuses);
+
+			// Debug
+			//addLine(player.name, 48, 32, 18, 4, 3.7, 2, 0);
+		}
+		else
+		{
+			addLine(player, player.name, player.score, "^1?", player.deaths, "^1?", "^1?", "^1?", "^1?");
+		}
 	}
 	else
 	{
-		addLine(player.name, player.score, "^1?", player.deaths, "^1?", "^1?", "^1?");
+		addLine(player, player.name, "", "", "", "", "", "", "");
 	}
+
 }
 
 
@@ -207,23 +321,39 @@ generatePlayerList()
 				self.scoreboard.scores = "";
 				self.scoreboard.kills = "";
 				self.scoreboard.deaths = "";
+				self.scoreboard.assists = "";
 				self.scoreboard.damages = "";
 				self.scoreboard.plants = "";
 				self.scoreboard.defuses = "";
 
+				self.pers["scoreboard_lines_players"] = [];
+
+
+				teamname_allies = "";
+				teamname_axis = "";
+				if (game["scr_matchinfo"] == 1 || game["scr_matchinfo"] == 2)
+				{
+					teamname_allies = game["match_team1_name"];
+					teamname_axis = game["match_team2_name"];
+					if (game["match_team1_side"] == "axis")
+					{
+						teamname_allies = game["match_team2_name"];
+						teamname_axis = game["match_team1_name"];
+					}
+				}
 
 				// Generate team names
 				if (!isDefined(game["allies_score"]))
 					teamname["allies"] = "^8Allies";
-				else if (level.teamname["allies"] != "")
-					teamname["allies"] = "^8" + level.teamname["allies"]+"  ("+game["allies_score"]+")";
+				else if (teamname_allies != "")
+					teamname["allies"] = "^8" + teamname_allies+"  ("+game["allies_score"]+")";
 				else
 					teamname["allies"] = "^8Allies  ("+game["allies_score"]+")";
 
 				if (!isDefined(game["axis_score"]))
 					teamname["axis"] = "^9Axis";
-				else if (level.teamname["axis"] != "")
-					teamname["axis"] = "^9" + level.teamname["axis"]+"  ("+game["axis_score"]+")";
+				else if (teamname_axis != "")
+					teamname["axis"] = "^9" + teamname_axis+"  ("+game["axis_score"]+")";
 				else
 					teamname["axis"] = "^9Axis  ("+game["axis_score"]+")";
 
@@ -240,12 +370,12 @@ generatePlayerList()
 				addTeamLine(teamname[team1]);
 				for(p = teamplayers[team1].size-1; p >= 0; p--)
 				{
-					self addPlayerLine(teamplayers[team1][p]);
+					self addPlayerLine(team1, teamplayers[team1][p]);
 				}
 				addTeamLine(teamname[team2]);
 				for(p = teamplayers[team2].size-1; p >= 0; p--)
 				{
-					self addPlayerLine(teamplayers[team2][p]);
+					self addPlayerLine(team2, teamplayers[team2][p]);
 				}
 
 				// Spectator
@@ -254,7 +384,7 @@ generatePlayerList()
 					addTeamLine("Spectators");
 					for(p = teamplayers["spectator"].size-1; p >= 0; p--)
 					{
-						self addPlayerLine(teamplayers["spectator"][p]);
+						self addPlayerLine("spectator", teamplayers["spectator"][p]);
 					}
 				}
 
@@ -264,7 +394,7 @@ generatePlayerList()
 					addTeamLine("None team");
 					for(p = teamplayers["none"].size-1; p >= 0; p--)
 					{
-						self addPlayerLine(teamplayers["none"][p]);
+						self addPlayerLine("none", teamplayers["none"][p]);
 					}
 				}
 
@@ -272,11 +402,11 @@ generatePlayerList()
 				self setClientCvarIfChanged("ui_scoreboard_names", self.scoreboard.names);
 				self setClientCvarIfChanged("ui_scoreboard_scores", self.scoreboard.scores);
 				self setClientCvarIfChanged("ui_scoreboard_kills", self.scoreboard.kills);
+				self setClientCvarIfChanged("ui_scoreboard_assists", self.scoreboard.assists);
 				self setClientCvarIfChanged("ui_scoreboard_damages", self.scoreboard.damages);
 				self setClientCvarIfChanged("ui_scoreboard_deaths", self.scoreboard.deaths);
 				self setClientCvarIfChanged("ui_scoreboard_plants", self.scoreboard.plants);
 				self setClientCvarIfChanged("ui_scoreboard_defuses", self.scoreboard.defuses);
-
 
 
 

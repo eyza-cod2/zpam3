@@ -1,17 +1,37 @@
+#include maps\mp\gametypes\global\_global;
+
 init()
 {
-    if (!isDefined(game["overtime_active"]))
-        game["overtime_active"] = false;
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	registerCvar("scr_overtime", "BOOL", 0);
+
+	if(game["firstInit"])
+	{
+		game["overtime_active"] = false;
+
+		precacheString2("STRING_GOING_TO_OVERTIME", &"Going to Over-time");
+	}
+}
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_overtime":	                level.scr_overtime = value; return true;
+	}
+	return false;
 }
 
 // Called at the end of the map if score is equal and overtime is enabled
 Do_Overtime()
 {
-    thread maps\mp\gametypes\_hud::PAM_Header();
-    thread maps\mp\gametypes\_hud::Matchover(true); // true means its overtime
-	thread maps\mp\gametypes\_hud::ScoreBoard(true);
+	HUD_GoingToOvertime();
 
-	wait level.fps_multiplier * 7;
+	wait level.fps_multiplier * 5;
 
     // Activate overtime
     game["overtime_active"] = true;
@@ -31,10 +51,6 @@ Do_Overtime()
 	game["half_2_allies_score"] = 0;
 	game["half_2_axis_score"] = 0;
 
-	// Total score for clan
-	game["Team_1_Score"] = 0;				// Team_1 is: game["half_1_axis_score"] + game["half_2_allies_score"] ---- team who was as axis in first half
-	game["Team_2_Score"] = 0;				// Team_2 is: game["half_2_axis_score"] + game["half_1_allies_score"] ----	team who was as allies in first half
-
 	// Reset halftime
 	game["is_halftime"] = false;
 
@@ -44,6 +60,7 @@ Do_Overtime()
 
 	// Other variables
 	game["roundsplayed"] = 0;
+	game["round"] = 0;
 
 
 	// Drop saved weapons
@@ -68,14 +85,27 @@ Do_Overtime()
 
 
 
-
-    // Rules load - overide cvars with values for defined league mode
-	maps\pam\rules\rules::load();
-	// Save rule sets values as default so we are able to check if some of the cvar was changed from original
-	maps\mp\gametypes\_cvar_system::saveRuleValues();
-
-
-
     if (!level.pam_mode_change)
         map_restart(true);
+}
+
+/*
+    Its a TIE
+Going to overtime
+*/
+HUD_GoingToOvertime()
+{
+	x = -85;
+	y = 240;
+
+	// Its a TIE
+	teamwin = addHUD(x, y, 1.2, (1,1,0), "center", "middle", "right");
+	teamwin showHUDSmooth(1);
+	teamwin setText(game["STRING_ITS_TIE"]);
+	y += 20;
+
+	// Going to overtime
+	goingto = addHUD(x, y, 1.2, (1,1,0), "center", "middle", "right");
+	goingto showHUDSmooth(1);
+	goingto setText(game["STRING_GOING_TO_OVERTIME"]);
 }

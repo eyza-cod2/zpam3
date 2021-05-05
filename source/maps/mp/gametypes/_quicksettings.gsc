@@ -1,4 +1,4 @@
-#include maps\mp\gametypes\_callbacksetup;
+#include maps\mp\gametypes\global\_global;
 
 init()
 {
@@ -65,6 +65,14 @@ parseString(string)
       else if (item == "matchinfo_0")       self maps\mp\gametypes\_matchinfo::ingame_disable();
       else if (item == "matchinfo_1")       self maps\mp\gametypes\_matchinfo::ingame_enable();
 
+      else if (item == "score")         self maps\mp\gametypes\_hud_teamscore::toggle();
+      else if (item == "score_0")       self maps\mp\gametypes\_hud_teamscore::disable();
+      else if (item == "score_1")       self maps\mp\gametypes\_hud_teamscore::enable();
+
+      else if (item == "playersleft")         self maps\mp\gametypes\_players_left::toggle();
+      else if (item == "playersleft_0")       self maps\mp\gametypes\_players_left::disable();
+      else if (item == "playersleft_1")       self maps\mp\gametypes\_players_left::enable();
+
       lastItemPos = i + 1;
     }
   }
@@ -79,16 +87,24 @@ updateClientSettings()
 
   recording = self maps\mp\gametypes\_record::isEnabled();
   matchinfo = self maps\mp\gametypes\_matchinfo::ingame_isEnabled();
+  score = self maps\mp\gametypes\_hud_teamscore::isEnabled();
+  playersleft = self maps\mp\gametypes\_players_left::isEnabled();
 
   string = string + "autorecording_" + recording;
   string = string + delimiter;
   string = string + "matchinfo_" + matchinfo;
+  string = string + delimiter;
+  string = string + "score_" + score;
+  string = string + delimiter;
+  string = string + "playersleft_" + playersleft;
 
-  self setClientCvar("server16", string);
+  self setClientCvar2("server16", string);
 
   // Cvars for switching text in quick menu
-  self setClientCvar("ui_quicksettings_autorecording", recording);
-  self setClientCvar("ui_quicksettings_matchinfo", matchinfo);
+  self setClientCvar2("ui_quicksettings_autorecording", recording);
+  self setClientCvar2("ui_quicksettings_matchinfo", matchinfo);
+  self setClientCvar2("ui_quicksettings_score", score);
+  self setClientCvar2("ui_quicksettings_playersleft", playersleft);
 
   self.pers["quicksettings_saved"] = true;
 }
