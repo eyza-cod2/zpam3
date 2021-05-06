@@ -21,6 +21,55 @@ Work on this pam was iniciated by me in 2015 a was not never fully finished. In 
 	- 2020/04/23 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f58fdedbf23f31c62e29ffd25379d6a1d7993e49">zPAM 3.1 BETA</a></b></b>
 
 
+## Changelog
+<details><summary>zPAM 3.20 changes (click to open)</summary>
+<p>
+
+#### Bugs fixed:
+- When you picked up weapon of enemy team into secondary slot, you was respawned only with pistol -> fixed
+- On start of new round, when you have mp44 for example and you picked up a weapon or you dropped a weapon, changing weapon to shotgun via menu (you get shotgun next round) gives you a smoke  -> fixed
+- Auto-recording didnt start to record when some menu is opened -> fixed, opened menus are closed when recording starts
+r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were correctly set to -1 -> fixed
+- In strat, spawned bots are kicked when player disconnect from server
+- FPS drops in strat - caused by HUD texts with keys of bind -> fixed
+- Deadchat in strat
+- g_allowVote fixed in menu
+
+#### News:
+- Code base was rewrited a bit, now code from old pam is completely ported to new pam codebase
+- New mp_toujane_fix_v1 map with fixed bugs
+- New mp_burgundy_fix_v1 map with fixed bugs
+- [3.3.27] MG clip FIX - if you drop a MG, you will be spawned right behind the MG
+- [3.3.28] Dead bodies are not spawned near planted bomb
+- [3.3.29] Score changing via menu - in first readyup, you can change a score of teams via rcon menu (in case wrong pam_mode was set, server crash, etc..)
+- [3.3.30] New spectating system - new UI, auto-spectator is now better, score stats, player progress stats, etc..
+- [3.3.31] Round report - at the end of the round info about kills and hits you made are printed
+- [3.3.32] New damage feedback for assists - when player damaged by you is killed, damage feedback cross is showed
+- [3.3.33] Enemy list - new player names list of alive enemy players. Players can be marked with different color via ingame scoreboard menu.
+- [3.3.34] In readyup, you can throw nades like in strat mode
+- [3.3.35] New custom settings for map mode in rcon menu - a few of the settings can be changed (for example fast-reload fix, shotgun rebalance,..) and this change stays applied in next maps
+- [3.3.36] New menu section in Main -> Options for zPAM settings
+- [3.3.37] List of all changed server cvars is showed in "Server info" menu
+- [3.3.38] Score in left-top corner can by enabled via settings menu
+- [3.3.39] For future hit diagnostics, at the end of each round info about hits is saved to cvar pam_damage_debug
+- [3.3.40] Hand hitbox fix - if you fire from rifle or scope to left arm at +-20* degrees, it will be changed to kill to body (more info on github)
+- [3.3.41] In halftime-readyup and between map readyup, when 5min timer expire, red timer is showed. If all players from 1 team are ready, match automatically start even if opponent team is not ready.
+- [3.4.15] PAM now has to be installed in main folder - this will fix problem with not saved cvar changes you made in game
+
+#### Update of existing:
+- [2.2.3] Timeout now can be called in round before halftime / map end
+- [3.2.1] Warning that you cannot drop actual weapons are now printed into killfeed instead of center messages
+- [3.3.2] Auto-recording is now recording between maps (demo is not stopped on next map)
+- [3.3.16] Rebalanced shotgun was updated to handle close range hits and long range kills better. Is enabled by default now.
+- [3.3.17] Scoreboard - new stats for assists; damage was changed to hits and is counted better; plants/defuses are not showed for enemy team
+- [3.3.18] Quick menu - new option for enable team score in left top corner, same as [3.3.38]
+- [3.3.19] Bash mode - message is printed if it is bash round; map is not restarted after bash is over
+- [3.3.26] Prone-peek is now processed better and is enabled by default. (400m delay is added only if pronepeek-able wall / conver is detected instead of adding it every time)
+- [3.4.14] Strat time was set to 6 seconds for cg and cg_mr12 pam modes
+Diagonal fix was removed
+</p>
+</details>
+
 
 ## Installation
 - Download <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam320.zip">zPAM 3.20</a></b> and extract folders with files into following locations:
@@ -33,9 +82,9 @@ Work on this pam was iniciated by me in 2015 a was not never fully finished. In 
 
 - Notes:
 	- When your server is runned, you may get an error message saying "PAM is not installed correctly". To fix this error, follow instructions in [Troubleshooting](#troubleshooting) section
-	- <i>mp_toujane_fix_v1.iwd</i> and <i>mp_burgundy_fix_v1.iwd</i> are fixed version of original maps - these files needs to be included with PAM, more info in [Questions & Answers](#questions-answers) section
+	- <i>mp_toujane_fix_v1.iwd</i> and <i>mp_burgundy_fix_v1.iwd</i> are fixed version of original maps - these files needs to be included with PAM, more info in [Questions & Answers](#questions--answers) section
 	- <i>server.cfg</i> - exec this file for fast server configuration and in case you are running a public server (+exec server)
-	- you have to enable downloading via cvar <i>sv_wwwDownload 1</i> and specify a download url via cvar <i>sv_wwwBaseURL "url"</i>; if you dont have any, you can use <i>sv_wwwBaseURL "TODO"</i> (this is to make sure fixed maps are downloaded in fast way for players)
+	- you have to enable downloading via cvar <i>sv_wwwDownload 1</i> and specify a download url via cvar <i>sv_wwwBaseURL "url"</i>; if you dont have any, you can use <i>sv_wwwBaseURL "http://cod2x.me/zpam320"</i> (this is to make sure fixed maps are downloaded in fast way for players)
 
 
 ## Contact
@@ -281,7 +330,7 @@ Make sure cvar /fs_game is empty and iwd files are placed in main folder.
 
 ####  WWW downloading must be enabled. Set sv_wwwDownload and sv_wwwBaseURL
 - You have to enable www downloading via cvar /sv_wwwDownload 1 and specify a download url via cvar /sv_wwwBaseURL "url".
-- If you dont have any url, you can use /sv_wwwBaseURL "TODO"
+- If you dont have any url, you can use /sv_wwwBaseURL "http://cod2x.me/zpam320"
 - This is to make sure fixed maps are downloaded in fast way for players
 
 ####  Old pam detected in main folder. Delete following iwd file:
