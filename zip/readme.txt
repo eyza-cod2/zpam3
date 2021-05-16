@@ -1,8 +1,8 @@
 Installation
 Extract folders with files into following locations:
 	- ./pb/pbsvuser.cfg
-	- ./main/zpam320.iwd
-	- ./main/mp_toujane_fix_v1.iwd
+	- ./main/zpam321.iwd
+	- ./main/mp_toujane_fix_v2.iwd
 	- ./main/mp_burgundy_fix_v1.iwd
 	- ./main/server.cfg
 

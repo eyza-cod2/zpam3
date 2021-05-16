@@ -178,7 +178,7 @@ itemDef  \
 ITEM_MAP_OPTIONS_HEADING(3 6, "Map:")
 
 
-ITEM_GAMETYPE_ONDVAR(86 06, 40 18, "Toujane  FIX",     "ui_rcon_map_map", "mp_toujane_fix_v1", exec "openscriptmenu ingame rcon_map_map_mp_toujane_fix_v1")
+ITEM_GAMETYPE_ONDVAR(86 06, 40 18, "Toujane  FIX",     "ui_rcon_map_map", "mp_toujane_fix_v2", exec "openscriptmenu ingame rcon_map_map_mp_toujane_fix_v2")
 ITEM_GAMETYPE_ONDVAR(86 22, 48 18, "Burgundy  FIX",    "ui_rcon_map_map", "mp_burgundy_fix_v1",  exec "openscriptmenu ingame rcon_map_map_mp_burgundy_fix_v1")
 //ITEM_GAMETYPE_ONDVAR(86 38, 49 18, "Dawnville  FIX",   "ui_rcon_map_map", "mp_dawnville_fix",  exec "openscriptmenu ingame rcon_map_map_mp_dawnville_fix")
 //ITEM_GAMETYPE_ONDVAR(86 54, 47 18, "Matmata  FIX",     "ui_rcon_map_map", "mp_matmata_fix",  exec "openscriptmenu ingame rcon_map_map_mp_matmata_fix")

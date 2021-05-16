@@ -1,6 +1,6 @@
 # Introduction
 
-Mod zPAM3.20 is new version of PAM mode for COD2.<br>
+Mod zPAM3.21 is new version of PAM mode for COD2.<br>
 
 The code form previous zPAM 2.07 version is completely rewritten and ported to new code base, which helped in the implementation of new features and bug fixes.
 
@@ -9,10 +9,11 @@ Work on this pam was iniciated by me in 2015 a was not never fully finished. In 
 
 ## Download
 - Actual version:
-	- 2021/05/05 - <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam320.zip">zPAM 3.20</a></b>
+	- 2021/05/16 - <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam321.zip">zPAM 3.21</a></b>
 
 
 - Previous versions:
+	- 2021/05/05 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c7d5fa259e6e21a7fc510847421fab5338f19d0d">zPAM 3.20</a></b>
 	- 2021/01/05 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/a365aa9d884f87a368e51879b016157b431ee449">zPAM 3.1 BETA 6</a></b></b>
 	- 2020/11/29 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/b3e8711b13b493134ec1c762aeba17399eefb95d">zPAM 3.1 BETA 5</a></b></b>
 	- 2020/09/24 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/2d3e3589dced881409bd42d2c5c500cc6ed3e0a1">zPAM 3.1 BETA 4</a></b></b>
@@ -22,6 +23,20 @@ Work on this pam was iniciated by me in 2015 a was not never fully finished. In 
 
 
 ## Changelog
+<details><summary>zPAM 3.21 changes (click to open)</summary>
+<p>
+
+#### Bugs fixed:
+- Updated Toujane FIX to version 2 - fixed link wall vault - https://youtu.be/DuoJOrDeaaM
+- PAM installations checks - on some servers it says installation error even if installed correctly -> fixed
+
+#### Update of existing:
+- [3.3.10] Match info - ingame info with team names and score visibility is turned off by default now
+- Strat - players are now spawned by SD spawn positions, not DM spawn positions - this make vallente map working in strat
+</p>
+</details>
+
+
 <details><summary>zPAM 3.20 changes (click to open)</summary>
 <p>
 
@@ -66,25 +81,27 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 - [3.3.19] Bash mode - message is printed if it is bash round; map is not restarted after bash is over
 - [3.3.26] Prone-peek is now processed better and is enabled by default. (400m delay is added only if pronepeek-able wall / conver is detected instead of adding it every time)
 - [3.4.14] Strat time was set to 6 seconds for cg and cg_mr12 pam modes
-Diagonal fix was removed
+- Diagonal fix was removed
 </p>
 </details>
 
 
 ## Installation
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam320.zip">zPAM 3.20</a></b> and extract folders with files into following locations:
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam321.zip">zPAM 3.21</a></b> and extract folders with files into following locations:
 	- ./pb/pbsvuser.cfg
-	- ./main/zpam320.iwd
-	- ./main/mp_toujane_fix_v1.iwd
+	- ./main/zpam321.iwd
+	- ./main/mp_toujane_fix_v2.iwd
 	- ./main/mp_burgundy_fix_v1.iwd
 	- ./main/server.cfg
 
 
 - Notes:
 	- When your server is runned, you may get an error message saying "PAM is not installed correctly". To fix this error, follow instructions in [Troubleshooting](#troubleshooting) section
-	- <i>mp_toujane_fix_v1.iwd</i> and <i>mp_burgundy_fix_v1.iwd</i> are fixed version of original maps - these files needs to be included with PAM, more info in [Questions & Answers](#questions--answers) section
+	- <i>mp_toujane_fix_v2.iwd</i> and <i>mp_burgundy_fix_v1.iwd</i> are fixed version of original maps - these files needs to be included with PAM, more info in [Questions & Answers](#questions--answers) section
+		- Toujane FIX changes: https://github.com/eyza-cod2/mp_toujane_fix
+		- Burgundy FIX changes: https://github.com/eyza-cod2/mp_burgundy_fix.
 	- <i>server.cfg</i> - exec this file for fast server configuration and in case you are running a public server (+exec server)
-	- you have to enable downloading via cvar <i>sv_wwwDownload 1</i> and specify a download url via cvar <i>sv_wwwBaseURL "url"</i>; if you dont have any, you can use <i>sv_wwwBaseURL "http://cod2x.me/zpam320"</i> (this is to make sure fixed maps are downloaded in fast way for players)
+	- you have to enable downloading via cvar <i>sv_wwwDownload 1</i> and specify a download url via cvar <i>sv_wwwBaseURL "url"</i>; if you dont have any, you can use <i>sv_wwwBaseURL "http://cod2x.me/zpam321"</i> (this is to make sure fixed maps are downloaded in fast way for players)
 
 
 ## Contact
@@ -92,7 +109,7 @@ Write message on discord <b>LetsPlay Europe</b> in <b>#cod2-zpam-3</b> channel.<
 Or add me on discord <b>eyza#7930</b><br>
 Or write me on email <b>kratas.tom@seznam.cz</b><br>
 <br>
-Supporters: askeslav, tomik, cokY, Sk1lzZ, YctN, kebit, foxbuster, <==Mustang==>Clan from Hungary
+Supporters: askeslav, tomik, cokY, Sk1lzZ, YctN, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / dutch, excel
 <br><br>
 Please support this work on my Paypal -> https://paypal.me/kratasy
 <br>
@@ -101,7 +118,7 @@ Please support this work on my Paypal -> https://paypal.me/kratasy
 
 ## Questions & Answers
 
-### What is Toujane FIX (mp_toujane_fix_v1) and Burgundy FIX (mp_burgundy_fix_v1)
+### What is Toujane FIX (mp_toujane_fix_v2) and Burgundy FIX (mp_burgundy_fix_v1)
 These are recompiled version of original maps that contains a bug fixes.
 List of all changes are available in these repositories: [mp_toujane_fix](https://github.com/eyza-cod2/mp_toujane_fix), [mp_burgundy_fix](https://github.com/eyza-cod2/mp_burgundy_fix).
 Other maps will follow in next release.<br>
@@ -311,30 +328,31 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 ## Known bugs
  - When quick messages menu is opened, auto-recording will not start (its not able to close quick messages menu via pam)
  - You cannot take screenshot of new scoreboard via F12 (in menu binds are not working)
+ - When you spawn a bot in strat, this bot will occupy player slot on server even if the bot is kicked; server restart is needed then
 
 <br>
 <br>
 
 ## Troubleshooting
 ### Error "zPAM is not installed correctly"
-#### Iwd file zpam320.iwd must be installed in main folder. (fs_game)
- - From version 3.20, all iwd files have to be installed in main folder.
+#### Iwd file zpam321.iwd must be installed in main folder. (fs_game)
+ - From version 3.21, all iwd files have to be installed in main folder.
 This is because of bug that cvars / settings changed in game are not saved into the config when running a game with fs_game set.
 Make sure cvar /fs_game is empty and iwd files are placed in main folder.
 
 #### Error while getting loaded iwd files. Make sure iwd files does not contains spaces.
 - PAM was not able to parse loaded iwd files. Some of the iwd files have probably name with spaces.
 
-#### Iwd file mp_toujane_fix_v1.iwd must be installed in main folder<br>Iwd file mp_burgundy_fix_v1.iwd must be installed in main folder
+#### Iwd file mp_toujane_fix_v2.iwd must be installed in main folder<br>Iwd file mp_burgundy_fix_v1.iwd must be installed in main folder
 - From version 3.20, fixed versions of some maps are available. PAM is forcing to include these files to make sure maps are available on every server.
 
 ####  WWW downloading must be enabled. Set sv_wwwDownload and sv_wwwBaseURL
 - You have to enable www downloading via cvar /sv_wwwDownload 1 and specify a download url via cvar /sv_wwwBaseURL "url".
-- If you dont have any url, you can use /sv_wwwBaseURL "http://cod2x.me/zpam320"
+- If you dont have any url, you can use /sv_wwwBaseURL "http://cod2x.me/zpam321"
 - This is to make sure fixed maps are downloaded in fast way for players
 
-####  Old pam detected in main folder. Delete following iwd file:
-- Your main folder contains also a other versions of pam. Delete all .iwd files with prefix "zpam".
+####  Old pam / maps detected in main folder. Delete iwd file you see above.
+- Your main folder contains also a other versions of pam or maps. Delete all .iwd files that the game prints on screen.
 
 
 

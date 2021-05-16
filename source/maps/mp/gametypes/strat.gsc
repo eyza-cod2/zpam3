@@ -85,15 +85,23 @@ onStartGameType()
 
 
 	// Spawn points
-	spawnpointname = "mp_tdm_spawn";
+	spawnpointname = "mp_sd_spawn_attacker";
 	spawnpoints = getentarray(spawnpointname, "classname");
-
 	if(!spawnpoints.size)
 	{
-		maps\mp\gametypes\_callbacksetup::AbortLevel();
+		AbortLevel();
 		return;
 	}
+	for(i = 0; i < spawnpoints.size; i++)
+		spawnpoints[i] placeSpawnpoint();
 
+	spawnpointname = "mp_sd_spawn_defender";
+	spawnpoints = getentarray(spawnpointname, "classname");
+	if(!spawnpoints.size)
+	{
+		AbortLevel();
+		return;
+	}
 	for(i = 0; i < spawnpoints.size; i++)
 		spawnpoints[i] PlaceSpawnpoint();
 
@@ -378,11 +386,16 @@ spawnPlayer()
 	}
 	else
 	{
-		spawnpointname = "mp_tdm_spawn";
-		spawnpoints = getentarray(spawnpointname, "classname");
-		spawnpoint = maps\mp\gametypes\_spawnlogic::getSpawnpoint_NearTeam(spawnpoints);
+		// Select correct spawn position according to selected team
+		if(self.pers["team"] == "allies")
+			spawnpointname = "mp_sd_spawn_attacker";
+		else
+			spawnpointname = "mp_sd_spawn_defender";
 
-		if(isDefined(spawnpoint))
+		spawnpoints = getentarray(spawnpointname, "classname");
+		spawnpoint = maps\mp\gametypes\_spawnlogic::getSpawnpoint_Random(spawnpoints);
+
+		if(isdefined(spawnpoint))
 			self spawn(spawnpoint.origin, spawnpoint.angles);
 		else
 			maps\mp\_utility::error("NO " + spawnpointname + " SPAWNPOINTS IN MAP");

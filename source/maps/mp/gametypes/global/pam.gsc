@@ -24,12 +24,12 @@ init()
 
 		// Errors
 		precacheString2("STRING_PAM_DONT_STEAL", &"This version of pam is only for testing! Dont steal!");
-		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam320.iwd^7 must be installed in ^9main^7 folder. (fs_game)"); // ZPAM_RENAME
+		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam321.iwd^7 must be installed in ^9main^7 folder. (fs_game)"); // ZPAM_RENAME
 		precacheString2("STRING_PAM_GETTING_IWD_FILES_ERROR", &"Error while getting loaded iwd files. Make sure iwd files does not contains spaces.");
-		precacheString2("STRING_PAM_TOUJANE_FIX_MISSING", &"Iwd file ^9mp_toujane_fix_v1.iwd^7 must be installed in ^9main^7 folder");
+		precacheString2("STRING_PAM_TOUJANE_FIX_MISSING", &"Iwd file ^9mp_toujane_fix_v2.iwd^7 must be installed in ^9main^7 folder");
 		precacheString2("STRING_PAM_BURGUNDY_FIX_MISSING", &"Iwd file ^9mp_burgundy_fix_v1.iwd^7 must be installed in ^9main^7 folder");
 		precacheString2("STRING_PAM_WWW_DOWNLOADING", &"WWW downloading must be enabled. Set ^9sv_wwwDownload^7 and ^9sv_wwwBaseURL");
-		precacheString2("STRING_PAM_BLACKLIST", &"Old pam detected in ^9main^7 folder. Delete following iwd file:");
+		precacheString2("STRING_PAM_BLACKLIST", &"Old pam / maps detected in ^9main^7 folder. Delete iwd file you see above.");
 
 
 		// Help url
@@ -38,7 +38,7 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam320"; // ZPAM_RENAME
+	level.pam_folder = "main/zpam321"; // ZPAM_RENAME
 
 	level.pam_mode_change = false;
 
@@ -99,18 +99,12 @@ CheckInstallation()
 
 	// Wait untill sv_referencedIwds is set
 	// Dont know why, but sv_referencedIwds cvars is defined after 4 frames
-	sv_referencedIwds = "";
-	sv_referencedIwdNames = "";
-	sv_iwdNames = "";
-	sv_iwds = "";
-	while(sv_referencedIwds == "" || sv_referencedIwdNames == "" || sv_iwdNames == "" || sv_iwds == "")
-	{
-		wait level.frame;
-		sv_referencedIwds = getCvar("sv_referencedIwds");
-		sv_referencedIwdNames = getCvar("sv_referencedIwdNames");
-		sv_iwdNames = getCvar("sv_iwdNames");
-		sv_iwds = getCvar("sv_iwds");
-	}
+	wait level.fps_multiplier * 0.3; // just to be sure - on some servers cvars are set twice with different value every time
+
+	sv_referencedIwds = getCvar("sv_referencedIwds");
+	sv_referencedIwdNames = getCvar("sv_referencedIwdNames");
+	sv_iwdNames = getCvar("sv_iwdNames");
+	sv_iwds = getCvar("sv_iwds");
 
 	// Referenced contains only loaded iwds, but full path!
 	//"sv_referencedIwds" is: "-340018619 473749641 181429573 780394069 1101180720 1046874969 1053665859 -1652414412 " default: ""
@@ -146,6 +140,8 @@ CheckInstallation()
 	// Number of items is not same - may be due to spaces in iwd names!
 	if (fullNumbersArray.size != fullNameArray.size)
 	{
+		level thread printTextInLoop("Diagnostics info: referencedIwds", sv_referencedIwdNames, sv_referencedIwdNames, fullNumbersArray.size + "!=" + fullNameArray.size);
+
 		setError(game["STRING_PAM_GETTING_IWD_FILES_ERROR"]);
 		return;
 	}
@@ -165,6 +161,8 @@ CheckInstallation()
 	// Number of items is not same - may be due to spaces in iwd names!
 	if (numbersArray.size != nameArray.size)
 	{
+		level thread printTextInLoop("Diagnostics info: iwds", sv_iwds, sv_iwdNames, numbersArray.size + "!=" + nameArray.size);
+
 		setError(game["STRING_PAM_GETTING_IWD_FILES_ERROR"]);
 		return;
 	}
@@ -180,12 +178,13 @@ CheckInstallation()
 
 	if (!arrayContains(fullNameArray, level.pam_folder))
 	{
-		println("sv_referencedIwdNames does not contain " + level.pam_folder);
+		level thread printTextInLoop("Diagnostics info: sv_referencedIwdNames does not contain " + level.pam_folder);
+
 		setError(game["STRING_PAM_MUST_EXISTS_UNDER_MAIN"]);
 		return;
 	}
 
-	if (!arrayContains(nameArray, "mp_toujane_fix_v1"))
+	if (!arrayContains(nameArray, "mp_toujane_fix_v2"))
 	{
 		setError(game["STRING_PAM_TOUJANE_FIX_MISSING"]);
 		return;
@@ -222,6 +221,8 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam310_beta5";
 	blackList[blackList.size] = "zpam310_beta6";
 	blackList[blackList.size] = "zpam320_test";
+	blackList[blackList.size] = "zpam320";
+	blackList[blackList.size] = "mp_toujane_fix_v1";
 
 
 	for(i = 0; i < blackList.size; i++)
@@ -241,15 +242,22 @@ CheckInstallation()
 }
 
 
-printTextInLoop(text)
+printTextInLoop(line1, line2, line3, line4)
 {
 	for(;;)
 	{
 		iprintlnbold(" ");
-		iprintlnbold(" ");
-		iprintlnbold(" ");
-		iprintlnbold(" ");
-		iprintlnbold(text);
+
+		if (!isDefined(line4)) 	iprintlnbold(" ");
+		if (!isDefined(line3)) 	iprintlnbold(" ");
+		if (!isDefined(line2)) 	iprintlnbold(" ");
+		if (!isDefined(line1)) 	iprintlnbold(" ");
+
+		if (isDefined(line1)) 	iprintlnbold(line1);
+		if (isDefined(line2)) 	iprintlnbold(line2);
+		if (isDefined(line3)) 	iprintlnbold(line3);
+		if (isDefined(line4)) 	iprintlnbold(line4);
+
 		wait level.fps_multiplier * 5;
 	}
 }
@@ -309,7 +317,7 @@ setError(error)
 	text1.alignx = "center";
 	text1.aligny = "top";
 	text1.x = 320;
-	text1.y = 100;
+	text1.y = 200;
 	text1.fontscale = 1.9;
 	text1.alpha = 1;
 	text1.sort = -2;
@@ -321,7 +329,7 @@ setError(error)
 	text2.alignx = "center";
 	text2.aligny = "top";
 	text2.x = 320;
-	text2.y = 125;
+	text2.y = 225;
 	text2.fontscale = 1.4;
 	text2.alpha = 1;
 	text2.sort = -1;
@@ -333,7 +341,7 @@ setError(error)
 	text3.alignx = "center";
 	text3.aligny = "top";
 	text3.x = 320;
-	text3.y = 235;
+	text3.y = 255;
 	text3.fontscale = 1.2;
 	text3.alpha = 1;
 	text3.sort = -1;

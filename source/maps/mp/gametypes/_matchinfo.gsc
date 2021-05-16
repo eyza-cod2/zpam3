@@ -95,22 +95,15 @@ onConnected()
 	// Ingame match info bar
 	if (!isDefined(self.pers["matchinfo_ingame"]))
 	{
-			// By default show match info ingame
-			self.pers["matchinfo_ingame"] = true;
-			self.pers["matchinfo_ingame_visible"] = true;
-			self.pers["matchinfo_showedForSpectator"] = false;
+		// By default show match info ingame
+		self.pers["matchinfo_ingame"] = false;
+		self.pers["matchinfo_ingame_visible"] = false;
+		self.pers["matchinfo_showedForSpectator"] = false;
 
-			// Show really only if enabled by rules
-			if (game["scr_matchinfo"] > 0)
-			{
-				self setClientCvarIfChanged("ui_matchinfo_ingame_show", "1");
-			}
-			else
-			{
-				self setClientCvarIfChanged("ui_matchinfo_ingame_show", "0");
-				self setClientCvarIfChanged("ui_matchinfo_ingame_team1_sideColor", 	""); // bg elements cannot be dependend on _show cvar, needs to be set separately
-				self setClientCvarIfChanged("ui_matchinfo_ingame_team2_sideColor", 	"");
-			}
+		// always hide ingame bar on first connect - if is enabled by settings, it will be showed later
+		self setClientCvarIfChanged("ui_matchinfo_ingame_show", "0");
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_sideColor", 	""); // bg elements cannot be dependend on _show cvar, needs to be set separately
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_sideColor", 	"");
 	}
 
 
@@ -465,7 +458,7 @@ ToUpper(char)
 
 GetMapName(mapname)
 {
-	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix_v1")		return "Toujane";
+	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix_v2")		return "Toujane";
 	if (mapname == "mp_burgundy" || mapname == "mp_burgundy_fix_v1")		return "Burgundy";
 	if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix")		return "Dawnville";
 	if (mapname == "mp_matmata" || mapname == "mp_matmata_fix")		return "Matmata";

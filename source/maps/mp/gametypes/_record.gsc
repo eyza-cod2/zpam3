@@ -209,7 +209,7 @@ generateDemoName()
     mapname = level.mapname;
 
 
-	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix_v1")		mapname = "tj";
+	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix_v2")		mapname = "tj";
 	else if (mapname == "mp_burgundy" || mapname == "mp_burgundy_fix_v1")	mapname = "bg";
 	else if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix")		mapname = "dw";
 	else if (mapname == "mp_matmata" || mapname == "mp_matmata_fix")		mapname = "mat";

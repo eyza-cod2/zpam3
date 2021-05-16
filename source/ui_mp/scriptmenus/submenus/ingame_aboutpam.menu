@@ -56,7 +56,33 @@ itemDef
 	visible			1
 	origin			0 101
 	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"Supporters: askeslav, tomik, cokY, Sk1lzZ, YctN, kebit, foxbuster, ^9<==^3Mustang^9==>^2Clan  from Hungary"
+	text			"Supporters:"
+	textfont		UI_FONT_NORMAL
+	textscale		0.25
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textalign		ITEM_ALIGN_LEFT
+	decoration
+}
+
+itemDef
+{
+	visible			1
+	origin			60 101
+	forecolor		GLOBAL_UNFOCUSED_COLOR
+	text			"askeslav, tomik, cokY, Sk1lzZ, YctN, kebit, foxbuster"
+	textfont		UI_FONT_NORMAL
+	textscale		0.25
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textalign		ITEM_ALIGN_LEFT
+	decoration
+}
+
+itemDef
+{
+	visible			1
+	origin			60 116
+	forecolor		GLOBAL_UNFOCUSED_COLOR
+	text			"^9<==^3Mustang^9==>^2Clan  from Hungary^7, hubertgruber / dutch, excel"
 	textfont		UI_FONT_NORMAL
 	textscale		0.25
 	textstyle		ITEM_TEXTSTYLE_SHADOWED
@@ -68,7 +94,7 @@ itemDef
 itemDef
 {
 	visible			1
-	origin			0 136
+	origin			0 141
 	forecolor		GLOBAL_UNFOCUSED_COLOR
 	text			"Join us on discord ^9LetsPlay Europe ^7in ^9#cod2-zpam-3 ^7channel."
 	textfont		UI_FONT_NORMAL

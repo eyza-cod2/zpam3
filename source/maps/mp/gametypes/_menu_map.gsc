@@ -19,7 +19,7 @@ init()
 	map["mp_toujane"] = 13;
 	map["mp_trainstation"] = 14;
 
-	map["mp_toujane_fix_v1"] = true;
+	map["mp_toujane_fix_v2"] = true;
 	map["mp_burgundy_fix_v1"] = true;
 	map["mp_dawnville_fix"] = true;
 	map["mp_matmata_fix"] = true;
