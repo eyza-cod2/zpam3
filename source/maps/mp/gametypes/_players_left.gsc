@@ -56,7 +56,8 @@ onConnected()
 		self thread createHUD();
 
 		// Enable player list by default, can be overwritten by player settings
-		self.pers["playersleft_list"] = true;
+		if (!isDefined(self.pers["playersleft_list"]))
+			enable();
 	}
 	else
 		self hide(); // hide is set from previous map
@@ -229,14 +230,6 @@ updateHUD(alliesChanged, axisChanged)
 
 		self.playersLeft_myTeam_num setValue(level.axis_alive);
 		self.playersLeft_enemy_num setValue(level.allies_alive);
-
-		// Bounce animation
-		if (alliesChanged && self.pers["team"] == "axis")
-		{
-			self thread doBounceAnimation(self.playersLeft_enemy_num);
-			if (level.allies_alive == 0)
-				self thread doBounceAnimation(self.playersLeft_enemy);
-		}
 	}
 	else // allies on left
 	{
@@ -268,14 +261,6 @@ updateHUD(alliesChanged, axisChanged)
 
 		self.playersLeft_myTeam_num setValue(level.allies_alive);
 		self.playersLeft_enemy_num setValue(level.axis_alive);
-
-		// Bounce animation
-		if (axisChanged && self.pers["team"] == "allies")
-		{
-			self thread doBounceAnimation(self.playersLeft_enemy_num);
-			if (level.axis_alive == 0)
-				self thread doBounceAnimation(self.playersLeft_enemy);
-		}
 	}
 
 	if (self.pers["team"] == "spectator")
@@ -287,36 +272,28 @@ updateHUD(alliesChanged, axisChanged)
 	}
 	else
 	{
-		self.playersLeft_myTeam.color = (.580,.961,.573);
-		self.playersLeft_myTeam_num.color = (.580,.961,.573);
-		self.playersLeft_enemy.color = (.055,.855,.996);
-		self.playersLeft_enemy_num.color = (.055,.855,.996);
+		// Eliminetd text is showed
+		if (self.playersLeft_myTeam_num.alpha == 0)
+		{
+			self.playersLeft_myTeam.color = (1,0.2,0.2);
+		// 0 Allies left is showed
+		} else {
+			self.playersLeft_myTeam.color = (.580,.961,.573);
+			self.playersLeft_myTeam_num.color = (.580,.961,.573);
+		}
+
+
+		// Eliminetd text is showed
+		if (self.playersLeft_enemy_num.alpha == 0)
+		{
+			self.playersLeft_enemy.color = (1,0.2,0.2);
+		// 0 Allies left is showed
+		} else {
+			self.playersLeft_enemy.color = (.055,.855,.996);
+			self.playersLeft_enemy_num.color = (.055,.855,.996);
+		}
 	}
 }
-
-
-doBounceAnimation(element)
-{
-	self endon("disconnect");
-
-	if (isDefined(element.inBounce))
-		return;
-
-	// Up down animation
-	element moveovertime(0.1);
-	element.y = 469;
-	element.inBounce = true;
-
-	wait level.fps_multiplier * 0.12222;
-
-	element moveovertime(0.2);
-	element.y = 479;
-	element.inBounce = undefined;
-
-}
-
-
-
 
 
 

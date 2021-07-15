@@ -43,6 +43,8 @@ init()
 		game["objective_timeout"] = game["readyup_press_activate"];
 
 
+		precacheString2("STRING_READYUP_SELECT_TEAM", &"Select team!");
+
 		precacheString2("STRING_READYUP_RESUMING_IN", &"Resuming In");
 		precacheString2("STRING_READYUP_KILLING_DISABLED", &"Disabled");
 		precacheString2("STRING_READYUP_KILLING_ENABLED", &"Enabled");
@@ -52,6 +54,9 @@ init()
 		precacheString2("STRING_READYUP_MATCH_BEGINS_IN", &"Match begins in:");
 		precacheString2("STRING_READYUP_MATCH_CONTINUES_IN", &"Match continues in:");
 		precacheString2("STRING_READYUP_MATCH_RESUMES_IN", &"Match resumes in:");
+
+		// Time to readyup expired
+		precacheString2("STRING_READYUP_SET_YOUR_TEAM_AS_READY", &"Time is over. Setting one team ready will skip the Ready-up.");
 
 		// Readyup warnings
 		precacheString2("STRING_WARNING_PASSWORD_IS_NOT_SET", &"Warning: Server password is not set");
@@ -193,6 +198,9 @@ onSpawned()
 	else				self.statusicon = "party_notready";
 
 	self PrintTeamAndHowToUse();
+
+	// Warning to select team if player is team none
+	self HUD_SelectTeam();
 
 
         if (level.scr_readyup_nadetraining)
@@ -592,9 +600,6 @@ ReadyUp_AutoResume()
 	// Resume after scr_readyup_autoresume seconds (5 mins defaults)
 	wait level.fps_multiplier * level.scr_readyup_autoresume * 60;
 
-	// Set your team as ready to skip readyup
-	iprintlnbold(game["readyup_timeExpired"]);
-	iprintlnbold(game["readyup_skip"]);
 
 	level thread HUD_ReadyUp_ResumingIn_ExtraTime();
 
@@ -1112,6 +1117,24 @@ HUD_ReadyUp_ResumingIn_ExtraTime()
 {
 	level endon("readyup_removeAutoResume");
 
+	// Set your team as ready to skip readyup
+	level.setYourTeamAsReadyBG = addHUD(-160, 347, undefined, (1,1,1), "left", "top", "center", "top");
+    	level.setYourTeamAsReadyBG setShader("black", 320, 20);
+        level.setYourTeamAsReadyBG.alpha = 0.75;
+
+        level.setYourTeamAsReady = newHudElem2();
+        level.setYourTeamAsReady.x = 320;
+        level.setYourTeamAsReady.y = 350;
+        level.setYourTeamAsReady.alignX = "center";
+        level.setYourTeamAsReady.alignY = "top";
+        level.setYourTeamAsReady.fontScale = 1.1;
+        level.setYourTeamAsReady.color = (1, 0, 0);
+	level.setYourTeamAsReady setText(game["STRING_READYUP_SET_YOUR_TEAM_AS_READY"]);
+
+	iprintlnbold(game["readyup_timeExpired"]);
+	iprintlnbold(game["readyup_skip"]);
+
+	// Red extra time
 	level.ht_resume_clock_extra = newHudElem2();
 	level.ht_resume_clock_extra.x = level.hud_readyup_offsetX;
 	level.ht_resume_clock_extra.y = level.hud_readyup_offsetY + 248;
@@ -1158,6 +1181,14 @@ HUD_ReadyUp_ResumingIn_Delete()
 		level.ht_resume_clock_extra destroy2();
 		level.ht_resume_clock_extra = undefined;
 	}
+
+	if (isDefined(level.setYourTeamAsReadyBG))
+	{
+		level.setYourTeamAsReadyBG destroy2();
+		level.setYourTeamAsReadyBG = undefined;
+		level.setYourTeamAsReady destroy2();
+		level.setYourTeamAsReady = undefined;
+	}
 }
 
 
@@ -1200,6 +1231,34 @@ HUD_Timeout_ResumingIn()
 	level.to_clock destroy2();
 
 }
+
+
+// Called each time player is spawned
+HUD_SelectTeam()
+{
+	if (self.pers["team"] == "none")
+	{
+		if (!isDefined(self.selectTeamInfoBG))
+		{
+			// Set your team as ready to skip readyup
+			self.selectTeamInfoBG = addHUDClient(self, -50, -23, undefined, (1,1,1), "left", "top", "center", "middle");
+		    	self.selectTeamInfoBG setShader("black", 100, 20);
+		        self.selectTeamInfoBG.alpha = 0.75;
+
+		        self.selectTeamInfo = addHUDClient(self, 0, -20, 1.1, (1,1,1), "center", "top", "center", "middle");
+			self.selectTeamInfo setText(game["STRING_READYUP_SELECT_TEAM"]);
+		}
+
+	}
+	else if (isDefined(self.selectTeamInfo))
+	{
+		self.selectTeamInfoBG destroy2();
+		self.selectTeamInfoBG = undefined;
+		self.selectTeamInfo destroy2();
+		self.selectTeamInfo = undefined;
+	}
+}
+
 
 // Black scren + timer countdown
 HUD_Half_Start(time)

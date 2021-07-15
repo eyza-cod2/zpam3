@@ -69,7 +69,7 @@ itemDef
 	visible			1
 	origin			60 101
 	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"askeslav, tomik, cokY, Sk1lzZ, YctN, kebit, foxbuster"
+	text			"askeslav, tomik, cokY, Sk1lzZ, YctN, kebit, foxbuster, shady"
 	textfont		UI_FONT_NORMAL
 	textscale		0.25
 	textstyle		ITEM_TEXTSTYLE_SHADOWED

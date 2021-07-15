@@ -85,7 +85,7 @@ handle(team, roundsplayed, value)
 
 
 
-	if ((roundsplayed > level.halfround && level.halfround > 0) || (value > level.halfscore && level.halfscore > 0))
+	if ((roundsplayed >= level.halfround && level.halfround > 0) || (value >= level.halfscore && level.halfscore > 0))
 		game["is_halftime"] = true;
 	else
 		game["is_halftime"] = false;

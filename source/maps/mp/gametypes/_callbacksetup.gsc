@@ -343,7 +343,7 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	{
 		//eAttacker iprintln("^6DMG feedback" + i);
 		if(isPlayer(eAttacker) && eAttacker != self && !(iDFlags & level.iDFLAGS_NO_PROTECTION))
-			eAttacker thread maps\mp\gametypes\_damagefeedback::updateDamageFeedback();
+			eAttacker thread maps\mp\gametypes\_damagefeedback::updateDamageFeedback(self);
 	}
 
 	//println("##################### " + "notifyDamage");

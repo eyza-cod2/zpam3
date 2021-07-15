@@ -385,7 +385,9 @@ resetAll()
 
 waitForPlayerOrClear(playersLast)
 {
-	wait level.fps_multiplier * 25;
+	wait level.fps_multiplier * 15;
+
+	resetCount = 0;
 
 	for(;;)
 	{
@@ -396,6 +398,12 @@ waitForPlayerOrClear(playersLast)
 		// reset matchinfo if 30% of players disconnect or there are no players or there was no players last map
 		players = getentarray("player", "classname");
 		if (((players.size * 1.0) < (playersLast * 0.7)) || ((players.size * 1.0) > (playersLast * 1.2)) || players.size <= 1 || playersLast <= 1)
+			resetCount++;
+		else
+			resetCount = 0;
+
+		// We are sure to reset the match info
+		if (resetCount >= 4)
 		{
 			clear();
 			iprintln("Info about teams was cleared.");
@@ -667,7 +675,7 @@ refresh()
 		if (playersLast != "")
 		{
 			level thread waitForPlayerOrClear(int(playersLast));
-			setcvar("sv_map_players", "");
+			//setcvar("sv_map_players", "");
 		}
 
 		// Save previous time left
@@ -765,6 +773,17 @@ refresh()
 			setCvarIfChanged("sv_map_totaltime", game["match_totaltime"]);
 
 
+		// Update number of players in first round (and second update only of its higher due to missing player in first round)
+		// If number of players change, matchinfo is reseted next map due to different number of players
+		if (game["match_teams_set"])
+		{
+			savedPlayers = GetCvarInt("sv_map_players"); // GetCvarInt return 0 if cvar is empty string
+			players = getentarray("player", "classname");
+
+			if (savedPlayers == 0 || (game["round"] == 2 && players.size > savedPlayers))
+				setCvarIfChanged("sv_map_players", players.size);
+		}
+
 
 		// Total time
 		if (game["match_totaltime"] > 0)
@@ -823,13 +842,6 @@ refresh()
 
 				setCvarIfChanged("sv_map_score", (game["match_team1_score_beforeOvertime"] + team1add) + " : " + (game["match_team2_score_beforeOvertime"] + team2add) + "  OT");
 			}
-
-			// Update number of player in this match
-			// Update this value only if it increases - avoid decreasing it for case when players disconnect in the middle of the match
-			// so next time map restart the info about match is properly reseted due to low number of players
-			players = getentarray("player", "classname");
-			if (players.size > GetCvarInt("sv_map_players"))
-				setCvarIfChanged("sv_map_players", players.size);
 		}
 
 		// Global server cvars visible via HLSW

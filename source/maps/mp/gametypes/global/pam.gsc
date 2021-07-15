@@ -24,7 +24,7 @@ init()
 
 		// Errors
 		precacheString2("STRING_PAM_DONT_STEAL", &"This version of pam is only for testing! Dont steal!");
-		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam321.iwd^7 must be installed in ^9main^7 folder. (fs_game)"); // ZPAM_RENAME
+		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam322.iwd^7 must be installed in ^9main^7 folder. (fs_game)"); // ZPAM_RENAME
 		precacheString2("STRING_PAM_GETTING_IWD_FILES_ERROR", &"Error while getting loaded iwd files. Make sure iwd files does not contains spaces.");
 		precacheString2("STRING_PAM_TOUJANE_FIX_MISSING", &"Iwd file ^9mp_toujane_fix_v2.iwd^7 must be installed in ^9main^7 folder");
 		precacheString2("STRING_PAM_BURGUNDY_FIX_MISSING", &"Iwd file ^9mp_burgundy_fix_v1.iwd^7 must be installed in ^9main^7 folder");
@@ -38,7 +38,7 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam321"; // ZPAM_RENAME
+	level.pam_folder = "main/zpam322"; // ZPAM_RENAME
 
 	level.pam_mode_change = false;
 
@@ -222,8 +222,9 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam310_beta6";
 	blackList[blackList.size] = "zpam320_test";
 	blackList[blackList.size] = "zpam320";
+	blackList[blackList.size] = "zpam321";
 	blackList[blackList.size] = "mp_toujane_fix_v1";
-
+	// ZPAM_RENAME - add old pam
 
 	for(i = 0; i < blackList.size; i++)
 	{
@@ -236,9 +237,6 @@ CheckInstallation()
 			return;
 		}
 	}
-
-
-	// TODO check www download url and set github?
 }
 
 

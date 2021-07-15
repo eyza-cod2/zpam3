@@ -162,7 +162,7 @@ generateDemoName()
     // Assing my team name as first
     myTeamName = game["match_team1_name"];
     enemyTeamName = game["match_team2_name"];
-    if (self.pers["team"] == "axis" && game["match_team2_side"] == "axis")
+    if (self.pers["team"] == game["match_team2_side"])
     {
         myTeamName = game["match_team2_name"];
         enemyTeamName = game["match_team1_name"];
@@ -306,12 +306,29 @@ stopRecordingForAll()
 			player openMenu(game["menu_exec_cmd"]);		// open menu via script
 			player closeMenu();				// will only close menu opened by script
 
+			// Serverinfo menu reopen
+			player thread reopenServerinfoMenu();
 
 			player iprintln("Recording stopped.");
 
 			if (player isEnabled())
 				player show(); // show recording will start automaticallly again
 		}
+	}
+}
+
+
+reopenServerinfoMenu()
+{
+	self endon("disconnect");
+
+	wait level.fps_multiplier * 0.1;
+
+	// Because stop recording may be called when matchinfo is cleared - it will close sevrerinfo menu for connected players
+	// If they are still in serverinfo menu, open that menu again
+	if(!isDefined(self.pers["skipserverinfo"]))
+	{
+		self openMenu(game["menu_serverinfo"]);
 	}
 }
 

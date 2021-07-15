@@ -511,7 +511,7 @@ onConnected()
     	self notify("menuresponse", game["menu_serverinfo"], "close");
     	wait level.frame;
 
-	i = 1;
+	i = 0;
 
 	if (i == 0)
 	{

@@ -1,6 +1,6 @@
 # Introduction
 
-Mod zPAM3.21 is new version of PAM mode for COD2.<br>
+Mod zPAM3.22 is new version of PAM mode for COD2.<br>
 
 The code form previous zPAM 2.07 version is completely rewritten and ported to new code base, which helped in the implementation of new features and bug fixes.
 
@@ -9,10 +9,12 @@ Work on this pam was iniciated by me in 2015 a was not never fully finished. In 
 
 ## Download
 - Actual version:
-	- 2021/05/16 - <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam321.zip">zPAM 3.21</a></b>
+	- 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam322.zip">zPAM 3.22</a></b>
 
 
 - Previous versions:
+
+	- 2021/05/16 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f0bea94f83791c4a756909963101bfd9d340757f">zPAM 3.21</a></b>
 	- 2021/05/05 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c7d5fa259e6e21a7fc510847421fab5338f19d0d">zPAM 3.20</a></b>
 	- 2021/01/05 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/a365aa9d884f87a368e51879b016157b431ee449">zPAM 3.1 BETA 6</a></b></b>
 	- 2020/11/29 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/b3e8711b13b493134ec1c762aeba17399eefb95d">zPAM 3.1 BETA 5</a></b></b>
@@ -23,6 +25,37 @@ Work on this pam was iniciated by me in 2015 a was not never fully finished. In 
 
 
 ## Changelog
+<details><summary>zPAM 3.22 changes (click to open)</summary>
+<p>
+
+#### Bugs fixed:
+- [3.3.18] Quick menu settings - settings for 'Show enemy list' was not correctly saved - fixed
+- [3.3.29] Score changing via menu - fixed issue when score is changed to halftime state (for example 10:2 in cg_mr12) - halftime was then called again -> fixed
+
+#### News:
+- [3.3.42] Players left - when last player in team is killed, text "Allies Eliminated" / "Axis Eliminated" is showed
+  (this change was already in zPAM3.20 - i forgot to write it to the change list)
+- [3.3.43] When you hit your teammate, reddish hit mark is showed<br>
+  <img src="/images/team_hit.png" height="200" />
+- Added text warning on screen to select a team when you ESC welcome (server info) menu
+
+#### Update of existing:
+- [3.3.32] New damage feedback for assists - text "assist" is showed instead of hit mark <br>
+  <img src="/images/assist.png" height="200" />
+- [3.3.41] When 5min timer expires between maps / halfs, warning text is showed for better indication that one team ready will skip the readyup<br>
+  <img src="/images/auto_readyup.png" height="200" />
+- [3.3.42] Players left - when some player were killed, "bouncy" animation was used for text. Its removed now because the number sometimes incomprehensibly moved all over the screen
+- [3.3.42] Players left - when last player in team is killed, text "Allies Eliminated" / "Axis Eliminated" is now showed in red color.
+- [3.3.10] Match info - improved detection of new match with different team
+- [3.3.2] Auto-recording - ensuring my team name is always first in demo name
+- [3.3.17] Scoreboard menu - when final scoreboard is showed, players names are showed with colors now
+</p>
+</details>
+
+
+
+
+
 <details><summary>zPAM 3.21 changes (click to open)</summary>
 <p>
 
@@ -35,6 +68,8 @@ Work on this pam was iniciated by me in 2015 a was not never fully finished. In 
 - Strat - players are now spawned by SD spawn positions, not DM spawn positions - this make vallente map working in strat
 </p>
 </details>
+
+
 
 
 <details><summary>zPAM 3.20 changes (click to open)</summary>
@@ -87,21 +122,26 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 
 ## Installation
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam321.zip">zPAM 3.21</a></b> and extract folders with files into following locations:
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam322.zip">zPAM 3.22</a></b> and extract folders with files into following locations:
 	- ./pb/pbsvuser.cfg
-	- ./main/zpam321.iwd
+	- ./main/zpam322.iwd
 	- ./main/mp_toujane_fix_v2.iwd
 	- ./main/mp_burgundy_fix_v1.iwd
 	- ./main/server.cfg
+	- ./main/public.cfg
+
+
+- Add ```+exec server.cfg``` into command line arguments and edit the *server.cfg* file to configure your server
+- If you are running public server, add ```+exec public.cfg``` into command line arguments and edit the *public.cfg* file to configure your public server
+- If you use these .cfg files, make sure no other .cfg files are executed!
 
 
 - Notes:
 	- When your server is runned, you may get an error message saying "PAM is not installed correctly". To fix this error, follow instructions in [Troubleshooting](#troubleshooting) section
 	- <i>mp_toujane_fix_v2.iwd</i> and <i>mp_burgundy_fix_v1.iwd</i> are fixed version of original maps - these files needs to be included with PAM, more info in [Questions & Answers](#questions--answers) section
 		- Toujane FIX changes: https://github.com/eyza-cod2/mp_toujane_fix
-		- Burgundy FIX changes: https://github.com/eyza-cod2/mp_burgundy_fix.
-	- <i>server.cfg</i> - exec this file for fast server configuration and in case you are running a public server (+exec server)
-	- you have to enable downloading via cvar <i>sv_wwwDownload 1</i> and specify a download url via cvar <i>sv_wwwBaseURL "url"</i>; if you dont have any, you can use <i>sv_wwwBaseURL "http://cod2x.me/zpam321"</i> (this is to make sure fixed maps are downloaded in fast way for players)
+		- Burgundy FIX changes: https://github.com/eyza-cod2/mp_burgundy_fix
+	- you have to enable downloading via cvar <i>sv_wwwDownload 1</i> and specify a download url via cvar <i>sv_wwwBaseURL "url"</i>; if you dont have any, you can use <i>sv_wwwBaseURL "http://cod2x.me/zpam322"</i> (this is to make sure fixed maps are downloaded in fast way for players)
 
 
 ## Contact
@@ -109,10 +149,26 @@ Write message on discord <b>LetsPlay Europe</b> in <b>#cod2-zpam-3</b> channel.<
 Or add me on discord <b>eyza#7930</b><br>
 Or write me on email <b>kratas.tom@seznam.cz</b><br>
 <br>
-Supporters: askeslav, tomik, cokY, Sk1lzZ, YctN, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / dutch, excel
-<br><br>
 Please support this work on my Paypal -> https://paypal.me/kratasy
 <br>
+
+## Supporters
+
+**askeslav, tomik, lampy**<br>
+Big thanks for consulting and testing
+
+**YctN**   (discord: FGH - YctN#1140)<br>
+Big thanks for server support, hosting and fixed maps consulting
+
+**Stendby**   (discord: Stendby#3298)<br>
+Big thanks for fixed maps
+
+**mtN**   (discord: mtN#8249)<br>
+Big thanks for PAM promoting
+
+**Other supporters:**<br>
+cokY, Sk1lzZ, YctN, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / dutch, excel, shady
+
 
 <br><br>
 
@@ -335,8 +391,8 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 
 ## Troubleshooting
 ### Error "zPAM is not installed correctly"
-#### Iwd file zpam321.iwd must be installed in main folder. (fs_game)
- - From version 3.21, all iwd files have to be installed in main folder.
+#### Iwd file zpam322.iwd must be installed in main folder. (fs_game)
+ - From version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that cvars / settings changed in game are not saved into the config when running a game with fs_game set.
 Make sure cvar /fs_game is empty and iwd files are placed in main folder.
 
@@ -348,7 +404,7 @@ Make sure cvar /fs_game is empty and iwd files are placed in main folder.
 
 ####  WWW downloading must be enabled. Set sv_wwwDownload and sv_wwwBaseURL
 - You have to enable www downloading via cvar /sv_wwwDownload 1 and specify a download url via cvar /sv_wwwBaseURL "url".
-- If you dont have any url, you can use /sv_wwwBaseURL "http://cod2x.me/zpam321"
+- If you dont have any url, you can use /sv_wwwBaseURL "http://cod2x.me/zpam322"
 - This is to make sure fixed maps are downloaded in fast way for players
 
 ####  Old pam / maps detected in main folder. Delete iwd file you see above.
@@ -566,7 +622,8 @@ Added posibility to call bash mode from menu.<br>
 [3.3.29] Score changing via menu - in first readyup, you can change a score of teams (in case wrong pam_mode was set, server crash, etc..)<br>
 [3.3.30] New spectating system - new UI, auto-spectator is now better, score stats, player progress stats, etc..<br>
 [3.3.31] Round report - at the end of the round info about kills and hits you made are printed<br>
-[3.3.32] New damage feedback for assists - when player damaged by you is killed, damage feedback cross is showed<br>
+[3.3.32] New damage feedback for assists - when player damaged by you is killed, "assist" text is showed on screen<br>
+<img src="/images/assist.png" /><br>
 [3.3.33] Players left - new player names list of alive enemy players above players left counter (can be turned off via menu)<br>
 [3.3.34] In readyup, you can throw nades like in strat mode<br>
 [3.3.35] New custom settings for map mode in rcon menu - a few of the settings can be changed (for example shotgun rebalance, fast-reload fix) and this change stays applied in next maps<br>
@@ -577,8 +634,12 @@ Added posibility to call bash mode from menu.<br>
 [3.3.38] Score in left-top corner can by enabled via settings menu<br>
 [3.3.39] For future hit diagnostics, at the end of each round info about hits is saved to cvar pam_damage_debug<br>
 [3.3.40] Hitbox rebalance - if you fire from rifle or scope to left arm at +-20* degress, it will be changed to kill to body<br>
-[3.3.41] In halftime-readyup and between map readyup, when 5min timer expire, red timer is showed. If all players from 1 team are ready, match automatically start even if opponent team is not ready.<br>
+[3.3.41] In halftime-readyup and between map readyup, when 5min timer expire, warning and red timer is showed. If all players from 1 team are ready, match automatically start even if opponent team is not ready.<br>
 <a href="/images/auto_readyup.png"> <img src="/images/auto_readyup.png" /> </a><br>
+[3.3.42] Players left - when last player in team is killed, text "Allies Eliminated" / "Axis Eliminated" is showed<br>
+[3.3.43] When you hit your teammate, reddish hit mark is showed<br>
+<img src="/images/team_hit.png" /><br>-
+
 
 </sub>
 

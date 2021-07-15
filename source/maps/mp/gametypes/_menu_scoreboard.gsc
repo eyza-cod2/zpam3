@@ -196,7 +196,15 @@ addLine(player, name, score, kills, deaths, assists, damages, plants, defuses)
 			self.scoreboard.names += "^4"; // blue
 	}
 
-	if (isDefined(name)) 	self.scoreboard.names +=	removeColorsFromString(name);
+
+
+	if (isDefined(name))
+	{
+		// In final scoreboard show name colors, otherwise dont
+		if (game["state"] != "intermission")
+			name = removeColorsFromString(name);
+		self.scoreboard.names +=	name;
+	}
 	if (isDefined(score)) 	self.scoreboard.scores +=	score;
 	if (isDefined(kills)) 	self.scoreboard.kills +=	kills;
 	if (isDefined(deaths)) 	self.scoreboard.deaths +=	deaths;
