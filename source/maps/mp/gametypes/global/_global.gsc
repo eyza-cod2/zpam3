@@ -92,12 +92,14 @@ setClientCvar2(cvar, value, aaa, bbb, ccc)
 /*************************************************************************************************************
 * Rules
 **************************************************************************************************************/
+PAMModeContains(string)
+{
+	return maps\mp\gametypes\global\rules::PAMModeContains(string);
+}
 ruleCvarDefault(array, cvarName, value)
 {
 	return maps\mp\gametypes\global\rules::ruleCvarDefault(array, cvarName, value);
 }
-
-
 
 /*************************************************************************************************************
 * HUD system
@@ -138,7 +140,10 @@ hideHUDSmooth(time, from, to)
 {
 	return maps\mp\gametypes\global\hud_system::hideHUDSmooth(time, from, to);
 }
-
+SetPlayerWaypoint(camera_player, waypoint_player, offset)
+{
+	return maps\mp\gametypes\global\hud_system::SetPlayerWaypoint(camera_player, waypoint_player, offset);
+}
 
 
 /*************************************************************************************************************
@@ -147,6 +152,10 @@ hideHUDSmooth(time, from, to)
 startsWith(string, substring)
 {
 	return maps\mp\gametypes\global\string::startsWith(string, substring);
+}
+contains(string, substring)
+{
+	return maps\mp\gametypes\global\string::contains(string, substring);
 }
 isDigitalNumber(string)
 {
@@ -164,7 +173,11 @@ removeColorsFromString(string)
 {
 	return maps\mp\gametypes\global\string::removeColorsFromString(string);
 }
-formatTime(timeSec)
+formatTime(timeSec, separator)
 {
-	return maps\mp\gametypes\global\string::formatTime(timeSec);
+	return maps\mp\gametypes\global\string::formatTime(timeSec, separator);
+}
+plural_s(num, text)
+{
+	return maps\mp\gametypes\global\string::plural_s(num, text);
 }

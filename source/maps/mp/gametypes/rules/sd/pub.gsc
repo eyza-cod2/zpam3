@@ -1,6 +1,6 @@
 Load()
 {
-	// DO NOT MODIFY BELOW THIS LINE!
-	game["leagueLogo"] = "";
-	game["leagueString"] = &"S&D Public Mode";
+	game["rules_leagueString"] = &"S&D - Public";
+	game["rules_formatString"] = &""; // default
+	game["rules_stringColor"] = (1, 1, 0); // yellow
 }

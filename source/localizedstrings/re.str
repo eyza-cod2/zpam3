@@ -1,0 +1,70 @@
+// Note to translators:
+// If a sentence is the same in your language then please change it to "#same"
+//
+// eg:
+// LANG_ENGLISH  "HALT"
+// LANG_GERMAN   "#same"
+//
+// (This is so we can tell which strings have been signed-off as ok to be the same words for QA
+//  and because we do not store duplicate strings, which will then get exported again next time
+//  as being untranslated.)
+//
+VERSION             "1"
+CONFIG              "C:\trees\cod2\bin\StringEd.cfg"
+
+REFERENCE           OBJ_GAMETYPE
+LANG_ENGLISH        "Retrieval"
+
+REFERENCE           OBJ_TEXT_GAMETYPE
+LANG_ENGLISH        "Attackers:  Retrieve the objectives and take them to your team goal. (Blue Box)\nDefenders:  Defend the objectives from being taken to their goal."
+
+REFERENCE           ATTACKER
+LANG_ENGLISH        "Retrieve the objectives and take them to your goal (Blue Box)"
+
+REFERENCE           DEFENDER
+LANG_ENGLISH        "Defend the objectives from being taken to the goal(Blue Box)"
+
+REFERENCE           CARRYINGGENERIC
+LANG_ENGLISH        "You are carrying the &&1"
+
+REFERENCE           PICKEDUPGENERIC
+LANG_ENGLISH        "A player has picked up the &&1"
+
+REFERENCE           PICKUPAXISONLYGENERIC
+LANG_ENGLISH        "The &&1 can only be picked up by the Axis. Defend it!"
+
+REFERENCE           PICKUPALLIESONLYGENERIC
+LANG_ENGLISH        "The &&1 can only be picked up by the Allies. Defend it!"
+
+REFERENCE           PRESSTOPICKUPGENERIC
+LANG_ENGLISH        "Press USE [[{+activate}]] to take the &&1"
+
+REFERENCE           DELAYPICKUPGENERIC
+LANG_ENGLISH        "Waiting time on pick up for &&1"
+
+REFERENCE           DROPPEDGENERIC
+LANG_ENGLISH        "A player has dropped the &&1"
+
+REFERENCE           TIMEOUTRETURNINGGENERIC
+LANG_ENGLISH        "Time-out &&1 being on the ground. Returning it to its original location"
+
+REFERENCE           INMINESGENERIC
+LANG_ENGLISH        "Lost &&1 in the minefield. Moving it to its original positions"
+
+REFERENCE           CAPTUREDALLIESGENERIC
+LANG_ENGLISH        "Allies have captured the &&1!"
+
+REFERENCE           CAPTUREDAXISSGENERIC
+LANG_ENGLISH        "Axis have captured the &&1!"
+
+REFERENCE           CAPTUREDALL
+LANG_ENGLISH        "All objectives have been captured!"
+
+REFERENCE           FIELDRADIO
+LANG_ENGLISH        "field radio"
+
+REFERENCE           EXPLOSIVES
+LANG_ENGLISH        "explosives"
+
+
+ENDMARKER

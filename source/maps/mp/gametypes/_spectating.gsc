@@ -2,6 +2,11 @@
 
 init()
 {
+	level.spectatingSystem = false;
+
+	if (!game["is_public_mode"] && (level.gametype == "sd" || level.gametype == "tdm" || level.gametype == "dm" || level.gametype == "ctf" || level.gametype == "hq" || level.gametype == "htf" || level.gametype == "re"))
+		level.spectatingSystem = true;
+
 	addEventListener("onCvarChanged", ::onCvarChanged);
 
 	registerCvar("scr_spectatefree", "BOOL", 0);

@@ -4,9 +4,9 @@ init()
 {
 	addEventListener("onCvarChanged", ::onCvarChanged);
 
-	registerCvar("scr_timeouts", "INT", 0, 0, 10);
-	registerCvar("scr_timeouts_half", "INT", 0, 0, 10);
-	registerCvar("scr_timeout_length", "FLOAT", 5, 0, 1440);
+	registerCvarEx("C", "scr_timeouts", "INT", 0, 0, 10);
+	registerCvarEx("C", "scr_timeouts_half", "INT", 0, 0, 10);
+	registerCvarEx("C", "scr_timeout_length", "FLOAT", 5, 0, 1440);
 
 
 	if(game["firstInit"])
@@ -16,9 +16,7 @@ init()
 		precacheString2("STRING_GOING_TO_TIMEOUT_IN", &"Going to time-out in");
 
 
-		game["timeout_called_team"] = "default";
-		game["timeout_call_count"] = 0;
-		game["timeout_cancel_count"] = 0;
+		game["timeout_called_team"] = "";
 		game["allies_called_timeouts"] = 0;
 		game["axis_called_timeouts"] = 0;
 		game["allies_called_timeouts_half"] = 0;
@@ -27,6 +25,7 @@ init()
 	}
 
 	level.in_timeout = false;
+	level.timeout_elapsedTime = 0; // in seconds
 
 	// If this flag is set to true, we know timeout will be runned
 	if (game["do_timeout"])
@@ -72,13 +71,13 @@ onStartGameType()
 onConnected()
 {
     // Set actual timeout status on player connect + when round restart in SD
-    self setClientCvar2("ui_allow_timeout", self Validate_Timeout(false));
+    self Update_Player_HUD_Cvar();
 }
 
 onSpawned()
 {
     // Set actual timeout status on player connect + when round restart in SD
-    self setClientCvar2("ui_allow_timeout", self Validate_Timeout(false));
+    self Update_Player_HUD_Cvar();
 
     // Disable weapons
     if (level.in_timeout)
@@ -111,6 +110,24 @@ callTimeout()
 	action = self Validate_Timeout(true);
 
 
+	// Timeout called, so print message to all players
+	if (action == "run_now" || action == "run_next_round" || action == "run_in_time")
+	{
+		game["timeout_called_team"] = self.pers["team"];
+
+		iprintln(self.name + " ^7called a time-out for team " + self.pers["team"]);
+
+		if (level.gametype == "sd" || level.gametype == "re")
+		{
+			if (level.in_timeout)
+				iprintln("Going to time-out mode now.");
+			else if(game["do_timeout"])
+				iprintln("Going to time-out mode in the next round.");
+		}
+
+		logPrint("TO_CALL;" + self.pers["team"] + ";" + self.name + "\n");
+	}
+
 
 	// Called in SD in strattime
 	if (action == "run_now")
@@ -124,7 +141,7 @@ callTimeout()
 		// Flag is set, timeout will be executed after restart
 		game["do_timeout"] = true;
 
-	        if (level.gametype == "sd" && level.roundended)
+	        if ((level.gametype == "sd" || level.gametype == "re") && level.roundended)
 		{
 	            thread HUD_Timeout(); // Show timeout message
 	        }
@@ -142,11 +159,8 @@ callTimeout()
 	else if (action == "cancel")
 	{
 		game["do_timeout"] = false;
-		game["timeout_cancel_count"]++;
 
-		// game["allies_called_timeouts"]    game["axis_called_timeouts"]
-		game[game["timeout_called_team"] + "_called_timeouts"]--;
-		game[game["timeout_called_team"] + "_called_timeouts_half"]--;
+		Cancel();
 
 		iprintln(self.name + " ^7canceled time-out for team " + self.pers["team"]);
 
@@ -155,44 +169,30 @@ callTimeout()
 
 
 
-	// Timeout called, so print message to all players
-	if (action == "run_now" || action == "run_next_round" || action == "run_in_time")
-	{
-		// Increase number of calls
-		game[self.pers["team"] + "_called_timeouts"]++;
-		game[self.pers["team"] + "_called_timeouts_half"]++;
-
-		game["timeout_called_team"] = self.pers["team"];
-		game["timeout_call_count"]++;
-
-		iprintln(self.name + " ^7called a time-out for team " + self.pers["team"]);
-
-		if (level.gametype == "sd")
-		{
-			if (level.in_timeout)
-				iprintln("Going to time-out mode now.");
-			else if(game["do_timeout"])
-				iprintln("Going to time-out mode in the next round.");
-		}
-
-		logPrint("TO_CALL;" + self.pers["team"] + ";" + self.name + "\n");
-	}
-
-
 	// Update timeout status for all other players in their menus
 	if (action != "notallowed")
 	{
 		players = getentarray("player", "classname");
 		for(i = 0; i < players.size; i++)
 		{
-			 players[i] setClientCvar2("ui_allow_timeout", players[i] Validate_Timeout(false));
+			 players[i] Update_Player_HUD_Cvar();
 		}
 	}
 
 }
 
+// Called also from do_halftime and do_mapend
+Cancel()
+{
+	game["do_timeout"] = false;
+
+	game["timeout_called_team"] = "";
+}
+
 Validate_Timeout(print)
 {
+	//  0:disabled 1:enabled 2:disabled 3:already called 4:in timeout 5:cancel
+
 	// Only for Allies and Axis
 	if (self.pers["team"] != "axis" && self.pers["team"] != "allies")
 	{
@@ -211,7 +211,7 @@ Validate_Timeout(print)
 	if (game["do_timeout"] == false)
 	{
 		// Is is supported game type
-		if (!(level.gametype == "sd" || level.gametype == "ctf" || level.gametype == "tdm" || level.gametype == "dm"))
+		if (!(level.gametype == "sd" || level.gametype == "ctf" || level.gametype == "tdm" || level.gametype == "dm" || level.gametype == "hq" || level.gametype == "htf" || level.gametype == "re"))
 		{
 			if (print) { self iprintln("Time-out is not supported in this gametype"); return "notallowed"; }
 			else return 0; // Invisible
@@ -255,7 +255,7 @@ Validate_Timeout(print)
 
 
 		// SD
-		if (level.gametype == "sd")
+		if (level.gametype == "sd" || level.gametype == "re")
 		{
 			// Timeout can be always called in strat time
 			if (level.in_strattime)
@@ -285,8 +285,20 @@ Validate_Timeout(print)
 		}
 
 		// Time based gametypes
-		else if (level.gametype == "ctf" || level.gametype == "tdm" || level.gametype == "dm")
+		else if (level.gametype == "ctf" || level.gametype == "tdm" || level.gametype == "dm" || level.gametype == "hq" || level.gametype == "htf")
 		{
+			// Timeout can be always called in strat time
+			if (level.in_strattime)
+			{
+				// We are in strat time, run timeout now
+				if (print) return "run_now";
+				else return 1; // Call timeout
+			}
+			if (level.mapended)
+			{
+				if (print) { self iprintln("Time-out can not be called"); return "notallowed"; }
+				else return 2; // Call timeout (disabled)
+			}
 
 			if (print) return "run_in_time";
 			else return 1; // Call timeout
@@ -316,17 +328,21 @@ Validate_Timeout(print)
 Start_Timeout_Mode(runned_in_middle_of_game)
 {
 	level.in_timeout = true;
+	game["do_timeout"] = false;
 
 	// Hide players left, change objectives, ...
 	level notify("running_timeout");
 
-	// Player movement
-	if (level.gametype != "sd")
-		maps\mp\gametypes\global\cvar_system::setCvarQuiet("g_speed", 0);
+	// Increase number of calls
+	if (game["timeout_called_team"] == "allies" || game["timeout_called_team"] == "axis")
+	{
+		game[game["timeout_called_team"] + "_called_timeouts"]++;
+		game[game["timeout_called_team"] + "_called_timeouts_half"]++;
+	}
 
-	// remove clock
-	if(isDefined(level.clock))
-		level.clock destroy2();
+	// Player movement
+	if (level.gametype != "sd" && level.gametype != "re")
+		maps\mp\gametypes\global\cvar_system::setCvarQuiet("g_speed", 0);
 
 	// Disable weapons
 	if (runned_in_middle_of_game)
@@ -336,25 +352,28 @@ Start_Timeout_Mode(runned_in_middle_of_game)
 		{
 			player = players[i];
 			player disableWeapon();
+			player Update_Player_HUD_Cvar();
 		}
 	}
+
+	time_start = gettime();
 
 	// Run readyup mode and wait here untill is finished
 	maps\mp\gametypes\_readyup::Start_Readyup_Mode(runned_in_middle_of_game);
 
-	Match_Resume();
-}
+	time_elapsed = gettime() - time_start;
+	level.timeout_elapsedTime += time_elapsed / 1000;
 
 
-Match_Resume()
-{
+
 	level notify("timeoutover");
 
+	game["timeout_called_team"] = "";
 	level.in_timeout = 0;
 
 	logPrint("TOO;\n");
 
-	if (level.gametype != "sd")
+	if (level.gametype != "sd" && level.gametype != "re")
 		maps\mp\gametypes\global\cvar_system::restoreCvarQuiet("g_speed");
 
 	// Enable weapons
@@ -363,48 +382,37 @@ Match_Resume()
 	{
 		player = players[i];
 		player enableWeapon();
+		player Update_Player_HUD_Cvar();
 	}
 
-	switch (level.gametype)
+	if (level.gametype == "sd" || level.gametype == "re")
 	{
-	case "ctf":
-    /*
-		thread maps\mp\gametypes\ctf::startGame();
-		thread maps\mp\gametypes\ctf::updateGametypeCvars();
-		if (isDefined(level.rogueflag["axis"]) && level.rogueflag["axis"])
-		{
-			axis_flag = getent("axis_flag", "targetname");
-			axis_flag thread maps\mp\gametypes\ctf::autoReturn();
-		}
-		if (isDefined(level.rogueflag["allies"]) && level.rogueflag["allies"])
-		{
-			allied_flag = getent("allied_flag", "targetname");
-			allied_flag thread maps\mp\gametypes\ctf::autoReturn();
-		}*/
-
-		break;
-	case "dm":/*
-		thread maps\mp\gametypes\dm::startGame();
-		//wait 1;
-		thread maps\mp\gametypes\dm::updateGametypeCvars();
-*/
-		break;
-	case "tdm":/*
-		thread maps\mp\gametypes\tdm::startGame();
-		//wait 1;
-		thread maps\mp\gametypes\tdm::updateGametypeCvars();
-*/
-		break;
-	case "sd":
-
 		// Reset map and start round again
 		map_restart(true);
-
-		break;
 	}
+}
+
+
+Update_Player_HUD_Cvar()
+{
+	//  0:disabled 1:enabled 2:disabled 3:already called 4:in timeout 5:cancel
+	number = self Validate_Timeout(false);
+
+	self setClientCvarIfChanged("ui_allow_timeout", number);
 
 
 
+	if (number == 1 && (self.pers["team"] == "axis" || self.pers["team"] == "allies"))
+	{
+		if (game[self.pers["team"] + "_called_timeouts"] < level.scr_timeouts)
+			str = "(" + (level.scr_timeouts_half - game[self.pers["team"] + "_called_timeouts_half"]) + ")";
+		else
+			str = "(0)";
+
+		self setClientCvarIfChanged("ui_timeout_info", str);
+	}
+	else
+		self setClientCvarIfChanged("ui_timeout_info", "");
 }
 
 
@@ -436,10 +444,11 @@ HUD_Timeout()
 
 TO_Time_Based_GoingToTimeOutIN()
 {
+	waittime = 12;
 
 	goingtoo = newHudElem2();
 	goingtoo.x = 320;
-	goingtoo.y = 15; //220
+	goingtoo.y = 75; //220
 	goingtoo.alignX = "center";
 	goingtoo.alignY = "top";
 	goingtoo.fontScale = 1.3;
@@ -448,17 +457,17 @@ TO_Time_Based_GoingToTimeOutIN()
 
 	ttb = newHudElem2();
 	ttb.x = 320;
-	ttb.y = 35; //220
+	ttb.y = 90; //220
 	ttb.alignX = "center";
 	ttb.alignY = "top";
 	ttb.fontScale = 1.2;
 	ttb.color = (1, 1, 0);
-	ttb SetTimer(20);
+	ttb SetTimer(waittime);
 
 	time = 0;
 	while (game["do_timeout"]) {
 
-		if (time >= 20)
+		if (time >= waittime)
 		{
 			level thread Start_Timeout_Mode(true); // runned_in_middle_of_game = true
 			break;

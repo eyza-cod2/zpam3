@@ -2,15 +2,14 @@
 
 Load()
 {
-	game["leagueLogo"] = "";
-	game["leagueString"] = &"SD Deathmatch";
-	game["ruleCvars"] = GetCvars();
+	game["rules_leagueString"] = &"Deathmatch - Warmup";
+	game["rules_formatString"] = &"Unlimited time"; // default
+
+	game["ruleCvars"] = GetCvars(game["ruleCvars"]);
 }
 
-GetCvars()
+GetCvars(arr)
 {
-	arr = [];
-
 	// Match Style
 	arr = ruleCvarDefault(arr, "scr_dm_timelimit", 0);		// Time limit. When halftime is enabled, its time limit per half. 0=disabled (minutes)
 	arr = ruleCvarDefault(arr, "scr_dm_half_score", 0);		// Number of score when half-time starts. Has no effect when halftime is disabled.
@@ -28,9 +27,10 @@ GetCvars()
 
 	// Readyup
 	arr = ruleCvarDefault(arr, "scr_readyup", 0); 				// Enable readyup [0, 1] 0 = disbled  1 = enabled
-	arr = ruleCvarDefault(arr, "scr_readyup_autoresume", 5); 	// Minutes to auto-resume halftime [0 - 10] 0 = disabled
+	arr = ruleCvarDefault(arr, "scr_readyup_autoresume_half", 0); 	// Minutes to auto-resume halftime [0 - 10] 0 = disabled
+	arr = ruleCvarDefault(arr, "scr_readyup_autoresume_map", 0); 	// Minutes to auto-resume between maps [0 - 10] 0 = disabled
 	arr = ruleCvarDefault(arr, "scr_readyup_nadetraining", 0); 	// Enable strat grenade fly mode in readyup
-	arr = ruleCvarDefault(arr, "scr_half_start_timer", 10); 	// Count-down timer when First-half starting / Second-half starting / Timeout ending
+	arr = ruleCvarDefault(arr, "scr_readyup_start_timer", 10); 	// Count-down timer with black screen when all players are ready
 
 	// Time-out
 	arr = ruleCvarDefault(arr, "scr_timeouts", 0);						// Total timeouts for one team
@@ -78,21 +78,26 @@ GetCvars()
 	arr = ruleCvarDefault(arr, "g_maxDroppedWeapons", 10);
 	arr = ruleCvarDefault(arr, "sv_fps", 30);
 	arr = ruleCvarDefault(arr, "sv_maxRate", 25000);
-	arr = ruleCvarDefault(arr, "sv_timeout", 60);				// Time after 999 player is kicked
-	arr = ruleCvarDefault(arr, "g_antilag", 0);
+	arr = ruleCvarDefault(arr, "sv_timeout", 60);					// Time after 999 player is kicked
+	arr = ruleCvarDefault(arr, "g_antilag", 0);					// Antilag 1 means that players ping is considered when calculating hit location - what you see on your monitor is also what the server will see
+	arr = ruleCvarDefault(arr, "g_knockback", 0);					// Speed energy if player is hitted by grenade, other player, etc; turned off to avoid "sliding" effect
 
 	arr = ruleCvarDefault(arr, "scr_fast_reload_fix", 1);				// Prevent players from shoting faster via double-scroll bug
-	arr = ruleCvarDefault(arr, "scr_shotgun_rebalance", 1);				// Enable shotgun rebalance to fix long shot kills and short range hits
+	arr = ruleCvarDefault(arr, "scr_shotgun_consistent", 1);			// Enable consistent shotgun to fix long shot kills and short range hits
 	arr = ruleCvarDefault(arr, "scr_prone_peek_fix", 1);				// Prevent players from doing fast peeks from prone (time, after player can prone again will be increased)
 	arr = ruleCvarDefault(arr, "scr_mg_peek_fix", 1);				// When mg is dropped, player is spawned right behid mg
-	arr = ruleCvarDefault(arr, "scr_hand_hitbox_fix", 1);				// Damage to left hand is adjusted for rifles and scopes.
+	arr = ruleCvarDefault(arr, "scr_hitbox_hand_fix", 1);				// Damage to left hand is adjusted for rifles and scopes.
+	arr = ruleCvarDefault(arr, "scr_hitbox_torso_fix", 1);					// Damage of M1, rifles, scopes and shotgun is adjusted to have less hits in game
+	arr = ruleCvarDefault(arr, "scr_ladder_weapon_fix", 1);				// Weapon ladder bug is when you 2x fast switch weapon and then hold fire button - weapon is invisible with no switch sound
 	arr = ruleCvarDefault(arr, "scr_killcam", 1);					// Killcam
 
 
   	/*********
 	WEAPONS
 	*********/
-
+	// Rifles-only mode
+	arr = ruleCvarDefault(arr, "scr_rifle_mode", 0);
+	
 	// Nade spawn counts for each class
 	arr = ruleCvarDefault(arr, "scr_boltaction_nades", 1);
 	arr = ruleCvarDefault(arr, "scr_semiautomatic_nades", 1);

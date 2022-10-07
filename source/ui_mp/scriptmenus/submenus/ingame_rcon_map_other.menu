@@ -1,0 +1,38 @@
+
+
+ITEM_MAP_OPTIONS_HEADING(3 0, 0.245, "Score allies:")
+
+ITEM_SCORE_PICKER(87 0, 13 15, "<",  "ui_rcon_map_score_enabled", exec "openscriptmenu ingame rcon_map_score_allies_-")
+ITEM_SCORE       (100 0, 12 15, "ui_rcon_map_score_allies", "ui_rcon_map_score_enabled")
+ITEM_SCORE_PICKER(112 0, 13 15, ">",  "ui_rcon_map_score_enabled", exec "openscriptmenu ingame rcon_map_score_allies_+")
+
+
+
+ITEM_MAP_OPTIONS_HEADING(3 16, 0.245, "Score axis:")
+
+ITEM_SCORE_PICKER(87 16, 13 15, "<",  "ui_rcon_map_score_enabled", exec "openscriptmenu ingame rcon_map_score_axis_-")
+ITEM_SCORE       (100 16, 12 15, "ui_rcon_map_score_axis", "ui_rcon_map_score_enabled")
+ITEM_SCORE_PICKER(112 16, 13 15, ">",  "ui_rcon_map_score_enabled", exec "openscriptmenu ingame rcon_map_score_axis_+")
+
+
+
+
+ITEM_MAP_OPTIONS_HEADING(3 48, 0.245, "Changed cvars:")
+ITEM_GAMETYPE_ONDVAR(86 50, 30 15, "Keep",				"ui_rcon_map_cvars", "keep", exec "openscriptmenu ingame rcon_map_cvars_keep")
+ITEM_GAMETYPE_ONDVAR(130 50, 110 15, "Restore default values",		"ui_rcon_map_cvars", "restore", exec "openscriptmenu ingame rcon_map_cvars_restore")
+
+itemDef
+{
+	type 			ITEM_TYPE_TEXT
+	dvar			"ui_rcon_map_numberOfChangedCvars"
+	origin 			230 50
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textscale		0.21
+	textalignx		4
+	textaligny		12
+	forecolor		1 1 1 1
+	dvartest    		"ui_rcon_map_numberOfChangedCvars"
+	hidedvar   		{ "" }
+	visible			1
+	decoration
+}

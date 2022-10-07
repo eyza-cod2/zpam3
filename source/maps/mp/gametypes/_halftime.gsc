@@ -18,12 +18,15 @@ Do_Half_Time()
 	// Show pam header, scoreboard + info about halftime
 	HUD_TeamSwap();
 
+	// Cancel timeout if called
+	level maps\mp\gametypes\_timeout::Cancel();
+
+
 	wait level.fps_multiplier * 4;
 
 	// Activate half-time
 	game["is_halftime"] = true;
 	logPrint("HalfTime;\n");
-
 
 	// Switch scores
 	axis_score = game["axis_score"];
@@ -51,9 +54,12 @@ Do_Half_Time()
 	}
 
 	// Switch score progress For spectators
-	allies_score_history = game["allies_score_history"];
-	game["allies_score_history"] = game["axis_score_history"] + "^7|";
-	game["axis_score_history"] = allies_score_history + "^7|";
+	if (level.gametype == "sd")
+	{
+		allies_score_history = game["allies_score_history"];
+		game["allies_score_history"] = game["axis_score_history"] + "^7|";
+		game["axis_score_history"] = allies_score_history + "^7|";
+	}
 
 
 	axissavedmodel = undefined;

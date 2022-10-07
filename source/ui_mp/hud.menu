@@ -57,14 +57,22 @@
 	    	rect 0 0 200 80 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
 
 
-		//ITEM_TEXT_DVAR("Score & players progress", -285, -53, .22, ITEM_ALIGN_LEFT, 1 1 1 1, "ui_spectatingsystem_team1_scoreProgress", hideDvar { "" })
-
 		ITEM_DVAR("ui_spectatingsystem_team1_scoreProgress", -285, -41, .2, ITEM_ALIGN_LEFT, 1 1 1 1)
 		ITEM_DVAR("ui_spectatingsystem_team2_scoreProgress", -285, -31, .2, ITEM_ALIGN_LEFT, 1 1 1 1)
 
 		ITEM_DVAR("ui_spectatingsystem_playerProgress", -285, -18, .18, ITEM_ALIGN_LEFT, 1 1 1 1)
 	}
 
+	menuDef
+	{
+	  	name spectatingsystem_killcam_proposing
+	  	fullScreen MENU_FALSE
+	  	visible MENU_TRUE
+	    	rect 0 0 200 80 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+
+		ITEM_DVAR("ui_spectatingsystem_killcamProposing", -140, 350, .18, ITEM_ALIGN_LEFT, 1 1 1 1)
+
+	}
 
 	menuDef
 	{
@@ -79,6 +87,35 @@
 
 
 
+	menuDef
+	{
+	  	name sniperinfo
+	  	fullScreen MENU_FALSE
+	  	visible MENU_TRUE
+	    	rect 135 -48 200 80 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+
+		ITEM_DVAR("ui_sniper_info", 0, 0, .20, ITEM_ALIGN_LEFT, 1 1 1 1)
+	}
+
+	menuDef
+	{
+	  	name shotguninfo
+	  	fullScreen MENU_FALSE
+	  	visible MENU_TRUE
+	    	rect 135 -26 200 80 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+
+		ITEM_DVAR("ui_shotgun_info", 0, 0, .20, ITEM_ALIGN_LEFT, 1 1 1 1)
+	}
+
+	menuDef
+	{
+	  	name serverinfo1
+	  	fullScreen MENU_FALSE
+	  	visible MENU_TRUE
+	    	rect 10 90 200 80 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+
+		ITEM_DVAR("ui_serverinfo_hud", 0, 0, .18, ITEM_ALIGN_LEFT, 1 1 1 1)
+	}
 
 
 	// Mantle Hint (Press space to --> jump over)
@@ -124,7 +161,7 @@
 	}
 
 
-
+/*
 	//	STANCE (icon next to compass)
 	menuDef
 	{
@@ -145,7 +182,7 @@
 			ownerdraw CG_PLAYER_STANCE
 		}
 	}
-
+*/
 
 	// WEAPON INFO
 	menuDef
@@ -172,19 +209,6 @@
 //////////////////
 */
 /*
-		// weapon name
-		itemDef
-		{
-			name "weapname"
-			rect -380 -15 290 40
-			textstyle ITEM_TEXTSTYLE_SHADOWED
-			//textscale WEAPON_TEXTSCALE
-			textscale .36
-			forecolor 1.0 1.0 1.0 1.0
-			ownerdraw CG_PLAYER_WEAPON_NAME
-			visible MENU_TRUE
-			decoration
-		}
 
 		// weapon mode
 		itemDef
@@ -206,6 +230,38 @@
 			background "gfx/hud/hud@ammocounterback.tga"
 			ownerdraw CG_PLAYER_AMMO_BACKDROP
 			visible MENU_TRUE
+			decoration
+		}
+
+
+		// weapon name original
+		itemDef
+		{
+			name "weapname"
+			rect -380 -15 290 40
+			textstyle ITEM_TEXTSTYLE_SHADOWED
+			//textscale WEAPON_TEXTSCALE
+			textscale .36
+			forecolor 1.0 1.0 1.0 1.0
+			ownerdraw CG_PLAYER_WEAPON_NAME
+			visible MENU_TRUE
+			dvartest    	"ui_playersleft_list"
+			showdvar   		{ "" }
+			decoration
+		}
+		// weapon name small
+		itemDef
+		{
+			name "weapname"
+			rect -271 -1 290 40
+			textstyle ITEM_TEXTSTYLE_SHADOWED
+			//textscale WEAPON_TEXTSCALE
+			textscale .2
+			forecolor 1.0 1.0 1.0 1.0
+			ownerdraw CG_PLAYER_WEAPON_NAME
+			visible MENU_TRUE
+			dvartest    	"ui_playersleft_list"
+			hidedvar   		{ "" }
 			decoration
 		}
 
@@ -493,6 +549,7 @@
 	  	visible MENU_TRUE
 	    rect 0 0 640 480
 
+
 		// showDvar supports only 128 items
 		DVAR_CHECK("Set com_maxFPS within 125-250", "com_maxfps", hideDvar { 125;126;127;128;129;130;131;132;133;134;135;136;137;138;139;140;141;142;143;144;145;146;147;148;149;150;151;152;153;154;155;156;157;158;159;160;161;162;163;164;165;166;167;168;169;170;171;172;173;174;175;176;177;178;179;180;181;182;183;184;185;186;187;188;189;190;191;192;193;194;195;196;197;198;199;200;201;202;203;204;205;206;207;208;209;210;211;212;213;214;215;216;217;218;219;220;221;222;223;224;225;226;227;228;229;230;231;232;233;234;235;236;237;238;239;240;241;242;243;244;245;246;247;248;249;250 } )
 		DVAR_CHECK("Set cl_maxPackets to 100", "cl_maxPackets", hideDvar { 100 } )
@@ -500,9 +557,9 @@
 		DVAR_CHECK("Set snaps to 30", "snaps", hideDvar { 30 } )
 		DVAR_CHECK("Set sc_enable to 0", "sc_enable", hideDvar { 0 } )
 		DVAR_CHECK("Set fx_sort to 1", "fx_sort", hideDvar { 1 } )
-		DVAR_CHECK("Set developer to 0", "developer", hideDvar { 0 } )
-		DVAR_CHECK("Set r_polygonOffsetScale to -1 or 4", "r_polygonOffsetScale", hideDvar { "-1";"4" } )
-		DVAR_CHECK("Set r_polygonOffsetBias to  -1 or 16", "r_polygonOffsetBias", hideDvar { "-1";"16" } )
+		//DVAR_CHECK("Set developer to 0", "developer", hideDvar { 0 } )
+		//DVAR_CHECK("Set r_polygonOffsetScale to -1 or 4", "r_polygonOffsetScale", hideDvar { "-1";"4" } )
+		//DVAR_CHECK("Set r_polygonOffsetBias to  -1 or 16", "r_polygonOffsetBias", hideDvar { "-1";"16" } )
 		//DVAR_CHECK("Set cl_avidemo to 0", "cl_avidemo", hideDvar { 0 } )
 		DVAR_CHECK("Set mss_q3fs to 1", "mss_q3fs", hideDvar { 1 } )
 	}

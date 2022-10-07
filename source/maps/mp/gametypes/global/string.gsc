@@ -11,6 +11,28 @@ startsWith(string, substring)
 	return true;
 }
 
+// String contains a substring
+contains(string, substring)
+{
+	if (substring.size > string.size)
+		return false;
+	for (i = 0; i < string.size - (substring.size - 1); i++)
+	{
+		match = true;
+		for (j = 0; j < substring.size; j++)
+		{
+			if (string[i+j] != substring[j])
+			{
+				match = false;
+				break;
+			}
+		}
+		if (match)
+			return true;
+	}
+	return false;
+}
+
 // If string contain just numbers, return true
 // If string starts with dash and number, like -1337, true is returned
 isDigitalNumber(string)
@@ -104,8 +126,9 @@ removeColorsFromString(string)
 }
 
 // Prints second in format 00:00:00 (hours are printed only if > 0)
-formatTime(timeSec)
+formatTime(timeSec, separator)
 {
+	if (!isDefined(separator)) separator = ":";
 	timeSec = int(timeSec); // to avoid unmatching types 'float' and 'int'
 	str = "";
 	min = int(timeSec / 60);
@@ -115,13 +138,21 @@ formatTime(timeSec)
 	{
 		if (hour < 10) hour = "0" + hour;
 		min = min % 60;
-		str += hour + ":";
+		str += hour + separator;
 	}
 	if (min < 10) min = "0" + min;
 	if (sec < 10) sec = "0" + sec;
 
-	str += min + ":";
+	str += min + separator;
 	str += sec;
 
 	return str;
+}
+
+// Add char 's' to the end of the string if num is > 1
+plural_s(num, text)
+{
+	if (num > 1)
+		text += "s";
+	return num + " " + text;
 }

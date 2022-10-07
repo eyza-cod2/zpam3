@@ -26,6 +26,7 @@ onOpen
 #define SCOREBOARD_DAMAGE_X 315
 #define SCOREBOARD_PLANTS_X 350
 #define SCOREBOARD_DEFUSES_X 387
+#define SCOREBOARD_PING_X 420
 
 
 
@@ -185,3 +186,4 @@ ITEM_DVAR("ui_scoreboard_assists",  SCOREBOARD_ASSISTS_X,  40, .2, ITEM_ALIGN_RI
 ITEM_DVAR("ui_scoreboard_damages",  SCOREBOARD_DAMAGE_X,  40, .2, ITEM_ALIGN_RIGHT, 1 1 1 1)
 ITEM_DVAR("ui_scoreboard_plants",   SCOREBOARD_PLANTS_X,  40, .2, ITEM_ALIGN_RIGHT, 1 1 1 1)
 ITEM_DVAR("ui_scoreboard_defuses",  SCOREBOARD_DEFUSES_X, 40, .2, ITEM_ALIGN_RIGHT, 1 1 1 1)
+ITEM_DVAR("ui_scoreboard_ping",     SCOREBOARD_PING_X, 40, .2, ITEM_ALIGN_RIGHT, 1 1 1 1)

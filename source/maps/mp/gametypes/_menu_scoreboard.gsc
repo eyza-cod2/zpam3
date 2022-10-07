@@ -212,6 +212,7 @@ addLine(player, name, score, kills, deaths, assists, damages, plants, defuses)
 	if (isDefined(damages)) self.scoreboard.damages +=	damages;
 	if (isDefined(plants)) 	self.scoreboard.plants +=	plants;
 	if (isDefined(defuses)) self.scoreboard.defuses +=	defuses;
+	if (isDefined(defuses)) self.scoreboard.pers["antilagTimeOffset"] +=		player.pers["antilagTimeOffset"] + "ms";
 
 	self.scoreboard.names +=	"\n^7";
 	self.scoreboard.scores +=	"\n^7";
@@ -221,6 +222,7 @@ addLine(player, name, score, kills, deaths, assists, damages, plants, defuses)
 	self.scoreboard.damages +=	"\n^7";
 	self.scoreboard.plants +=	"\n^7";
 	self.scoreboard.defuses +=	"\n^7";
+	self.scoreboard.pers["antilagTimeOffset"] +=		"\n^7";
 
 	self.scoreboard.i++;
 }
@@ -333,6 +335,7 @@ generatePlayerList()
 				self.scoreboard.damages = "";
 				self.scoreboard.plants = "";
 				self.scoreboard.defuses = "";
+				self.scoreboard.pers["antilagTimeOffset"] = "";
 
 				self.pers["scoreboard_lines_players"] = [];
 
@@ -415,6 +418,7 @@ generatePlayerList()
 				self setClientCvarIfChanged("ui_scoreboard_deaths", self.scoreboard.deaths);
 				self setClientCvarIfChanged("ui_scoreboard_plants", self.scoreboard.plants);
 				self setClientCvarIfChanged("ui_scoreboard_defuses", self.scoreboard.defuses);
+				self setClientCvarIfChanged("ui_scoreboard_ping", ""/*self.scoreboard.pers["antilagTimeOffset"]*/);
 
 
 

@@ -1,0 +1,71 @@
+#define ITEM_RCON_BUTTON(origin_choice, textstring, dofocus, doaction) \
+itemDef  \
+{ \
+	visible			1 \
+	rect			0 0 128 24 0 0 \
+	origin			origin_choice \
+	forecolor		GLOBAL_UNFOCUSED_COLOR \
+	type			ITEM_TYPE_BUTTON \
+	text			textstring \
+	textfont		UI_FONT_NORMAL \
+	textscale		0.28 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textaligny		15 \
+	action \
+	{ \
+		play "mouse_click"; \
+		CLOSE_SUBMENUS; \
+		doaction; \
+		RCON_UPDATE_STATUS; \
+	} \
+	onFocus \
+	{ \
+		play "mouse_over"; \
+		dofocus; \
+	} \
+}
+
+#define ITEM_RCON_STATUS(xy) \
+itemDef \
+{ \
+  rect				0 0 120 24 0 0 \
+  origin			xy \
+  type        ITEM_TYPE_BUTTON \
+  text				"RCON: ^9not logged" \
+  textscale		0.28 \
+  textaligny	20 \
+  textstyle		ITEM_TEXTSTYLE_SHADOWED \
+  visible 		1 \
+  dvartest		"ui_rcon_logged_in" \
+  showDvar    { "0" } \
+  action \
+  { \
+    play "mouse_click"; \
+    RCON_UPDATE_STATUS; \
+  } \
+  onFocus \
+  { \
+    play "mouse_over"; \
+    RCON_UPDATE_STATUS; \
+  } \
+} \
+itemDef \
+{ \
+  origin			xy \
+  text				"RCON: ^2logged in" \
+  textscale		0.28 \
+  textaligny	20 \
+  textstyle		ITEM_TEXTSTYLE_SHADOWED \
+  visible 		1 \
+  dvartest		"ui_rcon_logged_in" \
+  showDvar    { "1" } \
+  decoration \
+}
+
+
+ITEM_RCON_STATUS	(60 277)
+ITEM_RCON_BUTTON 	(60 300, "RCON - Change Map", ;, 		open rcon_map;)
+ITEM_RCON_BUTTON 	(60 318, "RCON - Settings", ;, 			open rcon_settings;)
+ITEM_RCON_BUTTON 	(60 336, "RCON - Kick Player", ;, 		open rcon_kick;)
+ITEM_RCON_BUTTON 	(60 354, "PAM Modes", ;, 			open pammodes;)
+ITEM_RCON_BUTTON 	(60 372, "About PAM", ;, 			open aboutpam;)

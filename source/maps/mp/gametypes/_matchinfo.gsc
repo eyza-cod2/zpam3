@@ -24,12 +24,9 @@ Init()
 	if (!isDefined(game["scr_matchinfo"]))
 		game["scr_matchinfo"] = level.scr_matchinfo;
 
-	if (game["scr_matchinfo"] == 0)
-		return;
-
 	// Matchinfo cannot working without readyup...
 	if (!level.scr_readyup)
-		return;
+		game["scr_matchinfo"] = 0;
 
 
 	if (!isDefined(game["match_teams_set"]))
@@ -48,6 +45,10 @@ Init()
 
 		game["match_round"] = "";
 	}
+
+	// Natchinfo not possible, exit here
+	if (game["scr_matchinfo"] == 0)
+		return;
 
 	// Once match start, save teams
 	if (!level.in_readyup)
@@ -225,7 +226,7 @@ updateTeamNames()
 
 
 	if (teamname_allies != "")
-		self setClientCvar2("g_TeamName_Allies", teamname_allies);
+		self setClientCvarIfChanged("g_TeamName_Allies", teamname_allies);
 	else
 	{
 		alliesDef = "";
@@ -235,13 +236,13 @@ updateTeamNames()
 			case "british":  alliesDef = "MPUI_BRITISH"; break;
 			case "russian":  alliesDef = "MPUI_RUSSIAN"; break;
 		}
-		self setClientCvar2("g_TeamName_Allies", alliesDef);
+		self setClientCvarIfChanged("g_TeamName_Allies", alliesDef);
 	}
 
 	if (teamname_axis != "")
-		self setClientCvar2("g_TeamName_Axis", teamname_axis);
+		self setClientCvarIfChanged("g_TeamName_Axis", teamname_axis);
 	else
-		self setClientCvar2("g_TeamName_Axis", "MPUI_GERMAN");
+		self setClientCvarIfChanged("g_TeamName_Axis", "MPUI_GERMAN");
 
 }
 
@@ -292,8 +293,8 @@ determineTeamByHistoryCvars()
 	refreshTeamNames();
 
 	// Fill team names
-	game["match_team1_name"] = getCvar("sv_map1_team1");
-	game["match_team2_name"] = getCvar("sv_map1_team2");
+	game["match_team1_name"] = getCvar("sv_match_team1");
+	game["match_team2_name"] = getCvar("sv_match_team2");
 
 	// Find that side that team is now
 	// Atleast one team must stay unrenamed or this will not work
@@ -358,8 +359,11 @@ resetAll()
 	setCvar("sv_map_team2", "");
 	setCvar("sv_map_score", "");
 
-	setCvar("sv_map_totaltime", "");
-	setCvar("sv_map_players", "");
+	setCvar("sv_match_totaltime", "");
+	setCvar("sv_match_players", "");
+	setCvar("sv_match_team1", "");
+	setCvar("sv_match_team2", "");
+
 
 	game["match_exists"] = false;
 	game["match_starttime"] = undefined;
@@ -466,11 +470,11 @@ ToUpper(char)
 
 GetMapName(mapname)
 {
-	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix_v2")		return "Toujane";
+	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix_v2")			return "Toujane";
 	if (mapname == "mp_burgundy" || mapname == "mp_burgundy_fix_v1")		return "Burgundy";
-	if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix")		return "Dawnville";
-	if (mapname == "mp_matmata" || mapname == "mp_matmata_fix")		return "Matmata";
-	if (mapname == "mp_carentan" || mapname == "mp_carentan_fix")		return "Carentan";
+	if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix_v2")		return "Dawnville";
+	if (mapname == "mp_matmata" || mapname == "mp_matmata_fix_v2")			return "Matmata";
+	if (mapname == "mp_carentan" || mapname == "mp_carentan_fix_v2")		return "Carentan";
 
 	if (mapname == "" || mapname.size < 3)
 		return mapname;
@@ -597,10 +601,18 @@ UpdatePlayerCvars()
 
 			if (!game["readyup_first_run"] && !level.in_bash)
 			{
-				if (!game["is_halftime"])
-					halfInfo = "Rounds to half:   " + (level.halfround-game["round"]);
+				if (level.gametype == "sd")
+				{
+					if (!game["is_halftime"])
+						halfInfo = "Rounds to half:   " + (level.halfround-game["round"]);
+					else
+						halfInfo = "First half score:   " + game["half_1_"+side_right+"_score"] + " : " + game["half_1_"+side_left+"_score"];
+				}
 				else
-					halfInfo = "First half score:   " + game["half_1_"+side_right+"_score"] + " : " + game["half_1_"+side_left+"_score"];
+					if (!game["is_halftime"])
+						halfInfo = "First half";
+					else
+						halfInfo = "Second half";
 			}
 		}
 
@@ -671,17 +683,17 @@ refresh()
 
 		// Run timer - untill 1min the same number of player must connect
 		// Othervise considere this as team left and we need to reset match info
-		playersLast = getCvar("sv_map_players");
+		playersLast = getCvar("sv_match_players");
 		if (playersLast != "")
 		{
 			level thread waitForPlayerOrClear(int(playersLast));
-			//setcvar("sv_map_players", "");
+			//setcvar("sv_match_players", "");
 		}
 
 		// Save previous time left
-		if (getCvar("sv_map_totaltime") != "")
+		if (getCvar("sv_match_totaltime") != "")
 		{
-			game["match_totaltime_prev"] = getCvarInt("sv_map_totaltime");
+			game["match_totaltime_prev"] = getCvarInt("sv_match_totaltime");
 
 			// Via this cvar we determinate if match is set from previous map
 			game["match_exists"] = true;
@@ -770,19 +782,63 @@ refresh()
 		}
 
 		if (game["match_exists"])
-			setCvarIfChanged("sv_map_totaltime", game["match_totaltime"]);
+			setCvarIfChanged("sv_match_totaltime", game["match_totaltime"]);
 
 
-		// Update number of players in first round (and second update only of its higher due to missing player in first round)
-		// If number of players change, matchinfo is reseted next map due to different number of players
+		elapsedTime = 0; // in seconds
+		if (isDefined(game["match_starttime"]))
+			elapsedTime = int((getTime() - game["match_starttime"]) / 1000);
+
+
+		// Readyup is over, teams are set
 		if (game["match_teams_set"])
 		{
-			savedPlayers = GetCvarInt("sv_map_players"); // GetCvarInt return 0 if cvar is empty string
+			// Save team name that will be used to load on next map
+			setCvarIfChanged("sv_match_team1", game["match_team1_name"]);
+			setCvarIfChanged("sv_match_team2", game["match_team2_name"]);
+
+
+			// Update number of players in second minute (due to missing player)
+			// If number of players change, matchinfo is reseted next map due to different number of players
+			savedPlayers = GetCvarInt("sv_match_players"); // GetCvarInt return 0 if cvar is empty string
 			players = getentarray("player", "classname");
 
-			if (savedPlayers == 0 || (game["round"] == 2 && players.size > savedPlayers))
-				setCvarIfChanged("sv_map_players", players.size);
+			if (savedPlayers == 0 || ((elapsedTime >= 120 && elapsedTime <= 130) && players.size > savedPlayers))
+				setCvarIfChanged("sv_match_players", players.size);
 		}
+
+
+
+		/***********************************************************************************************************************************
+		*** Update history cvars to be able load info in next map
+		/***********************************************************************************************************************************/
+
+		if (!game["overtime_active"])
+		{
+			game["match_team1_score_beforeOvertime"] = game["match_team1_score"];
+			game["match_team2_score_beforeOvertime"] = game["match_team2_score"];
+		}
+
+		// Save data from this map for next map
+		if ((game["match_teams_set"] || game["scr_matchinfo"] == 1) && elapsedTime > (3*60) && game["allies_score"] > 0 && game["axis_score"] > 0) // save map into hostory after 3 mins
+		{
+			setCvarIfChanged("sv_map_name", level.mapname);
+
+			// Dont update score if we are in overtime
+			if (!game["overtime_active"])
+			{
+				setCvarIfChanged("sv_map_score", game["match_team1_score"] + " : " + game["match_team2_score"]);
+			}
+			else
+			{
+				team1add = int(game["match_team1_score"] > game["match_team2_score"]);
+				team2add = int(game["match_team1_score"] < game["match_team2_score"]);
+
+				setCvarIfChanged("sv_map_score", (game["match_team1_score_beforeOvertime"] + team1add) + " : " + (game["match_team2_score_beforeOvertime"] + team2add) + "  OT");
+			}
+		}
+
+
 
 
 		// Total time
@@ -805,10 +861,15 @@ refresh()
 			game["match_round"] = "Bash";
 		else
 		{
-			game["match_round"] = "Round " + game["round"];
+			if (level.gametype == "sd")
+			{
+				game["match_round"] = "Round " + game["round"];
 
-			if (level.matchround > 0)
-				game["match_round"] += " / " + level.matchround;
+				if (level.matchround > 0)
+					game["match_round"] += " / " + level.matchround;
+			}
+			else
+				game["match_round"] = "";
 		}
 
 		if (game["overtime_active"])
@@ -816,33 +877,6 @@ refresh()
 
 
 
-		/***********************************************************************************************************************************
-		*** Update history cvars to be able load info in next map
-		/***********************************************************************************************************************************/
-
-		// Save data from this map for next map
-		if ((game["match_teams_set"] || game["scr_matchinfo"] == 1) && (game["round"] >= 3)) // save map into hostory in 3. round
-		{
-			setCvarIfChanged("sv_map_name", level.mapname);
-			setCvarIfChanged("sv_map_team1", game["match_team1_name"]);
-			setCvarIfChanged("sv_map_team2", game["match_team2_name"]);
-
-			// Dont update score if we are in overtime
-			if (!game["overtime_active"])
-			{
-				setCvarIfChanged("sv_map_score", game["match_team1_score"] + " : " + game["match_team2_score"]);
-
-				game["match_team1_score_beforeOvertime"] = game["match_team1_score"];
-				game["match_team2_score_beforeOvertime"] = game["match_team2_score"];
-			}
-			else
-			{
-				team1add = int(game["match_team1_score"] > game["match_team2_score"]);
-				team2add = int(game["match_team1_score"] < game["match_team2_score"]);
-
-				setCvarIfChanged("sv_map_score", (game["match_team1_score_beforeOvertime"] + team1add) + " : " + (game["match_team2_score_beforeOvertime"] + team2add) + "  OT");
-			}
-		}
 
 		// Global server cvars visible via HLSW
 		if (game["match_team1_name"] != "") 	setCvarIfChanged("_match_team1", game["match_team1_name"]);

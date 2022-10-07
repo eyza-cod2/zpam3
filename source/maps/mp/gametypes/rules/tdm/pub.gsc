@@ -1,6 +1,6 @@
 Load()
 {
-	// DO NOT MODIFY BELOW THIS LINE!
-	game["leagueLogo"] = "";
-	game["leagueString"] = &"TDM Public Mode";
+	game["rules_leagueString"] = &"Team Deathmatch - Public";
+	game["rules_formatString"] = &""; // default
+	game["rules_stringColor"] = (1, 1, 0); // yellow
 }

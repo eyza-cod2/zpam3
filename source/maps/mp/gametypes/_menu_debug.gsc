@@ -65,8 +65,15 @@ onMenuResponse(menu, response)
 		}
 		if (response == "skip_readyup") {
 			game["Do_Ready_up"] = 0;
+			game["readyup_first_run"] = 0;
 			level.in_readyup = 0;
 			map_restart(true);
+		}
+		if (response == "overtime") {
+			level thread maps\mp\gametypes\sd::endRound("draw");
+			game["roundsplayed"] = level.matchround;
+			game["allies_score"] = game["axis_score"];
+			game["is_halftime"] = true;
 		}
 	}
 }
@@ -116,10 +123,10 @@ debugBasics()
 		self setClientCvar2("debug_line_4", "self.health         = " + self.health);
 		self setClientCvar2("debug_line_5", "isAlive(self)       = " + isAlive(self));
 
-
-		self setClientCvar2("debug_line_7", "self.origin   = " + "["+self.origin[0]+", "+self.origin[1]+", "+self.origin[2]+"] ");
+		origin = self getOrigin();
+		self setClientCvar2("debug_line_7", "self.origin   = " + "["+origin[0]+", "+origin[1]+", "+origin[2]+"] ");
 		angles = self getplayerangles();
-		self setClientCvar2("debug_line_8", "self.angles   = " + "["+angles[0]+", "+angles[1]+", "+angles[2]+"]");
+		self setClientCvar2("debug_line_8", "self.angles   = " + "["+angles[0]+", "+angles[1]+", "+angles[2]+"] [pitch, yaw, roll]");
 
 		head_pos = self.headTag getOrigin();
 		self setClientCvar2("debug_line_9", "self.tag_head = " + "["+head_pos[0]+", "+head_pos[1]+", "+head_pos[2]+"]" + distance((0, 0, head_pos[2]), (0, 0, self.origin[2])));
@@ -129,11 +136,12 @@ debugBasics()
 
 
 
+		self setClientCvar2("debug_line_18", "level.in_readyup      = " + level.in_readyup);
+		self setClientCvar2("debug_line_19", "level.in_timeout      = " + level.in_timeout);
+		self setClientCvar2("debug_line_20", "level.in_strattime    = " + level.in_strattime);
+
 	        if (level.gametype == "sd")
 	        {
-	    		self setClientCvar2("debug_line_18", "level.in_readyup      = " + level.in_readyup);
-	            	self setClientCvar2("debug_line_19", "level.in_timeout      = " + level.in_timeout);
-	    		self setClientCvar2("debug_line_20", "level.in_strattime    = " + level.in_strattime);
 	            	self setClientCvar2("debug_line_21", "level.roundstarted    = " + level.roundstarted);
 	    		self setClientCvar2("debug_line_22", "level.roundended      = " + level.roundended);
 	    		self setClientCvar2("debug_line_23", "level.bombplanted     = " + level.bombplanted);
@@ -205,6 +213,8 @@ debugBasics()
         self setClientCvar2("debug_row_2_line_21", "HUD getArchivedCount       = " + 	self maps\mp\gametypes\global\hud_system::getArchivedCount());
         self setClientCvar2("debug_row_2_line_22", "HUD getNonArchivedCount    = " + 	self maps\mp\gametypes\global\hud_system::getNonArchivedCount());
 
+	self setClientCvar2("debug_row_2_line_24", "self attackbuttonpressed()       = " + 	self attackbuttonpressed());
+	self setClientCvar2("debug_row_2_line_25", "self isOnGround()                = " + 	self isOnGround());
 
 
         //self setClientCvar2("debug_row_2_line_14", "self.dropped_weapons   = " + 		 self.dropped_weapons);
@@ -212,7 +222,7 @@ debugBasics()
 
 
 
-		wait level.frame*20;
+		wait level.frame;
 	}
 
 }

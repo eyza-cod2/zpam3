@@ -15,6 +15,7 @@ main()
 	addEventListener("onPlayerDamaged", ::onPlayerDamaged);
 	addEventListener("onPlayerKilling", ::onPlayerKilling);
 	addEventListener("onPlayerKilled", ::onPlayerKilled);
+	addEventListener("onMenuResponse",  ::onMenuResponse);
 
 	// Events for this gametype that are called last after all events are processed
 	level.onAfterConnected = ::onAfterConnected;
@@ -117,7 +118,7 @@ onStartGameType()
 
 	setClientNameMode("auto_change");
 
-	serverInfo();
+	thread serverInfo();
 
 	thread sv_cheats();
 }
@@ -208,11 +209,17 @@ onDisconnect()
 {
 	iprintln(&"MP_DISCONNECTED", self.name);
 
-	if (isDefined(self.bot))
+	// Kick all bots spawned by this players
+	if (isDefined(self.bots))
 	{
-		kick(self.bot getEntityNumber());
+		for (i = 0; i < self.bots.size; i++)
+		{
+			if (isPlayer(self.bots[i]))
+			kick(self.bots[i] getEntityNumber());
+		}
 	}
 
+	// For bots only
 	if (isDefined(self.botLockPosition))
 	{
 		self.botLockPosition delete();
@@ -223,7 +230,7 @@ onDisconnect()
 onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
 {
 	// Print damage
-	if(isDefined(eAttacker) && isPlayer(eAttacker))
+	if(isDefined(eAttacker) && isPlayer(eAttacker) && iDamage > 0)
 	{
 		if (eAttacker == self)
 		{
@@ -303,7 +310,6 @@ onAfterPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir,
 {
 	self endon("disconnect");
 	self endon("spawned");
-	self notify("killed_player");
 
 	// send out an obituary message to all clients about the kill
 	obituary(self, attacker, sWeapon, sMeansOfDeath);
@@ -346,6 +352,53 @@ onAfterPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir,
 	if(isDefined(self.pers["weapon"]))
 		self thread spawnPlayer();
 }
+
+
+
+
+/*
+Called when command scriptmenuresponse is executed on client side
+self is player that called scriptmenuresponse
+Return true to indicate that menu response was handled in this function
+*/
+onMenuResponse(menu, response)
+{
+	if(menu == game["menu_strat_records"])
+	{
+		if (startsWith(response, "select_"))
+		{
+			substr = getsubstr(response, 7);
+			if (!isDigitalNumber(substr)) return true;
+			line = int(substr);
+			if (line < 1 || line > 9) return true;
+
+			self closeMenu();
+			self closeInGameMenu();
+
+			record(line-1);
+		}
+		else if (startsWith(response, "delete_"))
+		{
+			substr = getsubstr(response, 7);
+			if (!isDigitalNumber(substr)) return true;
+			line = int(substr);
+			if (line < 1 || line > 9) return true;
+
+			self closeMenu();
+			self closeInGameMenu();
+
+			self.recordSlots[line-1].used = false;
+
+			recordRequest();
+		}
+
+
+		return true;
+	}
+}
+
+
+
 
 
 
@@ -688,26 +741,9 @@ menuWeapon(response)
 
 serverInfo()
 {
-	setCvar("ui_serverinfo_left1", "");
-	makeCvarServerInfo("ui_serverinfo_left1", "");
-
-	setCvar("ui_serverinfo_left2", "");
-	makeCvarServerInfo("ui_serverinfo_left2", "");
-
-
-	setCvar("ui_serverinfo_right1", "");
-	makeCvarServerInfo("ui_serverinfo_right1", "");
-
-	setCvar("ui_serverinfo_right2", "");
-	makeCvarServerInfo("ui_serverinfo_right2", "");
-
-
-	setCvar("ui_motd", "");
-	makeCvarServerInfo("ui_motd", "");
+	level.serverinfo_left1 = "No settings";
+	level.serverinfo_left2 = "";
 }
-
-
-
 
 
 
@@ -719,7 +755,17 @@ Run_Strat()
 {
 	self.flying = false;
 	self.flaying_enabled = true;
+	self.bots = [];
 	self.recording = false;
+	self.recordSlots = [];
+	for (i = 0; i <= 8; i++)
+	{
+		self.recordSlots[i] = spawnStruct();
+		self.recordSlots[i].used = false;
+		self.recordSlots[i].positions = [];
+		self.recordSlots[i].angles = [];
+	}
+
 
 	// Ignore bots
 	if (maps\mp\gametypes\_bots::isBot())
@@ -841,7 +887,15 @@ Key_AddBot()
 
 			if (waittime > 1.0)
 			{
-				self add_bot();
+				if (!isDefined(self.bots[0]))
+					self add_bot();
+				else
+					self.bots[0] thread handle_bot(self); // respawn bot to actual players position
+
+				// Wait untill keys are released
+				while (self meleebuttonpressed() && self useButtonPressed())
+					wait level.fps_multiplier * 0.2;
+
 				break;
 			}
 			wait level.frame;
@@ -869,9 +923,9 @@ Key_RecordBot()
 				}
 				else
 				{
-					self.recording = true;
-					self thread record();
+					self thread recordRequest();
 				}
+
 				// Wait untill keys are released
 				while (self attackbuttonpressed() && self useButtonPressed() && !self meleebuttonpressed())
 					wait level.fps_multiplier * 0.2;
@@ -897,7 +951,7 @@ Key_PlayRecord()
 
 			if (waittime > 1.0)
 			{
-				self thread playRecord();
+				self thread playRecords();
 				break;
 			}
 			wait level.frame;
@@ -1201,19 +1255,19 @@ HUD_Grenade_Releases_In()
 
 add_bot()
 {
-	if (!isDefined(self.bot))
+	//iprintln(self.name + " is spawning bot.");
+
+	bot = maps\mp\gametypes\_bots::addBot();
+
+	if (!isDefined(bot))
+		self iprintln("^1Bot adding failed");
+	else
 	{
-		iprintln(self.name + " is spawning bot.");
-
-		self.bot = maps\mp\gametypes\_bots::addBot();
-
-		if (!isDefined(self.bot))
-		{
-			self iprintln("^1Bot adding failed");
-			return;
-		}
+		bot thread handle_bot(self); // spawn bot to actual players position
+		self.bots[self.bots.size] = bot;
 	}
-	self.bot thread handle_bot(self);
+
+	return bot;
 }
 
 handle_bot(player)
@@ -1226,7 +1280,7 @@ handle_bot(player)
 	angle = player.angles;
 	player iprintlnbold("Move away to spawn a bot.");
 	while (distance(pos, player.origin) < 50)
-		wait level.fps_multiplier * 1;
+		wait level.fps_multiplier * .1;
 
 
 	// This make sure only one thread is running on bot
@@ -1298,9 +1352,72 @@ obj()
 }
 
 
-record()
+/*
+Attack+Use = record
+	up to 10 slots are prepared to save a recording
+	for the first record its saved automatically to first slot without asking
+	for the other records open dialog with slots and saved recording
+		player has to choose in what slot to save the record
+		he can replace existing record or save it as new record
+
+Hold Use = play all records
+
+*/
+
+recordRequest()
 {
 	self endon("disconnect");
+
+	if (self.sessionteam != "allies" && self.sessionteam != "axis")
+		return;
+
+
+	empty = true;
+	for (i = 0; i < 9; i++)
+	{
+		if (self.recordSlots[i].used)
+		{
+			empty = false;
+			break;
+		}
+	}
+
+	// No records yet, save to first slot
+	if (empty)
+	{
+		record(0);
+	}
+	else // Open dialog
+	{
+		for (i = 0; i < 9; i++)
+		{
+			value = 0;
+
+			if (self.recordSlots[i].used)
+				value = 1;
+			else
+				value = 2;
+			/*
+				0 = empty
+				1 = replace record
+				2 = new record
+			*/
+			self setClientCvar2("ui_strat_records_line_" + (i+1), value);
+		}
+
+
+		self closeMenu();
+		self closeInGameMenu();
+		self openMenu(game["menu_strat_records"]);
+	}
+}
+
+
+record(slot)
+{
+	self endon("disconnect");
+
+	self.recording = true;
 
 	// Show black bar
 	self.kc_topbar = newClientHudElem2(self);
@@ -1323,55 +1440,49 @@ record()
 	self.kc_bottombar.sort = 99;
 	self.kc_bottombar setShader("black", 640, 80);
 
-
-	self iprintlnbold("Recording in");
-
-	origin_old = self.origin;
-	for (i = 3; i > 0; i--)
-	{
-		self iprintlnbold(i);
-		wait level.fps_multiplier;
-
-		if (distance(self.origin, origin_old) > 20)
-		{
-			self.kc_topbar destroy2();
-			self.kc_bottombar destroy2();
-
-			self iprintlnbold("^3Record canceled. You moved!");
-
-			return;
-		}
-	}
-
-	self iprintlnbold("Recording...");
+	self iprintlnbold("Move to start recording");
 	self iprintlnbold("^2Go Go Go!");
 
+	origin_old = self.origin;
+	for (;;)
+	{
+		if (distance(self.origin, origin_old) > 10)
+		{
+			self iprintlnbold("^2Recording to slot " + (slot+1) + "...");
+			break;
+		}
+		wait level.fps_multiplier * 0.1;
+	}
+
+
+	self iprintlnbold(" ");
 	self iprintlnbold(" ");
 	self iprintlnbold(" ");
 	self iprintlnbold(" ");
 
+	self.recordSlots[slot].used = true;
+	self.recordSlots[slot].positions = [];
+	self.recordSlots[slot].angles = [];
 
-	self.recordsPos = [];
-	self.recordsAngle = [];
-
+	origin_start = self.origin;
 	time_not_moving = 0;
 	while(self.recording)
 	{
-		self.recordsPos[self.recordsPos.size] = self.origin;
-		self.recordsAngle[self.recordsAngle.size] = self.angles;
+		self.recordSlots[slot].positions[self.recordSlots[slot].positions.size] = self.origin;
+		self.recordSlots[slot].angles[self.recordSlots[slot].angles.size] = self.angles;
 		origin_old = self.origin;
 
 		wait level.fps_multiplier * 0.25;
 
-		if (origin_old == self.origin)
+		if (origin_old == self.origin && self.origin != origin_start)
 			time_not_moving++;
 		else
 			time_not_moving = 0;
 
-		if (time_not_moving == 3)
+		if (time_not_moving == 1)
 			self iprintlnbold("Dont move to stop recording");
 
-		if (time_not_moving >= 8)
+		if (time_not_moving >= 4)
 			self.recording = false;
 	}
 
@@ -1381,7 +1492,7 @@ record()
 	self.kc_bottombar destroy2();
 }
 
-playRecord()
+playRecords()
 {
 	self endon("disconnect");
 
@@ -1389,16 +1500,12 @@ playRecord()
 	self notify("end_playRecord");
 	self endon("end_playRecord");
 
-	if (!isDefined(self.recordsPos) || self.recordsPos.size == 0)
-	{
-		self iprintlnbold("^1No record to play");
-		return;
-	}
 
-	if (!isDefined(self.bot))
+	records = 0;
+	for (i = 0; i < 9; i++)
 	{
-		self iprintlnbold("^1Spawn a bot to play record");
-		return;
+		if (self.recordSlots[i].used)
+			records++;
 	}
 
 	if (self.recording)
@@ -1407,7 +1514,28 @@ playRecord()
 		return;
 	}
 
-	self iprintlnbold("Playing record...");
+	if (records == 0)
+	{
+		self iprintlnbold("^1No record to play");
+		return;
+	}
+
+	// Add bots according to number of recordings
+	for (i = self.bots.size; i < records; i++)
+	{
+		bot = add_bot();
+
+		// Bot cannot be spawned, cancel playing record
+		if (!isDefined(bot))
+			return;
+
+		// Wait untill bot is spawned
+		while(!isAlive(bot))
+			wait level.fps_multiplier * 0.1;
+	}
+
+
+	self iprintlnbold("Playing records...");
 	self iprintlnbold(" ");
 	self iprintlnbold(" ");
 	self iprintlnbold(" ");
@@ -1427,19 +1555,51 @@ playRecord()
 	self.clock setTimer(2 * 60);
 
 
-	bot = self.bot;
-	for (i = 0; i < self.recordsPos.size; i++)
+	self.replayedRecords = 0;
+
+	botIndex = 0;
+	for (i = 0; i < 9; i++)
+	{
+		if (self.recordSlots[i].used)
+		{
+			self thread playRecord(i, botIndex);
+			botIndex++;
+		}
+	}
+
+	// Wait untill all records are played
+	while (self.replayedRecords != records)
+		wait level.fps_multiplier * .1;
+
+	self.clock destroy2();
+
+	self iprintln("Playing finished");
+}
+
+playRecord(slotIndex, botIndex)
+{
+	self endon("disconnect");
+	self endon("end_playRecord");
+
+	// Make sure only 1 thread is running
+	self notify("end_playRecord_" + slotIndex);
+	self endon("end_playRecord_" + slotIndex);
+
+	self iprintln("Playing record " + slotIndex + " for bot " + botIndex + " size: " + self.recordSlots[slotIndex].positions.size);
+
+	bot = self.bots[botIndex];
+	for (i = 0; i < self.recordSlots[slotIndex].positions.size; i++)
 	{
 		// Cancel playing if bot is killed
-		if (!isDefined(self.bot) || !isAlive(bot))
+		if (!isDefined(bot) || !isAlive(bot))
 			break;
 
 		// MoveTo( <point>, <time>, <acceleration time>, <deceleration time> )
-		bot.botLockPosition moveto(self.recordsPos[i], 0.25);
-		bot SetPlayerAngles(self.recordsAngle[i]);
+		bot.botLockPosition moveto(self.recordSlots[slotIndex].positions[i], 0.25);
+		bot SetPlayerAngles(self.recordSlots[slotIndex].angles[i]);
 
 		wait level.fps_multiplier * 0.25;
 	}
 
-	self.clock destroy2();
+	self.replayedRecords++;
 }

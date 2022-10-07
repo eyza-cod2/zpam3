@@ -112,7 +112,11 @@ setPlayerObjective()
 		return;
 	}
 
+	// Empty
+	self setClientCvar2("cg_objectiveText", "");
+	return;
 
+/*
 	switch (level.gametype)
 	{
 	case "ctf":
@@ -170,6 +174,6 @@ setPlayerObjective()
 
 		self setClientCvar2("cg_objectiveText", "Special mode used for practicing grenades or smoke, strategic plan making, jump learning and overall game testing.");
 	}
-
+*/
 
 }

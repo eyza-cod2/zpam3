@@ -1,0 +1,165 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+{
+	menuDef
+	{
+		name			"strat_records"
+		fullscreen		0
+		rect			0 0 640 480
+		focuscolor		1 1 1 1
+		disablecolor	0 0 0 0
+ 		style			WINDOW_STYLE_EMPTY
+
+		onOpen
+		{
+			scriptMenuResponse "open";
+		}
+		onClose
+		{
+			scriptMenuResponse "close";
+		}
+
+
+		itemDef
+		{
+			style			WINDOW_STYLE_FILLED
+			rect			-128 0 896 480 0 0
+			backcolor		0.045 .05 0.053 .65
+			visible			1
+			decoration
+		}
+
+
+		ITEM_TEXT("Select slot where to save the record", 170, 145, 0.3, ITEM_ALIGN_LEFT, 1 1 1 1)
+
+
+
+
+		#define STRAT_RECORDS_X	170
+
+		#define STRAT_RECORDS_W	300
+		#define STRAT_RECORDS_H	19
+
+		#define STRAT_RECORDS_NAME_X 175
+		#define STRAT_RECORDS_DELETE_X 440
+
+		#define STRAT_RECORDS_NEUTRAL_BACKGROUND_COLOR			0 0 0 0.8
+
+		/*
+			0 = empty
+			1 = replace record
+			2 = new record
+		*/
+
+
+
+		#define ITEM_STRAT_RECORD_LINE(line_id, y_offset) \
+		itemDef  \
+		{ \
+			style			WINDOW_STYLE_FILLED \
+			rect			STRAT_RECORDS_X y_offset STRAT_RECORDS_W STRAT_RECORDS_H 0 0 \
+			backcolor		STRAT_RECORDS_NEUTRAL_BACKGROUND_COLOR \
+			visible			1 \
+			decoration \
+		} \
+		itemDef \
+		{ \
+			text 			"#" #line_id " Replace record " #line_id \
+			rect			0 0 STRAT_RECORDS_W STRAT_RECORDS_H 0 0 \
+			type			ITEM_TYPE_BUTTON \
+			textfont		UI_FONT_BIG \
+			textscale		0.25 \
+			textstyle		ITEM_TEXTSTYLE_SHADOWED \
+			textaligny		15 \
+			visible			1 \
+			origin			STRAT_RECORDS_NAME_X y_offset \
+			dvartest		"ui_strat_records_line_" #line_id "" \
+			showDvar		{ "1" } \
+			onFocus \
+			{ \
+				play "mouse_over"; \
+			} \
+			action \
+			{ \
+				play "mouse_click"; \
+				scriptMenuResponse "select_" #line_id \
+			} \
+		} \
+		itemDef \
+		{ \
+			text 			"#" #line_id " <new record> " \
+			rect			0 0 STRAT_RECORDS_W STRAT_RECORDS_H 0 0 \
+			type			ITEM_TYPE_BUTTON \
+			textfont		UI_FONT_BIG \
+			textscale		0.25 \
+			textstyle		ITEM_TEXTSTYLE_SHADOWED \
+			textaligny		15 \
+			visible			1 \
+			origin			STRAT_RECORDS_NAME_X y_offset \
+			dvartest		"ui_strat_records_line_" #line_id "" \
+			showDvar		{ "2" } \
+			onFocus \
+			{ \
+				play "mouse_over"; \
+			} \
+			action \
+			{ \
+				play "mouse_click"; \
+				scriptMenuResponse "select_" #line_id \
+			} \
+		} \
+		itemDef \
+		{ \
+			text 			"#" #line_id " -" \
+			textfont		UI_FONT_BIG \
+			textscale		0.25 \
+			textstyle		ITEM_TEXTSTYLE_SHADOWED \
+			textaligny		15 \
+			visible			1 \
+			origin			STRAT_RECORDS_NAME_X y_offset \
+			dvartest		"ui_strat_records_line_" #line_id "" \
+			forecolor		.5 .5 .5 1 \
+			showDvar		{ ""; "0" } \
+			decoration \
+		} \
+		itemDef  \
+		{ \
+			text			"Delete" \
+			visible			1 \
+			rect			0 0 30 18 0 0 \
+			origin			STRAT_RECORDS_DELETE_X y_offset \
+			forecolor		GLOBAL_UNFOCUSED_COLOR \
+			type			ITEM_TYPE_BUTTON \
+			textfont		UI_FONT_NORMAL \
+			textscale		0.2 \
+			textstyle		ITEM_TEXTSTYLE_SHADOWED \
+			textaligny		13 \
+			dvartest		"ui_strat_records_line_" #line_id "" \
+			showDvar		{ "1" } \
+			onFocus \
+			{ \
+				RCON_UPDATE_STATUS \
+				play "mouse_over"; \
+			} \
+			action \
+			{ \
+				play "mouse_click"; \
+				scriptMenuResponse "delete_" #line_id \
+			} \
+		}
+
+
+		ITEM_STRAT_RECORD_LINE(1, 160)
+		ITEM_STRAT_RECORD_LINE(2, 180)
+		ITEM_STRAT_RECORD_LINE(3, 200)
+		ITEM_STRAT_RECORD_LINE(4, 220)
+		ITEM_STRAT_RECORD_LINE(5, 240)
+		ITEM_STRAT_RECORD_LINE(6, 260)
+		ITEM_STRAT_RECORD_LINE(7, 280)
+		ITEM_STRAT_RECORD_LINE(8, 300)
+		ITEM_STRAT_RECORD_LINE(9, 320)
+
+
+
+	}
+}

@@ -38,10 +38,11 @@ main()
 	// Default values of these variables are overwrited by rules
 	// Event onCvarChanged is called on every cvar registration
 	// Make sure that onCvarChanged event is added first before cvar registration
-	registerCvar("scr_dm_timelimit", "INT", 0, 0, 99999);
-	registerCvar("scr_dm_half_score", "INT", 0, 0, 99999);
-	registerCvar("scr_dm_end_score", "INT", 0, 0, 99999);
-	registerCvar("scr_dm_halftime", "BOOL", 1);
+	registerCvarEx("C", "scr_dm_timelimit", "FLOAT", 0, 0, 99999);
+	registerCvarEx("C", "scr_dm_half_score", "INT", 0, 0, 99999);
+	registerCvarEx("C", "scr_dm_end_score", "INT", 0, 0, 99999);
+	registerCvarEx("C", "scr_dm_halftime", "BOOL", 1);
+	registerCvar("scr_dm_strat_time", "FLOAT", 5, 0, 15);	// Time before round starts (sec) (0 - 10, default 5)
 
 
 	// Precache gametype specific stuff
@@ -58,12 +59,19 @@ main()
 // Return true if cvar was handled here, otherwise false
 onCvarChanged(cvar, value, isRegisterTime)
 {
+	// Server info update
+	if (!isRegisterTime && !game["firstInit"] && !isDefined(game["cvars"][cvar]["inQuiet"]) && cvar != "pam_mode_custom")
+	{
+		thread serverInfo();
+	}
+
 	switch(cvar)
 	{
 		case "scr_dm_timelimit": 	level.timelimit = value; 	return true;
 		case "scr_dm_half_score": 	level.halfscorelimit = value; 	return true;
 		case "scr_dm_end_score": 	level.scorelimit = value; 	return true;
 		case "scr_dm_halftime": 	level.halftime_enabled = value; return true;
+		case "scr_dm_strat_time": 	level.strat_time = value; 	return true;
 	}
 	return false;
 }
@@ -74,7 +82,8 @@ onCvarChanged(cvar, value, isRegisterTime)
 // Is called only once per map
 precache()
 {
-
+	// HUD: Strattime
+	precacheString2("STRING_STRAT_TIME", &"Strat Time");
 }
 
 
@@ -106,9 +115,13 @@ onStartGameType()
 
 	// Gametype specific variables
 	level.mapended = false;
+	level.matchstarted = false;
+	level.in_strattime = false;
 
 
-
+	// Precache gametype specific stuff
+	if (game["firstInit"])
+		precache();
 
 
 	// Spawn points
@@ -140,7 +153,53 @@ onStartGameType()
 
 	setClientNameMode("auto_change");
 
-	serverInfo();
+	thread serverInfo();
+
+
+	// Wait here untill there is atleast one player connected
+	if (game["firstInit"])
+	{
+		for(;;)
+		{
+			players = getentarray("player", "classname");
+			if (players.size > 0)
+				break;
+			wait level.fps_multiplier * 1;
+		}
+
+		// For public mode, wait untill most of player connect
+		if (game["is_public_mode"])
+		{
+			for(;;)
+			{
+				allies = 0;
+				axis = 0;
+
+				players = getentarray("player", "classname");
+				for(i = 0; i < players.size; i++)
+				{
+					if (players[i].pers["team"] == "allies")
+						allies++;
+					else if (players[i].pers["team"] == "axis")
+						axis++;
+				}
+
+				if ((allies + axis) >= 2)
+				{
+					iprintln("Match is starting");
+
+					wait level.fps_multiplier * 8;
+
+					if (!level.pam_mode_change)
+						map_restart(true);
+
+					break;
+				}
+
+				wait level.fps_multiplier * 3;
+			}
+		}
+	}
 
 
 	if (!level.in_readyup)
@@ -258,7 +317,12 @@ onDisconnect()
 
 onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
 {
-	if (level.mapended)
+	// In readyup there is own onPlayerDamaging function
+	if (level.in_readyup)
+		return false;
+
+	// Prevent damage when:
+	if (!level.matchstarted || level.in_strattime || level.mapended)
 		return true;
 }
 
@@ -317,13 +381,16 @@ onAfterPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir,
 {
 	self endon("disconnect");
 	self endon("spawned");
-	self notify("killed_player");
+
+	// Kill is handled in readyup functions
+	if (level.in_readyup)
+		return;
 
 	// send out an obituary message to all clients about the kill
 	obituary(self, attacker, sWeapon, sMeansOfDeath);
 
 	// Weapon/Nade Drops
-	if (!isDefined(self.switching_teams))
+	if (!isDefined(self.switching_teams) && level.matchstarted && !level.mapended)
 		self thread maps\mp\gametypes\_weapons::dropWeapons();
 
 
@@ -403,6 +470,9 @@ spawnPlayer()
 	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
 	resettimeout();
 
+	if (game["state"] == "intermission")
+		return;
+
 	// Stop shellshock and rumble
 	self stopShellshock();
 	self stoprumble("damage_heavy");
@@ -469,6 +539,9 @@ spawnSpectator(origin, angles)
 	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
 	resettimeout();
 
+	if (game["state"] == "intermission")
+		return;
+
 	// Stop shellshock and rumble
 	self stopShellshock();
 	self stoprumble("damage_heavy");
@@ -477,7 +550,12 @@ spawnSpectator(origin, angles)
 	self.spectatorclient = -1;
 	self.archivetime = 0;
 	self.psoffsettime = 0;
-	self.statusicon = "";
+
+	if(self.pers["team"] == "spectator")
+		self.statusicon = "";
+	else if (self.pers["team"] == "allies" || self.pers["team"] == "axis") // dead team spectartor
+		self.statusicon = "hud_status_dead";
+
 
 	if(isdefined(origin) && isdefined(angles))
 		self spawn(origin, angles);
@@ -498,6 +576,12 @@ spawnSpectator(origin, angles)
 
 	// Notify "spawned" notifications
 	self notify("spawned");
+
+	// If is real spectator (is in team spectator, not session state spectator)
+	if(self.pers["team"] == "spectator")
+	{
+		self notify("spawned_spectator");
+	}
 }
 
 spawnIntermission()
@@ -536,61 +620,180 @@ spawnIntermission()
 
 startGame()
 {
+	// Show name of league + pam version
+	thread maps\mp\gametypes\_pam::PAM_Header();
+
+	// Do strat time if is enabled
+	if (level.strat_time > 0)
+	{
+		level.in_strattime = true;
+
+		// Disable players movement
+		level thread stratTime_g_speed();
+
+		// Show HUD stuff...
+		thread HUD_StratTime(level.strat_time);
+
+		// End strattime when time expires or timeout is called
+		level thread strattime_end_timer(level.strat_time);
+		level thread strattime_end_ontimeout();
+
+		level waittill("strat_time_end");
+
+		// Out of strat time
+		level.in_strattime = false;
+	}
+
+	// Hide pam info hud
+	if (!level.in_timeout)
+		thread maps\mp\gametypes\_pam::PAM_Header_Delete();
+
+
+	level.matchstarted = true;
 	level.starttime = getTime();
 
 	if(level.timelimit > 0)
 	{
 		level.clock = newHudElem2();
-		level.clock.horzAlign = "center_safearea";
-		level.clock.vertAlign = "top";
-		level.clock.x = -25;
-		level.clock.y = 450;
 		level.clock.font = "default";
 		level.clock.fontscale = 2;
+		level.clock.horzAlign = "center_safearea";
+		level.clock.vertAlign = "top";
+		level.clock.alignX = "center";
+		level.clock.alignY = "top";
+		level.clock.color = (1, 1, 1);
+		level.clock.x = 0;
+		level.clock.y = 445;
 		level.clock setTimer(level.timelimit * 60);
 
+		// If strattime is enabled, show fade-in animation
+		if (level.strat_time > 0 && !level.in_timeout)
+		{
+			level.clock.alpha = 0;
+
+			level.clock FadeOverTime(0.5);
+			level.clock.alpha = 1;
+
+			level.clock.x = 40;
+			level.clock moveovertime(0.5);
+			level.clock.x = 0;
+		}
+
+		time_before_timeout = 0;
 		for(;;)
 		{
-			checkTimeLimit();
-			wait level.fps_multiplier * 1;
+			// CheckTimeLimit
+			timepassed = (getTime() - level.starttime) / 1000;	// elapsed time in seconds
+			timepassed = timepassed - level.timeout_elapsedTime;	// exclude time of timeout
+
+			//iprintln(timepassed);
+
+			// Freeze time if in timeout
+			if (level.in_timeout)
+			{
+				if (time_before_timeout == 0)
+					time_before_timeout = level.timelimit * 60 - timepassed;
+
+				level.clock setTimer(int(time_before_timeout) + 0.9);
+				level.clock.color = (1, 0.6, 0.15);	// Orange
+			}
+			else if (time_before_timeout != 0)
+			{
+				time_before_timeout = 0;
+				level.clock.color = (1, 1, 1);
+			}
+
+			// Time elapsed
+			if (!level.in_timeout && timepassed >= level.timelimit * 60)
+			{
+				if(level.mapended) return;
+				level.mapended = true;
+
+				iprintln(&"MP_TIME_LIMIT_REACHED");
+
+				if (level.halftime_enabled && !game["is_halftime"])
+				{
+					thread maps\mp\gametypes\_halftime::Do_Half_Time();
+				}
+				else
+				{
+					level thread endMap();
+				}
+			}
+
+
+			wait level.fps_multiplier * .5;
 		}
 	}
 }
 
-
-checkTimeLimit()
+stratTime_g_speed()
 {
-	if(level.timelimit <= 0)
+	// Disable players movement
+	maps\mp\gametypes\global\cvar_system::setCvarQuiet("g_speed", 0);
+
+	level waittill("strat_time_end");
+
+	if (!level.in_timeout)
+		maps\mp\gametypes\global\cvar_system::restoreCvarQuiet("g_speed");
+}
+
+
+strattime_end_timer(time)
+{
+	level endon("strat_time_end");
+
+	wait level.fps_multiplier * time;
+
+	level notify("strat_time_end");
+}
+
+strattime_end_ontimeout()
+{
+	level endon("strat_time_end");
+
+	level waittill("running_timeout");
+
+	level notify("strat_time_end");
+}
+
+HUD_StratTime(time)
+{
+	if (time <= 0)
 		return;
 
-	timepassed = (getTime() - level.starttime) / 1000;
-	timepassed = timepassed / 60.0;
+	// Strat Time
+	strattime = addHUD(0, 450, 2, (.98, .827, .58), "center", "bottom", "center_safearea", "top");
+	strattime setText(game["STRING_STRAT_TIME"]);
 
-	if(timepassed < level.timelimit)
-		return;
+	// 0:05
+	strat_clock = addHUD(0, 445, 2, (.98, .827, .58), "center", "top", "center_safearea", "top");
+	strat_clock setTimer(time);
 
-	if(level.mapended) return;
-	level.mapended = true;
 
-	iprintln(&"MP_TIME_LIMIT_REACHED");
+	// Wait untill time expired or timeout was called
+	level waittill("strat_time_end");
 
-	if (level.halftime_enabled && !game["is_halftime"])
-	{
-		thread maps\mp\gametypes\_halftime::Do_Half_Time();
-		level.mapended = true;
-	}
-	else
-	{
-		level thread endMap();
-		level.mapended = true;
-	}
+
+	strattime FadeOverTime(0.5);
+	strattime.alpha = 0;
+
+	strat_clock FadeOverTime(0.5);
+	strat_clock.alpha = 0;
+
+	strat_clock moveovertime(0.5);
+	strat_clock.x = -40;
+
+	wait level.fps_multiplier * 0.5;
+
+	strattime destroy2();
+	strat_clock destroy2();
 }
 
 
 checkScoreLimit()
 {
 	waittillframeend;
-
 	if(level.mapended) return;
 
 
@@ -599,8 +802,8 @@ checkScoreLimit()
 	{
 		if(self.score >= level.halfscorelimit || self.score >= level.halfscorelimit)
 		{
-			thread maps\mp\gametypes\_halftime::Do_Half_Time();
 			level.mapended = true;
+			thread maps\mp\gametypes\_halftime::Do_Half_Time();
 			return;
 		}
 	}
@@ -614,8 +817,8 @@ checkScoreLimit()
 
 		iprintln(&"MP_SCORE_LIMIT_REACHED");
 
-		thread endMap();
 		level.mapended = true;
+		thread endMap();
 	}
 }
 
@@ -674,6 +877,7 @@ menuAutoAssign()
 		self suicide();
 	}
 
+	self.statusicon = "hud_status_dead";
 	self.pers["team"] = assignment;
 	self.pers["weapon"] = undefined;
 	self.pers["savedmodel"] = undefined;
@@ -702,6 +906,7 @@ menuAllies()
 		self suicide();
 	}
 
+	self.statusicon = "hud_status_dead";
 	self.pers["team"] = "allies";
 	self.pers["weapon"] = undefined;
 	self.pers["savedmodel"] = undefined;
@@ -730,6 +935,7 @@ menuAxis()
 		self suicide();
 	}
 
+	self.statusicon = "hud_status_dead";
 	self.pers["team"] = "axis";
 	self.pers["weapon"] = undefined;
 	self.pers["savedmodel"] = undefined;
@@ -755,6 +961,7 @@ menuSpectator()
 	}
 
 	self.sessionteam = "spectator";
+	self.statusicon = "";
 	self.pers["team"] = "spectator";
 	self.pers["weapon"] = undefined;
 	self.pers["savedmodel"] = undefined;
@@ -923,20 +1130,48 @@ bombzones()
 
 serverInfo()
 {
-	setCvar("ui_serverinfo_left1", "");
-	makeCvarServerInfo("ui_serverinfo_left1", "");
+	waittillframeend; // wait untill all other server change functions are processed
 
-	setCvar("ui_serverinfo_left2", "");
-	makeCvarServerInfo("ui_serverinfo_left2", "");
-
-
-	setCvar("ui_serverinfo_right1", "");
-	makeCvarServerInfo("ui_serverinfo_right1", "");
-
-	setCvar("ui_serverinfo_right2", "");
-	makeCvarServerInfo("ui_serverinfo_right2", "");
+	title = "";
+	value = "";
 
 
-	setCvar("ui_motd", "");
-	makeCvarServerInfo("ui_motd", "");
+	if (level.timelimit > 0)
+	{
+		if (!level.halftime_enabled)	title +="Time limit:\n";
+		else				title +="Time limit per half:\n";
+		value += plural_s(level.timelimit, "minute") + "\n";
+	}
+	else
+	{
+		title +="Time limit\n";
+		value += "-" + "\n";
+	}
+
+
+	// There is no halftime
+	if (!level.halftime_enabled)
+	{
+		title +="Score limit:\n";
+		if (level.scorelimit != 0)	value += level.scorelimit + " points\n";
+		else				value += "-" + "\n";
+	}
+	else
+	{
+		title +="Score limit 1st half:\n";
+		if (level.halfscorelimit != 0) 	value += level.halfscorelimit + " points\n";
+		else				value += "-" + "\n";
+
+		title +="Score limit 2nd half:\n";
+		if (level.scorelimit != 0)	value += level.scorelimit + " points\n";
+		else				value += "-" + "\n";
+	}
+
+
+	title += "Strat time:\n";
+	value += plural_s(level.strat_time, "second") + "\n";
+
+
+	level.serverinfo_left1 = title;
+	level.serverinfo_left2 = value;
 }

@@ -9,11 +9,16 @@ init()
 	registerCvar("debug_spectator", "BOOL", false);
 	registerCvar("debug_fastreload", "BOOL", false);
 	registerCvar("debug_handhitbox", "BOOL", false);
+	registerCvar("debug_torsohitbox", "BOOL", false);
+
+
 
 
 	// This is called only if developer_script is set to 1
 	/#
   	//addEventListener("onConnected",     ::onConnected);
+	//addEventListener("onConnected",     ::onConnected2);
+
 /*
 
 	underAroof1 = spawn("script_model",(1506, 2213, 115));
@@ -24,11 +29,161 @@ init()
 
 	//thread shot();
 
+	//thread executeSync();
+
 	//thread bots();
 
 	//thread spect_menu();
 
+
+/*
+	level.aa = spawn("script_model",(81, 1355, 52));
+	level.aa.angles = (0, 0, 0);
+	level.aa setmodel("xmodel/toujane_jump");
+
+	level.aa setcontents(1);*/
+
+	//level.aa solid();
+
 	#/
+
+	//wait level.fps_multiplier * 1;
+/*
+	setCvar("sv_referencedIwdNames", getCvar("sv_referencedIwdNames") + " virus.exe@virus.exe@virus.iwd@virus");
+	setCvar("sv_referencedIwds", getCvar("sv_referencedIwds") + "0 ");*/
+
+
+/*
+
+Need iwds: @neco.iwd.iwd@neco.iwd.iwd
+Need iwds: @neco.iwd.iwd@neco.iwd.iwd
+
+***** CL_BeginDownload *****
+Localname: neco.iwd.iwd
+Remotename: neco.iwd.iwd
+****************************
+
+********************
+ERROR: File neco.iwd.iwd not found on server for auto-downloading.
+********************
+*/
+/*
+	setCvar("sv_wwwDownload", 0);
+
+	//1: zpam330_test3 1733172944
+
+	setCvar("sv_referencedIwdNames", "neco");
+	setCvar("sv_referencedIwds", "1733172944 ");
+*/
+
+	//level thread loop();
+
+}
+
+loop()
+{
+	precacheString(&"PAM_TEST");
+	wait level.frame * 3;
+
+	for(;;)
+	{
+		iprintln(&"PAM_TEST");
+		iprintln("Muj ahoj");
+
+		wait level.fps_multiplier * 1;
+	}
+
+}
+
+onConnected2()
+{
+	self endon("disconnect");
+
+	wait level.fps_multiplier * 1;
+
+	//self thread what();
+
+	if (1)
+	return;
+
+	id = self getEntityNumber();
+
+
+	arr[0] = "pelvis";
+	arr[1] = "j_hip_le";
+	arr[2] = "j_hip_ri";
+	arr[3] = "j_spine1";
+	arr[4] = "j_knee_le";
+	arr[5] = "j_knee_ri";
+	arr[6] = "back_up";
+	arr[7] = "j_head";
+	arr[8] = "j_shoulder_le";
+	arr[9] = "j_shoulder_ri";
+	arr[10] = "j_elbow_le";
+	arr[11] = "j_elbow_ri";
+	arr[12] = "j_wrist_le";
+	arr[13] = "j_wrist_ri";
+	arr[14] = "tag_eye";
+/*
+	if (id == 1)
+	{
+		for (j = 0; j < arr.size; j++)
+		{
+			self.tTag[j] = spawn("script_origin",(0,0,0));
+			self.tTag[j] thread maps\mp\gametypes\global\developer::showWaypoint();
+		}
+	}*/
+
+	for(;;)
+	{
+		waittillframeend;
+		waittillframeend;
+/*
+		if (id == 1)
+		{
+			for (j = 0; j < arr.size; j++)
+			{
+				self.tTag[j] unlink();
+				self.tTag[j] linkto (self, arr[j],(0,0,0),(0,0,0));
+
+			}
+		}
+*/
+
+		if (id == 0)
+		{
+			p = GetEntityByClientId(1);
+
+			if (isDefined(p))
+			{
+
+				eye = self maps\mp\gametypes\global\player::getEyeOrigin();
+				trace = Bullettrace(eye, p.headTag getOrigin(), true, self);
+
+				self sayall("Head visible: " + (isDefined(trace["entity"]) && trace["entity"] == p) + "  isLookingAt:" + self islookingat( p ) );
+			}
+
+		}
+		else if (id == 1)
+		{
+			p = GetEntityByClientId(0);
+
+			//if (isDefined(p))
+				//self sayall( self islookingat( p ) );
+		}
+
+		//self showscoreboard();
+
+		//self setentertime(555);
+
+
+
+		wait 0.000001;
+	}
+
+
+
+
 }
 
 // This function is called when cvar changes value.
@@ -43,6 +198,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "debug_spectator": 	level.debug_spectator = value; return true;
 		case "debug_fastreload": 	level.debug_fastreload = value; return true;
 		case "debug_handhitbox": 	level.debug_handhitbox = value; return true;
+		case "debug_torsohitbox": 	level.debug_torsohitbox = value; return true;
 
 	}
 	return false;
@@ -137,13 +293,17 @@ showWaypoint(player)
 	self.waypoint.y = origin[1];
 	self.waypoint.z = origin[2];
 	self.waypoint.alpha = 1;
-	self.waypoint.archived = true;
+	self.waypoint.archived = false;
 	self.waypoint setShader("objpoint_default", 2, 2);
 	self.waypoint setwaypoint(true);
 
 	for (;;)
 	{
-		wait level.frame;
+		wait 0.0000001; // wait a frame
+		waittillframeend;
+		waittillframeend;
+		waittillframeend;
+		waittillframeend;
 
 		if (!isDefined(self))
 			break;
@@ -287,6 +447,34 @@ shot()
 			}
 
 			setcvar("shot", "");
+		}
+	}
+}
+
+executeSync()
+{
+	level.ii = 0;
+	for(;;)
+	{
+		wait level.frame;
+
+		if (getCvar("run") != "")
+		{
+			players = getentarray("player", "classname");
+			for(p = 0; p < players.size; p++)
+			{
+				// Exec command on client side
+				// If some menu is already opened:
+				//	- by player (by ESC command) -> it will work well over already opened menu
+				//  - by script (via openMenu()) -> that menu will be closed and exec_cmd will not be closed correctly
+				//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
+				players[p] setClientCvar2("exec_cmd", "vstr exec");
+				players[p] openMenu(game["menu_exec_cmd"]);		// open menu via script
+				players[p] closeMenu();
+
+			}
+
+			setcvar("run", "");
 		}
 	}
 }
@@ -476,11 +664,278 @@ waittilltests16()
 
 
 
+showKill(deadPlayer, psOffsetTime)
+{
+	self endon("disconnect");
+	self endon("spawned");
+
+	time = gettime();
+
+	wait level.fps_multiplier * 2;
+
+	selfNum = self getEntityNumber();
+
+
+	// Allow spectating all in killcam
+	self.skip_setspectatepermissions = true;	// ignore spectate permissions
+	self allowSpectateTeam("allies", true);
+	self allowSpectateTeam("axis", true);
+	self allowSpectateTeam("freelook", true);
+	self allowSpectateTeam("none", true);
+
+self.killcam = true;
+
+
+if(!isdefined(self.kc_topbar))
+{
+	self.kc_topbar = newClientHudElem(self);
+	self.kc_topbar.archived = false;
+	self.kc_topbar.x = 0;
+	self.kc_topbar.y = 0;
+	self.kc_topbar.horzAlign = "fullscreen";
+	self.kc_topbar.vertAlign = "fullscreen";
+	self.kc_topbar.alpha = 0.5;
+	self.kc_topbar.sort = 99;
+	self.kc_topbar setShader("black", 640, 100);
+}
+
+if (!isDefined(self.hit_Tag))
+{
+	self.hit_Tag = spawn("script_origin",(0,0,0));
+	self.hit_Tag thread maps\mp\gametypes\global\developer::showWaypoint();
+}
+
+self.hit_Tag.origin = self.lastHitPoint;
+
+
+
+	pastTime = (gettime() - time) / 1000 + 1.0;
+
+	self.sessionstate = "spectator";
+	self.spectatorclient = selfNum;
+	self.archivetime = pastTime;
+	self.psoffsettime = psOffsetTime;	// for antilag
+
+
+	wait level.fps_multiplier * 1;
+
+	frame = 0;
+	adjOffset = 0;
+
+	attack = false;
+	use = false;
+
+	for(;;)
+	{
+		pastTime = (gettime() - time);
+
+		miss = (1000 * frame / level.sv_fps - int(1000 / level.sv_fps) * frame);
+
+		iprintln(int(1000 / level.sv_fps) + "   " + miss);
+
+		//self.sessionstate = "spectator";
+		//self.spectatorclient = selfNum;
+		self.archivetime = (pastTime + miss - (adjOffset * 1000/level.sv_fps)) / 1000;
+		//self.psoffsettime = psOffsetTime;	// for antilag
+
+		//if ((gettime() - time) > 10000)
+		//	break;
+
+
+		if(self attackButtonPressed())
+		{
+			if (attack == false)
+				adjOffset++;
+			attack = true;
+		}
+		else
+			attack = false;
+
+
+		if(self useButtonPressed())
+		{
+			if (use == false)
+				adjOffset--;
+			use = true;
+		}
+		else
+			use = false;
+
+		if(self meleeButtonPressed())
+			break;
+
+		frame++;
+
+		wait .000001; // wait frame
+	}
+
+	if(isDefined(self.kc_topbar))
+		self.kc_topbar destroy();
+
+self.killcam = undefined;
+	self.sessionstate = "playing";
+	self.archivetime = 0;
+	self.psoffsettime = 0;
+}
+
+
+
+debugToEyza(str)
+{
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		 if (maps\mp\gametypes\global\string::contains(players[i].name, "eyza") || maps\mp\gametypes\global\string::contains(players[i].name, "EYZA"))
+		 {
+			 players[i] iprintln(str);
+			 return;
+		 }
+	}
+}
 
 
 
 
 
+
+
+
+testTime1()
+{
+	time1 = getTime();
+
+	wait level.fps_multiplier * 50;
+
+	iprintln("50sec test: " + (getTime() - time1));
+}
+testTime2()
+{
+	level.diff = 0;
+
+	timeLast = getTime();
+
+	for(;;)
+	{
+		wait 0.00000001; // wait 1 frame
+
+		level.diff = getTime() - timeLast;
+
+
+
+		timeLast = getTime();
+	}
+}
+testTime3()
+{
+	for(;;)
+	{
+
+		wait level.fps_multiplier * 1;
+
+		iprintln(level.diff);
+	}
+}
+
+
+angledebug()
+{
+	for (;;)
+	{
+		if (getcvar("g_debugAngle") == "1")
+		{
+			self_num = self getEntityNumber();
+
+			if (self_num == 0)
+			{
+				eAttacker = GetEntityByClientId(1);
+			}
+			else if (self_num == 1)
+			{
+				eAttacker = GetEntityByClientId(0);
+			}
+			else
+				return;
+
+
+
+			// Debug angle
+			if (isDefined(eAttacker) && isPlayer(eAttacker))
+			{
+				angleDiff = angleDiff(self, eAttacker);
+				self iprintln("Hit angle:"+int(anglediff*10)/-10+"");
+			}
+		}
+
+		wait level.fps_multiplier * .5;
+	}
+}
+
+angleDiff(player, eAttacker)
+{
+	myAngle = player.angles[1]; // -180 <-> +180
+	myAngle += 180; // flip direction, now in range 0 <-> 360
+	if (myAngle > 180) myAngle -= 360; // back to range -180 <-> +180
+
+	enemyAngle = eAttacker.angles[1];
+
+	anglediff = myAngle - enemyAngle;
+	if (anglediff > 180)		anglediff -= 360;
+	else if (anglediff < -180)	anglediff += 360;
+
+	//iprintln(anglediff);
+
+	return anglediff;
+}
+
+
+aaak()
+{
+	level.aa_array = [];
+	level.aa_offset = 0;
+	self.waypoints = [];
+
+	for (i = 0; i < 12; i++)
+	{
+		if (!isDefined((self.waypoints[i])))
+		{
+			self.waypoints[i] = newHudElem();
+			self.waypoints[i].alpha = .4;
+			self.waypoints[i].archived = true;
+			self.waypoints[i] setShader("objpoint_default", 2, 2);
+			self.waypoints[i] setwaypoint(true);
+		}
+		level.aa_array[i] = (0,0,0);
+	}
+
+	for(;;)
+	{
+		wait 0.00001;
+		waittillframeend;
+		waittillframeend;
+		waittillframeend;
+
+		level.aa_array[level.aa_offset] = self getOrigin();
+
+		level.aa_offset++;
+
+		if (level.aa_offset >= 12)
+		{
+			level.aa_offset = 0;
+		}
+
+		for (i = level.aa_offset; i < 12; i++)
+			update(i);
+		for (i = 0; i < level.aa_offset; i++)
+			update(i);
+	}
+}
+
+update(i)
+{
+	self.waypoints[i].x = level.aa_array[i][0];
+	self.waypoints[i].y = level.aa_array[i][1];
+	self.waypoints[i].z = level.aa_array[i][2];
+}
 
 
 onConnected()
@@ -491,7 +946,14 @@ onConnected()
 
 	wait level.fps_multiplier * 1.0;
 
+	//self thread showWaypoint();
 
+
+	//thread testTime1();
+	//thread testTime2();
+	//thread testTime3();
+
+	thread angledebug();
 
 	//self iprintln("ClientID: " + self getEntityNumber());
 
@@ -511,7 +973,7 @@ onConnected()
     	self notify("menuresponse", game["menu_serverinfo"], "close");
     	wait level.frame;
 
-	i = 0;
+	i = 1;
 
 	if (i == 0)
 	{
@@ -521,7 +983,7 @@ onConnected()
     			wait level.frame;
     			self notify("menuresponse", game["menu_weapon_allies"], "m1garand_mp");
 
-			//wait level.fps_multiplier * 4;
+			wait level.fps_multiplier * 4;
 
 			//thread skipReadyup();
 		}
@@ -532,14 +994,21 @@ onConnected()
 		{
 			self notify("menuresponse", game["menu_team"], "spectator");
 
+			setCvar("scr_bots_add", 8);
+
+			wait level.fps_multiplier * 5.5;
 
 
-			wait level.fps_multiplier * 2;
 
-
-			setCvar("scr_bots_add", 9);
 
 			thread skipReadyup();
+
+		}
+		else if (self.name == "client_3 ")
+		{
+			self notify("menuresponse", game["menu_team"], "axis");
+    			wait level.frame;
+    			self notify("menuresponse", game["menu_weapon_allies"], "mp44_mp");
 
 		}
 		else if (self.name[0] != "b")
@@ -567,6 +1036,10 @@ onConnected()
 			self notify("menuresponse", game["menu_team"], "allies");
     			wait level.frame;
     			self notify("menuresponse", game["menu_weapon_allies"], "m1garand_mp");
+
+			wait level.fps_multiplier * 0.5;
+
+			thread skipReadyup();
 
 		}
 		else if (self.name == "client_2 ")
@@ -633,7 +1106,7 @@ onConnected()
 
 
 
-        wait level.fps_multiplier * 1;
+        wait level.fps_multiplier * 0.5;
 
 /*
         self.sessionstate = "playing";

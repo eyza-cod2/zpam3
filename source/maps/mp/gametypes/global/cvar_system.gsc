@@ -16,6 +16,13 @@ Init()
 	level.dedicated = getCvarInt("dedicated");
 	level.maxclients = getCvarInt("sv_maxclients");
 
+	// Make sure customizable cvars are reseted when gametype was changed
+	if (level.gametype != getcvar("g_gametype_previous"))
+	{
+		setCvar("pam_mode_custom", 0);
+	}
+	setCvar("g_gametype_previous", level.gametype);
+
 
 	maps\mp\gametypes\global\_global::addEventListener("onStartGameType", ::onStartGameType);
 }
@@ -46,13 +53,13 @@ registerCvar(cvar, type, defaultValue, minValue, maxValue)
 
 // Meaning of first parameter:
 // "" = empty - warning is showed if this cvar is changed and on map change this value is restored to default value defined by rules
-// "C" = customizable cvars via option pam_mode_custom - When map change, value of this variable is not reseted to default value defined by rules
-// "I" = important cvar - cvar value is not reset to default value and if is changed no warning message is showed in readyup
+// "I" = ignored cvar - cvar value is not reset to default value and if is changed no warning message is showed in readyup (pam_mode, scr_bots_add, ...)
+// "C" = not customizable - cvar value will be always reseted to value by rules
 registerCvarEx(method, cvar, type, defaultValue, minValue, maxValue)
 {
 	cvar = toLower(cvar);
 
-	//println("Registering cvar " + cvar);
+	//println("Registering cvar " + cvar + "  " + method);
 
 
 	// Check if this cvar is registered for multiple times
@@ -68,7 +75,23 @@ registerCvarEx(method, cvar, type, defaultValue, minValue, maxValue)
 	#/
 
 
-	setValue = false;
+	setDefaultValue = false;
+
+
+	// If cvar was in quiet mode before map restart, restore original value
+	quiet_value = getCvar("scr_cvar_quietMode_" + cvar);
+	if (quiet_value != "")
+	{
+		setCvar(cvar, quiet_value);
+		setCvar("scr_cvar_quietMode_" + cvar, "");
+	}
+
+
+	// If this cvar is defined by rules, change default value
+	if (isDefined(game["ruleCvars"]) && isDefined(game["ruleCvars"][cvar]))
+	{
+		defaultValue = game["ruleCvars"][cvar];
+	}
 
 
 	// If cvar is not defined yet, register
@@ -83,35 +106,30 @@ registerCvarEx(method, cvar, type, defaultValue, minValue, maxValue)
 			maxValue = 1;
 		}
 
-		// If this cvar is defined by rules, change default value
-		if (isDefined(game["ruleCvars"]) && isDefined(game["ruleCvars"][cvar]))
-		{
-			defaultValue = game["ruleCvars"][cvar];
-		}
-
 		// Update cvar info array
 		game["cvars"][cvar]["name"] = cvar;
 		game["cvars"][cvar]["type"] = type;
-		game["cvars"][cvar]["method"] = method; // R, I, "" (read-only, important, default)
+		game["cvars"][cvar]["method"] = method;
 		game["cvars"][cvar]["defaultValue"] = defaultValue;
 		game["cvars"][cvar]["minValue"] = minValue;  // may be undefined
 		game["cvars"][cvar]["maxValue"] = maxValue;  // may be undefined
 		game["cvars"][cvar]["value"] = getValueByType(cvar, type, defaultValue);         // Get value from original function according to cvar type
 
 		if (game["cvars"][cvar]["value"] != defaultValue)
-			setValue = true;
+			setDefaultValue = true;
 	}
 	else
    	{
-		// If default value of rule cvars change (used for overtimes), set flag to set cvar to specified value
-		if (isDefined(game["ruleCvars"]) && isDefined(game["ruleCvars"][cvar]))
+		// If default value of rule cvars change (used for overtimes), change the value
+		if (defaultValue != game["cvars"][cvar]["defaultValue"])
 		{
-			if (game["ruleCvars"][cvar] != game["cvars"][cvar]["defaultValue"])
-			{
-				defaultValue = game["ruleCvars"][cvar];
-				game["cvars"][cvar]["defaultValue"] = defaultValue;
-				setValue = true;
-			}
+			game["cvars"][cvar]["defaultValue"] = defaultValue;
+			game["cvars"][cvar]["value"] = defaultValue;
+
+			// Change value
+			setCvar(cvar, defaultValue);
+
+			println("Cvar registration: Value of cvar " + cvar + " was set to default rule value " + defaultValue + ", because rule default value changes");
 		}
 	}
 
@@ -119,7 +137,7 @@ registerCvarEx(method, cvar, type, defaultValue, minValue, maxValue)
 
 	// Set cvar to default value on registration or if default value changed
 	// Ignore this for cvars pam_mode and pam_mode_custom
-	if (setValue && isDefined(level.pam_mode) && isDefined(level.pam_mode_custom))
+	if (setDefaultValue && isDefined(level.pam_mode) && isDefined(level.pam_mode_custom))
 	{
 		for(;;)
 		{
@@ -127,12 +145,12 @@ registerCvarEx(method, cvar, type, defaultValue, minValue, maxValue)
 			if (game["is_public_mode"])
 				break;
 
-			// If cvar is important, dont change value
+			// If cvar is ignored, dont change value
 			if (method == "I")
 				break;
 
-			// If custom rules are enabled and this cvar is marked as customizable, dont change
-			if (level.pam_mode_custom && method == "C")
+			// If custom settings are enabled, dont change unles its no-customizable cvar
+			if (level.pam_mode_custom && method != "C")
 				break;
 
 			// Change value
@@ -140,11 +158,14 @@ registerCvarEx(method, cvar, type, defaultValue, minValue, maxValue)
 
 			game["cvars"][cvar]["value"] = defaultValue;
 
-			//println("Value of cvar " + cvar + " was set to " + defaultValue + " by rules");
+			println("Cvar registration: Value of cvar " + cvar + " was set to default rule value " + defaultValue + ", because it was different from rules");
 
 			break;
 		}
 	}
+
+	if (isDefined(level.pam_mode) && game["cvars"][cvar]["value"] != defaultValue && !game["is_public_mode"])
+		println("Cvar registration: Cvar " + cvar + " was NOT set to default rule value " + defaultValue + "!");
 
 
 	// Check if cvar value is in defined range and if cvar is defined - if not, set default value
@@ -160,16 +181,19 @@ registerCvarEx(method, cvar, type, defaultValue, minValue, maxValue)
 
 
 
-// Reset customisable cvars to value defined by rules
-SetDefaultsForCustomisableCvars()
+// Reset cvars to default values defined by rules
+SetDefaults()
 {
 	for(i = 0; i < game["cvarnames"].size; i++)
 	{
 		cvar = game["cvars"][game["cvarnames"][i]]; // array
 
-		if (cvar["method"] == "C")
+		if (cvar["method"] != "I")
 		{
-			setCvar(cvar["name"], cvar["defaultValue"]);
+			if (isDefined(cvar["inQuiet"]))
+				game["cvars"][game["cvarnames"][i]]["valueBeforeQuiet"] = cvar["defaultValue"];
+			else
+				setCvar(cvar["name"], cvar["defaultValue"]);
 		}
 
 	}
@@ -190,6 +214,10 @@ setCvarQuiet(cvarName, value)
 {
 	cvarName = toLower(cvarName);
 
+	// Mutiple call of setCvarQuiet
+	if (isDefined(game["cvars"][cvarName]["inQuiet"]))
+		game["cvars"][cvarName]["value"] = game["cvars"][cvarName]["valueBeforeQuiet"];
+
 	game["cvars"][cvarName]["inQuiet"] = true;
 	game["cvars"][cvarName]["valueBeforeQuiet"] = game["cvars"][cvarName]["value"];
 	game["cvars"][cvarName]["value"] = value;
@@ -199,6 +227,7 @@ setCvarQuiet(cvarName, value)
 
 	setCvar(cvarName, value);
 
+	setCvar("scr_cvar_quietMode_" + cvarName, game["cvars"][cvarName]["valueBeforeQuiet"]);
 	//println("Quiet mode for cvar " + cvarName + " was SET");
 }
 
@@ -219,6 +248,8 @@ restoreCvarQuiet(cvarName)
 		// Nofity change to all subscribed events
 		maps\mp\gametypes\global\events::notifyCvarChange(cvarName, game["cvars"][cvarName]["value"], false);
 
+		setCvar("scr_cvar_quietMode_" + cvarName, "");
+
 		//println("Quiet mode for cvar " + cvarName + " was canceled");
 	}
 }
@@ -229,6 +260,8 @@ cancelCvarQuiet(cvarName)
 
 	game["cvars"][cvarName]["inQuiet"] = undefined;
 	game["cvars"][cvarName]["valueBeforeQuiet"] = undefined;
+
+	setCvar("scr_cvar_quietMode_" + cvarName, "");
 
 	//println("Quiet mode for cvar " + cvarName + " was canceled");
 }
@@ -270,14 +303,13 @@ setCvarIfChanged(cvar, value)
 
 setClientCvar2(cvar, value, aaa, bbb, ccc)
 {
+	/#
 /*
 	if (cvar == "cg_objectiveText")
-      		println("### " + getTime() + " ### " + self.name + " ### " + cvar + " = " + "...localized string...");
+      		println("### " + getTime() + " ### " + level.frame_num + " ### " + self.name + " ### " + cvar + " = " + "...localized string...");
         else
-      		println("### " + getTime() + " ### " + self.name + " ### " + cvar + " = \"" + value + "\"");
-*/
-	/#
-	/*
+      		println("### " + getTime() + " ### " + level.frame_num + " ### " + self.name + " ### " + cvar + " = \"" + value + "\"");
+
 	self thread countCvarsInSingleFrame();
 
 
@@ -294,7 +326,7 @@ setClientCvar2(cvar, value, aaa, bbb, ccc)
 
 	      	//println("### new cvars:" + self.pers["sended_cvars"] + "  " + cvar);
         }
-	*/
+*/
 	#/
 
         self setClientCvar(cvar, value);
@@ -330,15 +362,19 @@ setClientCvarIfChanged(cvar, value)
 		assertmsg("setClientCvarIfChanged() setting undefined value for cvar " + cvar);
 		#/
 	}
+	/#
+	if (!isPlayer(self)) // just safety
+	{
+		assertmsg("setClientCvarIfChanged() self is not a player");
+	}
+	#/
 
-	// Convert value to string (to avoid wierd unmatching variable types errors)
-	valueStr = value + "";
-
-	// Convert to lower to match same cvars
-	cvar = toLower(cvar);
+	valueStr = value + "";	// Convert value to string (to avoid wierd unmatching variable types errors)
+	cvar = toLower(cvar);	// Convert to lower to match same cvars
+	lastValue = self.pers["cvar_" + cvar]; // Get last value, may be undefined for first time
 
 	// If value changed from last
-	if (!isDefined(self.pers["cvar_" + cvar]) || valueStr != self.pers["cvar_" + cvar])
+	if (!isDefined(lastValue) || valueStr != lastValue)
 	{
 		self setClientCvar2(cvar, valueStr);
 	}
@@ -352,7 +388,7 @@ limitCvar(cvar, registerTime)
 {
 	// This guarantees that STRING type cvar is defined
 	if (registerTime && getCvar(cvar["name"]) == "" && cvar["type"] == "STRING")
-		setCvar(cvar["name"], cvar["defaultValue"]);
+		setCvar(cvar["name"], "");
 
 	// If cvar is empty set default value
 	if(getCvar(cvar["name"]) == "" && cvar["type"] != "STRING")
@@ -400,62 +436,46 @@ limitCvar(cvar, registerTime)
 			return true;
 		}
 	}
-	else if (cvar["type"] == "STRING" && isDefined(cvar["minValue"]) && !isString(cvar["minValue"]) && cvar["minValue"].size != 0) // cvar["minValue"] is array of alloved strings
+	else if (cvar["type"] == "STRING" && isDefined(cvar["minValue"]) /*&& !isString(cvar["minValue"]) && cvar["minValue"].size != 0*/)
 	{
+		//assert(cvar["name"] == "pam_mode");
+
 		value_now = getValueByType(cvar["name"], cvar["type"], cvar["defaultValue"]);
 
-		allowedStrings = cvar["minValue"];
-		isValid = false;
-		for (i=0; i < allowedStrings.size ; i++ )
-		{
-			if (value_now == allowedStrings[i])
-			{
-				isValid = true;
-				break;
-			}
-		}
+		// cvar["minValue"] is function to validate new value
+		validateFunction = cvar["minValue"];
+
+		// Validate new value
+		isValid = [[validateFunction]](cvar, value_now, registerTime);
 
 		if (!isValid)
 		{
-			stringToPrint = "";
-			for (i=0; i < allowedStrings.size; i++)
-			{
-				if (i != 0)
-				stringToPrint += ", ";
-				stringToPrint += allowedStrings[i];
-			}
-
-			// Print not valid warning
-			if (!registerTime)
-			{
-				iprintln("^3DVAR change detected: ^2" + value_now + "^3 is not a valid value for dvar ^2" + cvar["name"]);
-				iprintln("^3Following values are valid:");
-				iprintln("^3" + stringToPrint);
-			} else {
-				println("Cvar " + cvar["name"] + " has invalid value '"+value_now+"'. Valid values: " + stringToPrint + ". Using " + cvar["defaultValue"] + ".");
-			}
-
+			/*
 			// Check also is value before is valid
-			for (i=0; i < allowedStrings.size ; i++ )
-			{
-				if (cvar["value"] == allowedStrings[i])
-				{
-					isValid = true;
-					break;
-				}
-			}
+			previousIsValid = [[validateFunction]](cvar, cvar["value"], registerTime);
 
-			if (!isValid)
-	                    setCvar(cvar["name"], cvar["defaultValue"]); // set default value
-	                else
-	                    setCvar(cvar["name"], cvar["value"]); // set value before
+			if (!previousIsValid)
+			    setCvar(cvar["name"], cvar["defaultValue"]); // set default value
+			else
+			    setCvar(cvar["name"], cvar["value"]); // set value before
+*/
 
-			return true;
+    			if (registerTime)
+    			    setCvar(cvar["name"], cvar["defaultValue"]); // set default value
+    			else
+    			    setCvar(cvar["name"], cvar["value"]); // set value before
+
+
+			return true; // invalid
 		}
+
+		return false; // valid
+
 	}
 
 	return false;
 }
+
 
 
 monitorCvarChanges()
@@ -464,6 +484,8 @@ monitorCvarChanges()
 
 	for (;;)
 	{
+		someCvarChangedFromDefault = false;
+
 		j = 0;
 		for(i = 0; i < game["cvarnames"].size; i++)
 		{
@@ -472,7 +494,7 @@ monitorCvarChanges()
 			value_last = cvar["value"];
 			value_now = getValueByType(cvar["name"], cvar["type"], cvar["defaultValue"]);
 
-			// Value changed
+			// Value changed (not true for cvars in quiet mode)
 			if (value_last != value_now)
 			{
 				// Check if new value is in cvar limit, if is outside limit - restore value before
@@ -481,8 +503,11 @@ monitorCvarChanges()
 				// Update only if value vas changed to correct value
 				if (!isOutsideLimit)
 				{
-					// Dont print cvar changed if it is in quiet mode (changed by script - exmp: g_speed in stratime,...)
-					if (!isDefined(cvar["inQuiet"]))
+					// Value was changed to other value then set by quiet function - cancel quiet
+					if (isDefined(cvar["inQuiet"]))
+						cancelCvarQuiet(cvar["name"]);
+
+					if (cvar["name"] != "pam_mode_custom")
 						iprintln("^3Server cvar ^2" + cvar["name"] + "^3 changed from ^2" + cvar["value"] + "^3 to ^2" + value_now);
 
 					// Update value in global struct definition
@@ -491,7 +516,16 @@ monitorCvarChanges()
 					// Nofity change to all subscribed events
 					maps\mp\gametypes\global\events::notifyCvarChange(cvar["name"], value_now, false);
 				}
+				else
+					// Update value if it was changed by function limitCvar - to check if the value is diifferent from default value
+					value_now = getValueByType(cvar["name"], cvar["type"], cvar["defaultValue"]);
 			}
+
+
+			// Check if some cvar is changed from default value
+			if (cvar["method"] != "I" &&  (value_now != cvar["defaultValue"] && !isDefined(cvar["inQuiet"]))  ||  (isDefined(cvar["inQuiet"]) && cvar["valueBeforeQuiet"] != cvar["defaultValue"]) )
+				someCvarChangedFromDefault = true;
+
 
 			// Split checking into multiple frames to avoid overhead
 			j++;
@@ -502,6 +536,20 @@ monitorCvarChanges()
 			}
 
 		}
+
+		// If cvar pam_mode_custom did not change during loop checking
+		cvar = game["cvars"]["pam_mode_custom"]; // array
+		value_last = cvar["value"];
+		value_now = getValueByType(cvar["name"], cvar["type"], cvar["defaultValue"]);
+		if (value_last == value_now)
+		{
+			// Check if we have some changed cvars and set pam_mode_custom particuraly
+			if (someCvarChangedFromDefault)
+				setCvarIfChanged("pam_mode_custom", "1");
+			else
+				setCvarIfChanged("pam_mode_custom", "0");
+		}
+
 	}
 }
 
@@ -512,10 +560,13 @@ isCvarChangedFromRuleValue(cvarName)
 	cvar = game["cvars"][cvarName]; // array
 
 	// If cvar changed + isnt in quiet mode
-	if (cvar["value"] != cvar["defaultValue"] && !isDefined(cvar["inQuiet"]))
+	if (cvar["method"] != "I" &&  (cvar["value"] != cvar["defaultValue"] && !isDefined(cvar["inQuiet"]))  ||  (isDefined(cvar["inQuiet"]) && cvar["valueBeforeQuiet"] != cvar["defaultValue"]) )
 		return true;
+
 	return false;
 }
+
+
 
 getChangedCvarsString()
 {
@@ -525,12 +576,7 @@ getChangedCvarsString()
 	{
 		cvar = game["cvars"][game["cvarnames"][i]]; // array
 
-		// Dont show warning for important cvar
-		if (cvar["method"] == "I")
-			continue;
-
-		// If cvar changed + isnt in quiet mode
-		if (cvar["value"] != cvar["defaultValue"] && !isDefined(cvar["inQuiet"]))
+		if (cvar["method"] != "I" &&  (cvar["value"] != cvar["defaultValue"] && !isDefined(cvar["inQuiet"]))  ||  (isDefined(cvar["inQuiet"]) && cvar["valueBeforeQuiet"] != cvar["defaultValue"]) )
 		{
 			arr[arr.size] = cvar["name"];
 		}
@@ -538,29 +584,24 @@ getChangedCvarsString()
 	return arr;
 }
 
-// Used in readyup to check if some cvar is changed from original rules values
-cvarsChangedFromRulesValues()
+
+getNumberOfChangedCvars()
 {
-	someCvarChanged = false;
+	changes = 0;
 
 	for(i = 0; i < game["cvarnames"].size; i++)
 	{
 		cvar = game["cvars"][game["cvarnames"][i]]; // array
 
-		// Dont show warning for important cvar
-		if (cvar["method"] == "I")
-			continue;
-
 		// If cvar changed + isnt in quiet mode
-		if (cvar["value"] != cvar["defaultValue"] && !isDefined(cvar["inQuiet"]))
+		if (cvar["method"] != "I" &&  (cvar["value"] != cvar["defaultValue"] && !isDefined(cvar["inQuiet"]))  ||  (isDefined(cvar["inQuiet"]) && cvar["valueBeforeQuiet"] != cvar["defaultValue"]) )
 		{
 			/#
 			//println("Not equal to rules: " + cvar["name"] + ", value="+cvar["value"] +", defValue="+ cvar["defaultValue"]);
 			#/
 
-			someCvarChanged = true;
-			break;
+			changes++;
 		}
 	}
-	return someCvarChanged;
+	return changes;
 }

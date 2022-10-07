@@ -243,16 +243,10 @@ getSecureString(string)
 {
 	// Remove chars that cannot be used in team name
 	string_secure = "";
-	allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789=-+_#!.|?<>()[]{}:/\\";
 
 	for (j = 0; j < string.size; j++)
 	{
-		if (string_secure != "" && (string[j] == "-" || string[j] == "|" || string[j] == "_"))
-		{
-			string_secure += " ";
-			continue;
-		}
-
 		saveChar = false;
 		for (i = 0; i < allowedChars.size; i++)
 		{

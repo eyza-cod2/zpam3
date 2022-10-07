@@ -1,0 +1,123 @@
+
+menuDef
+{
+	name			"rcon_map"
+	rect			240 84 430 350
+
+	DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.8)
+
+	#include "ui_mp/scriptmenus/submenus/ingame_rcon_map.menu"
+}
+menuDef
+{
+	name			"rcon_map_maps"
+	rect			240 84 430 140
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	#include "ui_mp/scriptmenus/submenus/ingame_rcon_map_maps.menu"
+}
+menuDef
+{
+	name			"rcon_map_pams"
+	rect			240 234 430 60
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	#include "ui_mp/scriptmenus/submenus/ingame_rcon_map_pams.menu"
+}
+menuDef
+{
+	name			"rcon_map_other"
+	rect			240 294 430 70
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	#include "ui_mp/scriptmenus/submenus/ingame_rcon_map_other.menu"
+}
+menuDef
+{
+	name			"rcon_map_apply"
+	rect			240 370 430 66
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	#include "ui_mp/scriptmenus/submenus/ingame_rcon_map_apply.menu"
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+menuDef
+{
+	name			"rcon_settings"
+	rect			240 84 430 350
+
+	DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.8)
+
+	#include "ui_mp/scriptmenus/submenus/ingame_rcon_settings.menu"
+}
+menuDef
+{
+	name			"rcon_settings_gametypes"
+	rect			240 84 430 120
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	#include "ui_mp/scriptmenus/submenus/ingame_rcon_settings_gametypes.menu"
+}
+menuDef
+{
+	name			"rcon_settings_shared"
+	rect			240 205 430 225
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	#include "ui_mp/scriptmenus/submenus/ingame_rcon_settings_shared.menu"
+}
+menuDef
+{
+	name			"rcon_settings_focus" // menu used for activate focus when some button is cliecked
+	rect			0 10 1 1
+
+	execKey "1" { exec "openscriptmenu ingame rcon_settings_key_1" }
+	execKey "2" { exec "openscriptmenu ingame rcon_settings_key_2" }
+	execKey "3" { exec "openscriptmenu ingame rcon_settings_key_3" }
+	execKey "4" { exec "openscriptmenu ingame rcon_settings_key_4" }
+	execKey "5" { exec "openscriptmenu ingame rcon_settings_key_5" }
+	execKey "6" { exec "openscriptmenu ingame rcon_settings_key_6" }
+	execKey "7" { exec "openscriptmenu ingame rcon_settings_key_7" }
+	execKey "8" { exec "openscriptmenu ingame rcon_settings_key_8" }
+	execKey "9" { exec "openscriptmenu ingame rcon_settings_key_9" }
+	execKey "0" { exec "openscriptmenu ingame rcon_settings_key_0" }
+	execKey "." { exec "openscriptmenu ingame rcon_settings_key_." }
+
+	execKeyInt 13 { exec "openscriptmenu ingame rcon_settings_key_enter" } // enter
+	execKeyInt 127 { exec "openscriptmenu ingame rcon_settings_key_backspace" } // backspace
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+menuDef
+{
+	name			"rcon_kick"
+	rect			240 84 430 350
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	style			WINDOW_STYLE_EMPTY
+
+	DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.8)
+
+	#include "ui_mp/scriptmenus/submenus/ingame_rcon_kick.menu"
+}
+
+menuDef
+{
+	name			"aboutpam"
+	rect			240 84 430 350
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	style			WINDOW_STYLE_EMPTY
+
+	DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.8)
+
+	#include "ui_mp/scriptmenus/submenus/ingame_aboutpam.menu"
+}
+
+
+menuDef
+{
+	name			"pammodes"
+	rect			240 84 430 350
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	style			WINDOW_STYLE_EMPTY
+
+	DRAW_GRADIENT_FOR_SUBMENU(-30, -23, 1300, 374,   0.8)
+
+	#include "ui_mp/scriptmenus/submenus/ingame_pammodes.menu"
+}

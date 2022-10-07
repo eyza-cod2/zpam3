@@ -189,9 +189,21 @@ itemDef \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 12 10 0 0 \
 	origin		152 3 \
-	backcolor	0 0 0 1 \
+	backcolor	1 1 1 .9 \
 	visible		1 \
 	background	"ui/assets/scrollbar_arrow_left.tga" \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "0_";  "10_red_";"10_green_";"10_blue_";"10_gray_";  "50_red_";"50_green_";"50_blue_";"50_gray_";  "80_red_"; "80_green_"; "80_blue_"; "80_gray_";  "100_red_";"100_green_";"100_blue_";"100_gray_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 12 10 0 0 \
+	origin		-14 3 \
+	backcolor	1 1 1 .9 \
+	visible		1 \
+	background	"ui/assets/scrollbar_arrow_right.tga" \
 	dvartest	cvarprefix "_health" \
 	showDvar	{ "0_";  "10_red_";"10_green_";"10_blue_";"10_gray_";  "50_red_";"50_green_";"50_blue_";"50_gray_";  "80_red_"; "80_green_"; "80_blue_"; "80_gray_";  "100_red_";"100_green_";"100_blue_";"100_gray_" } \
 	decoration \

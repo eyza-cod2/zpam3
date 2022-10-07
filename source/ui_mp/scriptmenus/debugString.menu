@@ -763,21 +763,11 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-		// TODO: remove when final release
 		ITEM_BUTTON 				(0   450, "end_round", ;, scriptMenuResponse "end_round")
 		ITEM_BUTTON 				(130 450, "next_round", ;, scriptMenuResponse "next_round")
 		ITEM_BUTTON 				(260 450, "do_halftime", ;, scriptMenuResponse "do_halftime")
 		ITEM_BUTTON 				(390 450, "skip_readyup", ;, scriptMenuResponse "skip_readyup")
+		ITEM_BUTTON 				(520 450, "overtime", ;, scriptMenuResponse "overtime")
 		//ITEM_BUTTON 				(520 450, "", ;, scriptMenuResponse "")
 
 

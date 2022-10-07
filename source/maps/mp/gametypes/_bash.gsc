@@ -108,7 +108,7 @@ callbash()
 	{
 		game["do_bash"] = false;
 
-		iprintlnbold(self.name + " ^7canceled a bash mode.");
+		iprintlnbold("^9" + self.name + " ^7canceled a bash mode.");
 
 		HUD_Bash();
 	}
@@ -125,7 +125,7 @@ callbash()
 		iprintln(self.name + " ^7called a bash mode.");
 		iprintln("Going to bash mode after the ready-up mode.");
 
-		iprintlnbold(self.name + " ^7called a bash mode.");
+		iprintlnbold("^3" + self.name + " ^7called a bash mode.");
 
 		logPrint("BASH_CALL;" + self.pers["team"] + ";" + self.name + "\n");
 
@@ -151,7 +151,7 @@ HUD_Bash()
 	// Bash info
 	if (!isDefined(level.bash_hud_info))
 	{
-		level.bash_hud_info = addHUD(-20, 39, 1, (1,1,0), "right", "top", "right");
+		level.bash_hud_info = addHUD(320, 86, 1.1, (1,1,0), "center", "top");
 		level.bash_hud_info setText(game["STRING_BASH_MODE"]);
 	}
 	else

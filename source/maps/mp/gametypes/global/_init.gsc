@@ -1,9 +1,7 @@
 // This function is called from every <gametype>.gsc::main function
 InitSystems()
 {
-	/#
-	println("### Call: maps/mp/gametypes/" + getcvar("g_gametype") + ".gsc::main()");
-	#/
+	thread maps\mp\gametypes\_callbacksetup::Init();
 
 	if (isDefined(game["firstInit"]))
 		game["firstInit"] = false;
@@ -39,10 +37,7 @@ resetFirstInit()
 // This function is called at the end of <gametype>.gsc::main() function
 InitModules()
 {
-	thread maps\mp\gametypes\_callbacksetup::Init();
-
 	thread maps\mp\gametypes\_pam::init();
-	thread maps\mp\gametypes\_punkbuster::init();
 	thread maps\mp\gametypes\_force_download::init();
 	thread maps\mp\gametypes\_cvar_forces::init();
 
@@ -50,9 +45,10 @@ InitModules()
 	thread maps\mp\gametypes\_server_restart::init();
 
 
+	thread maps\mp\gametypes\_weapons::init();		// must be caled before _menus because of rifle mode
 	thread maps\mp\gametypes\_menus::init();		// must be called before another onMenuResponse
+	thread maps\mp\gametypes\_menu_serverinfo::init();
 	thread maps\mp\gametypes\_teams::init();
-	thread maps\mp\gametypes\_weapons::init();
 	thread maps\mp\gametypes\_killcam::init();
 	thread maps\mp\gametypes\_shellshock::init();
 	thread maps\mp\gametypes\_damagefeedback::init();
@@ -72,7 +68,6 @@ InitModules()
 	thread maps\mp\gametypes\_halftime::init(); 	// must be caled before readyup and overtime
 	thread maps\mp\gametypes\_end_of_map::init();	// depends on overtime
 	thread maps\mp\gametypes\_readyup::init();
-	thread maps\mp\gametypes\_cracked::init();
 	thread maps\mp\gametypes\_bash::init();	// depends on readup
 
 	thread maps\mp\gametypes\_blackout::init();	// depends on timeout and readyup
@@ -85,16 +80,17 @@ InitModules()
 	thread maps\mp\gametypes\_matchinfo::init();	// depends on readyup, teamname, bash, overtime
 	thread maps\mp\gametypes\_record::init();	// depends on matchinfo
 	thread maps\mp\gametypes\_players_left::Init(); // depends on matchinfo
-	thread maps\mp\gametypes\_spectating_system::init(); // depends on readyup, matchinfo
 	thread maps\mp\gametypes\_spectating_auto::init(); // depends on spectating_system
-	thread maps\mp\gametypes\_spectating_menu::init(); // depends on spectating_system
+	thread maps\mp\gametypes\_spectating_hud::init(); // depends on readyup, matchinfo
+	thread maps\mp\gametypes\_spectating_killcam::init(); // depends on _spectating_auto
 	thread maps\mp\gametypes\_archive::init(); // depends on spectating_system and killcam
 
 
 	thread maps\mp\gametypes\_menu_rcon::init();
-	thread maps\mp\gametypes\_menu_kick::init();
+	thread maps\mp\gametypes\_menu_rcon_kick::init();
+	thread maps\mp\gametypes\_menu_rcon_map::init();
+	thread maps\mp\gametypes\_menu_rcon_settings::init();
 	thread maps\mp\gametypes\_menu_scoreboard::init(); // depends on matchinfo
-	thread maps\mp\gametypes\_menu_map::init();
 
 
 	thread maps\mp\gametypes\_bots::Init();
@@ -103,10 +99,11 @@ InitModules()
 	thread maps\mp\gametypes\_mapvote::Init();
 	thread maps\mp\gametypes\_player_stat::init();
 	thread maps\mp\gametypes\_mg_fix::init();
+	thread maps\mp\gametypes\_ladder_weapon_fix::init();
 	thread maps\mp\gametypes\_round_report::init();
 	thread maps\mp\gametypes\_score_set::init(); // depends on readyup, halftime, sd
-
-
+	thread maps\mp\gametypes\_sniper_shotgun_info::init();
+	thread maps\mp\gametypes\_warnings::init();
 
 
 	thread maps\mp\gametypes\_objective::init(); // depends on readyup, timeout

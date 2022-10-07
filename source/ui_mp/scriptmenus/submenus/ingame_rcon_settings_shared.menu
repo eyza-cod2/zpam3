@@ -1,0 +1,110 @@
+ITEM_RCON_SETTINGS_HEADING(0 0, "debug_fastreload", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 0, 20 11, "1",   "ui_rcon_settings_debug_fastreload", "1",  exec "openscriptmenu ingame rcon_settings_debug_fastreload_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 0, 20 11, "0",  "ui_rcon_settings_debug_fastreload", "0", exec "openscriptmenu ingame rcon_settings_debug_fastreload_0")
+ITEM_RCON_SETTINGS_TEXT(145 0, "Show info when fast reload is prevented", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 12, "debug_shotgun", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 12, 20 11, "1",  "ui_rcon_settings_debug_shotgun", "1", exec "openscriptmenu ingame rcon_settings_debug_shotgun_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 12, 20 11, "0",   "ui_rcon_settings_debug_shotgun", "0",  exec "openscriptmenu ingame rcon_settings_debug_shotgun_0")
+ITEM_RCON_SETTINGS_TEXT(145 12, "Show info about pellets and ranges when player is hited", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 24, "debug_handhitbox", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 24, 20 11, "1",  "ui_rcon_settings_debug_handhitbox", "1", exec "openscriptmenu ingame rcon_settings_debug_handhitbox_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 24, 20 11, "0",   "ui_rcon_settings_debug_handhitbox", "0",  exec "openscriptmenu ingame rcon_settings_debug_handhitbox_0")
+ITEM_RCON_SETTINGS_TEXT(145 24, "Show info when false hand hit is detected", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 36, "debug_torsohitbox", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 36, 20 11, "1",   "ui_rcon_settings_debug_torsohitbox", "1",  exec "openscriptmenu ingame rcon_settings_debug_torsohitbox_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 36, 20 11, "0",  "ui_rcon_settings_debug_torsohitbox", "0", exec "openscriptmenu ingame rcon_settings_debug_torsohitbox_0")
+ITEM_RCON_SETTINGS_TEXT(145 36, "Show info when extented torso hitbox is applied", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 48, "debug_pronepeek", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 48, 20 11, "1",   "ui_rcon_settings_debug_pronepeek", "1",  exec "openscriptmenu ingame rcon_settings_debug_pronepeek_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 48, 20 11, "0",  "ui_rcon_settings_debug_pronepeek", "0", exec "openscriptmenu ingame rcon_settings_debug_pronepeek_0")
+ITEM_RCON_SETTINGS_TEXT(145 48	, "Show info when prone peek is detected and how its detected", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 60, "debug_spectator", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 60, 20 11, "1",   "ui_rcon_settings_debug_spectator", "1",  exec "openscriptmenu ingame rcon_settings_debug_spectator_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 60, 20 11, "0",  "ui_rcon_settings_debug_spectator", "0", exec "openscriptmenu ingame rcon_settings_debug_spectator_0")
+ITEM_RCON_SETTINGS_TEXT(145 60, "Show info when spectated player is automatically switched", "", "-")
+
+
+
+ITEM_RCON_SETTINGS_HEADING(0 84, "scr_fast_reload_fix", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 84, 20 11, "1",   "ui_rcon_settings_scr_fast_reload_fix", "1",  exec "openscriptmenu ingame rcon_settings_scr_fast_reload_fix_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 84, 20 11, "0",  "ui_rcon_settings_scr_fast_reload_fix", "0", exec "openscriptmenu ingame rcon_settings_scr_fast_reload_fix_0")
+ITEM_RCON_SETTINGS_TEXT(145 84, "Prevent players from shoting faster via double-scroll bug", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 96, "scr_shotgun_consistent", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 96, 20 11, "1",  "ui_rcon_settings_scr_shotgun_consistent", "1", exec "openscriptmenu ingame rcon_settings_scr_shotgun_consistent_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 96, 20 11, "0",   "ui_rcon_settings_scr_shotgun_consistent", "0",  exec "openscriptmenu ingame rcon_settings_scr_shotgun_consistent_0")
+ITEM_RCON_SETTINGS_TEXT(145 96, "Enable consistent shotgun to fix long shot kills and short range hits", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 108, "scr_hitbox_hand_fix", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 108, 20 11, "1",  "ui_rcon_settings_scr_hitbox_hand_fix", "1", exec "openscriptmenu ingame rcon_settings_scr_hitbox_hand_fix_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 108, 20 11, "0",   "ui_rcon_settings_scr_hitbox_hand_fix", "0",  exec "openscriptmenu ingame rcon_settings_scr_hitbox_hand_fix_0")
+ITEM_RCON_SETTINGS_TEXT(145 108, "Avoid hand hits if body is behind the hands", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 120, "scr_hitbox_torso_fix", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 120, 20 11, "1",   "ui_rcon_settings_scr_hitbox_torso_fix", "1",  exec "openscriptmenu ingame rcon_settings_scr_hitbox_torso_fix_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 120, 20 11, "0",  "ui_rcon_settings_scr_hitbox_torso_fix", "0", exec "openscriptmenu ingame rcon_settings_scr_hitbox_torso_fix_0")
+ITEM_RCON_SETTINGS_TEXT(145 120, "Extend lower torso hitbox", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 132, "scr_prone_peek_fix", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 132, 20 11, "1",   "ui_rcon_settings_scr_prone_peek_fix", "1",  exec "openscriptmenu ingame rcon_settings_scr_prone_peek_fix_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 132, 20 11, "0",  "ui_rcon_settings_scr_prone_peek_fix", "0", exec "openscriptmenu ingame rcon_settings_scr_prone_peek_fix_0")
+ITEM_RCON_SETTINGS_TEXT(145 132, "Prevent players from doing fast peeks from prone", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 144, "scr_mg_peek_fix", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 144, 20 11, "1",   "ui_rcon_settings_scr_mg_peek_fix", "1",  exec "openscriptmenu ingame rcon_settings_scr_mg_peek_fix_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 144, 20 11, "0",  "ui_rcon_settings_scr_mg_peek_fix", "0", exec "openscriptmenu ingame rcon_settings_scr_mg_peek_fix_0")
+ITEM_RCON_SETTINGS_TEXT(145 144, "When mg is dropped, player is spawned right behid mg", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 156, "g_antilag:", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 156, 20 11, "1",   "ui_rcon_settings_g_antilag", "1",  exec "openscriptmenu ingame rcon_settings_g_antilag_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 156, 20 11, "0",  "ui_rcon_settings_g_antilag", "0", exec "openscriptmenu ingame rcon_settings_g_antilag_0")
+ITEM_RCON_SETTINGS_TEXT(145 156, "If enabled, player's ping is compensated to improve hit registration", "", "-")
+
+ITEM_RCON_SETTINGS_HEADING(0 168, "scr_killcam:", "", "-")
+ITEM_RCON_SETTINGS_ONDVAR(95 168, 20 11, "1",   "ui_rcon_settings_scr_killcam", "1",  exec "openscriptmenu ingame rcon_settings_scr_killcam_1")
+ITEM_RCON_SETTINGS_ONDVAR(116 168, 20 11, "0",  "ui_rcon_settings_scr_killcam", "0", exec "openscriptmenu ingame rcon_settings_scr_killcam_0")
+ITEM_RCON_SETTINGS_TEXT(145 168, "Replay kills", "", "-")
+
+
+
+
+
+// Apply
+ITEM_BUTTON_ONDVAR_DISABLED   	  (0 184, "Apply", "ui_rcon_settings_execString", showDvar {""}, RCON_UPDATE_STATUS;)
+ITEM_BUTTON_ONDVAR		  (0 184, "Apply", "ui_rcon_settings_execString", hideDvar {""}, RCON_UPDATE_STATUS, RCON_UPDATE_STATUS; exec "vstr ui_rcon_settings_exec"; CLOSE_ALL)
+
+
+
+
+// Smaller text
+itemDef
+{
+	type 			ITEM_TYPE_TEXT
+	dvar			"ui_rcon_settings_execString"
+	origin 			80 205
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textscale		0.19
+	forecolor		.5 .5 .5 1
+	visible			1
+	decoration
+}
+
+itemDef
+{
+	name 			"login_warning"
+	visible			1
+	rect			0 206 300 18 0 0
+	forecolor		GLOBAL_UNFOCUSED_COLOR
+	text			"You have to log in with '/rcon login <password>' before using this menu."
+	textfont		UI_FONT_NORMAL
+	textscale		0.195
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textaligny		18
+	dvartest		"ui_rcon_logged_in"
+	hideDvar		{ "1" }
+}

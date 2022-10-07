@@ -1,0 +1,157 @@
+ITEM_RCON_SETTINGS_HEADING(0 0, "scr_sd_timelimit", "ui_rcon_settings_scr_sd_timelimit", "")
+ITEM_RCON_SETTINGS_NUMBER(95 0, 40 11,  "ui_rcon_settings_scr_sd_timelimit", exec "openscriptmenu ingame rcon_settings_scr_sd_timelimit_edit")
+ITEM_RCON_SETTINGS_TEXT(145 0, "Time limit for map. 0=disabled (minutes)", "ui_rcon_settings_scr_sd_timelimit", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 12, "scr_sd_half_round", "ui_rcon_settings_scr_sd_half_round", "")
+ITEM_RCON_SETTINGS_NUMBER(95 12, 40 11,  "ui_rcon_settings_scr_sd_half_round", exec "openscriptmenu ingame rcon_settings_scr_sd_half_round_edit")
+ITEM_RCON_SETTINGS_TEXT(145 12, "Number of rounds when half-time starts. 0=ignored", "ui_rcon_settings_scr_sd_half_round", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 24, "scr_sd_half_score", "ui_rcon_settings_scr_sd_half_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 24, 40 11,  "ui_rcon_settings_scr_sd_half_score", exec "openscriptmenu ingame rcon_settings_scr_sd_half_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 24, "Number of score when half-time starts. 0=ignored", "ui_rcon_settings_scr_sd_half_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 36, "scr_sd_end_round", "ui_rcon_settings_scr_sd_end_round", "")
+ITEM_RCON_SETTINGS_NUMBER(95 36, 40 11,  "ui_rcon_settings_scr_sd_end_round", exec "openscriptmenu ingame rcon_settings_scr_sd_end_round_edit")
+ITEM_RCON_SETTINGS_TEXT(145 36, "Number of rounds when map ends. 0=ignored", "ui_rcon_settings_scr_sd_end_round", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 48, "scr_sd_end_score", "ui_rcon_settings_scr_sd_end_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 48, 40 11,  "ui_rcon_settings_scr_sd_end_score", exec "openscriptmenu ingame rcon_settings_scr_sd_end_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 48, "Number of score when map ends. 0=ignored", "ui_rcon_settings_scr_sd_end_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 68, "scr_sd_strat_time", "ui_rcon_settings_scr_sd_strat_time", "")
+ITEM_RCON_SETTINGS_NUMBER(95 68, 40 11,  "ui_rcon_settings_scr_sd_strat_time", exec "openscriptmenu ingame rcon_settings_scr_sd_strat_time_edit")
+ITEM_RCON_SETTINGS_TEXT(145 68, "Freeze time before round starts (seconds)", "ui_rcon_settings_scr_sd_strat_time", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 80, "scr_sd_roundlength", "ui_rcon_settings_scr_sd_roundlength", "")
+ITEM_RCON_SETTINGS_NUMBER(95 80, 40 11,  "ui_rcon_settings_scr_sd_roundlength", exec "openscriptmenu ingame rcon_settings_scr_sd_roundlength_edit")
+ITEM_RCON_SETTINGS_TEXT(145 80, "Time length of each round (minutes)", "ui_rcon_settings_scr_sd_roundlength", "")
+
+
+
+
+ITEM_RCON_SETTINGS_HEADING(0 0, "scr_dm_timelimit", "ui_rcon_settings_scr_dm_timelimit", "")
+ITEM_RCON_SETTINGS_NUMBER(95 0, 40 11,  "ui_rcon_settings_scr_dm_timelimit", exec "openscriptmenu ingame rcon_settings_scr_dm_timelimit_edit")
+ITEM_RCON_SETTINGS_TEXT(145 0, "Time limit for map or halftime. 0=disabled (minutes)", "ui_rcon_settings_scr_dm_timelimit", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 12, "scr_dm_half_score", "ui_rcon_settings_scr_dm_half_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 12, 40 11,  "ui_rcon_settings_scr_dm_half_score", exec "openscriptmenu ingame rcon_settings_scr_dm_half_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 12, "Number of score when half-time starts. 0=ignored", "ui_rcon_settings_scr_dm_half_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 24, "scr_dm_end_score", "ui_rcon_settings_scr_dm_end_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 24, 40 11,  "ui_rcon_settings_scr_dm_end_score", exec "openscriptmenu ingame rcon_settings_scr_dm_end_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 24, "Number of score when maps end. 0=ignored", "ui_rcon_settings_scr_dm_end_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 36, "scr_dm_halftime", "ui_rcon_settings_scr_dm_halftime", "")
+ITEM_RCON_SETTINGS_NUMBER(95 36, 40 11,  "ui_rcon_settings_scr_dm_halftime", exec "openscriptmenu ingame rcon_settings_scr_dm_halftime_edit")
+ITEM_RCON_SETTINGS_TEXT(145 36, "Do halftime. When 1, scr_dm_timelimit means time per half", "ui_rcon_settings_scr_dm_halftime", "")
+
+
+
+
+
+ITEM_RCON_SETTINGS_HEADING(0 0, "scr_tdm_timelimit", "ui_rcon_settings_scr_tdm_timelimit", "")
+ITEM_RCON_SETTINGS_NUMBER(95 0, 40 11,  "ui_rcon_settings_scr_tdm_timelimit", exec "openscriptmenu ingame rcon_settings_scr_tdm_timelimit_edit")
+ITEM_RCON_SETTINGS_TEXT(145 0, "Time limit for map or halftime. 0=disabled (minutes)", "ui_rcon_settings_scr_tdm_timelimit", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 12, "scr_tdm_half_score", "ui_rcon_settings_scr_tdm_half_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 12, 40 11,  "ui_rcon_settings_scr_tdm_half_score", exec "openscriptmenu ingame rcon_settings_scr_tdm_half_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 12, "Number of score when half-time starts. 0=ignored", "ui_rcon_settings_scr_tdm_half_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 24, "scr_tdm_end_score", "ui_rcon_settings_scr_tdm_end_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 24, 40 11,  "ui_rcon_settings_scr_tdm_end_score", exec "openscriptmenu ingame rcon_settings_scr_tdm_end_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 24, "Number of score when maps end. 0=ignored", "ui_rcon_settings_scr_tdm_end_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 36, "scr_tdm_halftime", "ui_rcon_settings_scr_tdm_halftime", "")
+ITEM_RCON_SETTINGS_NUMBER(95 36, 40 11,  "ui_rcon_settings_scr_tdm_halftime", exec "openscriptmenu ingame rcon_settings_scr_tdm_halftime_edit")
+ITEM_RCON_SETTINGS_TEXT(145 36, "Do halftime. When 1, scr_tdm_timelimit means time per half", "ui_rcon_settings_scr_tdm_halftime", "")
+
+
+
+
+ITEM_RCON_SETTINGS_HEADING(0 0, "scr_hq_timelimit", "ui_rcon_settings_scr_hq_timelimit", "")
+ITEM_RCON_SETTINGS_NUMBER(95 0, 40 11,  "ui_rcon_settings_scr_hq_timelimit", exec "openscriptmenu ingame rcon_settings_scr_hq_timelimit_edit")
+ITEM_RCON_SETTINGS_TEXT(145 0, "Time limit for map or halftime. 0=disabled (minutes)", "ui_rcon_settings_scr_hq_timelimit", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 12, "scr_hq_half_score", "ui_rcon_settings_scr_hq_half_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 12, 40 11,  "ui_rcon_settings_scr_hq_half_score", exec "openscriptmenu ingame rcon_settings_scr_hq_half_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 12, "Number of score when half-time starts. 0=ignored", "ui_rcon_settings_scr_hq_half_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 24, "scr_hq_end_score", "ui_rcon_settings_scr_hq_end_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 24, 40 11,  "ui_rcon_settings_scr_hq_end_score", exec "openscriptmenu ingame rcon_settings_scr_hq_end_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 24, "Number of score when maps end. 0=ignored", "ui_rcon_settings_scr_hq_end_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 36, "scr_hq_halftime", "ui_rcon_settings_scr_hq_halftime", "")
+ITEM_RCON_SETTINGS_NUMBER(95 36, 40 11,  "ui_rcon_settings_scr_hq_halftime", exec "openscriptmenu ingame rcon_settings_scr_hq_halftime_edit")
+ITEM_RCON_SETTINGS_TEXT(145 36, "Do halftime. When 1, scr_hq_timelimit means time per half", "ui_rcon_settings_scr_hq_halftime", "")
+
+
+
+
+
+ITEM_RCON_SETTINGS_HEADING(0 0, "scr_ctf_timelimit", "ui_rcon_settings_scr_ctf_timelimit", "")
+ITEM_RCON_SETTINGS_NUMBER(95 0, 40 11,  "ui_rcon_settings_scr_ctf_timelimit", exec "openscriptmenu ingame rcon_settings_scr_ctf_timelimit_edit")
+ITEM_RCON_SETTINGS_TEXT(145 0, "Time limit for map or halftime. 0=disabled (minutes)", "ui_rcon_settings_scr_ctf_timelimit", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 12, "scr_ctf_half_score", "ui_rcon_settings_scr_ctf_half_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 12, 40 11,  "ui_rcon_settings_scr_ctf_half_score", exec "openscriptmenu ingame rcon_settings_scr_ctf_half_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 12, "Number of score when half-time starts. 0=ignored", "ui_rcon_settings_scr_ctf_half_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 24, "scr_ctf_end_score", "ui_rcon_settings_scr_ctf_end_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 24, 40 11,  "ui_rcon_settings_scr_ctf_end_score", exec "openscriptmenu ingame rcon_settings_scr_ctf_end_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 24, "Number of score when maps end. 0=ignored", "ui_rcon_settings_scr_ctf_end_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 36, "scr_ctf_halftime", "ui_rcon_settings_scr_ctf_halftime", "")
+ITEM_RCON_SETTINGS_NUMBER(95 36, 40 11,  "ui_rcon_settings_scr_ctf_halftime", exec "openscriptmenu ingame rcon_settings_scr_ctf_halftime_edit")
+ITEM_RCON_SETTINGS_TEXT(145 36, "Do halftime. When 1, scr_ctf_timelimit means time per half", "ui_rcon_settings_scr_ctf_halftime", "")
+
+
+
+
+
+ITEM_RCON_SETTINGS_HEADING(0 0, "scr_htf_timelimit", "ui_rcon_settings_scr_htf_timelimit", "")
+ITEM_RCON_SETTINGS_NUMBER(95 0, 40 11,  "ui_rcon_settings_scr_htf_timelimit", exec "openscriptmenu ingame rcon_settings_scr_htf_timelimit_edit")
+ITEM_RCON_SETTINGS_TEXT(145 0, "Time limit for map or halftime. 0=disabled (minutes)", "ui_rcon_settings_scr_htf_timelimit", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 12, "scr_htf_half_score", "ui_rcon_settings_scr_htf_half_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 12, 40 11,  "ui_rcon_settings_scr_htf_half_score", exec "openscriptmenu ingame rcon_settings_scr_htf_half_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 12, "Number of score when half-time starts. 0=ignored", "ui_rcon_settings_scr_htf_half_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 24, "scr_htf_end_score", "ui_rcon_settings_scr_htf_end_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 24, 40 11,  "ui_rcon_settings_scr_htf_end_score", exec "openscriptmenu ingame rcon_settings_scr_htf_end_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 24, "Number of score when maps end. 0=ignored", "ui_rcon_settings_scr_htf_end_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 36, "scr_htf_halftime", "ui_rcon_settings_scr_htf_halftime", "")
+ITEM_RCON_SETTINGS_NUMBER(95 36, 40 11,  "ui_rcon_settings_scr_htf_halftime", exec "openscriptmenu ingame rcon_settings_scr_htf_halftime_edit")
+ITEM_RCON_SETTINGS_TEXT(145 36, "Do halftime. When 1, scr_htf_timelimit means time per half", "ui_rcon_settings_scr_htf_halftime", "")
+
+
+
+
+
+ITEM_RCON_SETTINGS_HEADING(0 0, "scr_re_timelimit", "ui_rcon_settings_scr_re_timelimit", "")
+ITEM_RCON_SETTINGS_NUMBER(95 0, 40 11,  "ui_rcon_settings_scr_re_timelimit", exec "openscriptmenu ingame rcon_settings_scr_re_timelimit_edit")
+ITEM_RCON_SETTINGS_TEXT(145 0, "Time limit for map. 0=disabled (minutes)", "ui_rcon_settings_scr_re_timelimit", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 12, "scr_re_half_round", "ui_rcon_settings_scr_re_half_round", "")
+ITEM_RCON_SETTINGS_NUMBER(95 12, 40 11,  "ui_rcon_settings_scr_re_half_round", exec "openscriptmenu ingame rcon_settings_scr_re_half_round_edit")
+ITEM_RCON_SETTINGS_TEXT(145 12, "Number of rounds when half-time starts. 0=ignored", "ui_rcon_settings_scr_re_half_round", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 24, "scr_re_half_score", "ui_rcon_settings_scr_re_half_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 24, 40 11,  "ui_rcon_settings_scr_re_half_score", exec "openscriptmenu ingame rcon_settings_scr_re_half_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 24, "Number of score when half-time starts. 0=ignored", "ui_rcon_settings_scr_re_half_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 36, "scr_re_end_round", "ui_rcon_settings_scr_re_end_round", "")
+ITEM_RCON_SETTINGS_NUMBER(95 36, 40 11,  "ui_rcon_settings_scr_re_end_round", exec "openscriptmenu ingame rcon_settings_scr_re_end_round_edit")
+ITEM_RCON_SETTINGS_TEXT(145 36, "Number of rounds when map ends. 0=ignored", "ui_rcon_settings_scr_re_end_round", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 48, "scr_re_end_score", "ui_rcon_settings_scr_re_end_score", "")
+ITEM_RCON_SETTINGS_NUMBER(95 48, 40 11,  "ui_rcon_settings_scr_re_end_score", exec "openscriptmenu ingame rcon_settings_scr_re_end_score_edit")
+ITEM_RCON_SETTINGS_TEXT(145 48, "Number of score when map ends. 0=ignored", "ui_rcon_settings_scr_re_end_score", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 68, "scr_re_strat_time", "ui_rcon_settings_scr_re_strat_time", "")
+ITEM_RCON_SETTINGS_NUMBER(95 68, 40 11,  "ui_rcon_settings_scr_re_strat_time", exec "openscriptmenu ingame rcon_settings_scr_re_strat_time_edit")
+ITEM_RCON_SETTINGS_TEXT(145 68, "Freeze time before round starts (seconds)", "ui_rcon_settings_scr_re_strat_time", "")
+
+ITEM_RCON_SETTINGS_HEADING(0 80, "scr_re_roundlength", "ui_rcon_settings_scr_re_roundlength", "")
+ITEM_RCON_SETTINGS_NUMBER(95 80, 40 11,  "ui_rcon_settings_scr_re_roundlength", exec "openscriptmenu ingame rcon_settings_scr_re_roundlength_edit")
+ITEM_RCON_SETTINGS_TEXT(145 80, "Time length of each round (minutes)", "ui_rcon_settings_scr_re_roundlength", "")

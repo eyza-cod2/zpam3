@@ -2,15 +2,14 @@
 
 Load()
 {
-	game["leagueLogo"] = "";
-	game["leagueString"] = &"Strategy Planning Mode";
-	game["ruleCvars"] = GetCvars();
+	game["rules_leagueString"] = &"Strategy Planning Mode";
+	game["rules_formatString"] = &""; // default
+
+	game["ruleCvars"] = GetCvars(game["ruleCvars"]);
 }
 
-GetCvars()
+GetCvars(arr)
 {
-	arr = [];
-
 	// Are there OT Rules?
 	arr = ruleCvarDefault(arr, "scr_overtime", 1);
 
@@ -57,14 +56,20 @@ GetCvars()
 	arr = ruleCvarDefault(arr, "g_maxDroppedWeapons", 32);
 	arr = ruleCvarDefault(arr, "sv_fps", 30);
 	arr = ruleCvarDefault(arr, "sv_maxRate", 25000);
-	arr = ruleCvarDefault(arr, "sv_timeout", 60);				// Time after 999 player is kicked
-	arr = ruleCvarDefault(arr, "g_antilag", 0);
+	arr = ruleCvarDefault(arr, "sv_timeout", 60);					// Time after 999 player is kicked
+	arr = ruleCvarDefault(arr, "g_antilag", 0);					// Antilag 1 means that players ping is considered when calculating hit location - what you see on your monitor is also what the server will see
+	arr = ruleCvarDefault(arr, "g_knockback", 0);					// Speed energy if player is hitted by grenade, other player, etc; turned off to avoid "sliding" effect
+	arr = ruleCvarDefault(arr, "sv_floodprotect", 0);		// 0 - allow spaming from basic client commands - /say, /noclip;  1 - add 1 second delay between commands
+
+
 
 	arr = ruleCvarDefault(arr, "scr_fast_reload_fix", 1);				// Prevent players from shoting faster via double-scroll bug
-	arr = ruleCvarDefault(arr, "scr_shotgun_rebalance", 1);				// Enable shotgun rebalance to fix long shot kills and short range hits
+	arr = ruleCvarDefault(arr, "scr_shotgun_consistent", 1);			// Enable consistent shotgun to fix long shot kills and short range hits
 	arr = ruleCvarDefault(arr, "scr_prone_peek_fix", 1);				// Prevent players from doing fast peeks from prone (time, after player can prone again will be increased)
 	arr = ruleCvarDefault(arr, "scr_mg_peek_fix", 1);				// When mg is dropped, player is spawned right behid mg
-	arr = ruleCvarDefault(arr, "scr_hand_hitbox_fix", 1);				// Damage to left hand is adjusted for rifles and scopes.
+	arr = ruleCvarDefault(arr, "scr_hitbox_hand_fix", 1);				// Damage to left hand is adjusted for rifles and scopes.
+	arr = ruleCvarDefault(arr, "scr_hitbox_torso_fix", 1);					// Damage of M1, rifles, scopes and shotgun is adjusted to have less hits in game
+	arr = ruleCvarDefault(arr, "scr_ladder_weapon_fix", 1);				// Weapon ladder bug is when you 2x fast switch weapon and then hold fire button - weapon is invisible with no switch sound
 	arr = ruleCvarDefault(arr, "scr_killcam", 0);					// Killcam
 
 
@@ -72,7 +77,9 @@ GetCvars()
 	/*********
 	WEAPONS
 	*********/
-
+	// Rifles-only mode
+	arr = ruleCvarDefault(arr, "scr_rifle_mode", 0);
+	
 	// Nade spawn counts for each class
 	arr = ruleCvarDefault(arr, "scr_boltaction_nades", 99);
 	arr = ruleCvarDefault(arr, "scr_semiautomatic_nades", 99);

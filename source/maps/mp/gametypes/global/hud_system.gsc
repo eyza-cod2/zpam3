@@ -169,6 +169,141 @@ addHUDClient(player, x, y, fontSize, color, alignX, alignY, horzAlign, vertAlign
     return hud;
 }
 
+// Makes HUD element to follow head of player in 3D world
+// HUD element needs to be aligned with "subleft" and "subtop" to fit between different resolutions and FOVs
+// Example:
+//    self.spec_waypoint[index] = addHUDClient(self, 0, 0, 1.2, (1,1,1), "center", "middle", "subleft", "subtop");
+//    self.spec_waypoint[index] SetPlayerNameString(player);
+//    self.spec_waypoint[index] thread SetPlayerWaypoint(self, player, (0, 0, 40));
+SetPlayerWaypoint(camera_player, waypoint_player, offset)
+{
+	last_x = 0;
+	last_y = 0;
+
+	waypoint_origin = undefined;
+
+	for(;;)
+	{
+		wait level.frame;
+
+		if (!isDefined(self) || !isDefined(camera_player) || !isDefined(waypoint_player))
+			break;
+
+		if (isDefined(self.paused) && self.paused)
+		{
+			self.x = -9999;
+			self.y = -9999;
+			continue;
+		}
+
+		camera_player_real = camera_player;
+
+		// If this player is following other player (auto-spectator), choose that player
+		if (camera_player.spectatorclient != -1)
+		{
+			players = getentarray("player", "classname");
+			for(i = 0; i < players.size; i++)
+			{
+				if (players[i] getEntityNumber() == camera_player.spectatorclient)
+				{
+					camera_player_real = players[i];
+					break;
+				}
+			}
+		}
+
+		fov = 80;
+		if (isAlive(camera_player_real))
+		{
+			weapon_fov["m1carbine_mp"] = 55;
+			weapon_fov["m1garand_mp"] = 50;
+			weapon_fov["thompson_mp"] = 65;
+			weapon_fov["bar_mp"] = 50;
+			weapon_fov["springfield_mp"] = 15;
+			weapon_fov["greasegun_mp"] = 65;
+			weapon_fov["shotgun_mp"] = 65;
+			weapon_fov["enfield_mp"] = 50;
+			weapon_fov["sten_mp"] = 65;
+			weapon_fov["bren_mp"] = 50;
+			weapon_fov["enfield_scope_mp"] = 15;
+			weapon_fov["mosin_nagant_mp"] = 50;
+			weapon_fov["SVT40_mp"] = 50;
+			weapon_fov["PPS42_mp"] = 65;
+			weapon_fov["ppsh_mp"] = 65;
+			weapon_fov["mosin_nagant_sniper_mp"] = 15;
+			weapon_fov["kar98k_mp"] = 50;
+			weapon_fov["g43_mp"] = 50;
+			weapon_fov["mp40_mp"] = 65;
+			weapon_fov["mp44_mp"] = 50;
+			weapon_fov["kar98k_sniper_mp"] = 15;
+			weapon_fov["colt_mp"] = 80;
+			weapon_fov["luger_mp"] = 80;
+			weapon_fov["tt30_mp"] = 80;
+			weapon_fov["webley_mp"] = 80;
+
+			current = camera_player_real getcurrentweapon(); // can be none
+			zoom = camera_player_real playerAds();	// 1 = zoom | 0 = no zoom
+			if (zoom < 0.5)
+				zoom = 0;
+			else
+				zoom = (zoom*2)-1;
+
+			if (isDefined(weapon_fov[current]))
+				fov = 80 - (80 - weapon_fov[current]) * zoom;
+		}
+
+		// Update players origin only if he is alive
+		if (!isDefined(waypoint_origin) || isAlive(waypoint_player))
+			waypoint_origin = waypoint_player.headTag.origin + offset;
+
+		point = worldToScreen(camera_player_real maps\mp\gametypes\global\player::getEyeOrigin(), camera_player_real getplayerangles(), waypoint_origin, fov/80);
+
+		self.x = point[0];
+		self.y = point[1];
+
+		self.x = (last_x + point[0]) / 2;
+		self.y = (last_y + point[1]) / 2;
+
+		last_x = point[0];
+		last_y = point[1];
+	}
+}
+
+WorldToScreen(camera_origin, camera_angles, position, fov_scale)
+{
+	width = 640;
+	height = 480;
+	fov_x = 80 * fov_scale;
+	fov_y = 63 * fov_scale;	// 63 - i dont know how its computed
+
+	left = anglestoright(camera_angles);
+	up = anglestoup(camera_angles);
+	forward = anglestoforward(camera_angles);
+
+	Position = position - camera_origin;
+        Transform[0] = VectorDot(Position, left);
+        Transform[1] = VectorDot(Position, up);
+        Transform[2] = VectorDot(Position, forward);
+
+        // make sure it is in front of us
+        if (Transform[2] < 0.1)
+	{
+		ret[0] = -1000;
+	        ret[1] = -1000;
+		return ret;
+	}
+
+        ret[0] = (width * 0.5) * (1 - (Transform[0] / tan(fov_x/2) / Transform[2]));
+        ret[1] = (height * 0.5) * (1 - (Transform[1] / tan(fov_y/2) / Transform[2]));
+
+	ret[0] = width - ret[0]; // flip x
+
+	//iprintln(ret[0] + " " + ret[1]);
+
+	return ret;
+}
+
+
 watchArchived()
 {
 	waittillframeend; // wait untill .archoved attribute is set

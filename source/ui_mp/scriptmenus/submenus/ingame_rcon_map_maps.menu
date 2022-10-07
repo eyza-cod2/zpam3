@@ -1,0 +1,49 @@
+ITEM_MAP_OPTIONS_HEADING(3 6, 0.245, "Map:")
+
+
+
+
+ITEM_GAMETYPE_ONDVAR(86 06, 55 15, "Toujane FIX",       "ui_rcon_map_map", "mp_toujane_fix_v2", exec "openscriptmenu ingame rcon_map_map_mp_toujane_fix_v2")
+ITEM_GAMETYPE_ONDVAR(86 22, 63 15, "Burgundy FIX",      "ui_rcon_map_map", "mp_burgundy_fix_v1",  exec "openscriptmenu ingame rcon_map_map_mp_burgundy_fix_v1")
+ITEM_GAMETYPE_ONDVAR(86 38, 64 15, "Dawnville FIX",     "ui_rcon_map_map", "mp_dawnville_fix_v2",  exec "openscriptmenu ingame rcon_map_map_mp_dawnville_fix_v2")
+ITEM_GAMETYPE_ONDVAR(86 54, 62 15, "Matmata FIX",	"ui_rcon_map_map", "mp_matmata_fix_v2",  exec "openscriptmenu ingame rcon_map_map_mp_matmata_fix_v2")
+ITEM_GAMETYPE_ONDVAR(86 70, 60 15, "Carentan FIX",      "ui_rcon_map_map", "mp_carentan_fix_v2", exec "openscriptmenu ingame rcon_map_map_mp_carentan_fix_v2")
+
+ITEM_GAMETYPE_ONDVAR(155 06, 59 15, "Trainstation", "ui_rcon_map_map", "mp_trainstation", exec "openscriptmenu ingame rcon_map_map_mp_trainstation")
+ITEM_GAMETYPE_ONDVAR(155 22, 31 15, "Rhine",        "ui_rcon_map_map", "mp_rhine", exec "openscriptmenu ingame rcon_map_map_mp_rhine")
+ITEM_GAMETYPE_ONDVAR(155 38, 53 15, "Farmhouse",    "ui_rcon_map_map", "mp_farmhouse",  exec "openscriptmenu ingame rcon_map_map_mp_farmhouse")
+ITEM_GAMETYPE_ONDVAR(155 54, 50 15, "Leningrad",    "ui_rcon_map_map", "mp_leningrad",  exec "openscriptmenu ingame rcon_map_map_mp_leningrad")
+ITEM_GAMETYPE_ONDVAR(155 70, 41 15, "Railyard",     "ui_rcon_map_map", "mp_railyard", exec "openscriptmenu ingame rcon_map_map_mp_railyard")
+
+ITEM_GAMETYPE_ONDVAR(215 06, 36 15, "Harbor",       "ui_rcon_map_map", "mp_harbor",  exec "openscriptmenu ingame rcon_map_map_mp_harbor")
+ITEM_GAMETYPE_ONDVAR(215 22, 50 15, "Downtown",     "ui_rcon_map_map", "mp_downtown",  exec "openscriptmenu ingame rcon_map_map_mp_downtown")
+ITEM_GAMETYPE_ONDVAR(215 38, 45 15, "Breakout",     "ui_rcon_map_map", "mp_breakout",  exec "openscriptmenu ingame rcon_map_map_mp_breakout")
+ITEM_GAMETYPE_ONDVAR(215 54, 41 15, "Brecourt",     "ui_rcon_map_map", "mp_brecourt",  exec "openscriptmenu ingame rcon_map_map_mp_brecourt")
+ITEM_GAMETYPE_ONDVAR(215 70, 36 15, "Decoy",        "ui_rcon_map_map", "mp_decoy",  exec "openscriptmenu ingame rcon_map_map_mp_decoy")
+
+ITEM_GAMETYPE_ONDVAR(267 06, 40 15, "Toujane",       "ui_rcon_map_map", "mp_toujane", exec "openscriptmenu ingame rcon_map_map_mp_toujane")
+ITEM_GAMETYPE_ONDVAR(267 22, 47 15, "Burgundy",      "ui_rcon_map_map", "mp_burgundy",  exec "openscriptmenu ingame rcon_map_map_mp_burgundy")
+ITEM_GAMETYPE_ONDVAR(267 38, 47 15, "Dawnville",     "ui_rcon_map_map", "mp_dawnville",  exec "openscriptmenu ingame rcon_map_map_mp_dawnville")
+ITEM_GAMETYPE_ONDVAR(267 54, 44 15, "Matmata",	    "ui_rcon_map_map", "mp_matmata",  exec "openscriptmenu ingame rcon_map_map_mp_matmata")
+ITEM_GAMETYPE_ONDVAR(267 70, 43 15, "Carentan",      "ui_rcon_map_map", "mp_carentan", exec "openscriptmenu ingame rcon_map_map_mp_carentan")
+
+ITEM_GAMETYPE_ONDVAR(320 6, 41 15, "Vallente",       "ui_rcon_map_map", "mp_vallente",  exec "openscriptmenu ingame rcon_map_map_mp_vallente")
+ITEM_GAMETYPE_ONDVAR(320 22, 59 15, "Breakout TLS",  "ui_rcon_map_map", "mp_breakout_tls",  exec "openscriptmenu ingame rcon_map_map_mp_breakout_tls")
+ITEM_GAMETYPE_ONDVAR(320 38, 33 15, "Chelm",     	"ui_rcon_map_map", "mp_chelm",  exec "openscriptmenu ingame rcon_map_map_mp_chelm")
+ITEM_GAMETYPE_ONDVAR(320 54, 59 15, "Wawa 3D Aim",	"ui_rcon_map_map", "wawa_3daim",  exec "openscriptmenu ingame rcon_map_map_wawa_3daim")
+ITEM_GAMETYPE_ONDVAR(320 70, 65 15, "<Fast Restart>", "ui_rcon_map_map", "fast_restart",  exec "openscriptmenu ingame rcon_map_map_fast_restart")
+
+
+
+
+ITEM_MAP_OPTIONS_HEADING(3 102, 0.245, "Gametype:")
+
+
+ITEM_GAMETYPE_ONDVAR(86 103, 85 15, "Search and Destroy",  	"ui_rcon_map_gametype", "sd", exec "openscriptmenu ingame rcon_map_gametype_sd")
+ITEM_GAMETYPE_ONDVAR(190 103, 56 15, "Deathmatch",  		"ui_rcon_map_gametype", "dm", exec "openscriptmenu ingame rcon_map_gametype_dm")
+ITEM_GAMETYPE_ONDVAR(260 103, 80 15, "Team Deathmatch",  	"ui_rcon_map_gametype", "tdm", exec "openscriptmenu ingame rcon_map_gametype_tdm")
+ITEM_GAMETYPE_ONDVAR(350 103, 31 15, "Strat",  			"ui_rcon_map_gametype", "strat", exec "openscriptmenu ingame rcon_map_gametype_strat")
+ITEM_GAMETYPE_ONDVAR(86 118, 63 15, "Headquarters",  		"ui_rcon_map_gametype", "hq", exec "openscriptmenu ingame rcon_map_gametype_hq")
+ITEM_GAMETYPE_ONDVAR(173 118, 72 15, "Capture the Flag",  	"ui_rcon_map_gametype", "ctf", exec "openscriptmenu ingame rcon_map_gametype_ctf")
+ITEM_GAMETYPE_ONDVAR(260 118, 63 15, "Hold the Flag",  		"ui_rcon_map_gametype", "htf", exec "openscriptmenu ingame rcon_map_gametype_htf")
+ITEM_GAMETYPE_ONDVAR(334 118, 47 15, "Retrieval",  		"ui_rcon_map_gametype", "re", exec "openscriptmenu ingame rcon_map_gametype_re")

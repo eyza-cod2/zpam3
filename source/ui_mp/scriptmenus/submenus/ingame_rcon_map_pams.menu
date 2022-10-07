@@ -1,0 +1,85 @@
+
+
+ITEM_MAP_OPTIONS_HEADING(3 0, 0.245, "PAM Mode:")
+ITEM_MAP_OPTIONS_HEADING(3 16, 0.20, "score mode:")
+ITEM_MAP_OPTIONS_HEADING(3 32, 0.20, "options:")
+
+
+// SD
+ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",		"ui_rcon_map_pam_sd", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
+
+ITEM_GAMETYPE_ONDVAR( 86 16, 26 15, "mr3",		"ui_rcon_map_pam_sd_gamesettings", "mr3", 	exec "openscriptmenu ingame rcon_map_pam_mr3")
+ITEM_GAMETYPE_ONDVAR(114 16, 31 15, "mr10",		"ui_rcon_map_pam_sd_gamesettings", "mr10", 	exec "openscriptmenu ingame rcon_map_pam_mr10")
+ITEM_GAMETYPE_ONDVAR(145 16, 30 15, "mr12",		"ui_rcon_map_pam_sd_gamesettings", "mr12", 	exec "openscriptmenu ingame rcon_map_pam_mr12")
+ITEM_GAMETYPE_ONDVAR(177 16, 30 15, "mr15",		"ui_rcon_map_pam_sd_gamesettings", "mr15", 	exec "openscriptmenu ingame rcon_map_pam_mr15")
+ITEM_GAMETYPE_ONDVAR(212 16, 46 15, "20 rounds",	"ui_rcon_map_pam_sd_gamesettings", "20rounds", 	exec "openscriptmenu ingame rcon_map_pam_20rounds")
+
+
+//DM
+ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",          	"ui_rcon_map_pam_dm", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
+ITEM_GAMETYPE_ONDVAR(121 0, 40 15, "warmup",      	"ui_rcon_map_pam_dm", "warmup", 	exec "openscriptmenu ingame rcon_map_pam_warmup")
+
+ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "15min",		"ui_rcon_map_pam_dm_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
+ITEM_GAMETYPE_ONDVAR(124 16, 35 15, "30min",		"ui_rcon_map_pam_dm_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
+ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "60min",		"ui_rcon_map_pam_dm_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
+ITEM_GAMETYPE_ONDVAR(207 16, 45 15, "unlimited",	"ui_rcon_map_pam_dm_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
+
+
+//TDM
+ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",          	"ui_rcon_map_pam_tdm", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
+
+ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "15min",		"ui_rcon_map_pam_tdm_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
+ITEM_GAMETYPE_ONDVAR(124 16, 35 15, "30min",		"ui_rcon_map_pam_tdm_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
+ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "60min",		"ui_rcon_map_pam_tdm_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
+ITEM_GAMETYPE_ONDVAR(207 16, 45 15, "unlimited",	"ui_rcon_map_pam_tdm_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
+
+
+//HQ
+ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",          	"ui_rcon_map_pam_hq", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
+
+ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "15min",		"ui_rcon_map_pam_hq_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
+ITEM_GAMETYPE_ONDVAR(124 16, 35 15, "30min",		"ui_rcon_map_pam_hq_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
+ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "60min",		"ui_rcon_map_pam_hq_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
+ITEM_GAMETYPE_ONDVAR(207 16, 45 15, "unlimited",	"ui_rcon_map_pam_hq_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
+
+
+//CTF
+ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",          	"ui_rcon_map_pam_ctf", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
+
+ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "15min",		"ui_rcon_map_pam_ctf_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
+ITEM_GAMETYPE_ONDVAR(124 16, 35 15, "30min",		"ui_rcon_map_pam_ctf_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
+ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "60min",		"ui_rcon_map_pam_ctf_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
+ITEM_GAMETYPE_ONDVAR(207 16, 45 15, "unlimited",	"ui_rcon_map_pam_ctf_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
+
+
+//HTF
+ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",          	"ui_rcon_map_pam_htf", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
+
+ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "15min",		"ui_rcon_map_pam_htf_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
+ITEM_GAMETYPE_ONDVAR(124 16, 35 15, "30min",		"ui_rcon_map_pam_htf_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
+ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "60min",		"ui_rcon_map_pam_htf_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
+ITEM_GAMETYPE_ONDVAR(207 16, 45 15, "unlimited",	"ui_rcon_map_pam_htf_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
+
+
+// RE
+ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",		"ui_rcon_map_pam_re", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
+
+ITEM_GAMETYPE_ONDVAR( 86 16, 26 15, "mr3",		"ui_rcon_map_pam_re_gamesettings", "mr3", 	exec "openscriptmenu ingame rcon_map_pam_mr3")
+ITEM_GAMETYPE_ONDVAR(114 16, 31 15, "mr10",		"ui_rcon_map_pam_re_gamesettings", "mr10", 	exec "openscriptmenu ingame rcon_map_pam_mr10")
+ITEM_GAMETYPE_ONDVAR(145 16, 30 15, "mr12",		"ui_rcon_map_pam_re_gamesettings", "mr12", 	exec "openscriptmenu ingame rcon_map_pam_mr12")
+ITEM_GAMETYPE_ONDVAR(177 16, 30 15, "mr15",		"ui_rcon_map_pam_re_gamesettings", "mr15", 	exec "openscriptmenu ingame rcon_map_pam_mr15")
+ITEM_GAMETYPE_ONDVAR(212 16, 46 15, "20 rounds",	"ui_rcon_map_pam_re_gamesettings", "20rounds", 	exec "openscriptmenu ingame rcon_map_pam_20rounds")
+
+
+
+//Start
+ITEM_GAMETYPE_ONDVAR(86 0, 0 15, "- ignored -",	"ui_rcon_map_pam_strat", "start", 	;)
+
+
+
+// Toggles for every gametype
+ITEM_GAMETYPE_ONDVAR( 86 32, 45 15, "1v1 / 2v2",	"ui_rcon_map_pam_2v2", "1", 		exec "openscriptmenu ingame rcon_map_pam_2v2")
+ITEM_GAMETYPE_ONDVAR(134 32, 26 15, "rifle",		"ui_rcon_map_pam_rifle", "1", 		exec "openscriptmenu ingame rcon_map_pam_rifle")
+ITEM_GAMETYPE_ONDVAR(164 32, 37 15, "russian",		"ui_rcon_map_pam_russian", "1", 	exec "openscriptmenu ingame rcon_map_pam_russian")
+ITEM_GAMETYPE_ONDVAR(205 32, 19 15, "lan",		"ui_rcon_map_pam_lan", "1", 		exec "openscriptmenu ingame rcon_map_pam_lan")
+ITEM_GAMETYPE_ONDVAR(230 32, 21 15, "pcw",		"ui_rcon_map_pam_pcw", "1", 		exec "openscriptmenu ingame rcon_map_pam_pcw")

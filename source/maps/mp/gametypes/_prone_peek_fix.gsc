@@ -4,7 +4,7 @@ Init()
 {
 	addEventListener("onCvarChanged", ::onCvarChanged);
 
-	registerCvarEx("C", "scr_prone_peek_fix", "BOOL", 0);				// level.scr_prone_peek_fix
+	registerCvar("scr_prone_peek_fix", "BOOL", 0);				// level.scr_prone_peek_fix
 
 	addEventListener("onConnected",     ::onConnected);
 	addEventListener("onDisconnect",     ::onDisconnect);

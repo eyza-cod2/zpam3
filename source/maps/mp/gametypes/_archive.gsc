@@ -4,7 +4,7 @@ init()
 {
 	addEventListener("onCvarChanged",    	 	::onCvarChanged);
 
-	registerCvar("g_antilag", "BOOL", 1); 				// Turn on antilag checks for weapon hits
+	registerCvar("g_antilag", "BOOL", 0); 				// Turn on antilag checks for weapon hits
 
 	update();
 

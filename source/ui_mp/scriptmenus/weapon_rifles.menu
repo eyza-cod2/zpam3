@@ -1,0 +1,73 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+#define HIDE_ALL hide weapon_kar98; hide weapon_enfield; hide weapon_nagant; hide weapon_kar98scoped; hide weapon_enfieldscoped; hide weapon_nagantscoped; hide weapon_springfield;
+
+{
+	menuDef
+	{
+		name			"weapon_rifles"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onOpen
+		{
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			open weapon_rifles_keys;
+		}
+		onEsc
+		{
+			HIDE_ALL
+			close weapon_rifles;
+			close matchinfo;
+			close weapon_rifles_keys;
+		}
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+
+		// Header
+		ITEM_TEXT_HEADING("@RIFLES_WEAPONS")
+
+
+		// MENU CHOICES
+		ITEM_WEAPON(ORIGIN_CHOICE1, "button_kar98k", 		"@RIFLES_1_KAR98K", 			"ui_allow_kar98k", 			"weapon_kar98", 		show weapon_kar98;, 		scriptMenuResponse "kar98k_mp";, 		"us_grenade_C",	"boltaction")
+		ITEM_WEAPON(ORIGIN_CHOICE2, "button_enfield", 		"@RIFLES_2_LEEENFIELD", 		"ui_allow_enfield", 		"weapon_enfield", 		show weapon_enfield;, 		scriptMenuResponse "enfield_mp";, 		"us_grenade_C",	"boltaction")
+		ITEM_WEAPON(ORIGIN_CHOICE3, "button_nagant", 		"@RIFLES_3_MOSINNAGANT", 		"ui_allow_nagant", 			"weapon_nagant", 		show weapon_nagant;, 		scriptMenuResponse "mosin_nagant_mp";, 	"us_grenade_C",	"boltaction")
+		ITEM_WEAPON(ORIGIN_CHOICE4, "button_kar98k_sniper", 	"@RIFLES_4_SCOPED_KAR98K", 	"ui_allow_kar98ksniper", 	"weapon_kar98scoped", 	show weapon_kar98scoped;, 	scriptMenuResponse "kar98k_sniper_mp";, "us_grenade_C",	"sniper")
+		ITEM_WEAPON(ORIGIN_CHOICE5, "button_enfieldscoped", 	"@RIFLES_5_SCOPED_LEEENFIELD", "ui_allow_enfieldsniper", "weapon_enfieldscoped", 	show weapon_enfieldscoped;, scriptMenuResponse "enfield_scope_mp";, "us_grenade_C",	"sniper")
+		ITEM_WEAPON(ORIGIN_CHOICE6, "button_nagantsniper", 	"@RIFLES_6_SCOPED_MOSINNAGANT","ui_allow_nagantsniper", 	"weapon_nagantscoped", 	show weapon_nagantscoped;, 	scriptMenuResponse "mosin_nagant_sniper_mp";, "us_grenade_C",	"sniper")
+		ITEM_WEAPON(ORIGIN_CHOICE7, "button_springfield", 	"@RIFLES_7_SPRINGFIELD", "ui_allow_springfield", "weapon_springfield", 	show weapon_springfield;, scriptMenuResponse "springfield_mp";, "us_grenade_C",	"sniper")
+
+
+		// Close
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, close weapon_rifles;)
+		// Main menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, close weapon_rifles; open main;)
+	}
+
+
+	// Key choices has to be in different menu if we are using submenus
+	// This keys is opened as last and will be in focus - so keys from this submenu will be accepted
+	menuDef
+	{
+		name			"weapon_rifles_keys"
+		rect			0 0 1 1
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+
+		execKey "1" { play "mouse_click"; exec "openscriptmenu weapon_rifles kar98k_mp"; }
+		execKey "2" { play "mouse_click"; exec "openscriptmenu weapon_rifles enfield_mp"; }
+		execKey "3" { play "mouse_click"; exec "openscriptmenu weapon_rifles mosin_nagant_mp"; }
+		execKey "4" { play "mouse_click"; exec "openscriptmenu weapon_rifles kar98k_sniper_mp"; }
+		execKey "5" { play "mouse_click"; exec "openscriptmenu weapon_rifles enfield_scope_mp"; }
+		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_rifles mosin_nagant_sniper_mp"; }
+		execKey "7" { play "mouse_click"; exec "openscriptmenu weapon_rifles springfield_mp"; }
+
+		execKeyInt 32 { play "mouse_click"; close weapon_rifles; open main; } // space
+	}
+}

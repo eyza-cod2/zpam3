@@ -1,15 +1,24 @@
 # Introduction
 
-Mod zPAM3.22 is new version of PAM mode for COD2.<br>
+Mod zPAM3.30 is a new version of PAM mode for COD2. <br>
 
-The code form previous zPAM 2.07 version is completely rewritten and ported to new code base, which helped in the implementation of new features and bug fixes.
+The code from the previous zPAM 2.07 version was completely rewritten and ported to a new code base, which helped in the implementation of new features and bug fixes.
 
-Work on this pam was iniciated by me in 2015 a was not never fully finished. In corona days, I decided to finish it.
+Work on this pam was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
+
 
 
 ## Download
 - Actual version:
-	- 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam322.zip">zPAM 3.22</a></b>
+	- 2022/10/07 - <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam330.zip">zPAM 3.30 PREVIEW</a></b>
+
+❗ Note ❗ <br>
+*Preview version demonstrates changes and new features and is not officially accepted by FPS Challange*
+
+## Previous versions
+
+- Stable version:
+	- 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/53e1a8e7243596c763e623318668438d8320b257">zPAM 3.22</a></b>
 
 
 - Previous versions:
@@ -24,7 +33,87 @@ Work on this pam was iniciated by me in 2015 a was not never fully finished. In 
 	- 2020/04/23 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f58fdedbf23f31c62e29ffd25379d6a1d7993e49">zPAM 3.1 BETA</a></b></b>
 
 
+❗ Note ❗ <br>
+*This page describe only actual version zPAM 3.30 PREVIEW.<br>
+To see description of previous version, click on the links above.*
+
 ## Changelog
+
+
+<details><summary>zPAM 3.30 changes (click to open)</summary>
+<p>
+
+#### News:
+[3.4.16] New pam mode names - cg was removed, now only pub and comp modes are available with sub modes.<br>
+	- modes: pub, comp, warmup<br>
+	- sub-modes: 2v2, rifle, russian, lan, pcw<br>
+	- Examples:<br>
+		- /rcon pam_mode pub  			- Public mode (custom settings)<br>
+		- /rcon pam_mode comp  			- Competitive mode<br>
+		- /rcon pam_mode comp_mr3  		- Competitive mode with max round 4<br>
+		- /rcon pam_mode comp_pcw   		- Competitive mode for team mix<br>
+		- /rcon pam_mode comp_pcw_russian 	- Competitive mode for team mix, russian side on russian maps<br>
+		- /rcon pam_mode comp_2v2 		- Competitive mode, scope and shotgun disabled<br>
+		- /rcon pam_mode comp_rifle 		- Competitive mode, bolt action and sniper only<br>
+		- /rcon pam_mode comp_rifle_2v2		- Competitive mode, bolt action only, sniper disabled<br>
+		- /rcon pam_mode comp_lan  		- Competitive mode on LAN, no readyup time limits<br>
+[3.4.17] Added support of HQ, CTF, HTF and RE gametypes<br>
+[3.4.18] Added rifle only mode<br>
+[3.3.44] Cvar system rewrited; any change to server settings is retained even when map changes; new cvar /pam_mode_custom is defined - it tells that changes made to server settings stays between map<br>
+[3.3.45] Warnings about wrong server settings (no password, cheats enabled, punkbuster disabled, cvars changes) is changed; its showed in left top corner under the score; if some of the server settings is changed, detailed list of changed cvars is showed; punkbuster warning is removed<br>
+[3.3.46] Hand hit box fix - if hands are in front of body and game somehow badly interprets it as hit to the hand, PAM change it to hit to the body; its an extension to already existing fix in 3.22 for left hand - now its applies also for right hand<br>
+[3.3.47] Torso hitbox fix; lower torso hitbox (pelvis area) is slightly enlarged as workaround for bad hitbox registration between torso_lower and right/left_leg_upper; this change effectively applies only for rifles, because other weapons has the same damage for torso_lower and right/left_leg_upper<br>
+[3.3.48] Consistent shotgun - this is the new name for new shotgun; this shotgun fixes close range hits; it replaces rebalanced shotgun<br>
+[3.3.49] Ladder weapon bug fix - silent use of ladder is no more possible; its a situation when you double scroll your weapon, hold fire button and use a ladder<br>
+[3.3.50] Sliding bug fix; g_knockback is set to 0; when you are hit, no move energy is applied (knockback); this should fix fast sliding on ground / getting bugged into ground<br>
+[3.3.51] Sniper shotgun info - weapons of players with sniper and shotgun are showed next to compas at start and the end of the round<br>
+[3.3.52] Colored time - color of round timer changes to orange when 30 seconds are left and red when 15 seconds are left<br>
+[3.3.53] Damage feedback (hit cross in center) - slightly changed to better distinguish between hit and kill; if its hit only, cross is more transparent and disappears quicker; if its kill, cross is fully showed and stays longer<br>
+[3.3.54] New blood effect to better visualize hit location; can be enabled / disabled via /cg_blood<br>
+[3.3.55] RCON menu - new menu for changing map, server settings and player kick; is showed in all menus in new place<br>
+[3.3.56] Auto-spectator - better auto-switch algorithm; hit info; player names; auto hide of help text<br>
+[3.3.57] Auto-spectator - automatic killcam replay based on interesting actions (multikills, nozoom)<br>
+[3.3.58] Match info - team names now can contains special characters like # _ ! < > etc..<br>
+[3.3.59] Bash mode text over the screen is showed when bash mode is called.<br>
+[3.3.60] Cvar warning all over the screen is removed for cvar developer and polygons<br>
+[3.3.61] Objective text showed in scoreboard is removed<br>
+[3.3.62] SD voiceover sound "Move in!" removed at the start of the round<br>
+[3.3.63] SD voiceover sound when bomb is planted is shortened - only "Explosives planted" sound is retained<br>
+[3.3.64] Strat - up to 9 bot path recording can be saved; up to 9 bot path recordings can be played at once; automatic record stop is now faster<br>
+[3.3.65] New mappack file zpam_maps_v1.iwd with maps Toujane FIX v2, Burgundy FIX v1, Dawnville FIX v2, Matmata FIX v2, Carentan FIX v2, Chelm, Vallente, wawa_3dAim<br>
+[3.3.66] Timeout settings changes:<br>
+	- timeouts per map: 4 (previously 2)<br>
+	- timeouts per side: 2 (previously 1)<br>
+	- timeout length: 2min (previously 5min)<br>
+	- so total timeout time would be 8min per map (previously 10min)<br>
+	- overtimes does not reset called timeouts count - it means if you called out all of the timeouts in standard game time, you dont get new timeouts in overtime. (same as previous)<br>
+	- when timeout time expires, "Time is over" warning message appears - setting one team ready will end the timeout. (previously it automatically resumes the game)<br>
+[3.3.67] Time between halfs and maps changes:<br>
+	- between maps: 5min (as previous)<br>
+	- between halfs: 2min (previously 5min)<br>
+	- between halfs at overtime: 1min (previously 5min)<br>
+	- for LAN mode, there will be no time limits between halfs and maps<br>
+<br>
+<br>
+#### Bug fixes:
+[2.3.5] Error while running server on 1.0 version fixed<br>
+[2.3.6] Fixed bug when you drop MG and step sound was made when mg peek fix was enabled<br>
+[2.3.7] Matchinfo - fixed bug when team names does not match players in teams; happens when pistol bash was called and players swap teams<br>
+[2.3.8] Auto-recording - fixed bug with empty team names when bash mode was called<br>
+[2.3.9] Auto-recording - server crash when somebody joins a team at the end of the round (only windows servers) -> fixed<br>
+[2.3.10] Auto-recording - wont start if main menu is opened, quick messages menu is opened or game is minimized -> fixed<br>
+[2.3.11] Auto-spectator - When replaying killcam in spectator, name of spectated player is not removed when the killcam ends -> fixed<br>
+[2.3.12] Fixed text PC_PATCH_1_1_SD_OBJECTIVES in SD server info<br>
+[2.3.13] Weapon name next to ammo HUD is not visible when enemy player list is enabled -> fixed by showing the weapon name under the ammo<br>
+[1.14] BAR sound bug - when BAR weapon is picked from ground, it makes pickup sound for every player -> fixed<br>
+<br>
+<br>
+
+</p>
+</details>
+
+
+
 <details><summary>zPAM 3.22 changes (click to open)</summary>
 <p>
 
@@ -121,31 +210,35 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 </details>
 
 
+
+
+
 ## Installation
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam322.zip">zPAM 3.22</a></b> and extract folders with files into following locations:
-	- ./pb/pbsvuser.cfg
-	- ./main/zpam322.iwd
-	- ./main/mp_toujane_fix_v2.iwd
-	- ./main/mp_burgundy_fix_v1.iwd
-	- ./main/server.cfg
-	- ./main/public.cfg
+
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam330.zip">zPAM 3.30 PREVIEW</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam330.iwd
+	- ./Call of Duty 2/main/zpam_maps_v1.iwd
+	- ./Call of Duty 2/main/server.cfg
 
 
-- Add ```+exec server.cfg``` into command line arguments and edit the *server.cfg* file to configure your server
-- If you are running public server, add ```+exec public.cfg``` into command line arguments and edit the *public.cfg* file to configure your public server
-- If you use these .cfg files, make sure no other .cfg files are executed!
-
+- Add ```+exec server.cfg``` into command line arguments and edit the ```server.cfg``` file to configure your server.
 
 - Notes:
-	- When your server is runned, you may get an error message saying "PAM is not installed correctly". To fix this error, follow instructions in [Troubleshooting](#troubleshooting) section
-	- <i>mp_toujane_fix_v2.iwd</i> and <i>mp_burgundy_fix_v1.iwd</i> are fixed version of original maps - these files needs to be included with PAM, more info in [Questions & Answers](#questions--answers) section
-		- Toujane FIX changes: https://github.com/eyza-cod2/mp_toujane_fix
-		- Burgundy FIX changes: https://github.com/eyza-cod2/mp_burgundy_fix
-	- you have to enable downloading via cvar <i>sv_wwwDownload 1</i> and specify a download url via cvar <i>sv_wwwBaseURL "url"</i>; if you dont have any, you can use <i>sv_wwwBaseURL "http://cod2x.me/zpam322"</i> (this is to make sure fixed maps are downloaded in fast way for players)
+	- Error <b>"PAM is not installed correctly"</b> may show. To fix this error, follow instructions in [Troubleshooting](#troubleshooting) section
+	- File <b>zpam_maps_v1.iwd</b> contains fixed version of original maps and new maps - these files needs to be included with PAM, more info in [Questions & Answers](#questions--answers) section
+	- You have to enable downloading via cvar <i>sv_wwwDownload 1</i> and specify a download url via cvar <i>sv_wwwBaseURL "url"</i>; if you dont have any, you can use <i>sv_wwwBaseURL "http://cod2x.me/zpam330"</i> (this is to make sure fixed maps are downloaded in fast way for players)
+
+<details>
+	<summary>Gameservers.com settings example (click to open)</summary>
+	<img src="/images/gameservers.png"  />
+</details>
+
+<br>
+
 
 
 ## Contact
-Write message on discord <b>LetsPlay Europe</b> in <b>#cod2-zpam-3</b> channel.<br>
+Write message on discord <b>FPS Challange</b> in <b>#cod2-zpam3</b> channel. https://discord.gg/yBzx4AJ9b7<br>
 Or add me on discord <b>eyza#7930</b><br>
 Or write me on email <b>kratas.tom@seznam.cz</b><br>
 <br>
@@ -163,6 +256,9 @@ Big thanks for server support, hosting and fixed maps consulting
 **Stendby**   (discord: Stendby#3298)<br>
 Big thanks for fixed maps
 
+**Fjozek**   (discord: Fjozek#0625)<br>
+Big thanks for HQ, HTF and RE gametypes integration and overal PAM testing
+
 **mtN**   (discord: mtN#8249)<br>
 Big thanks for PAM promoting
 
@@ -174,88 +270,135 @@ cokY, Sk1lzZ, YctN, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgrub
 
 ## Questions & Answers
 
-### What is Toujane FIX (mp_toujane_fix_v2) and Burgundy FIX (mp_burgundy_fix_v1)
-These are recompiled version of original maps that contains a bug fixes.
-List of all changes are available in these repositories: [mp_toujane_fix](https://github.com/eyza-cod2/mp_toujane_fix), [mp_burgundy_fix](https://github.com/eyza-cod2/mp_burgundy_fix).
-Other maps will follow in next release.<br>
+### What is zpam_maps_v1.iwd file
+- Its is a map pack of:
+	- [Toujane FIX v2](https://github.com/eyza-cod2/mp_toujane_fix)
+	- [Burgundy FIX v1](https://github.com/eyza-cod2/mp_burgundy_fix)
+	- [Dawnville FIX v2](https://github.com/eyza-cod2/mp_dawnville_fix)
+	- [Matmata FIX v2](https://github.com/eyza-cod2/mp_matmata_fix)
+	- [Carentan FIX v2](https://github.com/eyza-cod2/mp_carentan_fix)
+	- Chelm
+	- Vallente
+	- wawa_3dAim
+- Credit:
+	- Toujane FIX, Burgundy FIX - by **eyza** and **stendby**
+	- Dawnville FIX, Matmata FIX, Carentan FIX, Chelm - by **Fjozek**
+	- Vallente - by/for Crossfire.nu [www.crossfire.nu]
+
 If you know bugs that are not fixed yet, please contact me!<br>
-Big thanks goes to Stendby and YctN.
 
 <br>
 
-### How does the "Fast reload fix" works / what is it
-Fast reload is when you fire from KAR98 for example, press R to reload and then you scroll down 2x, you are able to shoot faster.
-PAM is blocking you from fast-switching weapon for short period of time after you fire from weapon.
-This take effect to following weapons: kar98k, kar98k_sniper, enfield, enfield_scope, mosin_nagant, mosin_nagant_sniper, springfield, shotgun.<br>
-You can debug fast-reload fix in game via command **/rcon debug_fastreload 1**.<br>
-**Fast reload fix is enabled by default.**
+### Whats going on with shotgun
+There were multiple versions of shotguns in a lifetime of new zPAM.
+- Classic shotgun - original and zPAM2.07
+- Rebalanced shotgun - zPAM3.22
+- Consistent shotgun - zPAM3.30
+
+The main goal of these shotgun versions is to avoid close range hits and long range kills.<br>
+An improvement was made with rebalanced shotgun, but it still was not perfect. Consistent shotgun is the latest version.<br>
+Shotgun problem analysis: https://youtu.be/7saFLaQoiwI
+
 
 <br>
 
-### How does the "Rebalanced shotgun" works / what is it
+
+### How does the "Consistent shotgun" works / what is it
 First of all, lets describe how the classic shotgun works:
 - When you fire from shotgun, 8 pellets are fired.
 - Spread of pellets is unpredictable and completly random.
+- This ingame image demonstrates the ransomness of the pellets:
 - <img src="/images/shotgun_spread.png" height="60" />
 - Damage of each individual pellet is based on distance between you and the pellet hit location.
-- #### How does the default shotgun damage works
+- #### Shotguns chart
+- <a href="/images/shotgun.png"><img src="/images/shotgun.png" /> </a>
+- #### Original shotgun
 	- Damage is splited into 2 range parts according to distance between you and hit location of enemy player: (this is how it is when the game was released in 2005)
-	- <img src="/images/shotgun_graph_classic.png" />
 	- Each one of 8 fired pellets follow this rules:
 		- if **distance is 0 - 384**: constant **50hp damage** is applied for every pellet
 		- if **distance is 384 - 800**: damage is linearly based on distance in range of **50hp - 5hp**
-- #### How does the rebalanced shotgun damage works
- - Rebalanced shotgun tries to address close range hits and long range kills.
+- #### Consistent shotgun
+ - Consistent shotgun tries to address close range hits and long range kills.
    - Close range hits are caused by only 1 pellet hit the target, others goes off target
    - Long range kills are caused by pellets fired close together.
   - Random spread is responsible for these close range hits and long range kills
- - To make it better, rebalanced shotgun defines new damage values for close range and long range:
- - <img src="/images/shotgun_graph_rebalanced.png" />
- - Each one of 8 fired pellets follow this rules:
- 	- if **distance is 0 - 200** (close range): **100hp damage** is applied if you hit important **body parts** (head, neck, left_arm_upper, right_arm_upper, torso_upper, torso_lower, left_leg_upper, right_leg_upper) (so 1 pellet means kill if you hit these body parts)
- 	- if **distance is 0 - 384**: damage is lineary based on distance in range of **100hp - 50hp** (so if only 1 pellet hit the target, you do more damage)
- 	- if **distance is 384 - 500**: **original damage** is used
- 	- if **distance is 500 - 800** (long range): **original damage** is used, but total damage of all pellets is **limited to 99hp**, so you cannot kill a player at this distance
+ - To make it better, consistent shotgun defines new damage values for close range and long range
+ - Each one of 8 fired pellets follow these rules:
+ 	- Distance 0 - 250 (close range):
+		- **100hp damage** is applied if you see head and body of enemy
+		- **50 - 99hp damage** is linearly applied based on distance if head and body not visible
+ 	- Distance 250 - 384:
+		- **50hp - 99hp** is linearly applied based on distance
+ 	- Distance 384 - 500:
+		- **34hp - 49hp** is linearly applied based on distance
+ 	- Distance 500 - 800 (long range):
+		- **0hp - 33hp** is applied; only 1 pellet is used, others are ignored
  - Examples:
 	 - Example 1:
-		 - You fire at close range (distance 150), **2 or more pellets** hits the target
-			 - classic shotgun: **kill**
-			 - rebalanced shotgun: **kill**
-	 - Example 2:
-	 	- You fire at close range (distance 150), **only 1 pellet** hits the target
-			- classic shotgun: **50hp damage**
+		 - You fire at close range (distance 150), **only 1 pellet** hits the target
+			- original shotgun: **50hp damage**
 			- rebalanced shotgun:
+				- in case of hit to body: **kill**
 				- in case of hit to hand: **~80hp damage**
-				- in case of hit to body: **100hp damage**
+			- consistent shotgun:
+				- head and body visible: **kill**
+				- head and body not visible: **~80hp damage**
+	 - Example 2:
+		 - You fire at close range (distance 150), **2 or more pellets** hits the target
+			 - original shotgun: **kill**
+			 - rebalanced shotgun: **kill**
+			 - consistent shotgun: **kill**
 	 - Example 3:
 		- You fire at mid range (distance 280), **only 1 pellet** hits the target
-			- classic shotgun: **50hp damage**
+			- original shotgun: **50hp damage**
 			- rebalanced shotgun: **~63hp damage**
+			- consistent shotgun: **~63hp damage**
 	 - Example 4:
 		- You fire at far range (distance 650), **5 pellets** hits the target
-			- classic shotgun: **~105hp damage** (~21hp damage per bullet)
-			- rebalanced shotgun: **99hp damage** (total damage limited)
- - Distance preview on toujane
- - <img src="/images/shotgun_graph_rebalanced_tj.png" />
- - You can debug rebalanced shotgun in game via command **/rcon debug_shotgun 1**
+			- original shotgun: **~105hp damage** (~21hp damage per bullet)
+			- rebalanced shotgun: **max 99hp damage** (total damage limited)
+			- consistent shotgun: **~12hp damage**
+ - You can debug consistent shotgun in game via command **/rcon debug_shotgun 1**
 
-**Rebalanced shotgun is enabled by default**
+**Consistent shotgun is enabled by default**
 
 <br>
 
+### How does the "Torso hitbox fix" works / what is it
+Hitbox area torso_lower is now slightly bigger to avoid weird hits to lower part of body.
+This will take effect only for rifles, because other weapons have the same damage values for torso_lower and left/right_leg_upper.
+
+<img src="/images/hitbox_torso.png"/>
+
+You can debug this in game via command **/rcon debug_torsohitbox 1**<br>
+**Torso hitbox fix is enabled by default**
+
+<br>
+
+
 ### How does the "Hand hitbox fix" works / what is it
 There are some weird situations when you shot player to the body, but the game process it as a hit only.
-These types of bugs are probably caused by wrongly processed bullet trajectory / unexpected server lag.
-Most of the time the game procces the hit location as hand / arm instead of body (when the arm is right behind the body)
-Hitbox fix tries to address this issue by these rules:
- - if you fire from rifle or scope to left arm (left_arm_lower), and
+These types of bugs are probably caused by badly implemented hit boxes within the game engine.
+In these situations the game process the hit location as hand / arm instead of body (when the arm is right behind the body)
+Hand hitbox fix tries to address this issue by these rules:
+ - if you fire from rifle or scope to left or right arm, and
  - enemy is in ads (zoomed), and
- - angle difference between you and enemy is +-20°, and
- - distance is more than 200
- - <img src="/images/hitbox.png" height="100"/>
+ - distance is more than 200, and
+ - left or right hind is in front of body (correct angles check)
+ - <img src="/images/hitbox_hand2.png"/>
  - In this case, hit location is changed to body, causing deadly damage
  - You can debug hitbox fix in game via command **/rcon debug_handhitbox 1**
- - **Hitbox fix is enabled by default**
+ - **Hand hitbox fix is enabled by default**
+
+
+ <br>
+
+ ### How does the "Fast reload fix" works / what is it
+ Fast reload is when you fire from KAR98 for example, press R to reload and then you scroll down 2x, you are able to shoot faster.
+ PAM is blocking you from fast-switching weapon for short period of time after you fire from weapon.
+ This take effect to following weapons: kar98k, kar98k_sniper, enfield, enfield_scope, mosin_nagant, mosin_nagant_sniper, springfield, shotgun.<br>
+ You can debug fast-reload fix in game via command **/rcon debug_fastreload 1**.<br>
+ **Fast reload fix is enabled by default.**
 
 <br>
 
@@ -322,10 +465,25 @@ So diagonal is not affected by PAM.
 <br>
 
 ### How does the "Auto-spectator" works / what is it
+- Auto-spectator is the name for following functions:
+ - Automatically controlelled switch between players according to game situation
+ - Players health bars with score on left and right side of the screen
+ - Automatically proposed killcams of interesting situations<br><br>
+- <img src="/images/spectator.png" /><br><br>
 - When you join spectator team and match is in progress, auto-spectator feature is enabled by default
-- Auto-spectator will automatically switch to player in these cases:
- - player is looking at enemy (enemy is in their crosshair)
+- Auto-spectator will automatically switch between players in these cases:
+ - player have enemy in sight (head of enemy appears on screen)
  - player is last alive player in team
+ - bomb is planted
+ - no action of followed player
+- Auto-spectator will automatically replay a killcam in these cases:
+ - two or more player were killed and this action was not watched
+ - nozoom
+- Killcam is proposed only if there is no visible enemy for actually followed player
+- Damage info text is showed
+- <img src="/images/spectator_hitinfo.png" /><br><br>
+- Player names are showed thru walls
+- <img src="/images/spectator_esp.png" /><br><br>
 - At round start, automatically followed player is selected by these steps:
   - Round 1: sniper of team allies
   - Round 2: sniper of team axis
@@ -338,8 +496,7 @@ So diagonal is not affected by PAM.
     - Next player in row in team axis
 - When there is a request for player switch, player is switched to player from the same team (if round starts spectating player from team allies, it switch to player from team allies)
 - If bomb is planted, team with lower alive players is preferred
-- When player is switched, next switch is possible after 8 seconds.
-- <img src="/images/spectator.png" />
+- When player is switched, next switch is possible after 6 seconds.
 
 <br>
 
@@ -382,7 +539,6 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 <br>
 
 ## Known bugs
- - When quick messages menu is opened, auto-recording will not start (its not able to close quick messages menu via pam)
  - You cannot take screenshot of new scoreboard via F12 (in menu binds are not working)
  - When you spawn a bot in strat, this bot will occupy player slot on server even if the bot is kicked; server restart is needed then
 
@@ -391,20 +547,20 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 
 ## Troubleshooting
 ### Error "zPAM is not installed correctly"
-#### Iwd file zpam322.iwd must be installed in main folder. (fs_game)
+#### Iwd file zpam330.iwd must be installed in main folder. (fs_game)
  - From version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that cvars / settings changed in game are not saved into the config when running a game with fs_game set.
 Make sure cvar /fs_game is empty and iwd files are placed in main folder.
 
+#### Iwd file zpam_maps_v1.iwd.iwd must be installed in main folder
+- From version 3.20, fixed versions of some maps are available. PAM is forcing to include these files to make sure maps are available on every server.
+
 #### Error while getting loaded iwd files. Make sure iwd files does not contains spaces.
 - PAM was not able to parse loaded iwd files. Some of the iwd files have probably name with spaces.
 
-#### Iwd file mp_toujane_fix_v2.iwd must be installed in main folder<br>Iwd file mp_burgundy_fix_v1.iwd must be installed in main folder
-- From version 3.20, fixed versions of some maps are available. PAM is forcing to include these files to make sure maps are available on every server.
-
 ####  WWW downloading must be enabled. Set sv_wwwDownload and sv_wwwBaseURL
 - You have to enable www downloading via cvar /sv_wwwDownload 1 and specify a download url via cvar /sv_wwwBaseURL "url".
-- If you dont have any url, you can use /sv_wwwBaseURL "http://cod2x.me/zpam322"
+- If you dont have any url, you can use /sv_wwwBaseURL "http://cod2x.me/zpam330"
 - This is to make sure fixed maps are downloaded in fast way for players
 
 ####  Old pam / maps detected in main folder. Delete iwd file you see above.
@@ -415,7 +571,20 @@ Make sure cvar /fs_game is empty and iwd files are placed in main folder.
 ### Error "recursive error after: Can´t create Dvar 'xxx': 1280 dvars already exist"
 This error happens when you have defined more than 1280 cvars in game.
 You have to clean your config from useless cvars. If you dont know that cvars to delete, create a new profile and compare these 2 configs. Normal config should have ~400 lines.
-This PAM defines ~150 new cvars for all of the features, so if your config contains a lot of mess, it may be the trigger for this error.
+This PAM defines ~200 new cvars for all of the features, so if your config contains a lot of mess, it may be the trigger for this error.
+
+
+### Error "Info string length exceeded"
+This error happens when you have too many .iwd files in main folder or name of all .iwd files exceed some limit.<br>
+How the error may looks like:<br>
+**Info string length exceeded<br>
+key: 'sv_referencedIwds'<br>
+value : '...'<br>
+Info string:<br>
+\bg_fallDamageMaxHeight\480 ...**<br>
+This is game bug - to workaround this error, remove unused iwd files / shorten the name of iwd files / pack multiple iwd files together.
+
+
 
 
 <br>
@@ -433,7 +602,7 @@ This PAM defines ~150 new cvars for all of the features, so if your config conta
 * Adjustable mouse vertical sensitivity, acceleration
 * GUI improvements (menu, hud)
 * Ability to change map / pam mode / kick player directly from menu
-* Rebalanced shotgun
+* New shotgun
 * MG clip fix
 * New interface for spectators
 * Match info bar
@@ -443,47 +612,86 @@ This PAM defines ~150 new cvars for all of the features, so if your config conta
 *And much more - see full list down below*
 
 ### Gametypes
-Only Search and Destroy, Deathmatch, Team Deathmatch and STRAT game type modes are currently supported.
-Implementation of CTF and HQ maybe in the future.
+This pam supports following gametypes:
+- Search and Destroy (sd)
+- Team Deathmatch (tdm)
+- Deathmatch (dm)
+- Headquaters (hq)
+- Capture the Flag (ctf)
+- Hold the Flag (htf)
+- Retrieval (re)
+- Strat (strat)
+
+##### Retrieval
+Retrieval is a SD-based gametype which has been ported from CoD1.
+
+Attackers:  Retrieve the objectives and take them to your team goal (Blue Box)<br>
+Defenders:  Defend the objectives from being taken to their goal<br>
+
+Retrieval may possess alternative teams spawnpoints for most of the maps.<br>
+Round length may be increased to 3-4 minutes.<br>
+Attacker can drop objectives by holding USE (F) so his teammates could pick up. Defenders cannot carry objectives.<br>
+Attackers should take both objectives to the goal (blue box) to win. (or eliminate enemies alike SD)<br>
+
+
 
 ### PAM modes
-##### Search and Destroy
-| pcw | cg | cg_mr12 | cg_2v2 | mr3 | mr10 | mr12 | mr15 | fun | pub |
-|-----|----|---------|--------|-----|------|------|------|-----|-----|
 
-##### Deathmatch
-| pcw | pub | warmup |
-|-----|-----|--------|
+| PAM mode | Description |
+|--------|---|
+| pub    | Public - custom settings |
+| comp   | Competitive - strat 6 seconds, auto recording, team names, rup time limit |
+| warmup | no readyup, for warmup before match (DM only) |
 
-##### Team Deathmatch
-| pcw | pub |
-|-----|-----|
 
+##### Score modes
+
+| Score sub-mode | Description |
+|--------|---|
+| mr3, mr10, mr12, mr15    | Max rounds mrxx+1 (SD, RE only) |
+| 20rounds   | first to 21 wins (SD, RE only) |
+| 15min, 30min, 60min, unlim | total time limit (TDM, DM, HQ, CTF, HTF only) |
+
+
+##### Options
+| Option sub-mode | Description |
+|--------|---|
+| 2v2 | Scope and shotgun weapon disabled|
+| rifle | Bolt action and sniper only, no grenades, no weapon drop|
+| russian | Russian side is enabled on russian maps |
+| lan | Readyup warnings are disabled |
+| pcw | strat 3 seconds, no auto-recording, no team names, no deadchat, no bash |
+
+<br><br>
+##### Examples
+PAM modes, score modes and options can be mixed together, for example:
+
+| PAM mode | Description |
+|--------|---|
+| /rcon pam_mode pub  		| Public mode (custom settings) |
+| /rcon pam_mode comp  		| Competitive mode |
+| /rcon pam_mode comp_mr3  	| Competitive mode with max round 4 |
+| /rcon pam_mode comp_pcw   	| Competitive mode for team mix |
+| /rcon pam_mode comp_pcw_russian | Competitive mode for team mix, russian side on russian maps |
+| /rcon pam_mode comp_2v2 	| Competitive mode, scope and shotgun disabled |
+| /rcon pam_mode comp_rifle 	| Competitive mode, bolt action and sniper only |
+| /rcon pam_mode comp_rifle_2v2	| Competitive mode, bolt action only, sniper disabled |
+| /rcon pam_mode comp_lan  	| Competitive mode on LAN, no readyup time limits |
+
+<br>
+
+#### SD score mode description
+| 20 rounds                         | Max round 3 (MR3)                                       | Max round 10 (MR10)                                        | Max round 12 (MR12)                                        | Max round 15 (MR15)                                        |
+|-------------------------------------|---------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|
+| 10 rounds per half<br>20 rounds max | 3 rounds per half<br>6 rounds max<br>4 is winning score | 10 rounds per half<br>20 rounds max<br>11 is winning score | 12 rounds per half<br>24 rounds max<br>13 is winning score | 15 rounds per half<br>30 rounds max<br>16 is winning score |
 
 
 <br>
 
-#### Formats
-| First to 21                         | Max round 3 (MR3)                                       | Max round 10 (MR10)                                        | Max round 12 (MR12)                                        | Max round 15 (MR15)                                        |
-|-------------------------------------|---------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|
-| pcw, cg, cg_2v2                     | mr3                                                     | mr10                                                       | mr12, cg_mr12                                              | mr15                                                       |
-| 10 rounds per half<br>20 rounds max | 3 rounds per half<br>6 rounds max<br>4 is winning score | 10 rounds per half<br>20 rounds max<br>11 is winning score | 12 rounds per half<br>24 rounds max<br>13 is winning score | 15 rounds per half<br>30 rounds max<br>16 is winning score |
-
-#### Settings
-| pcw                                                                                                                                    | cg modes, mr modes                                                                                                                    | pub           |
-|----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| - for classic match<br>- deadchat is enabled<br>- no count-down timer in half<br>- russian side turned on<br>- auto recording disabled | - for CyberGamer match<br>- deadchat is disabled<br>- 5min timer in half<br>- british replace russians<br>- auto recording is enabled | - public mode<br>- own settings |
 
 
 
-| fun                                                    | warmup |
-|--------------------------------------------------------|--------|
-| - just fun mode with<br>higher speed and lower gravity | - mode for DM gametype<br>- no readyup, killcam enabled |
-
-<br><br><br>
-
-
-
+<br><br>
 
 
 
@@ -518,7 +726,8 @@ Implementation of CTF and HQ maybe in the future.
 <a href="/images/matmataSandbags.jpg"><img src="/images/matmataSandbags.jpg" height="172" /></a><br>
 [1.11] Carentan plant B 333fps plant - players are now not able to plant on B bomb tank.<br>
 [1.12] <del>Carentan roof jump - added collision to avoid jumping to building roof</del> <strong>(canceled)</strong><br>
-[1.13] BAR sound bug - when some player plays with BAR weapon, all other players can hearing sounds of changing weapon (happends when player with BAR is switching between BAR and pistol) -> fixed
+[1.13] BAR sound bug - when some player plays with BAR weapon, all other players can hearing sounds of changing weapon (happends when player with BAR is switching between BAR and pistol) -> fixed<br>
+[1.14] BAR sound bug - when BAR weapon is picked from ground, it makes pickup sound for every player -> fixed
 </sub>
 
 ### 2. Fixed script bugs
@@ -546,6 +755,15 @@ Implementation of CTF and HQ maybe in the future.
 [2.3.2] when max team limit is reached and other player disconnect, other players was unable to select team -&gt; fixed<br>
 [2.3.3] fixed bash pam mode (only pistols are allowed, disabled planting)<br>
 [2.3.4] a lot of code rewrited, removed unnessesary things (splitscreen, xbox codes, ...)<br>
+[2.3.5] added support for 1.0<br>
+[2.3.6] Fixed bug when you drop MG and step sound was made when mg peek fix was enabled<br>
+[2.3.7] Matchinfo - fixed bug when team names does not match players in teams; happens when pistol bash was called and players swap teams<br>
+[2.3.8] Auto-recording - fixed bug with empty team names when bash mode was called<br>
+[2.3.9] Auto-recording - server crash when somebody joins a team at the end of the round (only windows servers) -> fixed<br>
+[2.3.10] Auto-recording - wont start if main menu is opened, quick messages menu is opened or game is minimized -> fixed<br>
+[2.3.11] Auto-spectator - When replaying killcam in spectator, name of spectated player is not removed when the killcam ends -> fixed<br>
+[2.3.12] Fixed text PC_PATCH_1_1_SD_OBJECTIVES in SD server info<br>
+[2.3.13] Weapon name next to ammo HUD is not visible when enemy player list is enabled -> fixed by showing the weapon name under the ammo
 </sub>
 
 
@@ -558,8 +776,7 @@ Implementation of CTF and HQ maybe in the future.
 [3.1.4] no team limit for teams in ready-up mode (you can select whatever team you want in readyup mode)<br>
 [3.1.5] when you are in spectator and you are following some player, now you can see really "Your status" instead of followed player status<br>
 [3.1.6] added voice sound when all players are ready in readyup / halftime / timeout<br>
-[3.1.7] added info indicating that server is cracked<br>
-  <a href="/images/cracked.jpg"><img src="/images/cracked.jpg" height="100" /></a>
+[3.1.7] <del>added info indicating that server is cracked</del> <strong>deleted in zPAM3.30</strong><br>
 </sub>
 
 #### 3.2 Weapons
@@ -591,6 +808,7 @@ Implementation of CTF and HQ maybe in the future.
     <a href="/images/matchinfo_hlsw.jpg"> <img src="/images/matchinfo_hlsw.jpg" alt="" height="150" /> </a><br>
 [3.3.12] Server settings (Rcon change map)<br>
     <a href="/images/rcon_map.png"> <img src="/images/rcon_map.png" alt="" height="450" /> </a><br>
+    <a href="/images/rcon_settings.png"> <img src="/images/rcon_settings.png" alt="" height="450" /> </a><br>
 [3.3.13] Rcon kick menu<br>
     <a href="/images/rcon_kick.png"> <img src="/images/rcon_kick.png" alt="" height="450" /> </a><br>
 [3.3.14] Strat bot support with path recording<br>
@@ -598,7 +816,7 @@ Implementation of CTF and HQ maybe in the future.
     Path recording:<br>
     <a href="/images/strat_bot_recording.jpg"> <img src="/images/strat_bot_recording.jpg" alt="" height="450" /> </a><br>
 [3.3.15] <del>Match info ingame for ingames</del> <strong>(merged into 3.3.10)</strong><br>
-[3.3.16] Shotgun rebalance 3 (new conditions to avoid long shots and close range hits)<br>
+[3.3.16] <del>Shotgun rebalance 3 (new conditions to avoid long shots and close range hits)</del><br>
 [3.3.17] Scoreboard menu, player's stats. Visible in menu and at the end of the map.<br>
     <a href="/images/scoreboard_ingame.jpg"> <img src="/images/scoreboard_ingame.jpg" alt="" height="600" /> </a><br><br>
     <a href="/images/scoreboard.jpg"> <img src="/images/scoreboard.jpg" alt="" height="450" /> </a><br>
@@ -633,13 +851,46 @@ Added posibility to call bash mode from menu.<br>
 <a href="/images/serverinfo.png"> <img src="/images/serverinfo.png" alt="" height="450" /> </a><br>
 [3.3.38] Score in left-top corner can by enabled via settings menu<br>
 [3.3.39] For future hit diagnostics, at the end of each round info about hits is saved to cvar pam_damage_debug<br>
-[3.3.40] Hitbox rebalance - if you fire from rifle or scope to left arm at +-20* degress, it will be changed to kill to body<br>
+[3.3.40] <del>Hitbox rebalance - if you fire from rifle or scope to left arm at +-20* degress, it will be changed to kill to body</del> <strong>replaced with [3.3.46]</strong><br>
 [3.3.41] In halftime-readyup and between map readyup, when 5min timer expire, warning and red timer is showed. If all players from 1 team are ready, match automatically start even if opponent team is not ready.<br>
 <a href="/images/auto_readyup.png"> <img src="/images/auto_readyup.png" /> </a><br>
 [3.3.42] Players left - when last player in team is killed, text "Allies Eliminated" / "Axis Eliminated" is showed<br>
 [3.3.43] When you hit your teammate, reddish hit mark is showed<br>
-<img src="/images/team_hit.png" /><br>-
-
+<img src="/images/team_hit.png" /><br>
+[3.3.44] Cvar system rewrited; any change to server settings is retained even when map changes; new cvar /pam_mode_custom is defined - it tells that changes made to server settings stays between map<br>
+[3.3.45] Warnings about wrong server settings (no password, cheats enabled, punkbuster disabled, cvars changes) is changed; its showed in left top corner under the score; if some of the server settings is changed, detailed list of changed cvars is showed; punkbuster warning is removed<br>
+[3.3.46] Hand hit box fix - if hands are in front of body and game somehow badly interprets it as hit to the hand, PAM change it to hit to the body; its an extension to already existing fix in 3.22 for left hand - now its applies also for right hand<br>
+[3.3.47] Torso hitbox fix; lower torso hitbox (pelvis area) is slightly enlarged as workaround for bad hitbox registration between torso_lower and right/left_leg_upper; this change effectively applies only for rifles, because other weapons has the same damage for torso_lower and right/left_leg_upper<br>
+[3.3.48] Consistent shotgun - this is the new name for new shotgun; this shotgun fixes close range hits; it replaces rebalanced shotgun <br>
+[3.3.49] Ladder weapon bug fix - silent use of ladder is no more possible; its a situation when you double scroll your weapon, hold fire button and use a ladder<br>
+[3.3.50] Sliding bug fix; g_knockback is set to 0; when you are hit, no move energy is applied (knockback); this should fix fast sliding on ground / getting bugged into ground<br>
+[3.3.51] Sniper shotgun info - weapons of players with sniper and shotgun are showed next to compas at start and the end of the round<br>
+[3.3.52] Colored time - color of round timer changes to orange when 30 seconds are left and red when 15 seconds are left<br>
+[3.3.53] Damage feedback (hit cross in center) - slightly changed to better distinguish between hit and kill; if its hit only, cross is more transparent and disappears quicker; if its kill, cross is fully showed and stays longer<br>
+[3.3.54] New blood effect to better visualize hit location; can be enabled / disabled via /cg_blood<br>
+[3.3.55] RCON menu - new menu for changing map, server settings and player kick; is showed in all menus in new place<br>
+[3.3.56] Auto-spectator - better auto-switch algorithm; hit info; player names; auto hide of help text<br>
+[3.3.57] Auto-spectator - automatic killcam replay based on interesting actions (multikills, nozoom)<br>
+[3.3.58] Match info - team names now can contains special characters like # _ ! < > etc..<br>
+[3.3.59] Bash mode text over the screen is showed when bash mode is called.<br>
+[3.3.60] Cvar warning all over the screen is removed for cvar developer and polygons<br>
+[3.3.61] Objective text showed in scoreboard is removed<br>
+[3.3.62] SD voiceover sound "Move in!" removed at the start of the round<br>
+[3.3.63] SD voiceover sound when bomb is planted is shortened - only "Explosives planted" sound is retained<br>
+[3.3.64] Strat - up to 9 bot path recording can be saved; up to 9 bot path recordings can be played at once; automatic record stop is now faster<br>
+[3.3.65] New iwd file zpam_maps_v1.iwd with maps Toujane FIX v2, Burgundy FIX v1, Dawnville FIX v2, Matmata FIX v2, Carentan FIX v2, Chelm, Vallente, wawa_3dAim<br>
+[3.3.66] Timeout settings changes:<br>
+- timeouts per map: 4 (previously 2)<br>
+	- timeouts per side: 2 (previously 1)<br>
+	- timeout length: 2min (previously 5min)<br>
+	- so total timeout time would be 8min per map (previously 10min)<br>
+	- overtimes does not reset called timeouts count - it means if you called out all of the timeouts in standard game time, you dont get new timeouts in overtime. (same as previous)<br>
+	- when timeout time expires, "Time is over" warning message appears - setting one team ready will end the timeout. (previously it automatically resumes the game)<br>
+[3.3.67] Time between halfs and maps changes:<br>
+	- between maps: 5min (as previous)<br>
+	- between halfs: 2min (previously 5min)<br>
+	- between halfs at overtime: 1min (previously 5min)<br>
+	- for LAN mode, there will be no time limits between halfs and maps<br>
 
 </sub>
 
@@ -664,41 +915,12 @@ Added posibility to call bash mode from menu.<br>
 [3.4.11] Added new cvar system - all cvars (sv_, g_, scr_) are monitored against change (not all cvars was monitored in old pam) + added warning in readyup if cvars are not equal to league rules<br>
 [3.4.12] Removed anoying music at the and of the map<br>
 [3.4.13] Removed anoying music from main menu<br>
-[3.4.14] Current pam modes (changes are marked bold):<br>
-cg<br>
- - 10 rounds per half<br>
- - 20 rounds max<br>
- - used as "first to 21" format<br>
-<br>
-cg_1v1 - <b>removed</b><br>
-<br>
-cg_2v2<br>
- - same as cg<br>
- - sniper + shotgun disabled<br>
-<br>
-cg_mr10 - <b>removed</b><br>
- - removed, this mod was same as cg (mr10 word is misscorectly used for "first to 21" format)<br>
-<br>
-cg_mr12 - <b>changed</b><br>
- - 12 rounds per half<br>
- - 24 rounds max<br>
- - 13 end score  <b>(there is the change)</b><br>
-<br>
-mr3, mr10, mr12, mr15<br>
-bash<br>
-pub<br>
-<br>
-<b>pcw (new)<br>
-- new mode for not cg matches<br>
-- russian side turned on<br>
-- auto recording is disabled<br>
-- deadchat is enabled<br>
-- there is no timer in half<br>
-<br>
-fun (new)<br>
-- just fun mode with higher speed and lower gravity<br>
-</b><br>
-[3.4.15] PAM now has to be installed in main folder - this will fix problem with not saved cvar changes you made in game
+[3.4.14] <del>Current pam modes</del> <strong>replaced with [3.4.16]</strong><br>
+[3.4.15] PAM now has to be installed in main folder - this will fix problem with not saved cvar changes you made in game<br>
+[3.4.16] New pam mode names - cg was removed, now only pub and comp modes are available with sub modes.<br>
+[3.4.17] Added support of HQ, CTF, HTF and RE gametypes
+[3.4.18] Added rifle only mode
+
 </sub>
 
 <br><br><br>
@@ -729,10 +951,10 @@ fun (new)<br>
 [5.6] bind MOUSE1 "+attack;+smoke" -&gt; this bind silences gun<br>
 [5.7] <del>toujane bug - you get stuck in "link" if you crouch next to the wall</del> <strong>fixed in mp_toujane_fix</strong> <br>
     <a href="/images/toujane_cigan.jpg"> <img src="/images/toujane_cigan.jpg" alt="" height="150" /> </a><br>
-[5.8] Carentan MG house at doors. Prone push  <br>
+[5.8] <del>Carentan MG house at doors. Prone push</del> <strong>fixed in mp_carentan_fix</strong> <br>
     <a href="/images/carentan_mg_house_bug1.jpg"> <img src="/images/carentan_mg_house_bug1.jpg" alt="" height="150" /> </a> <br>
     <a href="/images/carentan_mg_house_bug2.jpg"> <img src="/images/carentan_mg_house_bug2.jpg" alt="" height="150" /> </a><br>
-[5.9] Dawnville: Bug in last apartment <br>
+[5.9] <del>Dawnville: Bug in last apartment </del> <strong>fixed in mp_dawnville_fix</strong><br>
     <a href="/images/dawnville_apartment_bug.jpg"> <img src="/images/dawnville_apartment_bug.jpg" alt="" height="150" /> </a><br>
 [5.10] too hight mg sensitivity <br>
 [5.11] switching from scope to other player while dead, you keep hearing the "scopeshot" <br>
@@ -742,13 +964,13 @@ fun (new)<br>
 [5.15] MG clip bug - if you prone behind MG and press F to take it, enemy see you with a delay<br>
 [5.16] You cannot hear sounds of players that are far away from you. In some spots you cannot hear sounds of players just around a corner. This is caused by map portals - every map is split up to portals. Only portals that you can see from your location are rendered by game engine. Unforcenetly players are also not rendered. Thats why you cannot hear your teammate shooting on A bombsite while you are on allies spawn for example.<br>
 [5.17] Bash bug - you cannot bust while reload animation (untill weapon chamber is not fully refilled -> bash is blocked)<br>
-[5.18] Burgundy low sky box - grenades are removed from game if you throw them above you with jump<br>
-[5.19] Matmata jungle texture bug <br>
+[5.18] <del>Burgundy low sky box - grenades are removed from game if you throw them above you with jump</del><strong>fixed in mp_burgundy_fix</strong><br>
+[5.19] <del>Matmata jungle texture bug</del> <strong>fixed in mp_matmata_fix</strong> <br>
     <a href="/images/matmata_bug_1.jpg"><img src="/images/matmata_bug_1.jpg" alt="" height="150" /> </a>
     <a href="/images/matmata_bug_2.jpg"><img src="/images/matmata_bug_2.jpg" alt="" height="150" /> </a><br>
 [5.20] Tanks - some tanks dont have solid tank wheels - shots go throught them<br>
 [5.21] <del>Toujane bug under A roof</del><br>
 <b>Fixed, viz [1.6]</b><br>
-[5.22] Toujane bug in track on B bomb site - you can see enemy behind track boxes with jumping, but enemy cannot see you<br>
+[5.22] <del>Toujane bug in track on B bomb site - you can see enemy behind track boxes with jumping, but enemy cannot see you</del> <strong>fixed in mp_toujane_fix</strong><br>
 [5.23] Burgundy black tank - you can see enemy under tank wheels when you are far away from tank
  </sub>

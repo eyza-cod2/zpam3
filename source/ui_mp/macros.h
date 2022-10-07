@@ -80,7 +80,7 @@ itemDef \
 	decoration \
 }
 
-#define ITEM_BAR_BOTTOM_BUTTON_DVAR(textstring, x, w, dvartotest, dvarshowhide, todo)  \
+#define ITEM_BAR_BOTTOM_BUTTON_DVAR(textstring, x, w, dvartotest, dvarshowhide, actions)  \
 itemDef \
 { \
 	visible			1 \
@@ -97,7 +97,7 @@ itemDef \
 	action \
 	{ \
 		play "mouse_click"; \
-		todo ; \
+		actions ; \
 	} \
 	onFocus \
 	{ \
@@ -121,7 +121,7 @@ itemDef \
 	dvarshowhide \
 }
 
-#define ITEM_BAR_BOTTOM_BUTTON(textstring, x, w, todo)  \
+#define ITEM_BAR_BOTTOM_BUTTON(textstring, x, w, actions)  \
 itemDef \
 { \
 	visible			1 \
@@ -136,7 +136,7 @@ itemDef \
 	action \
 	{ \
 		play "mouse_click"; \
-		todo ; \
+		actions ; \
 	} \
 	onFocus \
 	{ \
@@ -259,6 +259,7 @@ itemDef \
 #define ORIGIN_CHOICE10	60 300
 #define ORIGIN_CHOICE11	60 324
 #define ORIGIN_CHOICE12	60 348
+#define ORIGIN_CHOICE13	60 372
 
 #define ITEM_BUTTON(origin_choice, textstring, dofocus, doaction) \
 itemDef  \
@@ -621,40 +622,7 @@ itemDef \
 
 #define RCON_UPDATE_STATUS execOnDvarStringValue ui_rcon_logged_in 0 "vstr ui_rcon_hash";
 
-#define ITEM_RCON_STATUS \
-itemDef \
-{ \
-  rect				0 0 120 24 0 0 \
-  origin			520 438 \
-  type        ITEM_TYPE_BUTTON \
-  text				"Rcon: ^3not logged" \
-  textscale		0.3 \
-  textaligny	18 \
-  visible 		1 \
-  dvartest		"ui_rcon_logged_in" \
-  showDvar    { "0" } \
-  action \
-  { \
-    play "mouse_click"; \
-    RCON_UPDATE_STATUS; \
-  } \
-  onFocus \
-  { \
-    play "mouse_over"; \
-    RCON_UPDATE_STATUS; \
-  } \
-} \
-itemDef \
-{ \
-  origin			520 438 \
-  text				"Rcon: ^2logged in" \
-  textscale		0.3 \
-  textaligny	18 \
-  visible 		1 \
-  dvartest		"ui_rcon_logged_in" \
-  showDvar    { "1" } \
-  decoration \
-}
+
 
 
 #define QUICKMESSAGE_LINE_TEXT(y, textstring, fontcolor)  \
@@ -746,3 +714,8 @@ itemDef \
         showhidedvar \
 	decoration \
 }
+
+
+// All sub-menus that can be possibly opened at the same time
+#define CLOSE_SUBMENUS close ingame_keys; close team_britishgerman_keys; close team_americangerman_keys; close team_russiangerman_keys; close ingame_scoreboard_sd; close rcon_map; close rcon_map_maps; close rcon_map_pams; close rcon_map_other; close rcon_map_apply; close rcon_settings; close rcon_settings_shared; close rcon_settings_gametypes; close rcon_settings_focus; close rcon_kick; close aboutpam; close pammodes;
+#define CLOSE_ALL CLOSE_SUBMENUS close ingame; close team_britishgerman; close team_americangerman; close team_russiangerman;

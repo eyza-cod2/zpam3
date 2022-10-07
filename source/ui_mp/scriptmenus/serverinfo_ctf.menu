@@ -1,0 +1,52 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+{
+	menuDef
+	{
+		name			"serverinfo_ctf"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onOpen
+		{
+			exec "vstr server16;" // server16 contains string with player's settings;
+		}
+		onEsc
+		{
+			scriptMenuResponse "close";
+		}
+
+		// Keys
+		execKeyInt 32 { play "mouse_click"; close ingame; open main; } // space
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+
+		// Header: Teams
+		ITEM_TEXT_HEADING("@MPUI_CAPTURE_THE_FLAG")
+
+		// INSTRUCTIONS
+		SERVERINFO_DRAW_OBJECTIVE("@MP_CTF_OBJ_TEXT_NOSCORE")
+
+		// SERVER SETTINGS
+		SERVERINFO_DRAW_PARAMETERS
+
+		// MESSAGE OF THE DAY
+		SERVERINFO_DRAW_MOTD
+
+		// Clickable quit button all over the screen
+		SERVERINFO_DRAW_QUIT
+
+
+		// Close menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, scriptMenuResponse "close")
+		// Main menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu", 135, 120, close serverinfo_ctf; open main)
+
+	}
+}

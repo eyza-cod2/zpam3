@@ -27,12 +27,27 @@ onCvarChanged(cvar, value, isRegisterTime)
 	return false;
 }
 
-updateDamageFeedback(enemy)
+updateDamageFeedback(enemy, count)
 {
+	self endon("disconnect");
+
+	// Make sure only one thread is running
+	self notify("updateDamageFeedback");
+	self endon("updateDamageFeedback");
+
+	waittillframeend; // wait intill player is killed
+
 	if (level.scr_show_hitblip)
 	{
 		if(isPlayer(self))
 		{
+			// Play hit sound
+			for (i = 1; i <= count; i++)
+			{
+				self playlocalsound("MP_hit_alert");
+			}
+
+
 			if (!isDefined(self.hud_damagefeedback))
 			{
 				self.hud_damagefeedback = newClientHudElem2(self);
@@ -45,16 +60,43 @@ updateDamageFeedback(enemy)
 				self.hud_damagefeedback setShader("damage_feedback", 24, 24);
 			}
 
+			alpha = 1;
+			time = 1.2;
+			delay = 0.25;
 			color = (1,1,1);
-			if (isPlayer(enemy) && level.gametype == "sd" && !level.in_readyup && enemy.pers["team"] == self.pers["team"])
-				color = (1,0.5,0.5);
+			if (isPlayer(enemy) && level.gametype == "sd" /*&& !level.in_readyup*/)
+			{
+				if (enemy.pers["team"] == self.pers["team"])
+					color = (1,0.5,0.5);
+				else if (isAlive(enemy))
+				{
+					// Hit only
+					alpha = 0.75;
+					time = 1;
+					delay = 0;
+				}
+			}
+
+			//iprintln("playing feedback, alpha: " + alpha);
+
 
 			self.hud_damagefeedback.color = color;
-			self.hud_damagefeedback.alpha = 1;
-			self.hud_damagefeedback fadeOverTime(1);
+
+			self.hud_damagefeedback fadeOverTime(0.00001);	// cancel fade time
+
+
+			self.hud_damagefeedback.alpha = alpha;
+
+
+
+			wait delay * level.fps_multiplier;
+
+			self.hud_damagefeedback fadeOverTime(time);
 			self.hud_damagefeedback.alpha = 0;
 
-			self playlocalsound("MP_hit_alert");
+
+
+
 		}
 	}
 }

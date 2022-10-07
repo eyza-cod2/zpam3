@@ -1,0 +1,39 @@
+// Note to translators:
+// If a sentence is the same in your language then please change it to "#same"
+//
+// eg:
+// LANG_ENGLISH  "HALT"
+// LANG_GERMAN   "#same"
+//
+// (This is so we can tell which strings have been signed-off as ok to be the same words for QA
+//  and because we do not store duplicate strings, which will then get exported again next time
+//  as being untranslated.)
+//
+VERSION             "1"
+CONFIG              "C:\trees\cod2\bin\StringEd.cfg"
+
+REFERENCE           WEAPONS
+LANG_ENGLISH        "Rifles"
+
+REFERENCE           1_KAR98K
+LANG_ENGLISH        "1. Kar98k"
+
+REFERENCE           2_LEEENFIELD
+LANG_ENGLISH        "2. Lee-Enfield"
+
+REFERENCE           3_MOSINNAGANT
+LANG_ENGLISH        "3. Mosin-Nagant"
+
+REFERENCE           4_SCOPED_KAR98K
+LANG_ENGLISH        "4. Scoped Kar98k"
+
+REFERENCE           5_SCOPED_LEEENFIELD
+LANG_ENGLISH        "5. Scoped Lee-Enfield"
+
+REFERENCE           6_SCOPED_MOSINNAGANT
+LANG_ENGLISH        "6. Scoped Mosin-Nagant"
+
+REFERENCE           7_SPRINGFIELD
+LANG_ENGLISH        "7. Springfield"
+
+ENDMARKER

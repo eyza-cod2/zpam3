@@ -1,0 +1,80 @@
+#define PAMMODE_TEXT(xy, txt, size) \
+itemDef \
+{ \
+	visible			1 \
+	origin			xy \
+	forecolor		GLOBAL_UNFOCUSED_COLOR \
+	text			txt \
+	textfont		UI_FONT_NORMAL \
+	textscale		size \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textalign		ITEM_ALIGN_LEFT \
+	decoration \
+}
+
+PAMMODE_TEXT(0 20, "PAM Modes", 0.3)
+
+PAMMODE_TEXT(10 35, "pub", 0.2)
+PAMMODE_TEXT(120 35, "^9Public - custom settings", 0.2)
+
+PAMMODE_TEXT(10 50, "comp", 0.2)
+PAMMODE_TEXT(120 50, "^9Competitive - strat 6 seconds, auto recording, team names, rup time limit", 0.2)
+
+PAMMODE_TEXT(10 65, "warmup", 0.2)
+PAMMODE_TEXT(120 65, "^9no readyup, for warmup before match (DM only)", 0.2)
+
+
+
+PAMMODE_TEXT(0 95, "Score modes:", 0.25)
+
+PAMMODE_TEXT(10 110, "mr3, mr10, mr12, mr15", 0.2)
+PAMMODE_TEXT(150 110, "^9max round xx+1 (S&D and RE only)", 0.2)
+
+PAMMODE_TEXT(10 125, "20 rounds", 0.2)
+PAMMODE_TEXT(150 125, "^9first to 21 wins (S&D and RE only)", 0.2)
+
+PAMMODE_TEXT(10 140, "15min, 30min, 90min, unlimited", 0.2)
+PAMMODE_TEXT(150 140, "^9total time limit (TDM, DM, HQ, CTF, HTF only)", 0.2)
+
+
+
+
+
+PAMMODE_TEXT(0 170, "Options", 0.25)
+
+PAMMODE_TEXT(10 185, "2v2", 0.2)
+PAMMODE_TEXT(50 185, "^9scope and shotgun disabled", 0.2)
+
+PAMMODE_TEXT(10 197, "rifle", 0.2)
+PAMMODE_TEXT(50 197, "^9bolt action and sniper only, no grenades, no weapon drop", 0.2)
+
+PAMMODE_TEXT(10 209, "russian", 0.2)
+PAMMODE_TEXT(50 209, "^9russian side is enabled on russian maps", 0.2)
+
+PAMMODE_TEXT(10 221, "lan", 0.2)
+PAMMODE_TEXT(50 221, "^9readyup warnings are disabled", 0.2)
+
+PAMMODE_TEXT(10 234, "pcw", 0.2)
+PAMMODE_TEXT(50 234, "^9strat 3 seconds, no auto-recording, no team names, no deadchat, no bash", 0.2)
+
+
+
+
+
+PAMMODE_TEXT(0 260, "PAM modes, score modes and options can be mixed together, example:", 0.2)
+
+PAMMODE_TEXT(0 272, "^9/rcon pam_mode comp", 0.2)
+PAMMODE_TEXT(0 284, "^9/rcon pam_mode comp_pcw", 0.2)
+PAMMODE_TEXT(0 296, "^9/rcon pam_mode comp_pcw_russian", 0.2)
+PAMMODE_TEXT(0 308, "^9/rcon pam_mode comp_2v2", 0.2)
+PAMMODE_TEXT(0 320, "^9/rcon pam_mode comp_rifle", 0.2)
+PAMMODE_TEXT(0 332, "^9/rcon pam_mode comp_rifle_2v2", 0.2)
+PAMMODE_TEXT(0 344, "^9/rcon pam_mode comp_lan", 0.2)
+
+PAMMODE_TEXT(150 272, "^9Competitive mode", 0.2)
+PAMMODE_TEXT(150 284, "^9Competitive mode for team mix", 0.2)
+PAMMODE_TEXT(150 296, "^9Competitive mode for team mix, russian side on russian maps", 0.2)
+PAMMODE_TEXT(150 308, "^9Competitive mode with sniper and shotgun disabled", 0.2)
+PAMMODE_TEXT(150 320, "^9Competitive mode with only bolt action and sniper enabled", 0.2)
+PAMMODE_TEXT(150 332, "^9Competitive mode with bolt action only, sniper disabled", 0.2)
+PAMMODE_TEXT(150 344, "^9Competitive mode for LAN, no readyup time limits", 0.2)

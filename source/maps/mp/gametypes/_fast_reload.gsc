@@ -4,7 +4,7 @@ init()
 {
 	addEventListener("onCvarChanged", ::onCvarChanged);
 
-	registerCvarEx("C", "scr_fast_reload_fix", "BOOL", 0);
+	registerCvar("scr_fast_reload_fix", "BOOL", 0);
 
 
 	level.fastReload_startTime = getTime();
@@ -149,7 +149,7 @@ manageWeaponCycleDelay()
                 // Send command after a few frames (this may help fix fps drop when player fire from weapon)
                 wait level.frame*3;
 
-  	            if (level.debug_fastreload) self iprintln("^1Preventing fast reload bug"); 
+  	            if (level.debug_fastreload) self iprintln("^1Preventing fast reload bug");
   	            self setClientCvar2("cg_weaponCycleDelay", "200");	// time in ms when player can change weapon again
       			}
         }

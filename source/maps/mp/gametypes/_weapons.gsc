@@ -14,6 +14,8 @@ registerCvars()
 {
 	var = ::registerCvar;
 
+	[[var]]("scr_rifle_mode", "BOOL", 0);       // level.scr_rifle_mode
+
 	// Nade spawn counts for each class
 	[[var]]("scr_boltaction_nades", "INT", 3, 0, 99);
 	[[var]]("scr_semiautomatic_nades", "INT", 2, 0, 99);
@@ -88,8 +90,9 @@ registerCvars()
 	[[var]]("scr_balance_ppsh_distance", "BOOL", 0); 	//level.balance_ppsh //ppsh -> tommy balance
 
 
-	registerCvarEx("C", "scr_shotgun_rebalance", "BOOL", 0);	// level.scr_shotgun_rebalance
-	registerCvarEx("C", "scr_hand_hitbox_fix", "BOOL", 0);		// level.scr_hand_hitbox_fix
+	[[var]]("scr_shotgun_consistent", "BOOL", 0);	// level.scr_shotgun_consistent
+	[[var]]("scr_hitbox_hand_fix", "BOOL", 0);	// level.scr_hitbox_hand_fix
+	[[var]]("scr_hitbox_torso_fix", "BOOL", 0);		// level.scr_hitbox_torso_fix
 }
 
 
@@ -100,6 +103,14 @@ onCvarChanged(cvar, value, isRegisterTime)
 {
 	switch(cvar)
 	{
+		case "scr_rifle_mode":
+		{
+			// Change value only while registrating (changing value requires map restart)
+			if (isRegisterTime)
+				level.scr_rifle_mode = value;
+			return true;
+		}
+
 		// Nothing get updated because we are getting value directly from getCvar()
 		case "scr_boltaction_nades":
 		case "scr_boltaction_smokes":
@@ -185,12 +196,16 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "scr_balance_ppsh_distance": 		level.balance_ppsh = value; return true;
 
 
-		case "scr_shotgun_rebalance":
-			level.scr_shotgun_rebalance = value;
+		case "scr_shotgun_consistent":
+			level.scr_shotgun_consistent = value;
 			return true;
 
-		case "scr_hand_hitbox_fix":
-			level.scr_hand_hitbox_fix = value;
+		case "scr_hitbox_hand_fix":
+			level.scr_hitbox_hand_fix = value;
+			return true;
+
+		case "scr_hitbox_torso_fix":
+			level.scr_hitbox_torso_fix = value;
 			return true;
 
 	}
@@ -207,11 +222,17 @@ onStartGameType()
 {
 	if(game["firstInit"])
 	{
-		precacheWeapons();
+		if(level.scr_rifle_mode)
+			precacheWeaponsRifle();
+		else
+			precacheWeapons();
 	}
 
 	// Weapons & Limits
-	maps\mp\gametypes\_weapons::defineWeapons();
+	if(level.scr_rifle_mode)
+		defineWeaponsRifle();
+	else
+		defineWeapons();
 
 	// Disable MG
 	if (!level.allow_turrets)
@@ -221,6 +242,50 @@ onStartGameType()
 	}
 }
 
+
+precacheWeaponsRifle()
+{
+	switch(game["allies"])
+	{
+	case "american":
+
+		precacheItem("frag_grenade_american_mp");
+		precacheItem("smoke_grenade_american_mp");
+		precacheItem("colt_mp");
+		break;
+
+	case "british":
+
+		precacheItem("frag_grenade_british_mp");
+		precacheItem("smoke_grenade_british_mp");
+		precacheItem("webley_mp");
+		break;
+
+	case "russian":
+
+		precacheItem("frag_grenade_russian_mp");
+		precacheItem("smoke_grenade_russian_mp");
+		precacheItem("TT30_mp");
+		break;
+	}
+
+	precacheItem("kar98k_mp");
+	precacheItem("enfield_mp");
+	precacheItem("mosin_nagant_mp");
+	precacheItem("kar98k_sniper_mp");
+	precacheItem("enfield_scope_mp");
+	precacheItem("mosin_nagant_sniper_mp");
+	precacheItem("springfield_mp");
+
+	precacheItem("frag_grenade_german_mp");
+	precacheItem("smoke_grenade_german_mp");
+
+	precacheItem("luger_mp");
+
+
+	// Weapons for all
+	precacheItem("binoculars_mp");
+}
 
 precacheWeapons()
 {
@@ -299,11 +364,32 @@ precacheWeapons()
 
 
 
-defineWeapons()
+defineWeaponsRifle()
 {
 	// List of all weapons that can be enabled or disabled by server cvars
 	// If you want to add new weapons, you have to create new cvars in cvars.gsc
 
+	// Rifle-only mode
+
+	addWeapon("kar98k_mp", 			"boltaction", 			"both", 			"scr_allow_kar98k", 		"ui_allow_kar98k");
+	addWeapon("enfield_mp", 		"boltaction", 			"both", 			"scr_allow_enfield", 		"ui_allow_enfield");
+	addWeapon("mosin_nagant_mp", 		"boltaction", 			"both", 			"scr_allow_nagant", 		"ui_allow_nagant");
+	addWeapon("kar98k_sniper_mp", 		"sniper", 			"both", 			"scr_allow_kar98ksniper", 	"ui_allow_kar98ksniper");
+	addWeapon("enfield_scope_mp", 		"sniper",			"both", 			"scr_allow_enfieldsniper", 	"ui_allow_enfieldsniper");
+	addWeapon("mosin_nagant_sniper_mp", 	"sniper", 			"both", 			"scr_allow_nagantsniper", 	"ui_allow_nagantsniper");
+	addWeapon("springfield_mp", 		"sniper", 			"both", 			"scr_allow_springfield", 	"ui_allow_springfield");
+
+	addClass("boltaction", 			"scr_boltaction_limit",		"scr_boltaction_nades", 	"scr_boltaction_smokes",	"scr_boltaction_allow_drop");
+	addClass("sniper", 			"scr_sniper_limit",		"scr_sniper_nades", 		"scr_sniper_smokes", 		"scr_sniper_allow_drop");
+
+}
+
+
+defineWeapons()
+{
+	// List of all weapons that can be enabled or disabled by server cvars
+	// If you want to add new weapons, you have to create new cvars in cvars.gsc
+	// Conventional weapons
 
 	switch(game["allies"])
 	{
@@ -343,6 +429,7 @@ defineWeapons()
 
 	// All teams
 	addWeapon("shotgun_mp", 		"shotgun", 			"both", 	"scr_allow_shotgun", 		"ui_allow_shotgun");
+
 
 	// Array of Available Weapon Classes
 	// If you want to add new classes, you have to create new cvars in start_gametype.gsc
@@ -518,9 +605,11 @@ giveGrenadesFor(weapon, count)
 
 		self giveWeapon(grenadetype);
 		self setWeaponClipAmmo(grenadetype, fraggrenadecount);
-	}
+		self switchtooffhand(grenadetype);
 
-	self switchtooffhand(grenadetype);
+		return fraggrenadecount;
+	}
+	return 0;
 }
 
 giveSmokesFor(weapon, count)
@@ -534,14 +623,17 @@ giveSmokesFor(weapon, count)
 	smokegrenadetype = self GetSmokeTypeName();
 	smokegrenadecount = getWeaponBasedSmokeGrenadeCount(weapon);
 
-	if(smokegrenadecount)
+	if(smokegrenadecount > 0)
 	{
 		if (isDefined(count)) // replace count with own number
 			smokegrenadecount = count;
 
 		self giveWeapon(smokegrenadetype);
 		self setWeaponClipAmmo(smokegrenadetype, smokegrenadecount);
+
+		return smokegrenadecount;
 	}
+	return 0;
 }
 
 
@@ -567,6 +659,9 @@ dropWeapon()
 		return;
 
 	if(current == "none")
+		return;
+
+	if (level.gametype == "re" && self.obj_carrier)
 		return;
 
 	weapon1 = self getweaponslotweapon("primary");
@@ -738,6 +833,20 @@ isMainWeapon(weapon)
 	return isDefined(level.weapons[weapon]);
 }
 
+isSniper(weaponname)
+{
+	if (isMainWeapon(weaponname))
+		return level.weapons[weaponname].classname == "sniper";
+	return false;
+}
+
+isShotgun(weaponname)
+{
+	if (isMainWeapon(weaponname))
+		return level.weapons[weaponname].classname == "shotgun";
+	return false;
+}
+
 getRandomWeapon()
 {
 	for (;;)
@@ -745,7 +854,10 @@ getRandomWeapon()
 		weaponname = level.weaponnames[randomInt(level.weaponnames.size)];
 		weapon = level.weapons[weaponname];
 
-		if (weapon.allow == false || weapon.team != self.pers["team"])
+		if (weapon.allow == false)
+			continue;
+
+		if(!level.scr_rifle_mode && weapon.team != self.pers["team"])
 			continue;
 
 		// Check if random selected weapon is free and allowed
@@ -853,6 +965,108 @@ getWeaponName(weapon)
 
 	default:
 		weaponname = &"WEAPON_UNKNOWNWEAPON";
+		break;
+	}
+
+	return weaponname;
+}
+
+
+getWeaponName2(weapon)
+{
+	switch(weapon)
+	{
+	// American
+	case "m1carbine_mp":
+		weaponname = "M1A1 Carbine";
+		break;
+
+	case "m1garand_mp":
+		weaponname = "M1 Garand";
+		break;
+
+	case "thompson_mp":
+		weaponname = "Thompson";
+		break;
+
+	case "bar_mp":
+		weaponname = "BAR";
+		break;
+
+	case "springfield_mp":
+		weaponname = "Scope";
+		break;
+
+	case "greasegun_mp":
+		weaponname = "Grease Gun";
+		break;
+
+	case "shotgun_mp":
+		weaponname = "Shotgun";
+		break;
+
+	// British
+	case "enfield_mp":
+		weaponname = "Lee-Enfield";
+		break;
+
+	case "sten_mp":
+		weaponname = "Sten";
+		break;
+
+	case "bren_mp":
+		weaponname = "Bren LMG";
+		break;
+
+	case "enfield_scope_mp":
+		weaponname = "Scope";
+		break;
+
+	// Russian
+	case "mosin_nagant_mp":
+		weaponname = "Mosin-Nagant";
+		break;
+
+	case "SVT40_mp":
+		weaponname = "SVT40";
+		break;
+
+	case "PPS42_mp":
+		weaponname = "PPS42";
+		break;
+
+	case "ppsh_mp":
+		weaponname = "PPSh";
+		break;
+
+	case "mosin_nagant_sniper_mp":
+		weaponname = "Scope";
+		break;
+
+	//German
+	case "kar98k_mp":
+		weaponname = "Kar98k";
+		break;
+
+	case "g43_mp":
+		weaponname = "Gewehr 43";
+		break;
+
+	case "mp40_mp":
+		weaponname = "MP40";
+		break;
+
+	case "mp44_mp":
+		weaponname = "MP44";
+		break;
+
+	case "kar98k_sniper_mp":
+		weaponname = "Scope";
+		break;
+
+
+	default:
+		weaponname = weapon;
 		break;
 	}
 

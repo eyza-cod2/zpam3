@@ -2,14 +2,14 @@
 
 init()
 {
+	if (level.gametype != "sd")
+		return;
+
 	addEventListener("onCvarChanged", ::onCvarChanged);
 
 	registerCvar("scr_sd_round_report", "BOOL", 0);
 
-
 	if (!level.scr_sd_round_report)
-		return;
-	if (level.gametype != "sd")
 		return;
 
 	// Register notifications catchup
@@ -32,11 +32,24 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 onConnected()
 {
+	self endon("disconnect");
+
 	self.round_report_array = [];
 	self.round_report_myKill = undefined;
 
 	self.round_report_debug = [];
 	self.round_report_debug[0] = "-- Is updated at the end of the round. Only rifle, scope, shotgun and grenade hit is saved --";
+
+	// Set default value
+	if (!isDefined(self.pers["round_report_debug_init"]))
+	{
+		wait level.fps_multiplier * 5;
+		self setClientCvarIfChanged("pam_damage_debug", "");
+		self setClientCvarIfChanged("pam_damage_debug2", "");
+		self setClientCvarIfChanged("pam_damage_debug3", "");
+		self setClientCvarIfChanged("pam_damage_debug4", "");
+		self.pers["round_report_debug_init"] = true;
+	}
 }
 
 /*
@@ -205,6 +218,12 @@ sendDebugInfo()
 	if (buffer != "")
 		self sendDebugInfoCvar(debugIndex, buffer);
 
+	// Empty other cvars
+	for(i = debugIndex + 1; i <= 4; i++)
+	{
+		self sendDebugInfoCvar(i, "");
+	}
+
 }
 sendDebugInfoCvar(debugIndex, buffer)
 {
@@ -310,6 +329,11 @@ print()
 					else if (log.hitLoc != "none")
 						string += " to " + log.hitLoc;
 				}
+				else
+				{
+					string += " with " + log.pellets + " pellet";
+					if (log.pellets > 1) string += "s";
+				}
 
 				// [Weapon]
 				weapon = getWeapon(log.sMeansOfDeath, log.sWeapon);
@@ -329,7 +353,7 @@ print()
 
 				string += "hit";
 
-				if (log.sMeansOfDeath == "MOD_RIFLE_BULLET" || log.sFirstWeapon == "shotgun_mp")
+				//if (log.sMeansOfDeath == "MOD_RIFLE_BULLET" || log.sFirstWeapon == "shotgun_mp")
 					string += " " + int(log.firstDamageValue) + "hp";
 
 				if (log.sFirstWeapon == "shotgun_mp")

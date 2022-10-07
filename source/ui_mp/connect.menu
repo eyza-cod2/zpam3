@@ -80,39 +80,13 @@
 			hidedvar { "0" }
 		}
 
-/*
-		itemDef
-		{
-			visible			1
-			origin			447 15
-			forecolor		1 1 1  1
-			text			"You are playing on server with BETA version of zPAM3.22"
-			textfont		UI_FONT_NORMAL
-			textscale		0.2
-			textstyle		ITEM_TEXTSTYLE_SHADOWED
-			textalign		ITEM_ALIGN_CENTER
-			decoration
-		}
-		itemDef
-		{
-			visible			1
-			origin			447 30
-			forecolor		1 1 1 0.8
-			text			"Please report bugs on discord ^2LetsPlay Europe ^7in ^2#cod2-zpam-3 ^7channel."
-			textfont		UI_FONT_NORMAL
-			textscale		0.2
-			textstyle		ITEM_TEXTSTYLE_SHADOWED
-			textalign		ITEM_ALIGN_CENTER
-			decoration
-		}
-*/
 
 		itemDef
 		{
 			visible			1
 			origin			447 15
 			forecolor		1 1 1  1
-			text			"You are playing on server with ^2zPAM3.22" // ZPAM_RENAME
+			text			"You are playing on server with ^2zPAM3.30 ^3PREVIEW" // ZPAM_RENAME
 			textfont		UI_FONT_NORMAL
 			textscale		0.2
 			textstyle		ITEM_TEXTSTYLE_SHADOWED
@@ -131,6 +105,33 @@
 			textalign		ITEM_ALIGN_CENTER
 			decoration
 		}
+
+/*
+		itemDef
+		{
+			visible			1
+			origin			447 15
+			forecolor		1 1 1  1
+			text			"You are playing on server with ^1zPAM3.30 TEST 10" // ZPAM_RENAME
+			textfont		UI_FONT_NORMAL
+			textscale		0.2
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_CENTER
+			decoration
+		}
+		itemDef
+		{
+			visible			1
+			origin			447 28
+			forecolor		1 1 1 0.8
+			text			"^1Unreleased version"
+			textfont		UI_FONT_NORMAL
+			textscale		0.2
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_CENTER
+			decoration
+		}
+*/
 
 	}
 }

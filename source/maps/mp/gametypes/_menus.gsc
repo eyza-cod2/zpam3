@@ -20,6 +20,7 @@ onStartGameType()
 		game["menu_team"] = "team_" + game["allies"] + game["axis"];	// team_britishgerman
 		game["menu_weapon_allies"] = "weapon_" + game["allies"];
 		game["menu_weapon_axis"] = "weapon_" + game["axis"];
+		game["menu_weapon_rifles"] = "weapon_rifles";
 		game["menu_serverinfo"] = "serverinfo_" + level.gametype;
 		game["menu_callvote"] = "callvote";
 		game["menu_exec_cmd"] = "exec_cmd";
@@ -30,13 +31,14 @@ onStartGameType()
 		game["menu_mousesettings"] = "mousesettings";
 		game["menu_scoreboard"] = "scoreboard_sd";
 		game["menu_spectatingsystem"] = "spectatingsystem";
-
+		game["menu_strat_records"] = "strat_records";
 
 		precacheMenu(game["menu_moddownload"]);
 		precacheMenu(game["menu_ingame"]);
 		precacheMenu(game["menu_team"]);
 		precacheMenu(game["menu_weapon_allies"]);
 		precacheMenu(game["menu_weapon_axis"]);
+		precacheMenu(game["menu_weapon_rifles"]);
 		precacheMenu(game["menu_serverinfo"]);
 		precacheMenu(game["menu_callvote"]);
 		precacheMenu(game["menu_exec_cmd"]);
@@ -47,6 +49,14 @@ onStartGameType()
 		precacheMenu(game["menu_mousesettings"]);
 		precacheMenu(game["menu_scoreboard"]);
 		precacheMenu(game["menu_spectatingsystem"]);
+		precacheMenu(game["menu_strat_records"]);
+
+		// Rifle mode use different menu for allies and axis
+		if (level.scr_rifle_mode)
+		{
+			game["menu_weapon_allies"] = game["menu_weapon_rifles"];
+			game["menu_weapon_axis"] = game["menu_weapon_rifles"];
+		}
 
 		/#
 		game["menu_debugString"] = "debugString";
@@ -62,7 +72,7 @@ onConnected()
 	scriptMainMenu = "";	// If ESC is pressed, open Main menu
 
 	// If pam is not installed correctly
-	if (level.pam_installation_error || game["pbsv_not_loaded"])
+	if (level.pam_installation_error)
 	{
 		// dont open any menu
 	}
@@ -92,6 +102,7 @@ onConnected()
 		{
 			scriptMainMenu = game["menu_serverinfo"];
 			self openMenu(game["menu_serverinfo"]);
+			self maps\mp\gametypes\_menu_serverinfo::updateServerInfo();
 		}
 		// Server info is skipped
 		else
@@ -162,9 +173,6 @@ onJoinedTeam(team)
 		self setClientCvar2("g_scriptMainMenu", game["menu_ingame"]);
 	}
 
-	//??
-	//if(!isdefined(self.pers["weapon"]))
-	//	self openMenu(game["menu_weapon_allies"]);
 }
 
 /*
@@ -175,7 +183,7 @@ Return true to indicate that menu response was handled in this function
 onMenuResponse(menu, response)
 {
 	// Pam is not installed correctly, ignore other responses
-	if (level.pam_installation_error || game["pbsv_not_loaded"])
+	if (level.pam_installation_error)
 		return true;
 
 	// Mod is not downloaded, ignore other responses
@@ -193,6 +201,7 @@ onMenuResponse(menu, response)
 		self closeMenu();
 		self closeInGameMenu();
 		self openMenu(game["menu_serverinfo"]);
+		self maps\mp\gametypes\_menu_serverinfo::updateServerInfo();
 
 		return true;
 	}
@@ -236,6 +245,7 @@ onMenuResponse(menu, response)
 			self closeMenu();
 			self closeInGameMenu();
 			self openMenu(game["menu_serverinfo"]);
+			self maps\mp\gametypes\_menu_serverinfo::updateServerInfo();
 			return true;
 		}
 		if (response == "callvote")

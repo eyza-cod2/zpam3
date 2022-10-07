@@ -1,0 +1,163 @@
+onOpen
+{
+	exec "openscriptmenu ingame rcon_settings_open";	// this will update info
+
+	setitemcolor login_warning forecolor 1 1 1 1;
+
+	open rcon_settings_gametypes;
+	open rcon_settings_shared;
+}
+
+
+#define ITEM_RCON_SETTINGS_HEADING(origin_choice, textstring, dvarstring, dvarvalue) \
+itemDef \
+{ \
+	type 			ITEM_TYPE_TEXT \
+	text 			textstring \
+	origin 			origin_choice \
+	textalignx		2 \
+	textaligny		10 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textscale		0.19 \
+	forecolor		1 1 1 1 \
+	visible			1 \
+	dvartest		dvarstring \
+	hideDvar    		{dvarvalue} \
+	decoration \
+}
+
+#define ITEM_RCON_SETTINGS_TEXT(origin_choice, textstring, dvarstring, dvarvalue) \
+itemDef  \
+{ \
+	visible			1 \
+	origin			origin_choice \
+	forecolor		.7 .7 .7 1 \
+	type			ITEM_TYPE_TEXT \
+	text			textstring \
+	textfont		UI_FONT_NORMAL \
+	textscale		0.19 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textalignx		4 \
+	textaligny		10 \
+	dvartest		dvarstring \
+	hideDvar    		{dvarvalue} \
+	decoration \
+}
+
+
+
+
+
+#define ITEM_RCON_SETTINGS_ONDVAR(origin_choice, width_height, textstring, dvarstring, dvarvalue, doaction) \
+itemDef \
+{ \
+	style			WINDOW_STYLE_FILLED \
+	rect			0 0 width_height 0 0 \
+	origin			origin_choice \
+	backcolor		.92 .55 .06 .2 \
+	visible			1 \
+	dvartest		dvarstring \
+	showDvar    		{dvarvalue} \
+	decoration \
+} \
+itemDef  \
+{ \
+	visible			1 \
+	rect			0 0 width_height 0 0 \
+	origin			origin_choice \
+	forecolor		GLOBAL_UNFOCUSED_COLOR \
+	type			ITEM_TYPE_BUTTON \
+	text			textstring \
+	textfont		UI_FONT_NORMAL \
+	textscale		0.19 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textalignx		8 \
+	textaligny		10 \
+	dvartest		dvarstring \
+	hideDvar    		{""} \
+	onFocus \
+	{ \
+		play "mouse_over"; \
+		RCON_UPDATE_STATUS \
+	} \
+	action \
+	{ \
+		play "mouse_click"; \
+  		close rcon_settings_focus; open rcon_settings_focus; \
+		doaction; \
+		setitemcolor login_warning forecolor 1 0 0 1; \
+	} \
+}
+
+
+
+#define ITEM_RCON_SETTINGS_NUMBER(origin_choice, width_height, dvarstring, doaction) \
+itemDef \
+{ \
+	style			WINDOW_STYLE_FILLED \
+	rect			0 0 width_height 0 0 \
+	origin			origin_choice \
+	backcolor		.9 .9 .9 .1 \
+	visible			1 \
+	dvartest		dvarstring \
+	hideDvar    		{""} \
+	decoration \
+} \
+itemDef  \
+{ \
+	visible			1 \
+	rect			0 0 width_height 0 0 \
+	origin			origin_choice \
+	forecolor		GLOBAL_UNFOCUSED_COLOR \
+	type			ITEM_TYPE_BUTTON \
+	dvar			dvarstring \
+	textfont		UI_FONT_NORMAL \
+	textscale		0.19 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textalignx		5 \
+	textaligny		10 \
+	dvartest		dvarstring \
+	hideDvar    		{""} \
+	onFocus \
+	{ \
+		play "mouse_over"; \
+		RCON_UPDATE_STATUS \
+	} \
+	action \
+	{ \
+		play "mouse_click"; \
+  		close rcon_settings_focus; open rcon_settings_focus; \
+		doaction; \
+		setitemcolor login_warning forecolor 1 0 0 1; \
+	} \
+}
+
+
+
+
+itemDef
+{
+	style			WINDOW_STYLE_FILLED
+	rect			0 0 250 15 0 0
+	origin			95 -20
+	backcolor		.91 .69 .49 .3
+	visible			1
+	dvartest		"ui_rcon_settings_enter_help"
+	showDvar		{ "1" }
+	decoration
+}
+
+// Smaller text
+itemDef
+{
+	type 			ITEM_TYPE_TEXT
+	text			"Enter a numeric value. Use numbers row - numpad does not work."
+	origin 			100 -9
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textscale		0.19
+	forecolor		1 1 1 1
+	visible			1
+	dvartest		"ui_rcon_settings_enter_help"
+	showDvar		{ "1" }
+	decoration
+}

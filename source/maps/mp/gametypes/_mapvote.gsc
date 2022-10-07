@@ -596,12 +596,8 @@ isGametype(gt)
 		case "sd":
 		case "hq":
 		case "ctf":
-		case "ihtf":
-		case "wrz":
-		case "zom":
-		case "obj":
-		case "ft":
-		case "utd":
+		case "htf":
+		case "re":
 			return true;
 
 		default:
@@ -705,28 +701,12 @@ getGametypeName(gt)
 			gtname = "Capture The Flag";
 			break;
 
-		case "ihtf":
-			gtname = "Individual Hold The Flag";
+		case "htf":
+			gtname = "Hold The Flag";
 			break;
 
-		case "wrz":
-			gtname = "War Zone";
-			break;
-
-		case "zom":
-			gtname = "Zombies";
-			break;
-
-		case "obj":
-			gtname = "Objetives";
-			break;
-
-		case "ft":
-			gtname = "Freeze Tag";
-			break;
-
-		case "utd":
-			gtname = "Domination";
+		case "re":
+			gtname = "Retrieval";
 			break;
 
 		default:

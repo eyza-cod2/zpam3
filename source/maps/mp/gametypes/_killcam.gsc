@@ -4,7 +4,7 @@ init()
 {
 	addEventListener("onCvarChanged",    	 	::onCvarChanged);
 
-	registerCvarEx("C", "scr_killcam", "BOOL", 1);
+	registerCvar("scr_killcam", "BOOL", 1);
 
 	if(game["firstInit"])
 	{
@@ -42,6 +42,10 @@ killcam(attackerNum, pastTime, length, offsetTime, respawn, isReplay)
 	if(attackerNum < 0)
 		return;
 
+	self.killcam = true;
+
+	spectatorclient = self.spectatorclient;
+
 	if (!isReplay)
 		self.sessionstate = "spectator";
 	self.spectatorclient = attackerNum;
@@ -73,10 +77,10 @@ killcam(attackerNum, pastTime, length, offsetTime, respawn, isReplay)
 		self.archivetime = 0;
 		self.psoffsettime = 0;
 
+		self.killcam = false;
+
 		return;
 	}
-
-	self.killcam = true;
 
 
 	if(!isdefined(self.kc_topbar))
@@ -203,7 +207,12 @@ killcam(attackerNum, pastTime, length, offsetTime, respawn, isReplay)
 
 	self removeKillcamElements();
 
-	if (!isReplay)
+	if (isReplay)
+	{
+		if (self.spectatorclient == attackerNum)
+			self.spectatorclient = spectatorclient;
+	}
+	else
 	{
 		self.sessionstate = "dead";
 		self.spectatorclient = -1;
@@ -261,6 +270,8 @@ removeKillcamElements()
 		self.kc_skiptext destroy2();
 	if(isDefined(self.kc_timer))
 		self.kc_timer destroy2();
+	if(isDefined(self.kc_playername))
+		self.kc_playername destroy2();
 }
 
 spawnedKillcamCleanup()

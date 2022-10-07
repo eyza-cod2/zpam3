@@ -21,7 +21,7 @@ init()
 onConnected()
 {
 	// Ignore if pam is not installed correctly
-	if (level.pam_installation_error || game["pbsv_not_loaded"])
+	if (level.pam_installation_error)
 		return;
 
 	// Define variables
@@ -48,7 +48,7 @@ checkDownload()
 	wait level.fps_multiplier * 3;
 
 	// Ignore if pam is not installed correctly
-	if (level.pam_installation_error || game["pbsv_not_loaded"] || game["state"] == "intermission")
+	if (level.pam_installation_error || game["state"] == "intermission")
 		return;
 
 	if (!self.pers["modDownloaded"])
@@ -99,25 +99,29 @@ modIsNotDownloadedForSure()
 
 showErrorMessage()
 {
-    // Background
-    self.forcedownload = addHUDClient(self, 0, 0, undefined, (1,1,1), "left", "top", "fullscreen", "fullscreen");
+	// Background
+	self.forcedownload = addHUDClient(self, 0, 0, undefined, (1,1,1), "left", "top", "fullscreen", "fullscreen");
 	self.forcedownload.sort = 1000;
 	self.forcedownload.foreground = true;
+	self.forcedownload.archived = false;
 	self.forcedownload setShader("black", 640, 480);
 
-    self.forcedownloadm1 = addHUDClient(self, 0, 150, 1.8, (1, .86, .4), "center", "top", "center");
+	self.forcedownloadm1 = addHUDClient(self, 0, 150, 1.8, (1, .86, .4), "center", "top", "center");
 	self.forcedownloadm1.sort = 1001;
 	self.forcedownloadm1.foreground = true;
+	self.forcedownloadm1.archived = false;
 	self.forcedownloadm1 SetText(game["STRING_FORCEDOWNLOAD_ERROR_1"]);
 
-    self.forcedownloadm2 = addHUDClient(self, 0, 174, 1.4, (1, .86, .4), "center", "top", "center");
+	self.forcedownloadm2 = addHUDClient(self, 0, 174, 1.4, (1, .86, .4), "center", "top", "center");
 	self.forcedownloadm2.sort = 1002;
 	self.forcedownloadm2.foreground = true;
+	self.forcedownloadm2.archived = false;
 	self.forcedownloadm2 SetText(game["STRING_FORCEDOWNLOAD_ERROR_2"]);
 
-    self.forcedownloadm3 = addHUDClient(self, 0, 210, 1.6, (1, .86, .4), "center", "top", "center");
+	self.forcedownloadm3 = addHUDClient(self, 0, 210, 1.6, (1, .86, .4), "center", "top", "center");
 	self.forcedownloadm3.sort = 1003;
 	self.forcedownloadm3.foreground = true;
+	self.forcedownloadm3.archived = false;
 	self.forcedownloadm3 SetText(game["STRING_FORCEDOWNLOAD_ERROR_3"]);
 }
 

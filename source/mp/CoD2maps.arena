@@ -1,89 +1,89 @@
 {
 	map			"mp_farmhouse"
 	longname	"Farmhouse"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_brecourt"
 	longname	"Brecourt"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_burgundy"
 	longname	"Burgundy"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_trainstation"
 	longname	"Trainstation"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_carentan"
 	longname	"Carentan"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_decoy"
 	longname	"Decoy"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_leningrad"
 	longname	"Leningrad"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_matmata"
 	longname	"Matmata"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_downtown"
 	longname	"Downtown"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_harbor"
 	longname	"Harbor"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_dawnville"
 	longname	"Dawnville"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_railyard"
 	longname	"Railyard"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_toujane"
 	longname	"Toujane"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_breakout"
 	longname	"Breakout"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }
 
 {
 	map			"mp_rhine"
 	longname	"Rhine"
-	gametype	"dm tdm sd hq ctf strat"
+	gametype	"dm tdm sd hq ctf htf re strat"
 }

@@ -4,22 +4,29 @@
 Via script we are able to detect if some player starts using a MG.
 To detect if player drop the MG, we will use that player position accesed via player.origin is beeing overwriten when player is using MG
 Even if we link player to specific tag, the position is overwrited.
-
 So when player start using MG, we lock player position exacly behind MG. Since position is overwrited by the game, player moves normally while using MG..
 When player drops MG, he will be moved to locked position (because of link)
 If players position equals the locked position, it means player drops the MG and we can unlink him.
-
 Via this player always spawn behind the MG when he drop it
 */
 
 init()
 {
+	addEventListener("onConnected",     ::onConnected);
 	addEventListener("onCvarChanged", ::onCvarChanged);
 
-	registerCvarEx("C", "scr_mg_peek_fix", "BOOL", 0);
+	registerCvar("scr_mg_peek_fix", "BOOL", 0);
 
 	if (level.scr_mg_peek_fix)
+	{
+		wait level.frame;	// wait a frame - MGs can be removed by other scripts
 		start();
+	}
+}
+
+onConnected()
+{
+	self.usingMG = false;
 }
 
 // This function is called when cvar changes value.
@@ -85,38 +92,42 @@ handleDrop(turret)
 {
 	self endon("disconnect");
 
+	self.usingMG = true;
 	//iprintln("Player "+self.name+ " is using MG");
 
 	wait level.frame;
 
-	tempTag = spawn("script_model", (999999, 999999, 999999));
-
 	// Compute position of player behid the MG
 	forward = AnglesToForward( turret.angles ); // 1.0 scale
 	dist = -30; // how far behind MG should player spawn
-	pos = turret.origin + (forward[0] * dist, forward[1] * dist, -24); // new pos
+	pos = turret.origin + (forward[0] * dist, forward[1] * dist, forward[2] * dist); // new pos
 
+	trace = bulletTrace(pos, (pos + (0, 0, -40)), false, undefined);
+	if(trace["fraction"] < 1)
+	{
+		pos = trace["position"];
+	}
+	else
+	{
+		pos = pos + (0, 0, -24); // new pos
+	}
 
-	while (isDefined(self))
+	while (true)
 	{
 	        self setOrigin(pos);
-	        self linkto(tempTag);
 
 	        wait level.frame;
-	        waittillframeend;
 
-		// Even we linked player to tag, next frame the position of player is overwrited when using MG
+		// Next frame the position of player is overwrited when using MG
 		// Via that we can detect if player is still using the MG - by checking distance between position
 
 		dist = distance(self.origin, pos);
-
-		self unlink();
 
 	        if (dist < 2)
 	          break;
 	}
 
-	tempTag delete();
-
 	//iprintln("Player "+self.name+ " dropped MG");
+
+	self.usingMG = false;
 }

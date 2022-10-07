@@ -51,7 +51,7 @@ Register_Shared_Cvars()
 	//[[sVar]]("developer_script", "BOOL", 0);
 
 
-	[[sVar]]("sv_fps", "INT", 20, 20, 30);
+	[[sVar]]("sv_fps", "INT", 20, 10, 1000);
 	[[sVar]]("rate", "INT", 25000, 25000, 25000);
 	[[sVar]]("g_allowVote", "BOOL", 1);
 	[[sVar]]("g_clonePlayerMaxVelocity", "FLOAT", 80, 0, undefined);
@@ -74,6 +74,7 @@ Register_Shared_Cvars()
 	[[sVar]]("g_voiceChatTalkingDuration", "INT", 500, 0, 10000);
 	[[sVar]]("g_voteAbstainWeight", "FLOAT", 0.5, 0, 1);
 	[[sVar]]("g_weaponAmmoPools", "BOOL", 0);
+	[[sVar]]("g_debugDamage", "BOOL", 0);
 	[[sVar]]("packetDebug", "BOOL", 0);
 	[[sVar]]("player_toggleBinoculars", "BOOL", 1);
 	[[sVar]]("sv_allowAnonymous", "BOOL", 0);
@@ -129,6 +130,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 				level.frame = 1 / value;
 				level.fps_multiplier = 0.05 / level.frame;
 			}
+			level.sv_fps = value;
 			//println("Server FPS is: " + value);
 			return true;
 
@@ -156,6 +158,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "g_voicechattalkingduration":	return true;
 		case "g_voteabstainweight":		return true;
 		case "g_weaponammopools":		return true;
+		case "g_debugdamage":			level.debugDamage = value; return true;
 		case "packetdebug":			return true;
 		case "player_togglebinoculars":		return true;
 		case "sv_allowanonymous":		return true;
@@ -259,7 +262,7 @@ ResetCheatCvars()
 	setCvar("player_meleeWidth", "10");
     	setCvar("player_moveThreshhold", "10");	// read-only
 	setCvar("player_scopeExitOnDamage", "0");
-	setCvar("player_spectateSpeedScale", "2");
+	setCvar("player_spectateSpeedScale", "2");	
 	setCvar("player_strafeSpeedScale", "0.8");// pohyb do stran
 
 	setCvar("player_turnAnims", "0");

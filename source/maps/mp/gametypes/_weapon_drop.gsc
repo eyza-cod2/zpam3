@@ -50,77 +50,82 @@ onSpawnedPlayer()
 playersWeaponDrop()
 {
 	self endon("disconnect");
-	self endon("killed_player");
 
 	for(;;)
 	{
-        wait level.fps_multiplier * .25;
+		wait level.fps_multiplier * .25;
 
-        // Timer of how long F is pressed
+		if (!isAlive(self))
+			return;
+
+		// Timer of how long F is pressed
 		timer = 0;
-		while (self UseButtonPressed() && !(level.gametype == "sd" && self.bombinteraction))
+		while (self UseButtonPressed() && !(level.gametype == "sd" && self.bombinteraction) && !(level.gametype == "re" && self.obj_carrier))
 		{
 			timer += level.fps_multiplier * .1;
 
+			if (!isAlive(self))
+				return;
+
 			// How long you have to hold f
-            if (timer > 1.0)
-            {
-                slot[0] = self getWeaponSlotWeapon("primary");
-                slot[1] = self getWeaponSlotWeapon("primaryb");
-                current = self getcurrentweapon();
+			if (timer > 1.0)
+			{
+				slot[0] = self getWeaponSlotWeapon("primary");
+				slot[1] = self getWeaponSlotWeapon("primaryb");
+				current = self getcurrentweapon();
 
-                // If primary weapon can not be dropped
-                if (!level.allow_primary_drop && current == slot[0])
-                    break;
-                // If secondary weapon can not be dropped
-                if (!level.allow_secondary_drop && current == slot[1])
-                    break;
+				// If primary weapon can not be dropped
+				if (!level.allow_primary_drop && current == slot[0])
+					break;
+				// If secondary weapon can not be dropped
+				if (!level.allow_secondary_drop && current == slot[1])
+					break;
 
-                // We can drop weapon only if we have 2 weapons
-                if (slot[0] == "none" || slot[1] == "none")
-                {
-                    self iprintln("^3You can not drop your last weapon.");
-                    break;
-                }
+				// We can drop weapon only if we have 2 weapons
+				if (slot[0] == "none" || slot[1] == "none")
+				{
+					self iprintln("^3You can not drop your last weapon.");
+					break;
+				}
 
-                // No weapon in hands (player is on ladder for example)
-                if (current == "none")
-                    break;
+				// No weapon in hands (player is on ladder for example)
+				if (current == "none")
+					break;
 
-                // Check if current weapon can be dropped (snipers are disabled for example in cg)
-                if (!maps\mp\gametypes\_weapon_limiter::isWeaponDropable(current))
-                {
-                    self iprintln("^3This weapon can not be dropped.");
-                    break;
-                }
+				// Check if current weapon can be dropped (snipers are disabled for example in cg)
+				if (!maps\mp\gametypes\_weapon_limiter::isWeaponDropable(current))
+				{
+					self iprintln("^3This weapon can not be dropped.");
+					break;
+				}
 
 				// Drop primary weapon only if weapon in secondary slot is big weapon
-                if (current == slot[0] && !isDefined(level.weapons[slot[1]]))
-                {
-                    self iprintln("^3Primary weapon can be dropped only if there are 2 main weapons.");
-                    break;
-                }
+				if (current == slot[0] && !isDefined(level.weapons[slot[1]]))
+				{
+					self iprintln("^3Primary weapon can be dropped only if there are 2 main weapons.");
+					break;
+				}
 
 
 
 
-                // Drop weapon
-                self dropItem(current);
-                level notify("weapon_dropped", current, self);
+				// Drop weapon
+				self dropItem(current);
+				level notify("weapon_dropped", current, self);
 
-                // Switch to wepoan that left
-                if (current == slot[0])
-                    self switchToWeapon(slot[1]);
-                else
-                    self switchToWeapon(slot[0]);
+				// Switch to wepoan that left
+				if (current == slot[0])
+					self switchToWeapon(slot[1]);
+				else
+					self switchToWeapon(slot[0]);
 
-                // Used in strattime to check if some weapon was dropped
-                self.dropped_weapons++;
+				// Used in strattime to check if some weapon was dropped
+				self.dropped_weapons++;
 
 				wait level.fps_multiplier * 1;
 
-                break;
-            }
+				break;
+			}
 
 			wait level.fps_multiplier * .1;
 		}
