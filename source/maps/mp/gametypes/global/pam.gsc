@@ -21,9 +21,9 @@ init()
 
 		// Errors
 		precacheString2("STRING_PAM_DONT_STEAL", &"This version of pam is only for testing! Dont steal!");
-		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam330.iwd^7 must be installed in ^9main^7 folder. (fs_game)"); // ZPAM_RENAME
+		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam331.iwd^7 must be installed in ^9main^7 folder. (fs_game)"); // ZPAM_RENAME
 		precacheString2("STRING_PAM_GETTING_IWD_FILES_ERROR", &"Error while getting loaded iwd files. Make sure iwd files does not contains spaces.");
-		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v1.iwd^7 must be installed in ^9main^7 folder");
+		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v2.iwd^7 must be installed in ^9main^7 folder");
 		precacheString2("STRING_PAM_MAPS_LOAD_ERROR", &"Error while checking if fixed maps exists. Map printed above was not found on server.");
 		precacheString2("STRING_PAM_WWW_DOWNLOADING", &"WWW downloading must be enabled. Set ^9sv_wwwDownload^7 and ^9sv_wwwBaseURL");
 		precacheString2("STRING_PAM_BLACKLIST", &"Old pam / maps detected in ^9main^7 folder. Delete iwd file you see printed above.");
@@ -35,8 +35,8 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam330"; // ZPAM_RENAME
-	level.pam_map_iwd = "zpam_maps_v1";
+	level.pam_folder = "main/zpam331"; // ZPAM_RENAME
+	level.pam_map_iwd = "zpam_maps_v2";
 
 	level.pam_mode_change = false;
 
@@ -191,37 +191,38 @@ CheckInstallation()
 	}
 
 
-	if (!arrayContains(nameArray, level.pam_map_iwd))
+	if (getCvar("shortversion") == "1.3" && !arrayContains(nameArray, level.pam_map_iwd))
 	{
 		setError(game["STRING_PAM_MAPS_MISSING"]);
 		return;
 	}
 
 
-
-	maps = [];
-	maps[maps.size] = "mp_toujane_fix_v2";
-	maps[maps.size] = "mp_burgundy_fix_v1";
-	maps[maps.size] = "mp_dawnville_fix_v2";
-	maps[maps.size] = "mp_matmata_fix_v2";
-	maps[maps.size] = "mp_carentan_fix_v2";
-	maps[maps.size] = "mp_chelm";
-	maps[maps.size] = "mp_breakout_tls";
-	maps[maps.size] = "mp_vallente";
-	maps[maps.size] = "wawa_3daim";
-
-	for(i = 0; i < maps.size; i++)
+	if (getCvar("shortversion") == "1.3")
 	{
-		if (!MapExists(maps[i]))
+		maps = [];
+		maps[maps.size] = "mp_toujane_fix_v2";
+		maps[maps.size] = "mp_burgundy_fix_v1";
+		maps[maps.size] = "mp_dawnville_fix_v2";
+		maps[maps.size] = "mp_matmata_fix_v2";
+		maps[maps.size] = "mp_carentan_fix_v2";
+		maps[maps.size] = "mp_chelm";
+		maps[maps.size] = "mp_breakout_tls";
+		maps[maps.size] = "mp_vallente";
+		maps[maps.size] = "wawa_3daim";
+
+		for(i = 0; i < maps.size; i++)
 		{
-			setError(game["STRING_PAM_MAPS_LOAD_ERROR"]);
+			if (!MapExists(maps[i]))
+			{
+				setError(game["STRING_PAM_MAPS_LOAD_ERROR"]);
 
-			level thread printTextInLoop(maps[i]);
+				level thread printTextInLoop(maps[i]);
 
-			return;
+				return;
+			}
 		}
 	}
-
 
 
 	blackList = [];
@@ -245,6 +246,8 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam322";
 	blackList[blackList.size] = "mp_toujane_fix_v2";
 	blackList[blackList.size] = "mp_burgundy_fix_v1";
+	blackList[blackList.size] = "zpam330";
+	blackList[blackList.size] = "zpam_maps_v1";
 
 	blackList[blackList.size] = "mp_chelm";
 	blackList[blackList.size] = "mp_breakout_tls";

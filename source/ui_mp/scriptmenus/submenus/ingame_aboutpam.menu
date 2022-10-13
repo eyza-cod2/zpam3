@@ -96,7 +96,21 @@ itemDef
 	visible			1
 	origin			0 141
 	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"Join us on discord ^9FPS Challange ^7in ^9#cod2-zpam3 ^7channel."
+	text			"Join us on discord ^9TLS CoD2 Community ^7in ^9#zpam3-chat ^7channel."
+	textfont		UI_FONT_NORMAL
+	textscale		0.25
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textalign		ITEM_ALIGN_LEFT
+	decoration
+}
+
+
+itemDef
+{
+	visible			1
+	origin			0 156
+	forecolor		GLOBAL_UNFOCUSED_COLOR
+	text			"discord.gg/HDsC6u5k6y"
 	textfont		UI_FONT_NORMAL
 	textscale		0.25
 	textstyle		ITEM_TEXTSTYLE_SHADOWED

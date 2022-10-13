@@ -1,5 +1,5 @@
-zPAM3.22
-Released 2021/07/15
+zPAM3.31 PREVIEW
+Released 2022/10/13
 
 This mod was created by EYZA
 

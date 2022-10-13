@@ -1,8 +1,6 @@
 onOpen
 {
 	exec "openscriptmenu ingame rcon_kick_refresh";	// this will update info
-
-	setitemcolor login_warning forecolor 1 1 1 1;
 }
 
 
@@ -129,7 +127,6 @@ itemDef  \
 	{ \
 		play "mouse_click"; \
 		exec "vstr ui_playerlist_line_" #line_id "_kick"; \
-		setitemcolor login_warning forecolor 1 0 0 1 \
 	} \
 } \
 itemDef  \
@@ -155,7 +152,6 @@ itemDef  \
 	{ \
 		play "mouse_click"; \
 		exec "vstr ui_playerlist_line_" #line_id "_ban"; \
-		setitemcolor login_warning forecolor 1 0 0 1 \
 	} \
 }
 
@@ -182,13 +178,13 @@ itemDef
 {
 	name 			"login_warning"
 	visible			1
-	rect			0 320 300 18 0 0
-	forecolor		GLOBAL_UNFOCUSED_COLOR
+	rect			0 327 300 18 0 0
+	forecolor		1 0 0 1
 	text			"You have to log in with '/rcon login <password>' before using this menu."
 	textfont		UI_FONT_NORMAL
-	textscale		0.25
+	textscale		0.195
 	textstyle		ITEM_TEXTSTYLE_SHADOWED
-	textaligny		20
+	textaligny		18
 	dvartest		"ui_rcon_logged_in"
 	hideDvar		{ "1" }
 }

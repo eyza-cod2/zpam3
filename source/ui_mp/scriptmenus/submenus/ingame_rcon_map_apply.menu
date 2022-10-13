@@ -1,7 +1,25 @@
+onOpen
+{
+	exec "openscriptmenu ingame rcon_kick_refresh";	// this will update info
+}
+
+
+
 
 // Apply
-ITEM_BUTTON_ONDVAR_DISABLED   	  (0 10, "Apply", "ui_rcon_map_execString", showDvar {""}, RCON_UPDATE_STATUS;)
-ITEM_BUTTON_ONDVAR		  (0 10, "Apply", "ui_rcon_map_execString", hideDvar {""}, RCON_UPDATE_STATUS, RCON_UPDATE_STATUS; exec "vstr ui_rcon_map_exec"; CLOSE_ALL)
+itemDef
+{
+	style			WINDOW_STYLE_FILLED
+	rect			-5 0 46 25 0 0
+	origin			0 20
+	backcolor		.92 .55 .06 .2
+	visible			1
+	dvartest		"ui_rcon_map_execString"
+	hideDvar {""}
+	decoration
+}
+ITEM_BUTTON_ONDVAR_DISABLED   	  (0 20, "Apply", "ui_rcon_map_execString", showDvar {""}, RCON_UPDATE_STATUS;)
+ITEM_BUTTON_ONDVAR		  (0 20, "Apply", "ui_rcon_map_execString", hideDvar {""}, RCON_UPDATE_STATUS, RCON_UPDATE_STATUS; exec "vstr ui_rcon_map_exec"; CLOSE_ALL)
 
 
 
@@ -12,7 +30,7 @@ itemDef
 {
 	type 			ITEM_TYPE_TEXT
 	dvar			"ui_rcon_map_execString"
-	origin 			80 29
+	origin 			80 39
 	textstyle		ITEM_TEXTSTYLE_SHADOWED
 	textscale		0.25
 	forecolor		.5 .5 .5 1
@@ -26,7 +44,7 @@ itemDef
 {
 	type 			ITEM_TYPE_TEXT
 	dvar			"ui_rcon_map_execString"
-	origin 			80 29
+	origin 			80 39
 	textstyle		ITEM_TEXTSTYLE_SHADOWED
 	textscale		0.2
 	forecolor		.5 .5 .5 1
@@ -42,11 +60,11 @@ itemDef
 {
 	name 			"login_warning"
 	visible			1
-	rect			0 30 300 18 0 0
-	forecolor		GLOBAL_UNFOCUSED_COLOR
+	rect			0 42 300 18 0 0
+	forecolor		1 0 0 1
 	text			"You have to log in with '/rcon login <password>' before using this menu."
 	textfont		UI_FONT_NORMAL
-	textscale		0.25
+	textscale		0.195
 	textstyle		ITEM_TEXTSTYLE_SHADOWED
 	textaligny		18
 	dvartest		"ui_rcon_logged_in"

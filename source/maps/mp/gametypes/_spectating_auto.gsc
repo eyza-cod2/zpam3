@@ -206,6 +206,8 @@ autoSpectator()
 
 	for(;;)
 	{
+		wait level.frame;
+
 		// End this thread if player join team
 		if (self.pers["team"] != "spectator")
 		{
@@ -223,10 +225,7 @@ autoSpectator()
 
 		// Skip these key checks if we are in killcam
 		if (inKillcam)
-		{
-			wait level.fps_multiplier * 0.5;
 			continue;
-		}
 
 		// Wait untill timeout is over
 		if (level.in_readyup)
@@ -287,8 +286,6 @@ autoSpectator()
 			hud_text_last = level.autoSpectating_HUD_text;
 		}
 
-
-		wait level.frame;
 	}
 }
 
@@ -1368,7 +1365,7 @@ autoFollowedPlayer()
 			if (isDefined(spectated_player.autospectator_visibleEnemy) || isDefined(spectated_player.autospectator_seenByEnemy))
 			{
 				if (level.debug_spectator) printToAutoSpectators("Extending time for this player (visisble enemy)");
-				level.autoSpectating_noSwitchUntill = gettime() + 6000;
+				level.autoSpectating_noSwitchUntill = gettime() + 8000;
 				level.autoSpectating_HUD_text = "STRING_AUTO_SPECTATING_REASON_VISIBLE_ENEMY";
 				wait level.fps_multiplier * 1;
 			}
@@ -1412,6 +1409,14 @@ autoFollowedPlayer()
 				hud_text = "STRING_AUTO_SPECTATING_REASON_LAST_PLAYER";
 			}
 
+			// 1vX - always folow alone player
+			else if (axisAlive == 1 && alliesAlive > 1)
+			{
+				follow_team = "axis";
+				switch_reason = "Last player in team";
+				hud_text = "STRING_AUTO_SPECTATING_REASON_LAST_PLAYER";
+			}
+
 			// 1v1 - follow player with lower team score
 			else if (alliesAlive == 1 && axisAlive == 1 && game["allies_score"] != game["axis_score"])
 			{
@@ -1445,11 +1450,11 @@ autoFollowedPlayer()
 
 
 
-		// By default, follow one 1
+		// By default, follow one team
 		followed_team = spectated_player.pers["team"];
 
 		// When bomb is planted, follow team with lower score
-		if (level.gametype == "sd" && level.bombplanted)
+		if (level.gametype == "sd" && level.bombplanted && alliesAlive >= 1 && axisAlive >= 1)
 		{
 			if ((gettime() - level.bombtimerstart) < 3000) // if no action, follow player who actually planted the bomb
 			{

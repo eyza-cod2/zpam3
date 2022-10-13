@@ -211,6 +211,8 @@ killcam(attackerNum, pastTime, length, offsetTime, respawn, isReplay)
 	{
 		if (self.spectatorclient == attackerNum)
 			self.spectatorclient = spectatorclient;
+		else
+			self.spectatorclient = -1;
 	}
 	else
 	{

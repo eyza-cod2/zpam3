@@ -1142,7 +1142,7 @@ startRound()
 
 		// Hide score if it may be hidden
 		level maps\mp\gametypes\_hud_teamscore::hideScore(0.5);
-		//thread sayObjective();
+		thread sayObjective();
 
 		return;
 	}
@@ -1197,7 +1197,7 @@ startRound()
 
 
 
-	//thread sayObjective();
+	thread sayObjective();
 
 
 
@@ -2384,8 +2384,6 @@ sayObjective()
 {
 	level endon("running_timeout");
 
-	wait level.fps_multiplier * 2;
-
 	attacksounds["american"] = "US_mp_cmd_movein";
 	attacksounds["british"] = "UK_mp_cmd_movein";
 	attacksounds["russian"] = "RU_mp_cmd_movein";
@@ -2395,8 +2393,46 @@ sayObjective()
 	defendsounds["russian"] = "RU_mp_defendbomb";
 	defendsounds["german"] = "GE_mp_defendbomb";
 
-	level playSoundOnPlayers(attacksounds[game[game["attackers"]]], game["attackers"]);
-	level playSoundOnPlayers(defendsounds[game[game["defenders"]]], game["defenders"]);
+	soundAttackers = attacksounds[game[game["attackers"]]];
+	soundDefenders = defendsounds[game[game["defenders"]]];
+
+	if (game["is_public_mode"])
+	{
+		wait level.fps_multiplier * 2;
+
+		level playSoundOnPlayers(soundAttackers, game["attackers"]);
+		level playSoundOnPlayers(soundDefenders, game["defenders"]);
+	}
+	else
+	{
+		players = getentarray("player", "classname");
+		for(i = 0; i < players.size; i++)
+		{
+			if (players[i].pers["team"] == game["attackers"])
+				players[i] thread sayObjectiveIfPlayerIsNotMoving(soundAttackers);
+			if (players[i].pers["team"] == game["defenders"])
+				players[i] thread sayObjectiveIfPlayerIsNotMoving(soundDefenders);
+		}
+	}
+}
+
+sayObjectiveIfPlayerIsNotMoving(sound)
+{
+	self endon("disconnect");
+	level endon("running_timeout");
+
+	for (i = 0; i < 4; i++)
+	{
+		origin = self.origin;
+
+		wait level.fps_multiplier * 0.5;
+
+		// Player moved
+		if (distance(self.origin, origin) > 10)
+			return;
+	}
+
+	self playLocalSound(sound);
 }
 
 showBombTimers()

@@ -1377,26 +1377,35 @@ returnFlag()
 	 	self.basemodel.angles = spawnpoint.angles;
 	}
 
-	while (level.in_timeout || level.in_strattime)
-		wait level.fps_multiplier * 1;
-
-
-	// Wait delay before spawning flag
-	if(!level.first_flag_spawn)
-	{
-		iprintln(&"HTF_FLAGRESPAWN", level.flagspawndelay);
-		wait level.fps_multiplier * level.flagspawndelay;
-	}
+	wait level.fps_multiplier * 1;
 
 	// Do not spawn flag unless there are alive players in both teams
 	while( !(alivePlayers("allies") && alivePlayers("axis")) )
 		wait level.fps_multiplier * 0.05;
 
-	while (level.in_timeout)
+	// Do not spawn flag unless there are strattime / timeout
+	while (level.in_timeout || level.in_strattime)
 		wait level.fps_multiplier * 1;
 
 
-	level.first_flag_spawn = true;
+	if(!level.first_flag_spawn)
+	{
+		level.first_flag_spawn = true;
+		iprintln(&"HTF_FLAGRESPAWN", level.flagspawndelay);
+	}
+
+	// Wait a specific time and consider timeout and strat time pause
+	time = 0;
+	for(;;)
+	{
+		if (!level.in_timeout && !level.in_strattime)
+			time += 1;
+		if (time >= level.flagspawndelay)
+			break;
+
+		wait level.fps_multiplier * 1;
+	}
+
 
 	self.access = true;
 	self.atbase = true;

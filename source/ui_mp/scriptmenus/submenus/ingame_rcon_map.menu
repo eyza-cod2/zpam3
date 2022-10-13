@@ -2,8 +2,6 @@ onOpen
 {
 	exec "openscriptmenu ingame rcon_map_open";	// this will update info
 
-	setitemcolor login_warning forecolor 1 1 1 1;
-
 	open rcon_map_maps;
 	open rcon_map_pams;
 	open rcon_map_other;
@@ -13,11 +11,11 @@ onOpen
 #define ITEM_MAP_OPTIONS_HEADING(origin_choice, txtsize, textstring) \
 itemDef \
 { \
-	style			WINDOW_STYLE_SHADER \
-	rect			0 0 60 17 0 0 \
+	style			WINDOW_STYLE_FILLED \
+	rect			0 0 105 16 0 0 \
 	origin			origin_choice \
 	background		"gradient" \
-	backcolor		0 0 0 .25 \
+	backcolor		0 0 0 .5 \
 	visible			1 \
 	decoration \
 } \
@@ -93,7 +91,6 @@ itemDef  \
 	{ \
 		play "mouse_click"; \
 		doaction; \
-		setitemcolor login_warning forecolor 1 0 0 1; \
 	} \
 } \
 itemDef  \
@@ -151,7 +148,6 @@ itemDef  \
 	{ \
 		play "mouse_click"; \
 		doaction; \
-		setitemcolor login_warning forecolor 1 0 0 1; \
 	} \
 } \
 itemDef  \

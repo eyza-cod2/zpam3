@@ -1,6 +1,6 @@
 # Introduction
 
-Mod zPAM3.30 is a new version of PAM mode for COD2. <br>
+Mod zPAM3.31 is a new version of PAM mode for COD2. <br>
 
 The code from the previous zPAM 2.07 version was completely rewritten and ported to a new code base, which helped in the implementation of new features and bug fixes.
 
@@ -9,103 +9,125 @@ Work on this pam was initiated by me in 2015 and was never fully finished. On co
 
 
 ## Download
-- Actual version:
-	- 2022/10/07 - <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam330.zip">zPAM 3.30 PREVIEW</a></b>
+- #### Preview version:
+  - 2022/10/13 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.31/zpam331.zip">zPAM 3.31 PREVIEW - zpam331.zip</a></b>
+  - ❗ *Preview version demonstrates changes and new features and is not officially accepted by FPS Challange* ❗
+- #### Stable version:
+  - 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.22/zpam322.zip">zPAM 3.22 - zpam322.zip</a></b>
 
-❗ Note ❗ <br>
-*Preview version demonstrates changes and new features and is not officially accepted by FPS Challange*
+
+
+
 
 ## Previous versions
 
-- Stable version:
-	- 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/53e1a8e7243596c763e623318668438d8320b257">zPAM 3.22</a></b>
-
-
-- Previous versions:
-
-	- 2021/05/16 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f0bea94f83791c4a756909963101bfd9d340757f">zPAM 3.21</a></b>
-	- 2021/05/05 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c7d5fa259e6e21a7fc510847421fab5338f19d0d">zPAM 3.20</a></b>
-	- 2021/01/05 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/a365aa9d884f87a368e51879b016157b431ee449">zPAM 3.1 BETA 6</a></b></b>
-	- 2020/11/29 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/b3e8711b13b493134ec1c762aeba17399eefb95d">zPAM 3.1 BETA 5</a></b></b>
-	- 2020/09/24 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/2d3e3589dced881409bd42d2c5c500cc6ed3e0a1">zPAM 3.1 BETA 4</a></b></b>
-	- 2020/05/13 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c327385fd7cc7fbcb1d3d04a443abf16ee93ad6b">zPAM 3.1 BETA 3</a></b></b>
-	- 2020/04/28 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/8c9e528ad09be3ce626bcd36463c3cdf180295ae">zPAM 3.1 BETA 2</a></b></b>
-	- 2020/04/23 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f58fdedbf23f31c62e29ffd25379d6a1d7993e49">zPAM 3.1 BETA</a></b></b>
+- 2022/10/07 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f254c512574269b4e37971f730087707417d3dce">zPAM 3.30 PREVIEW</a></b>
+- 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/53e1a8e7243596c763e623318668438d8320b257">zPAM 3.22</a></b>
+- 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/53e1a8e7243596c763e623318668438d8320b257">zPAM 3.22</a></b>
+- 2021/05/16 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f0bea94f83791c4a756909963101bfd9d340757f">zPAM 3.21</a></b>
+- 2021/05/05 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c7d5fa259e6e21a7fc510847421fab5338f19d0d">zPAM 3.20</a></b>
+- 2021/01/05 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/a365aa9d884f87a368e51879b016157b431ee449">zPAM 3.1 BETA 6</a></b></b>
+- 2020/11/29 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/b3e8711b13b493134ec1c762aeba17399eefb95d">zPAM 3.1 BETA 5</a></b></b>
+- 2020/09/24 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/2d3e3589dced881409bd42d2c5c500cc6ed3e0a1">zPAM 3.1 BETA 4</a></b></b>
+- 2020/05/13 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c327385fd7cc7fbcb1d3d04a443abf16ee93ad6b">zPAM 3.1 BETA 3</a></b></b>
+- 2020/04/28 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/8c9e528ad09be3ce626bcd36463c3cdf180295ae">zPAM 3.1 BETA 2</a></b></b>
+- 2020/04/23 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f58fdedbf23f31c62e29ffd25379d6a1d7993e49">zPAM 3.1 BETA</a></b></b>
 
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 3.30 PREVIEW.<br>
+*This page describe only actual version zPAM 3.31 PREVIEW.<br>
 To see description of previous version, click on the links above.*
 
 ## Changelog
 
+<details><summary>zPAM 3.31 changes (click to open)</summary>
+<p>
+
+
+- [3.3.68] Climbing sound fix
+	- If you climb ladder or wall, the "weapon switch" sound was made only for 1st person player, it was silent for other players
+	- Now the sound matches equally, so you hear exactly what other players hear (meaning if you climb ladder or wall, "weapon switch" sound is made for everybody)
+	- If you want to silently climb ladder or wall, you need to hold weapon down by scrolling down 2x and hold left mouse
+	- This fix replaces previous [3.3.49] "Ladder weapon fix" in 3.30
+- New version of mappack - zpam_maps_v2.iwd
+	- There is a problem with previous version zpam_maps_v1.iwd - when you have this file downloaded in main folder and you try to connect older 3.22 server, error "Impure client detected" shows
+	- Please remove old zpam_maps_v1.iwd file from main folder
+- [3.3.69] SD voiceover sound "Move in!" is now played only if player is not moving (replaces [3.3.62])
+- Verson 1.0 will not require to have mappack zpam_maps_v2.iwd installed because there is no possibility for fast download
+- Autospectator fixes
+- UI stuff minor changes
+- HTF flag spawn timer fix when timeout
+
+</p>
+</details>
 
 <details><summary>zPAM 3.30 changes (click to open)</summary>
 <p>
 
 #### News:
-[3.4.16] New pam mode names - cg was removed, now only pub and comp modes are available with sub modes.<br>
-	- modes: pub, comp, warmup<br>
-	- sub-modes: 2v2, rifle, russian, lan, pcw<br>
-	- Examples:<br>
-		- /rcon pam_mode pub  			- Public mode (custom settings)<br>
-		- /rcon pam_mode comp  			- Competitive mode<br>
-		- /rcon pam_mode comp_mr3  		- Competitive mode with max round 4<br>
-		- /rcon pam_mode comp_pcw   		- Competitive mode for team mix<br>
-		- /rcon pam_mode comp_pcw_russian 	- Competitive mode for team mix, russian side on russian maps<br>
-		- /rcon pam_mode comp_2v2 		- Competitive mode, scope and shotgun disabled<br>
-		- /rcon pam_mode comp_rifle 		- Competitive mode, bolt action and sniper only<br>
-		- /rcon pam_mode comp_rifle_2v2		- Competitive mode, bolt action only, sniper disabled<br>
-		- /rcon pam_mode comp_lan  		- Competitive mode on LAN, no readyup time limits<br>
-[3.4.17] Added support of HQ, CTF, HTF and RE gametypes<br>
-[3.4.18] Added rifle only mode<br>
-[3.3.44] Cvar system rewrited; any change to server settings is retained even when map changes; new cvar /pam_mode_custom is defined - it tells that changes made to server settings stays between map<br>
-[3.3.45] Warnings about wrong server settings (no password, cheats enabled, punkbuster disabled, cvars changes) is changed; its showed in left top corner under the score; if some of the server settings is changed, detailed list of changed cvars is showed; punkbuster warning is removed<br>
-[3.3.46] Hand hit box fix - if hands are in front of body and game somehow badly interprets it as hit to the hand, PAM change it to hit to the body; its an extension to already existing fix in 3.22 for left hand - now its applies also for right hand<br>
-[3.3.47] Torso hitbox fix; lower torso hitbox (pelvis area) is slightly enlarged as workaround for bad hitbox registration between torso_lower and right/left_leg_upper; this change effectively applies only for rifles, because other weapons has the same damage for torso_lower and right/left_leg_upper<br>
-[3.3.48] Consistent shotgun - this is the new name for new shotgun; this shotgun fixes close range hits; it replaces rebalanced shotgun<br>
-[3.3.49] Ladder weapon bug fix - silent use of ladder is no more possible; its a situation when you double scroll your weapon, hold fire button and use a ladder<br>
-[3.3.50] Sliding bug fix; g_knockback is set to 0; when you are hit, no move energy is applied (knockback); this should fix fast sliding on ground / getting bugged into ground<br>
-[3.3.51] Sniper shotgun info - weapons of players with sniper and shotgun are showed next to compas at start and the end of the round<br>
-[3.3.52] Colored time - color of round timer changes to orange when 30 seconds are left and red when 15 seconds are left<br>
-[3.3.53] Damage feedback (hit cross in center) - slightly changed to better distinguish between hit and kill; if its hit only, cross is more transparent and disappears quicker; if its kill, cross is fully showed and stays longer<br>
-[3.3.54] New blood effect to better visualize hit location; can be enabled / disabled via /cg_blood<br>
-[3.3.55] RCON menu - new menu for changing map, server settings and player kick; is showed in all menus in new place<br>
-[3.3.56] Auto-spectator - better auto-switch algorithm; hit info; player names; auto hide of help text<br>
-[3.3.57] Auto-spectator - automatic killcam replay based on interesting actions (multikills, nozoom)<br>
-[3.3.58] Match info - team names now can contains special characters like # _ ! < > etc..<br>
-[3.3.59] Bash mode text over the screen is showed when bash mode is called.<br>
-[3.3.60] Cvar warning all over the screen is removed for cvar developer and polygons<br>
-[3.3.61] Objective text showed in scoreboard is removed<br>
-[3.3.62] SD voiceover sound "Move in!" removed at the start of the round<br>
-[3.3.63] SD voiceover sound when bomb is planted is shortened - only "Explosives planted" sound is retained<br>
-[3.3.64] Strat - up to 9 bot path recording can be saved; up to 9 bot path recordings can be played at once; automatic record stop is now faster<br>
-[3.3.65] New mappack file zpam_maps_v1.iwd with maps Toujane FIX v2, Burgundy FIX v1, Dawnville FIX v2, Matmata FIX v2, Carentan FIX v2, Chelm, Vallente, wawa_3dAim<br>
-[3.3.66] Timeout settings changes:<br>
-	- timeouts per map: 4 (previously 2)<br>
-	- timeouts per side: 2 (previously 1)<br>
-	- timeout length: 2min (previously 5min)<br>
-	- so total timeout time would be 8min per map (previously 10min)<br>
-	- overtimes does not reset called timeouts count - it means if you called out all of the timeouts in standard game time, you dont get new timeouts in overtime. (same as previous)<br>
-	- when timeout time expires, "Time is over" warning message appears - setting one team ready will end the timeout. (previously it automatically resumes the game)<br>
-[3.3.67] Time between halfs and maps changes:<br>
-	- between maps: 5min (as previous)<br>
-	- between halfs: 2min (previously 5min)<br>
-	- between halfs at overtime: 1min (previously 5min)<br>
-	- for LAN mode, there will be no time limits between halfs and maps<br>
+- [3.4.16] New pam mode names - cg was removed, now only pub and comp modes are available with sub modes.
+	- modes: pub, comp, warmup
+	- sub-modes: 2v2, rifle, russian, lan, pcw
+	- Examples:
+		- /rcon pam_mode pub  			- Public mode (custom settings)
+		- /rcon pam_mode comp  			- Competitive mode
+		- /rcon pam_mode comp_mr3  		- Competitive mode with max round 4
+		- /rcon pam_mode comp_pcw   		- Competitive mode for team mix
+		- /rcon pam_mode comp_pcw_russian 	- Competitive mode for team mix, russian side on russian maps
+		- /rcon pam_mode comp_2v2 		- Competitive mode, scope and shotgun disabled
+		- /rcon pam_mode comp_rifle 		- Competitive mode, bolt action and sniper only
+		- /rcon pam_mode comp_rifle_2v2		- Competitive mode, bolt action only, sniper disabled
+		- /rcon pam_mode comp_lan  		- Competitive mode on LAN, no readyup time limits
+- [3.4.17] Added support of HQ, CTF, HTF and RE gametypes
+- [3.4.18] Added rifle only mode
+- [3.3.44] Cvar system rewrited; any change to server settings is retained even when map changes; new cvar /pam_mode_custom is defined - it tells that changes made to server settings stays between map
+- [3.3.45] Warnings about wrong server settings (no password, cheats enabled, punkbuster disabled, cvars changes) is changed; its showed in left top corner under the score; if some of the server settings is changed, detailed list of changed cvars is showed; punkbuster warning is removed
+- [3.3.46] Hand hit box fix - if hands are in front of body and game somehow badly interprets it as hit to the hand, PAM change it to hit to the body; its an extension to already existing fix in 3.22 for left hand - now its applies also for right hand
+- [3.3.47] Torso hitbox fix; lower torso hitbox (pelvis area) is slightly enlarged as workaround for bad hitbox registration between torso_lower and right/left_leg_upper; this change effectively applies only for rifles, because other weapons has the same damage for torso_lower and right/left_leg_upper
+- [3.3.48] Consistent shotgun - this is the new name for new shotgun; this shotgun fixes close range hits; it replaces rebalanced shotgun
+- [3.3.49] Ladder weapon bug fix - silent use of ladder is no more possible; its a situation when you double scroll your weapon, hold fire button and use a ladder
+- [3.3.50] Sliding bug fix; g_knockback is set to 0; when you are hit, no move energy is applied (knockback); this should fix fast sliding on ground / getting bugged into ground
+- [3.3.51] Sniper shotgun info - weapons of players with sniper and shotgun are showed next to compas at start and the end of the round
+- [3.3.52] Colored time - color of round timer changes to orange when 30 seconds are left and red when 15 seconds are left
+- [3.3.53] Damage feedback (hit cross in center) - slightly changed to better distinguish between hit and kill; if its hit only, cross is more transparent and disappears quicker; if its kill, cross is fully showed and stays longer
+- [3.3.54] New blood effect to better visualize hit location; can be enabled / disabled via /cg_blood
+- [3.3.55] RCON menu - new menu for changing map, server settings and player kick; is showed in all menus in new place
+- [3.3.56] Auto-spectator - better auto-switch algorithm; hit info; player names; auto hide of help text
+- [3.3.57] Auto-spectator - automatic killcam replay based on interesting actions (multikills, nozoom)
+- [3.3.58] Match info - team names now can contains special characters like # _ ! < > etc..
+- [3.3.59] Bash mode text over the screen is showed when bash mode is called.
+- [3.3.60] Cvar warning all over the screen is removed for cvar developer and polygons
+- [3.3.61] Objective text showed in scoreboard is removed
+- [3.3.62] SD voiceover sound "Move in!" removed at the start of the round
+- [3.3.63] SD voiceover sound when bomb is planted is shortened - only "Explosives planted" sound is retained
+- [3.3.64] Strat - up to 9 bot path recording can be saved; up to 9 bot path recordings can be played at once; automatic record stop is now faster
+- [3.3.65] New mappack file zpam_maps_v2.iwd with maps Toujane FIX v2, Burgundy FIX v1, Dawnville FIX v2, Matmata FIX v2, Carentan FIX v2, Breakout_TLS, Chelm, Vallente, wawa_3dAim
+- [3.3.66] Timeout settings changes:
+	- timeouts per map: 4 (previously 2)
+	- timeouts per side: 2 (previously 1)
+	- timeout length: 2min (previously 5min)
+	- so total timeout time would be 8min per map (previously 10min)
+	- overtimes does not reset called timeouts count - it means if you called out all of the timeouts in standard game time, you dont get new timeouts in overtime. (same as previous)
+	- when timeout time expires, "Time is over" warning message appears - setting one team ready will end the timeout. (previously it automatically resumes the game)
+- [3.3.67] Time between halfs and maps changes:
+	- between maps: 5min (as previous)
+	- between halfs: 2min (previously 5min)
+	- between halfs at overtime: 1min (previously 5min)
+	- for LAN mode, there will be no time limits between halfs and maps
 <br>
 <br>
+
 #### Bug fixes:
-[2.3.5] Error while running server on 1.0 version fixed<br>
-[2.3.6] Fixed bug when you drop MG and step sound was made when mg peek fix was enabled<br>
-[2.3.7] Matchinfo - fixed bug when team names does not match players in teams; happens when pistol bash was called and players swap teams<br>
-[2.3.8] Auto-recording - fixed bug with empty team names when bash mode was called<br>
-[2.3.9] Auto-recording - server crash when somebody joins a team at the end of the round (only windows servers) -> fixed<br>
-[2.3.10] Auto-recording - wont start if main menu is opened, quick messages menu is opened or game is minimized -> fixed<br>
-[2.3.11] Auto-spectator - When replaying killcam in spectator, name of spectated player is not removed when the killcam ends -> fixed<br>
-[2.3.12] Fixed text PC_PATCH_1_1_SD_OBJECTIVES in SD server info<br>
-[2.3.13] Weapon name next to ammo HUD is not visible when enemy player list is enabled -> fixed by showing the weapon name under the ammo<br>
-[1.14] BAR sound bug - when BAR weapon is picked from ground, it makes pickup sound for every player -> fixed<br>
+- [2.3.5] Error while running server on 1.0 version fixed
+- [2.3.6] Fixed bug when you drop MG and step sound was made when mg peek fix was enabled
+- [2.3.7] Matchinfo - fixed bug when team names does not match players in teams; happens when pistol bash was called and players swap teams
+- [2.3.8] Auto-recording - fixed bug with empty team names when bash mode was called
+- [2.3.9] Auto-recording - server crash when somebody joins a team at the end of the round (only windows servers) -> fixed
+- [2.3.10] Auto-recording - wont start if main menu is opened, quick messages menu is opened or game is minimized -> fixed
+- [2.3.11] Auto-spectator - When replaying killcam in spectator, name of spectated player is not removed when the killcam ends -> fixed
+- [2.3.12] Fixed text PC_PATCH_1_1_SD_OBJECTIVES in SD server info
+- [2.3.13] Weapon name next to ammo HUD is not visible when enemy player list is enabled -> fixed by showing the weapon name under the ammo
+- [1.14] BAR sound bug - when BAR weapon is picked from ground, it makes pickup sound for every player -> fixed
 <br>
 <br>
 
@@ -215,18 +237,25 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/raw/master/zpam330.zip">zPAM 3.30 PREVIEW</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam330.iwd
-	- ./Call of Duty 2/main/zpam_maps_v1.iwd
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.31/zpam331.zip">zPAM 3.31 PREVIEW</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam331.iwd
+	- ./Call of Duty 2/main/zpam_maps_v2.iwd <i>(*required only for 1.3 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
 
 - Add ```+exec server.cfg``` into command line arguments and edit the ```server.cfg``` file to configure your server.
 
-- Notes:
-	- Error <b>"PAM is not installed correctly"</b> may show. To fix this error, follow instructions in [Troubleshooting](#troubleshooting) section
-	- File <b>zpam_maps_v1.iwd</b> contains fixed version of original maps and new maps - these files needs to be included with PAM, more info in [Questions & Answers](#questions--answers) section
-	- You have to enable downloading via cvar <i>sv_wwwDownload 1</i> and specify a download url via cvar <i>sv_wwwBaseURL "url"</i>; if you dont have any, you can use <i>sv_wwwBaseURL "http://cod2x.me/zpam330"</i> (this is to make sure fixed maps are downloaded in fast way for players)
+- For game version 1.3:
+	- Mappack file <b>zpam_maps_v2.iwd</b> needs to be included in main folder. [What is zpam_maps_v1.iwd file?](#what-is-zpam_maps_v2iwd-file)
+	- Fast download must be enabled via these settings (custom URL may be used):
+		- <b>sv_wwwDownload 1</b>
+		- <b>sv_wwwBaseURL "http://cod2x.me/zpam"</b>
+	- This is to make sure that maps are downloaded in fast way for players
+
+❗ Error <b>"PAM is not installed correctly"</b> may show. ❗<br>
+To fix this error, follow instructions in [Troubleshooting](#troubleshooting) section
+
+
 
 <details>
 	<summary>Gameservers.com settings example (click to open)</summary>
@@ -238,7 +267,7 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 
 ## Contact
-Write message on discord <b>FPS Challange</b> in <b>#cod2-zpam3</b> channel. https://discord.gg/yBzx4AJ9b7<br>
+Write message on discord <b>TLS CoD2 Community</b> in <b>#zpam3-chat</b> channel. https://discord.gg/HDsC6u5k6y<br>
 Or add me on discord <b>eyza#7930</b><br>
 Or write me on email <b>kratas.tom@seznam.cz</b><br>
 <br>
@@ -270,19 +299,21 @@ cokY, Sk1lzZ, YctN, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgrub
 
 ## Questions & Answers
 
-### What is zpam_maps_v1.iwd file
+### What is zpam_maps_v2.iwd file
 - Its is a map pack of:
 	- [Toujane FIX v2](https://github.com/eyza-cod2/mp_toujane_fix)
 	- [Burgundy FIX v1](https://github.com/eyza-cod2/mp_burgundy_fix)
 	- [Dawnville FIX v2](https://github.com/eyza-cod2/mp_dawnville_fix)
 	- [Matmata FIX v2](https://github.com/eyza-cod2/mp_matmata_fix)
 	- [Carentan FIX v2](https://github.com/eyza-cod2/mp_carentan_fix)
+	- [Breakout TLS](https://github.com/eyza-cod2/mp_breakout_tls)
 	- Chelm
 	- Vallente
 	- wawa_3dAim
 - Credit:
 	- Toujane FIX, Burgundy FIX - by **eyza** and **stendby**
 	- Dawnville FIX, Matmata FIX, Carentan FIX, Chelm - by **Fjozek**
+	- Breakout TLS - by **eyza** and **craven**
 	- Vallente - by/for Crossfire.nu [www.crossfire.nu]
 
 If you know bugs that are not fixed yet, please contact me!<br>
@@ -391,7 +422,41 @@ Hand hitbox fix tries to address this issue by these rules:
  - **Hand hitbox fix is enabled by default**
 
 
+<br>
+
+### How does the "Sniper shotgun info" works / what is it
+At the start of the round and at the end of the round, info about weapons of players with sniper and shotgun is showed next to compass. If player does not have a secondary weapon, text is gray. If player does have a secondary weapon, text is green.
+
+<img src="/images/sniper_shotgun_info.png"/>
+
+
+
  <br>
+ <br>
+
+ ### How does the "Climbing fix" works / what is it
+
+If you climb ladder or wall, the "weapon switch" sound was made only for 1st person player, it was silent for other players. Now the sound matches equally, so you hear exactly what other players hear (meaning if you climb ladder or wall, "weapon switch" sound is made for everybody).
+If you want to silently climb ladder or wall, you need to hold weapon down by scrolling down 2x and hold left mouse
+
+###### Original:
+
+| Player	| Climb ladder<br><sub>(weapon normal)</sub>	| Climb wall <br><sub>(weapon normal)</sub>	| Climb ladder<br><sub>(weapon holded down)</sub>	| Climb wall <br><sub>(weapon holded down)</sub>	|
+|---------------|---------------|---------------|-----------------|-------------|
+| You	| sound		| sound		| -		  | -		|
+| Others	| -		| -		| -		  | -		|
+
+
+###### zPAM3.31:
+
+| Player	| Climb ladder<br><sub>(weapon normal)</sub>	| Climb wall <br><sub>(weapon normal)</sub>	| Climb ladder<br><sub>(weapon holded down)</sub>	| Climb wall <br><sub>(weapon holded down)</sub>	|
+|---------------|---------------|---------------|-----------------|-------------|
+| You	| sound		| sound		| -		  | -		|
+| Others	| sound		| sound		| -		  | -		|
+
+
+ <br>
+
 
  ### How does the "Fast reload fix" works / what is it
  Fast reload is when you fire from KAR98 for example, press R to reload and then you scroll down 2x, you are able to shoot faster.
@@ -547,12 +612,12 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 
 ## Troubleshooting
 ### Error "zPAM is not installed correctly"
-#### Iwd file zpam330.iwd must be installed in main folder. (fs_game)
+#### Iwd file zpam331.iwd must be installed in main folder. (fs_game)
  - From version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that cvars / settings changed in game are not saved into the config when running a game with fs_game set.
 Make sure cvar /fs_game is empty and iwd files are placed in main folder.
 
-#### Iwd file zpam_maps_v1.iwd.iwd must be installed in main folder
+#### Iwd file zpam_maps_v2.iwd must be installed in main folder
 - From version 3.20, fixed versions of some maps are available. PAM is forcing to include these files to make sure maps are available on every server.
 
 #### Error while getting loaded iwd files. Make sure iwd files does not contains spaces.
@@ -560,7 +625,7 @@ Make sure cvar /fs_game is empty and iwd files are placed in main folder.
 
 ####  WWW downloading must be enabled. Set sv_wwwDownload and sv_wwwBaseURL
 - You have to enable www downloading via cvar /sv_wwwDownload 1 and specify a download url via cvar /sv_wwwBaseURL "url".
-- If you dont have any url, you can use /sv_wwwBaseURL "http://cod2x.me/zpam330"
+- If you dont have any url, you can use /sv_wwwBaseURL "http://cod2x.me/zpam"
 - This is to make sure fixed maps are downloaded in fast way for players
 
 ####  Old pam / maps detected in main folder. Delete iwd file you see above.
@@ -585,6 +650,11 @@ Info string:<br>
 This is game bug - to workaround this error, remove unused iwd files / shorten the name of iwd files / pack multiple iwd files together.
 
 
+
+### Error "Impure client detected. Invalid .IWD files referenced!"
+- This error means that .iwd files loaded from your local folders (main) are in conflict with .iwd files located at server - some files are not equal. This is protection agains your modified files that may be used for cheating.
+- There is a problem with zpam_maps_v1.iwd file - when you have this file downloaded in main folder and you try to connect older 3.22 server, error "Impure client detected" shows. (Toujane FIX and Brungundy FIX sun file problem) Please remove this file from main folder.
+- <img src="/images/error_impure_client_detected.png"/>
 
 
 <br>
@@ -862,7 +932,7 @@ Added posibility to call bash mode from menu.<br>
 [3.3.46] Hand hit box fix - if hands are in front of body and game somehow badly interprets it as hit to the hand, PAM change it to hit to the body; its an extension to already existing fix in 3.22 for left hand - now its applies also for right hand<br>
 [3.3.47] Torso hitbox fix; lower torso hitbox (pelvis area) is slightly enlarged as workaround for bad hitbox registration between torso_lower and right/left_leg_upper; this change effectively applies only for rifles, because other weapons has the same damage for torso_lower and right/left_leg_upper<br>
 [3.3.48] Consistent shotgun - this is the new name for new shotgun; this shotgun fixes close range hits; it replaces rebalanced shotgun <br>
-[3.3.49] Ladder weapon bug fix - silent use of ladder is no more possible; its a situation when you double scroll your weapon, hold fire button and use a ladder<br>
+[3.3.49] <del>Ladder weapon bug fix - silent use of ladder is no more possible; its a situation when you double scroll your weapon, hold fire button and use a ladder</del> <strong>replaced via 3.3.68</strong><br>
 [3.3.50] Sliding bug fix; g_knockback is set to 0; when you are hit, no move energy is applied (knockback); this should fix fast sliding on ground / getting bugged into ground<br>
 [3.3.51] Sniper shotgun info - weapons of players with sniper and shotgun are showed next to compas at start and the end of the round<br>
 [3.3.52] Colored time - color of round timer changes to orange when 30 seconds are left and red when 15 seconds are left<br>
@@ -875,10 +945,10 @@ Added posibility to call bash mode from menu.<br>
 [3.3.59] Bash mode text over the screen is showed when bash mode is called.<br>
 [3.3.60] Cvar warning all over the screen is removed for cvar developer and polygons<br>
 [3.3.61] Objective text showed in scoreboard is removed<br>
-[3.3.62] SD voiceover sound "Move in!" removed at the start of the round<br>
+[3.3.62] <del>SD voiceover sound "Move in!" removed at the start of the round</del> <strong>replaced with 3.3.69</strong><br>
 [3.3.63] SD voiceover sound when bomb is planted is shortened - only "Explosives planted" sound is retained<br>
 [3.3.64] Strat - up to 9 bot path recording can be saved; up to 9 bot path recordings can be played at once; automatic record stop is now faster<br>
-[3.3.65] New iwd file zpam_maps_v1.iwd with maps Toujane FIX v2, Burgundy FIX v1, Dawnville FIX v2, Matmata FIX v2, Carentan FIX v2, Chelm, Vallente, wawa_3dAim<br>
+[3.3.65] New iwd file zpam_maps_v1.iwd with maps Toujane FIX v2, Burgundy FIX v1, Dawnville FIX v2, Matmata FIX v2, Carentan FIX v2, Breakout TLS, Chelm, Vallente, wawa_3dAim<br>
 [3.3.66] Timeout settings changes:<br>
 - timeouts per map: 4 (previously 2)<br>
 	- timeouts per side: 2 (previously 1)<br>
@@ -891,7 +961,12 @@ Added posibility to call bash mode from menu.<br>
 	- between halfs: 2min (previously 5min)<br>
 	- between halfs at overtime: 1min (previously 5min)<br>
 	- for LAN mode, there will be no time limits between halfs and maps<br>
-
+[3.3.68] Climbing sound fix<br>
+	- If you climb ladder or wall, the "weapon switch" sound was made only for 1st person player, it was silent for other players<br>
+	- Now the sound matches equally, so you hear exactly what other players hear (meaning if you climb ladder or wall, "weapon switch" sound is made for everybody)<br>
+	- If you want to silently climb ladder or wall, you need to hold weapon down by scrolling down 2x and hold left mouse<br>
+	- This fix replaces previous [3.3.49] "Ladder weapon fix" in 3.30<br>
+[3.3.69] SD voiceover sound "Move in!" is now played only if player is not moving (replaces [3.3.62])<br>
 </sub>
 
 #### 3.4 Other

@@ -88,7 +88,6 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_mg_peek_fix", 1);				// When mg is dropped, player is spawned right behid mg
 	arr = ruleCvarDefault(arr, "scr_hitbox_hand_fix", 1);				// Damage to left hand is adjusted for rifles and scopes.
 	arr = ruleCvarDefault(arr, "scr_hitbox_torso_fix", 1);					// Damage of M1, rifles, scopes and shotgun is adjusted to have less hits in game
-	arr = ruleCvarDefault(arr, "scr_ladder_weapon_fix", 1);				// Weapon ladder bug is when you 2x fast switch weapon and then hold fire button - weapon is invisible with no switch sound
 	arr = ruleCvarDefault(arr, "scr_killcam", 1);					// Killcam
 
 
@@ -97,7 +96,7 @@ GetCvars(arr)
 	*********/
 	// Rifles-only mode
 	arr = ruleCvarDefault(arr, "scr_rifle_mode", 0);
-	
+
 	// Nade spawn counts for each class
 	arr = ruleCvarDefault(arr, "scr_boltaction_nades", 1);
 	arr = ruleCvarDefault(arr, "scr_semiautomatic_nades", 1);

@@ -2,8 +2,6 @@ onOpen
 {
 	exec "openscriptmenu ingame rcon_settings_open";	// this will update info
 
-	setitemcolor login_warning forecolor 1 1 1 1;
-
 	open rcon_settings_gametypes;
 	open rcon_settings_shared;
 }
@@ -85,7 +83,6 @@ itemDef  \
 		play "mouse_click"; \
   		close rcon_settings_focus; open rcon_settings_focus; \
 		doaction; \
-		setitemcolor login_warning forecolor 1 0 0 1; \
 	} \
 }
 
@@ -128,7 +125,6 @@ itemDef  \
 		play "mouse_click"; \
   		close rcon_settings_focus; open rcon_settings_focus; \
 		doaction; \
-		setitemcolor login_warning forecolor 1 0 0 1; \
 	} \
 }
 

@@ -1,4 +1,19 @@
-name,sequence,probability,file,vol_min,vol_max,vol_mod,pitch_min,pitch_max,dist_min,dist_max,channel,type,loop,masterslave,loadspec,subtitle,compression,secondaryaliasname,volumefalloffcurve,startdelay,speakermap,reverb,lfe percentage
+name,sequence,file,vol_min,vol_max,vol_mod,pitch_min,pitch_max,dist_min,dist_max,channel,type,loop,masterslave,loadspec,subtitle,compression,secondaryaliasname,volumefalloffcurve,startdelay,speakermap,reverb,lfe percentage
 
-hill400_assault_gr5_letsgoget,,,Voiceovers/US/400Assault/hill400assault_gr5_sc03_01_t1.wav,0.5,0.5,,,,1000000,,auto,streamed
-US_0_order_move_generic_05,,,Battlechatter/US/0/US_0_order_move_generic_05.wav,0.5,0.5,,,,1000000,,auto,streamed
+hill400_assault_gr5_letsgoget,,Voiceovers/US/400Assault/hill400assault_gr5_sc03_01_t1.wav,0.5,0.5,,,,1000000,,auto,streamed
+US_0_order_move_generic_05,,Battlechatter/US/0/US_0_order_move_generic_05.wav,0.5,0.5,,,,1000000,,auto,streamed
+
+
+
+# Original sound aliases for weapon swap
+weap_raise,,null.wav,0,,,,,,,,,,,,,,,,
+
+# New name for weapon change sound to be manually controled by script
+zpam_weap_raise,,misc/wpnarm_2.wav,0.45,0.5,wpnplyr,0.9,1.2,7,500,auto,,,,,,,weap_raise_layer,
+
+# Original sound aliases for weapon swap (comented)
+#name,sequence,file,vol_min,vol_max,vol_mod,pitch_min,pitch_max,dist_min,dist_max,channel,type,probability,loop,masterslave,loadspec,subtitle,compression,secondaryaliasname,volumefalloffcurve,startdelay,speakermap,reverb,lfe percentage
+#weap_raise,,misc/wpnarm_2.wav,0.45,0.5,wpnplyr,0.9,1.2,7,500,auto,,,,,,,,weap_raise_layer,
+#weap_raise_layer,1,misc/pu_weapon01.wav,0.25,0.3,wpnplyr,0.9,0.9,7,500,auto,,,,,,,,,
+#weap_raise_layer,2,misc/pu_weapon02.wav,0.18,0.23,wpnplyr,0.9,0.9,7,500,auto,,,,,,,,,
+#weap_raise_layer,3,misc/pu_weapon04.wav,0.25,0.3,wpnplyr,0.9,0.9,7,500,auto,,,,,,,,,

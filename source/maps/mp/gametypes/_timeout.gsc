@@ -37,6 +37,7 @@ init()
 	// Register notifications catchup
 	addEventListener("onStartGameType", ::onStartGameType);
 	addEventListener("onConnected",     ::onConnected);
+	addEventListener("onJoinedTeam",    ::onJoinedTeam);
 	addEventListener("onSpawned",     ::onSpawned);
 	addEventListener("onMenuResponse",  ::onMenuResponse);
 }
@@ -72,6 +73,12 @@ onConnected()
 {
     // Set actual timeout status on player connect + when round restart in SD
     self Update_Player_HUD_Cvar();
+}
+
+onJoinedTeam(teamName)
+{
+	// Set actual timeout status on player connect + when round restart in SD
+        self Update_Player_HUD_Cvar();
 }
 
 onSpawned()

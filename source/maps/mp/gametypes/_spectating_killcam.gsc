@@ -198,7 +198,7 @@ potencialAutoKillcamForPlayer(killId)
 	record = level.autoSpectating_kills[killId];
 	for(;;)
 	{
-		wait level.fps_multiplier * 0.05;
+		wait level.frame;
 
 		if (record.deleted || !isDefined(record.player))
 			return;
@@ -209,7 +209,8 @@ potencialAutoKillcamForPlayer(killId)
 		// If round ended change it to auto-replay
 		if (level.gametype == "sd" && level.roundended)
 		{
-			wait level.fps_multiplier * 2; // wait untill killcam for last kill is played as first (if there is no killcam, it will start this one)
+			wait level.fps_multiplier * 1.5; // wait untill killcam for last kill is played as first (if there is no killcam, it will start this one)
+			wait level.frame;
 
 			self thread replayAction(killId, false);
 
@@ -249,7 +250,8 @@ potencialAutoKillcamForPlayer(killId)
 				{
 					self thread hideKillcamProposingForPlayer();
 
-					wait level.fps_multiplier * 2; // wait untill killcam for last kill is played as first (if there is no killcam, it will start this one)
+					wait level.fps_multiplier * 1.5; // wait untill killcam for last kill is played as first (if there is no killcam, it will start this one)
+					wait level.frame;
 
 					self thread replayAction(killId, false);
 
@@ -457,8 +459,8 @@ watchIntenseSituation()
 		else
 			intenseSituationTime = 0;
 
-		// Intense situation is after 10 seconds elapse
-		level.autoSpectating_intenseSituation = (intenseSituationTime > 10);
+		// Intense situation is after 3 seconds elapse
+		level.autoSpectating_intenseSituation = (intenseSituationTime > 3);
 
 
 

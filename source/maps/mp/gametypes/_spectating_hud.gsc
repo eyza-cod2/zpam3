@@ -157,6 +157,9 @@ showDamageInfo(iDamage, sHitLoc, sMeansOfDeath)
 
 	self endon("disconnect");
 
+	if (isDefined(self.killcam))
+		return;
+
 	self notify("autoSpectating_showDamageInfo_end");
 	self endon("autoSpectating_showDamageInfo_end");
 
@@ -179,6 +182,9 @@ showDamageInfo(iDamage, sHitLoc, sMeansOfDeath)
 		self.hud_damageinfo_loc.fontscale = 1.1;
 		self.hud_damageinfo_loc.archived = false;
 	}
+
+	if (iDamage > 100)
+		iDamage = 100;
 
 	self.hud_damageinfo setValue(iDamage);
 
@@ -243,6 +249,9 @@ showTakenDamageInfo(iDamage, sHitLoc, sMeansOfDeath)
 
 	self endon("disconnect");
 
+	if (isDefined(self.killcam))
+		return;
+
 	self notify("autoSpectating_showTakenDamageInfo_end");
 	self endon("autoSpectating_showTakenDamageInfo_end");
 
@@ -265,6 +274,9 @@ showTakenDamageInfo(iDamage, sHitLoc, sMeansOfDeath)
 		self.hud_takendamageinfo_loc.fontscale = 1.1;
 		self.hud_takendamageinfo_loc.archived = false;
 	}
+
+	if (iDamage > 100)
+		iDamage = 100;
 
 	self.hud_takendamageinfo setValue(iDamage*-1);
 
@@ -313,6 +325,9 @@ showTakenDamageInfo(iDamage, sHitLoc, sMeansOfDeath)
 showKillInfo()
 {
 	self endon("disconnect");
+
+	if (isDefined(self.killcam))
+		return;
 
 	self notify("autoSpectating_showKillInfo_end");
 	self endon("autoSpectating_showKillInfo_end");
