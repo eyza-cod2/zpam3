@@ -75,6 +75,26 @@ onMenuResponse(menu, response)
 			game["allies_score"] = game["axis_score"];
 			game["is_halftime"] = true;
 		}
+		if (response == "intermission")
+		{
+			level notify("round_ended");
+			level.roundended = true;
+
+			game["state"] = "intermission";
+			level notify("intermission");
+
+			// Spawn each player into intermission
+			players = getentarray("player", "classname");
+			for(i = 0; i < players.size; i++)
+			{
+				player = players[i];
+
+				player closeMenu();
+				player closeInGameMenu();
+
+				player [[level.spawnIntermission]]();
+			}
+		}
 	}
 }
 

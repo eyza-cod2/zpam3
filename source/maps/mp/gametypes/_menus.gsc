@@ -16,6 +16,7 @@ onStartGameType()
 	if (!isDefined(game["menuPrecached"]))
 	{
 		game["menu_moddownload"] = "moddownload";
+		game["menu_language"] = "language";
 		game["menu_ingame"] = "ingame";
 		game["menu_team"] = "team_" + game["allies"] + game["axis"];	// team_britishgerman
 		game["menu_weapon_allies"] = "weapon_" + game["allies"];
@@ -34,6 +35,7 @@ onStartGameType()
 		game["menu_strat_records"] = "strat_records";
 
 		precacheMenu(game["menu_moddownload"]);
+		precacheMenu(game["menu_language"]);
 		precacheMenu(game["menu_ingame"]);
 		precacheMenu(game["menu_team"]);
 		precacheMenu(game["menu_weapon_allies"]);
@@ -92,24 +94,34 @@ onConnected()
 		// dont open any menu
 	}
 
-	// If player is just connected
-	else if (self.pers["team"] == "none")
+	// Server info wasnt skiped yet - player didnt click "continue"
+	else if(!isDefined(self.pers["skipserverinfo"]))
+	{
+		scriptMainMenu = game["menu_serverinfo"];
+		self openMenu(game["menu_serverinfo"]);
+		self maps\mp\gametypes\_menu_serverinfo::updateServerInfo();
+	}
+
+	// Menu with language was not opened yet
+	else if (!isDefined(self.pers["languageLoaded"]))
+	{
+		scriptMainMenu = game["menu_language"];
+		self openMenu(game["menu_language"]);
+	}
+
+	else if (game["state"] == "intermission")
 	{
 		self setClientCvar2("ui_allow_weaponchange", 0);
+		self setClientCvar2("ui_allow_changeteam", 0);
+		scriptMainMenu = game["menu_ingame"];	// default
+	}
 
-		// Server info wasnt skiped yet - player didnt click "continue"
-		if(!isDefined(self.pers["skipserverinfo"]))
-		{
-			scriptMainMenu = game["menu_serverinfo"];
-			self openMenu(game["menu_serverinfo"]);
-			self maps\mp\gametypes\_menu_serverinfo::updateServerInfo();
-		}
-		// Server info is skipped
-		else
-		{
-			scriptMainMenu = game["menu_team"]; // when esc is pressed, show menu with teams
-			self openMenu(game["menu_team"]); // else open team menu
-		}
+	// Player did not choose team yet after connect
+	else if (!isDefined(self.pers["firstTeamSelected"]))
+	{
+		self setClientCvar2("ui_allow_changeteam", 1);
+		scriptMainMenu = game["menu_team"]; // when esc is pressed, show menu with teams
+		self openMenu(game["menu_team"]); // else open team menu
 	}
 
 	// If team is selected
@@ -149,6 +161,9 @@ onConnected()
 
 onJoinedTeam(team)
 {
+	self.pers["firstTeamSelected"] = true;
+
+
 	if (team == "allies" || team == "axis")
 	{
 		self setClientCvar2("ui_allow_weaponchange", "1");
@@ -195,16 +210,57 @@ onMenuResponse(menu, response)
 	{
 		maps\mp\gametypes\_force_download::modIsDownloaded();
 
-		self setClientCvar2("g_scriptMainMenu", game["menu_serverinfo"]);
+		/*
+		TODO LANG
+		// Open language menu
+		self closeMenu();
+		self closeInGameMenu();
+		self openMenu(game["menu_language"]);
+		self setClientCvar2("g_scriptMainMenu", game["menu_language"]);
+
+		return true;
+	}
+
+	else if (menu == game["menu_language"])
+	{
+		maps\mp\gametypes\_language::saveOriginalLanguage(response);
+		TODO LANG
+		*/
+
+		self.pers["languageLoaded"] = true;
 
 		// Open server info
 		self closeMenu();
 		self closeInGameMenu();
 		self openMenu(game["menu_serverinfo"]);
+		self setClientCvar2("g_scriptMainMenu", game["menu_serverinfo"]);
 		self maps\mp\gametypes\_menu_serverinfo::updateServerInfo();
+	}
+
+	else if(menu == game["menu_serverinfo"] && response == "close")
+	{
+		self closeMenu();
+		self closeInGameMenu();
+
+		if (game["state"] != "intermission")
+			self setClientCvar2("ui_allow_changeteam", 1);
+
+		if (!isDefined(self.pers["skipserverinfo"]))	// first time
+		{
+			// After serverinfo is skipped, show menu with teams
+			self setClientCvar2("g_scriptMainMenu", game["menu_team"]);
+			self openMenu(game["menu_team"]);
+		}
+		else if (!isDefined(self.pers["firstTeamSelected"]))
+			self openMenu(game["menu_team"]);
+		else
+			self openMenu(game["menu_ingame"]); // serverinfo may be opened and closed aditionally via menu
+
+		self.pers["skipserverinfo"] = true;
 
 		return true;
 	}
+
 
 
 	if(response == "back")
@@ -223,7 +279,7 @@ onMenuResponse(menu, response)
 
 	if(menu == game["menu_ingame"])
 	{
-		if (response == "changeweapon")
+		if (response == "changeweapon" && game["state"] != "intermission")
 		{
 			self closeMenu();
 			self closeInGameMenu();
@@ -233,7 +289,7 @@ onMenuResponse(menu, response)
 				self openMenu(game["menu_weapon_axis"]);
 			return true;
 		}
-		if (response == "changeteam")
+		if (response == "changeteam" && game["state"] != "intermission")
 		{
 			self closeMenu();
 			self closeInGameMenu();
@@ -257,7 +313,7 @@ onMenuResponse(menu, response)
 		}
 	}
 
-	else if(menu == game["menu_team"])
+	else if(menu == game["menu_team"] && game["state"] != "intermission")
 	{
 		teamBefore = self.pers["team"];
 		switch(response)
@@ -326,26 +382,6 @@ onMenuResponse(menu, response)
 	else if(menu == game["menu_quickresponses"])
 	{
 		maps\mp\gametypes\_quickmessages::quickresponses(response);
-		return true;
-	}
-	else if(menu == game["menu_serverinfo"] && response == "close")
-	{
-		self closeMenu();
-		self closeInGameMenu();
-
-		if (!isDefined(self.pers["skipserverinfo"]))	// first time
-		{
-			// After serverinfo is skipped, show menu with teams
-			self setClientCvar2("g_scriptMainMenu", game["menu_team"]);
-			self openMenu(game["menu_team"]);
-		}
-		else if (self.pers["team"] == "none")
-			self openMenu(game["menu_team"]);
-		else
-			self openMenu(game["menu_ingame"]);
-
-		self.pers["skipserverinfo"] = true;
-
 		return true;
 	}
 

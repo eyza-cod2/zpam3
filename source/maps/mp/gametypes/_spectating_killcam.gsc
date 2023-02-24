@@ -191,6 +191,8 @@ potencialAutoKillcam(killId)
 
 potencialAutoKillcamForPlayer(killId)
 {
+	self endon("disconnect");
+
 	// Wait untill this player does not see enemy no more - then we can replay killcam
 	// If player kills another enemy, this record is deleted, this thread ends and new thread is created
 	time_killer_no_enemy = 0;
@@ -476,11 +478,44 @@ watchIntenseSituation()
 
 openSpectMenu()
 {
-	self endon("disconnect");
+	//self endon("disconnect");
+
+	/*
+	Open QuickMessage menu trick
+	- this menu is usefull because it does not hide HUD elements as standart menu does
+	- but this menu is openable only via command /mp_qucikmessage in client side
+	- also to open this menu player must be alive player (wich spectator is not)
+	- trick is is move spectator into "none" team and set him as "dead", in wich case the /mp_qucikmessage works
+	- only problem is that this game is quite bugged and there are some side effect:
+		- if players in "allies" or "axis" team are all dead and they are in "spectator" state,
+		  for some reason players with clientId lower then spectator clientId starts following this spectator
+		- because spectator is spawned outside map and then imidietly back to spectating mode, players
+		  with lower clientId stays outside map
+		- we need to save current position of players with clientId lower then spectator clientId and
+		  only if all players are dead in their team
+	*/
+	allies = 0;
+	axis = 0;
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{	// Count alive players in teams
+		if (players[i].sessionteam == "allies" && players[i].sessionstate != "spectator")	allies++;
+		if (players[i].sessionteam == "axis"   && players[i].sessionstate != "spectator")	axis++;
+	}
+	for(i = 0; i < players.size; i++)
+	{	// clientId is lower then spectator and not player are alive in team
+		if (players[i] GetEntityNumber() < self GetEntityNumber() &&
+		   ((allies == 0 && players[i].sessionteam == "allies") || (axis == 0 && players[i].sessionteam == "axis")))
+		{
+			players[i].spectating_killcam_origin = players[i].origin;
+			players[i].spectating_killcam_angles = players[i].angles;
+		}
+	}
 
 	spectatorclient = self.spectatorclient;
 	origin = self getOrigin();
 	angles = self getPlayerAngles();
+
 	self.sessionteam = "none";
 	self.sessionstate = "dead"; // enable quickmessage
 	self.spectatorclient = -1;
@@ -501,15 +536,37 @@ openSpectMenu()
 
 	wait level.frame * 2;
 
-	self.sessionteam = "spectator";
-	self.sessionstate = "spectator";
-	if (self.spectatorclient == -1)
-		self.spectatorclient = spectatorclient;
+	// Spectator may disconnect
+	if (isDefined(self))
+	{
+		self.sessionteam = "spectator";
+		self.sessionstate = "spectator";
+		if (self.spectatorclient == -1)
+			self.spectatorclient = spectatorclient;
 
-	wait level.frame;
+		wait level.frame;
+	}
 
-	self spawn(origin, angles);
+	// Spawn to previous location
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		if (isDefined(players[i].spectating_killcam_origin))
+		{
+			players[i] spawn(players[i].spectating_killcam_origin, players[i].spectating_killcam_angles);
+			players[i].spectating_killcam_origin = undefined;
+			players[i].spectating_killcam_angles = undefined;
+			//players[i] iprintln("^1 APPLIED SPECTATE BUG FIX");
+		}
+	}
+
+	// Spawn to previous location
+	if (isDefined(self))	// Spectator may disconnect
+		self spawn(origin, angles);
 }
+
+
+
 
 spectMenuSetRows()
 {
@@ -572,7 +629,7 @@ replayAction(killId, print)
 
 	// Already in killcam, wait for end
 	while(isDefined(self.killcam))
-		wait level.fps_multiplier * 1;
+		wait level.frame;
 
 	record = level.autoSpectating_kills[killId];
 

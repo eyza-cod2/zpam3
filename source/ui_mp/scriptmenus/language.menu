@@ -1,0 +1,42 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+{
+	menuDef
+	{
+		name			"language"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onOpen
+		{
+			execOnDvarStringValue loc_language 0 "openscriptmenu language 0"; // English
+			execOnDvarStringValue loc_language 1 "openscriptmenu language 1"; // French
+			execOnDvarStringValue loc_language 2 "openscriptmenu language 2"; // German
+			execOnDvarStringValue loc_language 6 "openscriptmenu language 6"; // Russian
+			execOnDvarStringValue loc_language 7 "openscriptmenu language 7"; // Polish
+			execOnDvarStringValue loc_language 14 "openscriptmenu language 14"; // Czech
+			execOnDvarStringValue loc_language 15 "openscriptmenu language 15"; // Czech
+
+			// Only 1 openscriptmenu command can be send from client
+			// If none of the conditions above did not match, use default
+			exec "openscriptmenu language -1"; // Default
+		}
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+
+		//
+		ITEM_TEXT_HEADING("Loading...")
+
+
+		// Close menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 90, ;)
+		// Main menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu", 140, 120, ;)
+	}
+}

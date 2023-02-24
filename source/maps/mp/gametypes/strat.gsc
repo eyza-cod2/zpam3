@@ -1482,7 +1482,7 @@ record(slot)
 		if (time_not_moving == 1)
 			self iprintlnbold("Dont move to stop recording");
 
-		if (time_not_moving >= 4)
+		if (time_not_moving >= 4 || !isAlive(self))
 			self.recording = false;
 	}
 

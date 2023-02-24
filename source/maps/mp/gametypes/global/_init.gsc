@@ -37,8 +37,13 @@ resetFirstInit()
 // This function is called at the end of <gametype>.gsc::main() function
 InitModules()
 {
+	/# //This is called only if developer_script is set to 1
+	thread maps\mp\gametypes\_menu_debug::init();
+	#/
+
 	thread maps\mp\gametypes\_pam::init();
 	thread maps\mp\gametypes\_force_download::init();
+	thread maps\mp\gametypes\_language::init();
 	thread maps\mp\gametypes\_cvar_forces::init();
 
 	thread maps\mp\gametypes\_log::init();
@@ -64,11 +69,12 @@ InitModules()
 
 
 	thread maps\mp\gametypes\_overtime::init();	// must be caled before readyup
-	thread maps\mp\gametypes\_timeout::init();	// must be caled before readyup
 	thread maps\mp\gametypes\_halftime::init(); 	// must be caled before readyup and overtime
 	thread maps\mp\gametypes\_end_of_map::init();	// depends on overtime
+
 	thread maps\mp\gametypes\_readyup::init();
-	thread maps\mp\gametypes\_bash::init();	// depends on readup
+	thread maps\mp\gametypes\_timeout::init();	// depends on readyup
+	thread maps\mp\gametypes\_bash::init();		// depends on readup
 
 	thread maps\mp\gametypes\_blackout::init();	// depends on timeout and readyup
 	thread maps\mp\gametypes\_spectating::init(); // depends on _blackout
@@ -80,8 +86,10 @@ InitModules()
 	thread maps\mp\gametypes\_matchinfo::init();	// depends on readyup, teamname, bash, overtime
 	thread maps\mp\gametypes\_record::init();	// depends on matchinfo
 	thread maps\mp\gametypes\_players_left::Init(); // depends on matchinfo
-	thread maps\mp\gametypes\_spectating_auto::init(); // depends on spectating_system
+	thread maps\mp\gametypes\_spectating_auto::init(); // depends on readyup
 	thread maps\mp\gametypes\_spectating_hud::init(); // depends on readyup, matchinfo
+	thread maps\mp\gametypes\_spectating_hud_esp::init(); // depends on readyup, matchinfo
+	thread maps\mp\gametypes\_spectating_hud_damage::init(); // depends on readyup
 	thread maps\mp\gametypes\_spectating_killcam::init(); // depends on _spectating_auto
 	thread maps\mp\gametypes\_archive::init(); // depends on spectating_system and killcam
 
@@ -107,13 +115,5 @@ InitModules()
 
 
 	thread maps\mp\gametypes\_objective::init(); // depends on readyup, timeout
-
-
-
-
-	/# //This is called only if developer_script is set to 1
-	thread maps\mp\gametypes\_menu_debug::init();
-	#/
-
 
 }

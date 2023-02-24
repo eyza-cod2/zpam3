@@ -53,6 +53,10 @@ isPlayerLookingAt(entity)
 {
 	return maps\mp\gametypes\global\player::isPlayerLookingAt(entity);
 }
+isPlayerInSight(player)
+{
+	return maps\mp\gametypes\global\player::isPlayerInSight(player);
+}
 getLookingAtPosition()
 {
 	return maps\mp\gametypes\global\player::getLookingAtPosition();
@@ -140,9 +144,9 @@ hideHUDSmooth(time, from, to)
 {
 	return maps\mp\gametypes\global\hud_system::hideHUDSmooth(time, from, to);
 }
-SetPlayerWaypoint(camera_player, waypoint_player, offset)
+SetPlayerWaypoint(camera_player, waypoint_player)
 {
-	return maps\mp\gametypes\global\hud_system::SetPlayerWaypoint(camera_player, waypoint_player, offset);
+	return maps\mp\gametypes\global\hud_system::SetPlayerWaypoint(camera_player, waypoint_player);
 }
 
 
@@ -180,4 +184,8 @@ formatTime(timeSec, separator)
 plural_s(num, text)
 {
 	return maps\mp\gametypes\global\string::plural_s(num, text);
+}
+format_fractional(num, fixedPositions, precision)
+{
+	return maps\mp\gametypes\global\string::format_fractional(num, fixedPositions, precision);
 }

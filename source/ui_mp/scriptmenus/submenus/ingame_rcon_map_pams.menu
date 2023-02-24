@@ -19,46 +19,51 @@ ITEM_GAMETYPE_ONDVAR(212 16, 46 15, "20 rounds",	"ui_rcon_map_pam_sd_gamesetting
 ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",          	"ui_rcon_map_pam_dm", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
 ITEM_GAMETYPE_ONDVAR(121 0, 40 15, "warmup",      	"ui_rcon_map_pam_dm", "warmup", 	exec "openscriptmenu ingame rcon_map_pam_warmup")
 
-ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "15min",		"ui_rcon_map_pam_dm_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
-ITEM_GAMETYPE_ONDVAR(124 16, 35 15, "30min",		"ui_rcon_map_pam_dm_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
-ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "60min",		"ui_rcon_map_pam_dm_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
-ITEM_GAMETYPE_ONDVAR(207 16, 45 15, "unlimited",	"ui_rcon_map_pam_dm_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
+ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "10min",		"ui_rcon_map_pam_dm_gamesettings", "10min", 	exec "openscriptmenu ingame rcon_map_pam_10min")
+ITEM_GAMETYPE_ONDVAR(124 16, 32 15, "15min",		"ui_rcon_map_pam_dm_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
+ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "30min",		"ui_rcon_map_pam_dm_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
+ITEM_GAMETYPE_ONDVAR(207 16, 35 15, "60min",		"ui_rcon_map_pam_dm_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
+ITEM_GAMETYPE_ONDVAR(247 16, 45 15, "unlimited",	"ui_rcon_map_pam_dm_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
 
 
 //TDM
 ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",          	"ui_rcon_map_pam_tdm", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
 
-ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "15min",		"ui_rcon_map_pam_tdm_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
-ITEM_GAMETYPE_ONDVAR(124 16, 35 15, "30min",		"ui_rcon_map_pam_tdm_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
-ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "60min",		"ui_rcon_map_pam_tdm_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
-ITEM_GAMETYPE_ONDVAR(207 16, 45 15, "unlimited",	"ui_rcon_map_pam_tdm_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
+ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "10min",		"ui_rcon_map_pam_tdm_gamesettings", "10min", 	exec "openscriptmenu ingame rcon_map_pam_10min")
+ITEM_GAMETYPE_ONDVAR(124 16, 32 15, "15min",		"ui_rcon_map_pam_tdm_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
+ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "30min",		"ui_rcon_map_pam_tdm_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
+ITEM_GAMETYPE_ONDVAR(207 16, 35 15, "60min",		"ui_rcon_map_pam_tdm_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
+ITEM_GAMETYPE_ONDVAR(247 16, 45 15, "unlimited",	"ui_rcon_map_pam_tdm_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
 
 
 //HQ
 ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",          	"ui_rcon_map_pam_hq", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
 
-ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "15min",		"ui_rcon_map_pam_hq_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
-ITEM_GAMETYPE_ONDVAR(124 16, 35 15, "30min",		"ui_rcon_map_pam_hq_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
-ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "60min",		"ui_rcon_map_pam_hq_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
-ITEM_GAMETYPE_ONDVAR(207 16, 45 15, "unlimited",	"ui_rcon_map_pam_hq_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
+ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "10min",		"ui_rcon_map_pam_hq_gamesettings", "10min", 	exec "openscriptmenu ingame rcon_map_pam_10min")
+ITEM_GAMETYPE_ONDVAR(124 16, 32 15, "15min",		"ui_rcon_map_pam_hq_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
+ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "30min",		"ui_rcon_map_pam_hq_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
+ITEM_GAMETYPE_ONDVAR(207 16, 35 15, "60min",		"ui_rcon_map_pam_hq_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
+ITEM_GAMETYPE_ONDVAR(247 16, 45 15, "unlimited",	"ui_rcon_map_pam_hq_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
 
 
 //CTF
 ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",          	"ui_rcon_map_pam_ctf", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
 
-ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "15min",		"ui_rcon_map_pam_ctf_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
-ITEM_GAMETYPE_ONDVAR(124 16, 35 15, "30min",		"ui_rcon_map_pam_ctf_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
-ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "60min",		"ui_rcon_map_pam_ctf_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
-ITEM_GAMETYPE_ONDVAR(207 16, 45 15, "unlimited",	"ui_rcon_map_pam_ctf_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
+ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "10min",		"ui_rcon_map_pam_ctf_gamesettings", "10min", 	exec "openscriptmenu ingame rcon_map_pam_10min")
+ITEM_GAMETYPE_ONDVAR(124 16, 32 15, "15min",		"ui_rcon_map_pam_ctf_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
+ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "30min",		"ui_rcon_map_pam_ctf_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
+ITEM_GAMETYPE_ONDVAR(207 16, 35 15, "60min",		"ui_rcon_map_pam_ctf_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
+ITEM_GAMETYPE_ONDVAR(247 16, 45 15, "unlimited",	"ui_rcon_map_pam_ctf_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
 
 
 //HTF
 ITEM_GAMETYPE_ONDVAR(86 0, 29 15, "comp",          	"ui_rcon_map_pam_htf", "comp", 		exec "openscriptmenu ingame rcon_map_pam_comp")
 
-ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "15min",		"ui_rcon_map_pam_htf_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
-ITEM_GAMETYPE_ONDVAR(124 16, 35 15, "30min",		"ui_rcon_map_pam_htf_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
-ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "60min",		"ui_rcon_map_pam_htf_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
-ITEM_GAMETYPE_ONDVAR(207 16, 45 15, "unlimited",	"ui_rcon_map_pam_htf_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
+ITEM_GAMETYPE_ONDVAR( 86 16, 32 15, "10min",		"ui_rcon_map_pam_htf_gamesettings", "10min", 	exec "openscriptmenu ingame rcon_map_pam_10min")
+ITEM_GAMETYPE_ONDVAR(124 16, 32 15, "15min",		"ui_rcon_map_pam_htf_gamesettings", "15min", 	exec "openscriptmenu ingame rcon_map_pam_15min")
+ITEM_GAMETYPE_ONDVAR(165 16, 35 15, "30min",		"ui_rcon_map_pam_htf_gamesettings", "30min", 	exec "openscriptmenu ingame rcon_map_pam_30min")
+ITEM_GAMETYPE_ONDVAR(207 16, 35 15, "60min",		"ui_rcon_map_pam_htf_gamesettings", "60min", 	exec "openscriptmenu ingame rcon_map_pam_60min")
+ITEM_GAMETYPE_ONDVAR(247 16, 45 15, "unlimited",	"ui_rcon_map_pam_htf_gamesettings", "unlim", 	exec "openscriptmenu ingame rcon_map_pam_unlim")
 
 
 // RE

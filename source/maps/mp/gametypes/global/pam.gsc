@@ -21,7 +21,7 @@ init()
 
 		// Errors
 		precacheString2("STRING_PAM_DONT_STEAL", &"This version of pam is only for testing! Dont steal!");
-		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam331.iwd^7 must be installed in ^9main^7 folder. (fs_game)"); // ZPAM_RENAME
+		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam332.iwd^7 must be installed in ^9main^7 folder. (fs_game)"); // ZPAM_RENAME
 		precacheString2("STRING_PAM_GETTING_IWD_FILES_ERROR", &"Error while getting loaded iwd files. Make sure iwd files does not contains spaces.");
 		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v2.iwd^7 must be installed in ^9main^7 folder");
 		precacheString2("STRING_PAM_MAPS_LOAD_ERROR", &"Error while checking if fixed maps exists. Map printed above was not found on server.");
@@ -35,7 +35,7 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam331"; // ZPAM_RENAME
+	level.pam_folder = "main/zpam332"; // ZPAM_RENAME
 	level.pam_map_iwd = "zpam_maps_v2";
 
 	level.pam_mode_change = false;
@@ -115,12 +115,13 @@ CheckInstallation()
 
 /*
 	// eyza safe
-	if (getCvar("") != "") // ZPAM_RENAME
+	if (getCvar("eyza") != "leet") // ZPAM_RENAME
 	{
 		setError(game["STRING_PAM_DONT_STEAL"]);
 		return;
 	}
 */
+
 	// If fs_mode is set
 	if (tolower(level.fs_game) != "")
 	{
@@ -248,6 +249,7 @@ CheckInstallation()
 	blackList[blackList.size] = "mp_burgundy_fix_v1";
 	blackList[blackList.size] = "zpam330";
 	blackList[blackList.size] = "zpam_maps_v1";
+	blackList[blackList.size] = "zpam331";
 
 	blackList[blackList.size] = "mp_chelm";
 	blackList[blackList.size] = "mp_breakout_tls";

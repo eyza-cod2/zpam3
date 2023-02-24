@@ -5,6 +5,7 @@ init()
 	if(game["firstInit"])
 	{
 		precacheString2("STRING_AUTO_SPECTATING", 				&"Auto-spectating");
+		precacheString2("STRING_AUTO_SPECTATING_OFF", 				&"Auto-spectating off");
 		precacheString2("STRING_AUTO_SPECTATING_REASON_MANUAL", 		&"Manual change");
 		precacheString2("STRING_AUTO_SPECTATING_REASON_VISIBLE_ENEMY", 		&"Enemy in sight");
 		precacheString2("STRING_AUTO_SPECTATING_REASON_VISIBLE_BY_ENEMY", 	&"Spotted by enemy");
@@ -18,15 +19,14 @@ init()
 
 		game["STRING_AUTO_SPECT_IS_ENABLED"] = 		"Auto-spectator is ^2On";
 		game["STRING_AUTO_SPECT_IS_DISABLED"] = 	"Auto-spectator is ^1Off";
-		game["STRING_AUTO_SPECT_NAMES_ON"] = 		"Player names ^2On";
-		game["STRING_AUTO_SPECT_NAMES_OFF"] = 		"Player names ^1Off";
+		game["STRING_AUTO_SPECT_NAMES_ON"] = 		"XRAY ^2On";
+		game["STRING_AUTO_SPECT_NAMES_OFF"] = 		"XRAY ^1Off";
 	}
 
 	level.autoSpectating_do = false;
 	level.autoSpectating_ID = -1;		// spectated player
 	level.autoSpectating_spectatedPlayer = undefined;
 	level.autoSpectating_noSwitchUntill = 0;
-	level.autoSpectating_refreshPlayerNames = false;
 	level.autoSpectating_HUD_text = "";
 
 	if (!isDefined(game["spectatingSystem_recommandedPlayerMode_teamLeft_player"]) || level.gametype != "sd" || game["round"] == 0) // round in case of bash
@@ -45,16 +45,16 @@ init()
 	addEventListener("onSpawnedSpectator",  ::onSpawnedSpectator);
 	addEventListener("onPlayerDamaged", 	::onPlayerDamaged);
 	addEventListener("onPlayerKilled", 	::onPlayerKilled);
+
+	//setCvar("debug_spectator", 1);
 }
 
 onConnected()
 {
 	if (!isDefined(self.pers["autoSpectating"]))
 		self.pers["autoSpectating"] = false;
-
 	self.autoSpectating_inCinematic = false;
 	self.freeSpectating = true; // free spectating, not following any player
-	self.autoSpectating_ESP = true;
 }
 
 onConnectedAll()
@@ -76,7 +76,6 @@ onSpawnedSpectator()
 
 onSpawnedPlayer()
 {
-	level.autoSpectating_refreshPlayerNames = true;
 }
 
 
@@ -191,9 +190,9 @@ autoSpectator()
 
 	autoSpectatorEnable(); // enable by default
 
-	self thread playerNames();
+	self thread maps\mp\gametypes\_spectating_hud_esp::ESP_Loop();
 
-	self thread keys_help();
+	self thread maps\mp\gametypes\_spectating_hud::keys_help();
 
 	wait level.frame* 3;
 
@@ -203,6 +202,8 @@ autoSpectator()
 	self.waitForUseKeyRelease = false;
 
 	hud_text_last = "";
+
+	angles_last = undefined;
 
 	for(;;)
 	{
@@ -230,14 +231,13 @@ autoSpectator()
 		// Wait untill timeout is over
 		if (level.in_readyup)
 		{
-			autoSpectatorDisable();
+			self autoSpectatorDisable();
+			self autoSpectatorExit();
 
 			while (level.in_readyup)
 				wait level.fps_multiplier * 1;
 
-			autoSpectatorEnable();
-
-			self thread playerNames();
+			self autoSpectatorEnable();
 		}
 
 
@@ -273,8 +273,6 @@ autoSpectator()
 
 			self.freeSpectating = false; // free spectating ended, now following a player
 		}
-
-
 
 		// Update text with follow reason
 		if (self.pers["autoSpectating"])
@@ -374,7 +372,6 @@ handleMeleeButtonPress()
 	if (!self.pers["autoSpectating"])
 	{
 		self.freeSpectating = true; // free spectating, not following any player
-		self.autoSpectating_ESP = true; // by default enabled
 		if (level.debug_spectator) self iprintln("meleeBtn> self.freeSpectating = ^2true");
 	}
 
@@ -417,9 +414,9 @@ handleUseButtonPress()
 
 	if (holded)
 	{
-		self.autoSpectating_ESP = !self.autoSpectating_ESP;
-		if (self.autoSpectating_ESP) 	self iprintln(game["STRING_AUTO_SPECT_NAMES_ON"]);
-		else				self iprintln(game["STRING_AUTO_SPECT_NAMES_OFF"]);
+		self.pers["autoSpectatingESP"] = !self.pers["autoSpectatingESP"];
+		if (self.pers["autoSpectatingESP"]) 	self iprintln(game["STRING_AUTO_SPECT_NAMES_ON"]);
+		else					self iprintln(game["STRING_AUTO_SPECT_NAMES_OFF"]);
 	}
 	else
 	{
@@ -446,248 +443,6 @@ handleUseButtonPress()
 
 
 
-keys_help()
-{
-	self endon("disconnect");
-
-	self thread maps\mp\gametypes\_spectating_hud::keys_show();
-
-	wait level.fps_multiplier * 5;
-
-	self thread maps\mp\gametypes\_spectating_hud::keys_hide();
-}
-
-
-
-
-
-
-
-playerNames()
-{
-	self endon("disconnect");
-
-	wait level.frame;
-
-	// Wait untill readyup is over (used when timeout is called in time based gametypes and somebody connect)
-	while(level.in_readyup || isDefined(self.spec_waypoint))
-		wait level.fps_multiplier * 1;
-
-	level.autoSpectating_refreshPlayerNames = false;
-	self.spec_waypoint = [];
-
-	players = getentarray("player", "classname");
-	for(i = 0; i < players.size; i++)
-	{
-		player = players[i];
-		if (player != self && (player.pers["team"] == "allies" || player.pers["team"] == "axis") && player.sessionstate == "playing")
-		{
-			index = self.spec_waypoint.size;
-			self.spec_waypoint[index] = addHUDClient(self, 10, 10, 1.2, (1,1,1), "center", "bottom", "subleft", "subtop");
-			self.spec_waypoint[index].name = "name";
-			self.spec_waypoint[index].player = player;
-			self.spec_waypoint[index].fontscale = 0.75;
-			self.spec_waypoint[index].archived = false;
-			self.spec_waypoint[index] SetPlayerNameString(player);
-			self.spec_waypoint[index] thread SetPlayerWaypoint(self, player, (0, 0, 10));
-			self.spec_waypoint[index] thread hud_watchPlayer(self, player);
-		}
-	}
-
-	index = self.spec_waypoint.size;
-	self.spec_waypoint[index] = addHUDClient(self, 0, 0, undefined, (1,1,1), "center", "middle", "center", "middle");
-	self.spec_waypoint[index].name = "cross";
-	self.spec_waypoint[index].player = self;
-	self.spec_waypoint[index] setShader("white", 2, 2);
-	self.spec_waypoint[index] thread hud_watchPlayer(self);
-
-
-	self.spec_follow_text = addHUDClient(self, 0, -85, 1.2, (1,1,1), "center", "middle", "center", "bottom");
-	self.spec_follow_text.fontscale = 1;
-	self.spec_follow_text.alpha = 0;
-
-
-
-	waypoints = self.spec_waypoint.size;
-	saved_player_last = undefined;
-
-	for(;;)
-	{
-		wait level.frame;
-
-		// All needs to be removed (changed team or new player connected)
-		if (self.pers["team"] != "spectator" || level.in_readyup || level.autoSpectating_refreshPlayerNames)
-		{
-			break;
-		}
-
-		saved_dist2D = 0;
-		saved_dist3D = 0;
-		saved_player = undefined;
-
-		for(i = 0; i < waypoints; i++)
-		{
-			hud = self.spec_waypoint[i];
-
-			// If HUD is not defined, it means player disconnect and HUD object was deleted
-			if (!isDefined(hud))
-				continue;
-
-			if (hud.name != "name" || !isDefined(hud.player) || !isAlive(hud.player))
-				continue;
-
-			self.spec_waypoint[i].paused = !self.autoSpectating_ESP && !self.freeSpectating && self.pers["autoSpectating"];
-
-			if (!self.freeSpectating)
-				continue;
-
-
-			dist3D = distance(self.origin, hud.player.origin);
-
-			// If text is somewhere in rectangle around center
-			if ((hud.x > 160 && hud.x < 480 && hud.y > 120 && hud.y < 360) || (dist3D < 300 && hud.x > 160 && hud.x < 480))
-			{
-				if (dist3D < 1000)
-				{
-					dist2D = distance((hud.x, hud.y, 0), (320, 240, 0));	// Distance of text from center - text is in 640x480 rectangle aligned left top
-
-					if (!isDefined(saved_player) || (dist2D < saved_dist2D && dist3D < saved_dist3D))
-					{
-						saved_dist2D = dist2D;
-						saved_dist3D = dist3D;
-						saved_player = hud.player;
-					}
-				}
-			}
-		}
-
-		time = 0.1;
-
-		if (isDefined(saved_player))
-		{
-			if (isDefined(saved_player_last) && saved_player_last != saved_player)
-			{
-				self.spec_follow_text fadeOverTime(time);
-				self.spec_follow_text.alpha = 0;
-				wait level.fps_multiplier * time;
-			}
-			if (!isDefined(saved_player_last) || saved_player_last != saved_player)
-			{
-				self.spec_follow_text SetPlayerNameString(saved_player);
-				self.spec_follow_text fadeOverTime(time);
-				self.spec_follow_text.alpha = 1;
-				wait level.fps_multiplier * time;
-			}
-		}
-		else if (isDefined(saved_player_last))
-		{
-			self.spec_follow_text fadeOverTime(time);
-			self.spec_follow_text.alpha = 0;
-			wait level.fps_multiplier * time;
-		}
-
-		saved_player_last = saved_player;
-
-		self.spec_follow = saved_player;
-	}
-
-
-	// Destroy all
-	for(i = 0; i < waypoints; i++)
-	{
-		hud = self.spec_waypoint[i];
-
-		// If HUD is not defined, it means player disconnect and HUD object was deleted
-		if (!isDefined(hud))
-			continue;
-
-		hud destroy2();
-	}
-	self.spec_waypoint = undefined;
-
-	self.spec_follow_text destroy2();
-
-	// Run again
-	if (level.autoSpectating_refreshPlayerNames)
-	{
-		level.autoSpectating_refreshPlayerNames = false;
-		self thread playerNames();
-	}
-}
-
-
-// self is HUD, spectator is hud owner and player is waypoined player
-hud_watchPlayer(spectator, player)
-{
-	for (;;)
-	{
-		if (!isDefined(self))
-			break;
-
-		if (!isDefined(player))
-		{
-			self destroy2();
-			break;
-		}
-
-		if (self.name == "name")
-		{
-			color = (0.8, 0.8, 0.8);
-			if (player.sessionteam == "allies")
-			{
-				if(game["allies"] == "american")
-					color = (0.4, 0.9, .56);
-				else if(game["allies"] == "british")
-					color = (0.45, 0.73, 1);
-				else if(game["allies"] == "russian")
-					color = (1, 0.4, 0.4);
-			}
-			self.color = color;
-
-			// ESP for spectated player - show only enemy
-			alpha = 0;
-			if (!isDefined(spectator.killcam) && spectator.autoSpectating_ESP && !spectator.freeSpectating && spectator.pers["autoSpectating"])
-			{
-				if(isAlive(player) && isDefined(level.autoSpectating_spectatedPlayer) && level.autoSpectating_spectatedPlayer.sessionteam != player.sessionteam)
-				{
-					alpha = 1;
-
-					// If is in center, add alpha
-					dist2D = distance((self.x, self.y, 0), (320, 240, 0));	// Distance of text from center - text is in 640x480 rectangle aligned left top
-					if (dist2D < 100)
-					{
-						alpha = dist2D / 100;
-					}
-				}
-			}
-			else if (!isDefined(spectator.killcam) && spectator.freeSpectating)
-			{
-				if (isAlive(player))
-					alpha = 1;
-				else
-					alpha = 0.4;
-			}
-
-			self.alpha = alpha;
-		}
-
-		if (self.name == "cross")
-		{
-			if (spectator.freeSpectating)
-				self.alpha = 1;
-			else
-				self.alpha = 0;
-		}
-
-		wait level.frame;
-	}
-}
-
-
-
-
-
-
 
 autoSpectatorEnable()
 {
@@ -705,7 +460,6 @@ autoSpectatorEnable()
 		self.autoSpectatingBG.y = 40;
 		self.autoSpectatingBG.horzAlign = "center";
 		self.autoSpectatingBG.vertAlign = "top";
-		self.autoSpectatingBG.alpha = 0.5;
 		self.autoSpectatingBG setShader("black", 80, 10);
 	}
 
@@ -721,11 +475,12 @@ autoSpectatorEnable()
 		self.autoSpectatingText.y = 42;
 		self.autoSpectatingText.archived = false;
 		self.autoSpectatingText.font = "default";
-		self.autoSpectatingText.sort = 2;
 		self.autoSpectatingText.alpha = 0.9;
+		self.autoSpectatingText.sort = 2;
 		self.autoSpectatingText.fontscale = 0.6;
 	}
 
+	self.autoSpectatingBG.alpha = 0.5;
 	self.autoSpectatingText setText(game["STRING_AUTO_SPECTATING"]);
 }
 
@@ -735,17 +490,8 @@ autoSpectatorDisable()
 	self.pers["autoSpectating"] = false;
 	self.spectatorclient = -1;
 
-
-	if(isdefined(self.autoSpectatingBG))
-	{
-		self.autoSpectatingBG destroy2();
-		self.autoSpectatingBG = undefined;
-	}
-	if(isdefined(self.autoSpectatingText))
-	{
-		self.autoSpectatingText destroy2();
-		self.autoSpectatingText = undefined;
-	}
+	self.autoSpectatingBG.alpha = 0;
+	self.autoSpectatingText setText(game["STRING_AUTO_SPECTATING_OFF"]);
 }
 
 autoSpectatorExit()

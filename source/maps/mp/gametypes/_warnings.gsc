@@ -69,7 +69,7 @@ update()
 	errors = "";
 /*
 	// ZPAM_RENAME
-	errors += "^3This is preview version of PAM!^7\n";
+	errors += "^3This is testing version of PAM, server may crash!^7\n";
 	errors += "^3Report feedback to eyza#7930^7\n";
 */
 	if (getcvarint("sv_cheats"))
@@ -84,7 +84,10 @@ update()
 	map = level.mapname;
 	if (map == "mp_toujane" || map == "mp_burgundy" || map == "mp_dawnville" || map == "mp_matmata" || map == "mp_carentan")
 	{
-		errors += "^3This is old version of map, use fixed version^7\n";
+		ver = "_v2";
+		if (map == "mp_burgundy") ver = "_v1";
+	
+		errors += "^3This is an old map, use " + map + "_fix" + ver + "^7\n";
 	}
 
 	if (errors != "")

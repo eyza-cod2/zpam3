@@ -11,7 +11,7 @@
 		blurWorld		5.0
 		onOpen
 		{
-			scriptMenuResponse "moddownloaded";
+			execNow "openscriptmenu moddownload moddownloaded"
 		}
 		OnEsc
 		{

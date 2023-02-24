@@ -243,18 +243,20 @@ onConnected()
 	// Other like self.ownvariable will be undefined after scriped map restart
 	// Except a few special vars, like self.sessionteam, their are defined after map restart, but with default value
 
-	// If is players first connect, his team is undefined (in SD is PlayerConnected called every round)
-	if (isDefined(self.pers["team"]) && self.pers["team"] != "spectator")
-	{
-		// Show player in spectator team
-		self.sessionteam = "none";
-	}
-	else
+	if (!isDefined(self.pers["team"]))
 	{
 		self.pers["team"] = "spectator";
 		self.sessionteam = "spectator";
+
 		// Print "<NAME> Connected" to all
 		iprintln(&"MP_CONNECTED", self.name);
+	}
+	else
+	{
+		if (self.pers["team"] == "allies" || self.pers["team"] == "axis")
+			self.sessionteam = "none";
+		else
+			self.sessionteam = "spectator";
 	}
 
 	// Define default variables specific for this gametype
@@ -277,7 +279,7 @@ onAfterConnected()
 		spawnIntermission();
 
 	// If player is just connected and blackout needs to be activated
-	else if (self.pers["team"] == "none")
+	else if (!isDefined(self.pers["firstTeamSelected"]))
 	{
 		if (self maps\mp\gametypes\_blackout::isBlackoutNeeded())
 			self maps\mp\gametypes\_blackout::spawnBlackout();
@@ -948,7 +950,7 @@ menuAxis()
 
 menuSpectator()
 {
-	if(self.pers["team"] == "spectator")
+	if(self.pers["team"] == "spectator" && isDefined(self.pers["firstTeamSelected"]))
 		return;
 
 	self.joining_team = "spectator";

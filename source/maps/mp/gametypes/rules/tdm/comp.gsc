@@ -32,9 +32,9 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_readyup_start_timer", 10); 	// Count-down timer with black screen when all players are ready
 
 	// Time-out
-	arr = ruleCvarDefault(arr, "scr_timeouts", 0);						// Total timeouts for one team
-	//arr = ruleCvarDefault(arr, "scr_timeouts_half", 1); 				// How many per side
-	//arr = ruleCvarDefault(arr, "scr_timeout_length", 5); 				// Length in minutes
+	arr = ruleCvarDefault(arr, "scr_timeouts", 4);			// Total timeouts for one team
+	arr = ruleCvarDefault(arr, "scr_timeouts_half", 2); 		// How many per side
+	arr = ruleCvarDefault(arr, "scr_timeout_length", 2); 		// Length in minutes
 
 	// Hud Options
 	arr = ruleCvarDefault(arr, "scr_show_players_left", 1);
@@ -126,6 +126,7 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_smg_allow_drop", 1);
 	arr = ruleCvarDefault(arr, "scr_mg_allow_drop", 1);
 	arr = ruleCvarDefault(arr, "scr_shotgun_allow_drop", 0);
+	arr = ruleCvarDefault(arr, "scr_pistol_allow_drop", 1);
 
 	// Allow grenade / smoke drop when player die
 	arr = ruleCvarDefault(arr, "scr_allow_grenade_drop", 1);

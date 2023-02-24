@@ -74,21 +74,37 @@ isDigit(char)
 // Return array with separated items
 splitString(string, delimiter)
 {
+	if (delimiter == "")
+		return string;
+
 	array = [];
 	buffer = "";
 	for (i = 0; i <= string.size; i++)
 	{
-		char = delimiter;
-		if (i < string.size)
-			char = string[i];
+		char = "";
 
-		if (char == delimiter)
+		match = true;
+		if (i < string.size)
+		{
+			char = string[i];
+			for (j = 0; j < delimiter.size; j++)
+			{
+				if (i + j >= string.size || string[i+j] != delimiter[j])
+				{
+					match = false;
+					break;
+				}
+			}
+		}
+
+		if (match)
 		{
 			if (buffer != "")
 			{
 				array[array.size] = buffer;
 				buffer = "";
 			}
+			i += delimiter.size - 1;
 		}
 		else
 			buffer += char;
@@ -155,4 +171,33 @@ plural_s(num, text)
 	if (num > 1)
 		text += "s";
 	return num + " " + text;
+}
+
+// Format the number into specified number of decimal places
+format_fractional(num, fixedPositions, precision)
+{
+	// Is negative number
+	num2 = num;
+	if (num < 0)
+		num2 *= -1;
+
+	// Get the fraction part as integer formated to 9 places
+	fraction = "" + int((num2 - int(num2)) * 1000000000);
+	fraction2 = "000000000" + fraction;
+	fraction2 = getsubstr(fraction2, fraction2.size - 9);
+	fraction2 = getsubstr(fraction2, 0, precision);
+
+	// Format the whole number
+	whole = "" + int(num2);
+	if (whole.size < fixedPositions)
+	{
+		whole = "000000000" + whole;
+		whole = getsubstr(whole, whole.size - fixedPositions);
+	}
+
+	sign = "";
+	if (num < 0)
+		sign = "-";
+
+	return sign + whole + "." + fraction2;
 }

@@ -86,7 +86,7 @@
 			visible			1
 			origin			447 15
 			forecolor		1 1 1  1
-			text			"You are playing on server with ^2zPAM3.31 ^3PREVIEW" // ZPAM_RENAME
+			text			"You are playing on server with ^2zPAM3.32 ^3PREVIEW" // ZPAM_RENAME
 			textfont		UI_FONT_NORMAL
 			textscale		0.2
 			textstyle		ITEM_TEXTSTYLE_SHADOWED
@@ -112,7 +112,7 @@
 			visible			1
 			origin			447 15
 			forecolor		1 1 1  1
-			text			"You are playing on server with ^1zPAM3.31 TEST 1" // ZPAM_RENAME
+			text			"You are playing on server with ^1zPAM3.32 TEST 2" // ZPAM_RENAME
 			textfont		UI_FONT_NORMAL
 			textscale		0.2
 			textstyle		ITEM_TEXTSTYLE_SHADOWED

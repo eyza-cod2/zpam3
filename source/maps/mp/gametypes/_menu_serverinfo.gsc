@@ -5,9 +5,10 @@ init()
 	addEventListener("onStartGameType", ::onStartGameType);
 	addEventListener("onCvarChanged",   ::onCvarChanged);
 
-	registerCvar("scr_motd", "STRING", "Welcome. This server is running zPAM3.31");	// ZPAM_RENAME
+	registerCvarEx("I", "scr_motd", "STRING", "Welcome. This server is running zPAM3.32");	// ZPAM_RENAME
 
 	level.motd = "";
+	level.serverversion = "";
 	level.serverinfo_left1 = "";
 	level.serverinfo_left2 = "";
 	level.serverinfo_right1 = "";
@@ -45,6 +46,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 updateServerInfo()
 {
 	self setClientCvarIfChanged("ui_motd", level.motd);
+	self setClientCvarIfChanged("ui_serverversion", level.serverversion);
 
 	// These are set from gametype
 	self setClientCvarIfChanged("ui_serverinfo_left1", level.serverinfo_left1);
@@ -81,6 +83,25 @@ generateGlobalServerInfo()
 	}
 	level.motd = motd_final;
 
+
+
+
+	level.serverversion = getCvar("version") + "    "; // "CoD2 MP 1.3 build pc_1.3_1_1 Mon May 01 2006 05:05:43PM win-x86"
+
+	sys_cpuGHz = getCvarFloat("sys_cpuGHz"); // "2.59199"
+	if (sys_cpuGHz != 0)
+		level.serverversion += " (CPU " + format_fractional(sys_cpuGHz, 1, 2) + " GHz)";
+
+	sys_gpu = getcvar("sys_gpu"); // "Intel(R) UHD Graphics"
+	if (sys_gpu != "")
+		level.serverversion += " (GPU " + sys_gpu + ")";
+
+	level.serverversion += " (" + getcvarint("sv_maxclients") + " slots)"; // (14 slots)
+
+	if (contains(level.serverversion, "win"))
+		level.serverversion += " (Windows server)";
+	else if (contains(level.serverversion, "linux"))
+		level.serverversion += " (Linux server)";
 
 
 

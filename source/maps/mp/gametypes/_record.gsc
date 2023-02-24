@@ -18,9 +18,6 @@ init()
 	if (!level.scr_recording)
 		return;
 
-	if (game["scr_matchinfo"] == 0) // used to get team names
-		return;
-
 	// Match ID is just random string to avoid demo overwrite
 	if (!isDefined(game["recordingMatchID"]))
 		game["recordingMatchID"] = generateHash(2);
@@ -113,7 +110,7 @@ onSpawned()
 	if (!self.pers["recording_executed"])
 	{
 		// If player connect in the middle of the match, start recording (recording was not runned yet)
-		if (!level.in_readyup && !level.in_timeout && (self.sessionteam == "allies" || self.sessionteam == "axis"))
+		if (!level.in_readyup && !level.in_timeout && (self.pers["team"] == "allies" || self.pers["team"] == "axis"))
 		{
 			waittillframeend; // wait until team names are generated
 			self execRecording();
@@ -192,83 +189,96 @@ generateDemoName()
 	// Wait untill team names are generated in case recording is executed right at start of new round
 	waittillframeend;
 
-	// Assing my team name as first
-	myTeamName = game["match_team1_name"];
-	enemyTeamName = game["match_team2_name"];
-	if (self.pers["team"] == game["match_team2_side"])
+	teamPrefix = "";
+
+	// If team names are turned off (deathmatch)
+	if (game["scr_matchinfo"] > 0)
 	{
-		myTeamName = game["match_team2_name"];
-		enemyTeamName = game["match_team1_name"];
-	}
-
-
-	// Protection if team names from match info are empty
-	if (myTeamName == "" || enemyTeamName == "")
-	{
-		maps\mp\gametypes\_teamname::refreshTeamName("allies"); // will update level.teamname_allies
-		maps\mp\gametypes\_teamname::refreshTeamName("axis"); // will update level.teamname_axis
-
-		if (self.pers["team"] == "allies")
+		// Assing my team name as first
+		myTeamName = game["match_team1_name"];
+		enemyTeamName = game["match_team2_name"];
+		if (self.pers["team"] == game["match_team2_side"])
 		{
-			myTeamName = level.teamname_allies;
-			enemyTeamName = level.teamname_axis;
+			myTeamName = game["match_team2_name"];
+			enemyTeamName = game["match_team1_name"];
 		}
-		else
+
+
+		// Protection if team names from match info are empty
+		if (myTeamName == "" || enemyTeamName == "")
 		{
-			myTeamName = level.teamname_axis;
-			enemyTeamName = level.teamname_allies;
-		}
-	}
+			maps\mp\gametypes\_teamname::refreshTeamName("allies"); // will update level.teamname_allies
+			maps\mp\gametypes\_teamname::refreshTeamName("axis"); // will update level.teamname_axis
 
-
-	// Generated name is empty
-	if (myTeamName == "")
-		myTeamName = "!";
-	if (enemyTeamName == "")
-		enemyTeamName = "!";
-
-
-	// Get only a-z A-Z 0-9
-	myTeamName = getSecureString(myTeamName);
-	enemyTeamName = getSecureString(enemyTeamName);
-
-	// Limit length
-	enemyExtraLen = 11 - enemyTeamName.size;
-	if (enemyExtraLen < 0) enemyExtraLen = 0;
-	myExtraLen = 7 - myTeamName.size;
-	if (myExtraLen < 0) myExtraLen = 0;
-
-	myTeamName = getsubstr(myTeamName, 0, 7 + enemyExtraLen);
-	enemyTeamName = getsubstr(enemyTeamName, 0, 11 + myExtraLen);
-
-	// Get number of players
-	myTeamPlayers = 0;
-	enemyTeamPlayers = 0;
-	players = getentarray("player", "classname");
-	for(i = 0; i < players.size; i++)
-	{
-		player = players[i];
-
-		if (player.pers["team"] == "allies")
-		{
 			if (self.pers["team"] == "allies")
-				myTeamPlayers++;
+			{
+				myTeamName = level.teamname_allies;
+				enemyTeamName = level.teamname_axis;
+			}
 			else
-				enemyTeamPlayers++;
+			{
+				myTeamName = level.teamname_axis;
+				enemyTeamName = level.teamname_allies;
+			}
 		}
-		else if (player.pers["team"] == "axis")
+
+
+		// Generated name is empty
+		if (myTeamName == "")
+			myTeamName = "!";
+		if (enemyTeamName == "")
+			enemyTeamName = "!";
+
+
+		// Get only a-z A-Z 0-9
+		myTeamName = getSecureString(myTeamName);
+		enemyTeamName = getSecureString(enemyTeamName);
+
+		// Limit length
+		enemyExtraLen = 11 - enemyTeamName.size;
+		if (enemyExtraLen < 0) enemyExtraLen = 0;
+		myExtraLen = 7 - myTeamName.size;
+		if (myExtraLen < 0) myExtraLen = 0;
+
+		myTeamName = getsubstr(myTeamName, 0, 7 + enemyExtraLen);
+		enemyTeamName = getsubstr(enemyTeamName, 0, 11 + myExtraLen);
+
+		// Get number of players
+		myTeamPlayers = 0;
+		enemyTeamPlayers = 0;
+		players = getentarray("player", "classname");
+		for(i = 0; i < players.size; i++)
 		{
-			if (self.pers["team"] == "axis")
-				myTeamPlayers++;
-			else
-				enemyTeamPlayers++;
+			player = players[i];
+
+			if (player.pers["team"] == "allies")
+			{
+				if (self.pers["team"] == "allies")
+					myTeamPlayers++;
+				else
+					enemyTeamPlayers++;
+			}
+			else if (player.pers["team"] == "axis")
+			{
+				if (self.pers["team"] == "axis")
+					myTeamPlayers++;
+				else
+					enemyTeamPlayers++;
+			}
 		}
+
+		teamPrefix = myTeamName + "_" + enemyTeamName;
+
+		// Show xVx text only if it is not 5v5
+		if (myTeamPlayers != 5 && enemyTeamPlayers != 5)
+			teamPrefix += "_" + myTeamPlayers + "v" + enemyTeamPlayers;
+	}
+	else
+	{
+		teamPrefix = getsubstr(getSecureString(self.name), 0, 18);
 	}
 
-	// Shot xVx text only if it is not 5v5
-	xVx = "";
-	if (myTeamPlayers != 5 && enemyTeamPlayers != 5)
-	xVx = "_" + myTeamPlayers + "v" + enemyTeamPlayers;
+
 
 	// Map name
 	mapname = level.mapname;
@@ -286,14 +296,14 @@ generateDemoName()
 		mapname = getsubstr(mapname, 0, 3);
 	}
 
-	demoName = myTeamName + "_" + enemyTeamName+xVx + "_" + mapname + "#" + game["recordingMatchID"];
+	demoName = teamPrefix + "_" + mapname;
+
+	if (level.gametype != "sd")
+		demoName += "#" + level.gametype;
+
+	demoName += "#" + game["recordingMatchID"];
 
 	// Avoiding file overwritting
-	if (level.gametype != "sd")
-	{
-		demoName += "#" + level.gametype;
-	}
-
 	if ((level.gametype == "sd" || level.gametype == "re") && game["roundsplayed"] > 0 && !game["overtime_active"])
 		demoName += "_r" + game["roundsplayed"]; // use round-number
 	else if (level.gametype != "sd" && level.gametype != "re" && isDefined(level.matchstarted) && level.matchstarted)
@@ -348,7 +358,7 @@ startRecordingForAll()
     {
         player = players[i];
 
-		if (!player.pers["recording_executed"] && (player.sessionteam == "allies" || player.sessionteam == "axis"))
+		if (!player.pers["recording_executed"] && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
 			player thread execRecording();
     }
 }
@@ -433,30 +443,26 @@ stopRecording()
 	// Try to execute the command every second untill its confirmed by openscriptmenu
 	while(!self.pers["recording_stop_executed"])
 	{
-		// Exec command on client side
-		// If some menu is already opened:
-		//	- by player (main menu / quick messages) -> NOT WORKING - command will not be executed
-		//	- by player (by ESC key) -> that menu will be closed
-		//  	- by script (via openMenu()) -> that menu will be closed and exec_cmd will not be closed correctly
-		//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
-		self closeMenu();
-		self closeInGameMenu();
-		self setClientCvar2("exec_cmd", "stoprecord; openScriptMenu exec_cmd stop_recording");
-		self openMenu(game["menu_exec_cmd"]);		// open menu via script
-		self closeMenu();				// will only close menu opened by script
+		// Open menu only if player is alive (to make sure no other menu is opened)
+		// Because stop recording may be called when matchinfo is cleared - it will close sevrerinfo menu for connected players
+		if (IsAlive(self))
+		{
+			// Exec command on client side
+			// If some menu is already opened:
+			//	- by player (main menu / quick messages) -> NOT WORKING - command will not be executed
+			//	- by player (by ESC key) -> that menu will be closed
+			//  	- by script (via openMenu()) -> that menu will be closed and exec_cmd will not be closed correctly
+			//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
+			self closeMenu();
+			self closeInGameMenu();
+			self setClientCvar2("exec_cmd", "stoprecord; openScriptMenu exec_cmd stop_recording");
+			self openMenu(game["menu_exec_cmd"]);		// open menu via script
+			self closeMenu();				// will only close menu opened by script
+		}
 
 		// Wait a second before next menu opening
 		for (i = 0; i < 9 && !self.pers["recording_executed"]; i++)
 			wait level.fps_multiplier * .1;
-	}
-
-	// Serverinfo menu reopen
-	// Because stop recording may be called when matchinfo is cleared - it will close sevrerinfo menu for connected players
-	// If they are still in serverinfo menu, open that menu again
-	if(!isDefined(self.pers["skipserverinfo"]))
-	{
-		self closeMenu();
-		self openMenu(game["menu_serverinfo"]);
 	}
 
 	self iprintln("Recording stopped.");

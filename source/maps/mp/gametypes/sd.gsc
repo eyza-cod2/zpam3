@@ -231,6 +231,8 @@ precache()
 
 	// HUD: Strattime
 	precacheString2("STRING_STRAT_TIME", &"Strat Time");
+
+	precacheString2("STRING_SPECTATOR_KILLCAM_REPLAY", &"Spectator killcam replay");
 }
 
 // Called after the <gametype>.gsc::main() and <map>.gsc::main() scripts are called
@@ -572,7 +574,7 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 		// Player's stats - increase damage points (_player_stat.gsc)
 		if (isDefined(eAttacker) && isPlayer(eAttacker) && eAttacker != self && eAttacker.pers["team"] != self.pers["team"] && !level.in_readyup && level.roundstarted && !level.roundended)
 		{
-			eAttacker thread watchPlayerDamageForStats(self, iDamage);
+			eAttacker thread watchPlayerDamageForStats(self, iDamage, sMeansOfDeath, sWeapon);
 
 			// For assists
 			if (isDefined(self.lastAttacker) && self.lastAttacker != eAttacker)
@@ -680,10 +682,53 @@ onAfterPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWe
 }
 
 // Self if player who is hitting enemy
-watchPlayerDamageForStats(enemy, damage)
+watchPlayerDamageForStats(enemy, damage, sMeansOfDeath, sWeapon)
 {
 	self endon("disconnect");
 	enemy endon("disconnect");
+
+	weapons["m1carbine_mp"] = 		50;
+	weapons["m1garand_mp"] = 		50;
+	weapons["thompson_mp"] = 		50;
+	weapons["bar_mp"] = 			50;
+	weapons["springfield_mp"] = 		100;
+	weapons["greasegun_mp"] = 		50;
+	weapons["shotgun_mp"] = 		50;
+	weapons["enfield_mp"] = 		100;
+	weapons["sten_mp"] = 			50;
+	weapons["bren_mp"] = 			50;
+	weapons["enfield_scope_mp"] = 		100;
+	weapons["mosin_nagant_mp"] = 		100;
+	weapons["SVT40_mp"] = 			50;
+	weapons["PPS42_mp"] = 			50;
+	weapons["ppsh_mp"] = 			50;
+	weapons["mosin_nagant_sniper_mp"] = 	100;
+	weapons["kar98k_mp"] = 			100;
+	weapons["g43_mp"] = 			50;
+	weapons["mp40_mp"] = 			50;
+	weapons["mp44_mp"] = 			50;
+	weapons["kar98k_sniper_mp"] = 		50;/*
+	weapons["colt_mp"] = 			50;
+	weapons["luger_mp"] = 			50;
+	weapons["tt30_mp"] = 			50;
+	weapons["webley_mp"] = 			50;*/
+	weapons["mg_mp"] = 			50;
+
+	if (self.usingMG)
+		sWeapon = "mg_mp";
+
+
+	// Decide damage poins
+	if (isDefined(weapons[sWeapon]) && (sMeansOfDeath == "MOD_PISTOL_BULLET" || sMeansOfDeath == "MOD_RIFLE_BULLET"))
+		damage = weapons[sWeapon];
+	else
+		return;
+
+	//self iprintln("^2Hits: " + damage);
+
+	// Make sure only 1 thread is running for player
+	self notify("watchPlayerDamageForStats_kill_" + enemy getEntityNumber());
+	self endon ("watchPlayerDamageForStats_kill_" + enemy getEntityNumber());
 
 	// Wait untill player starts healing
 	lastValue = enemy.health;
@@ -699,6 +744,8 @@ watchPlayerDamageForStats(enemy, damage)
 
 	// Enemy was not killed in 5sec, count damage
 	self maps\mp\gametypes\_player_stat::AddDamage(damage);
+
+	//self iprintln("Hits: " + damage);
 }
 
 /*
@@ -746,6 +793,11 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 			{
 				attacker maps\mp\gametypes\_player_stat::AddKill();
 				attacker maps\mp\gametypes\_player_stat::AddScore(1);
+
+				if (sMeansOfDeath == "MOD_GRENADE_SPLASH")
+				{
+					attacker maps\mp\gametypes\_player_stat::AddGrenade();
+				}
 
 				// For assists
 				if (isDefined(self.lastAttacker) && isDefined(self.lastAttacker2) && self.lastAttacker2 != attacker && (self.lastAttackerTime2 + 5000) > gettime())
@@ -1109,6 +1161,8 @@ spawnIntermission()
   // Open alternative scoreboard
 	self openMenu(game["menu_scoreboard"]);
 	self setClientCvar2("g_scriptMainMenu", game["menu_ingame"]);
+	self setClientCvar2("ui_allow_weaponchange", 0);
+	self setClientCvar2("ui_allow_changeteam", 0);
 
 	// Notify "spawned" notifications
 	self notify("spawned");
@@ -1437,9 +1491,14 @@ HUD_NextRound()
 	starting setText(game["STRING_ROUND_STARTING"]);
 
 
-	// Remove HUD in case timeout is called (new hud about timeout is whowed)
-	while (!game["do_timeout"])
-		wait level.fps_multiplier * 0.2;
+	// Remove hud after time exlaped
+	for(i = 0; i < level.sv_fps * time; i++)
+	{
+		// Remove HUD sooner in case timeout is called (new hud about timeout is whowed)
+		if (game["do_timeout"])
+			break;
+		wait level.frame;
+	}
 
 	round thread removeHUDSmooth(.5);
 	roundnum thread removeHUDSmooth(.5);
@@ -1708,6 +1767,57 @@ endRound(roundwinner)
 		}
 	}
 
+
+	// Check if some spectator is in killcam
+	in_killcam = level isSpectatorInKillcam();
+	if (in_killcam)
+	{
+		// HUD
+		hud = addHUD(-85, 280, 1.2, (1,1,0), "center", "middle", "right");
+		hud showHUDSmooth(.5);
+		hud setText(game["STRING_SPECTATOR_KILLCAM_REPLAY"]);
+
+		// Disable players weapons
+		players = getentarray("player", "classname");
+		for(i = 0; i < players.size; i++)
+		{
+			player = players[i];
+			if (player.sessionstate == "playing")
+				player disableWeapon();
+		}
+
+		for (i = 0; i < level.weaponnames.size; i++)
+		{
+			weapon = level.weaponnames[i];
+
+			// Delete weapons in map
+			weapons = getentarray("weapon_" + weapon, "classname");
+			for(j = 0; j < weapons.size; j++)
+			{
+				weapons[j] delete();
+			}
+		}
+
+		count = 2;
+		for(;;)
+		{
+			wait level.fps_multiplier * 1;
+			in_killcam = level isSpectatorInKillcam();
+
+			if (!in_killcam)
+				count--;
+			else
+				count = 2;
+
+			if (count <= 0)
+				break;
+		}
+
+		hud hideHUDSmooth(.5);
+
+		wait level.fps_multiplier * 0.5;
+	}
+
 	// Used for balance team at the end of the round
 	level notify("restarting");
 
@@ -1715,6 +1825,26 @@ endRound(roundwinner)
 		map_restart(true);
 
 
+}
+
+
+isSpectatorInKillcam()
+{
+	in_killcam = false;
+
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		player = players[i];
+
+		if (player.sessionstate == "spectator" && isDefined(player.killcam) && player.killcam == true)
+		{
+			in_killcam = true;
+			break;
+		}
+	}
+
+	return in_killcam;
 }
 
 checkTimeLimit()

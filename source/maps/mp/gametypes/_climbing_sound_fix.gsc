@@ -1,23 +1,23 @@
 #include maps\mp\gametypes\global\_global;
 
 /*
-If you climb ladder or wall, the "weapon switch" sound is made only for 1st person player, its silent for other players
-If you hide weapon and you climb ladder or obstacle, no "weapon switch" sound is played, its silent for everybody
+If you climb ladder or wall, the "weapon switch" sound was made only for 1st person player, it was silent for other players.
+The sound is now removed completly - meaning if you climb ladder or wall, "weapon switch" sound is not played at all - same for everybody
 
 PAM disabled playing weapon sound change in soundaliases and this script is plaing the sound manually
 
-| -----------------------------------------------------------------------------------------------
-| PAM		| 		| 	Weapon normal state	| 	Weapon holded down	|
-| PAM		| Action	| Ladder	| Climb wall	| Ladder entering | Climb wall	|
-| --------------|---------------|---------------|---------------|-----------------|-------------|
-| Original 	| Client	| sound		| sound		| -		  | -		|
-| Original 	| Others	| -		| -		| -		  | -		|
-| --------------|---------------|---------------|---------------|-----------------|--------------
-| zPAM3.31 	| Client	| sound		| sound		| -		  | -		|
-| zPAM3.31 	| Others	| sound		| sound		| -		  | -		|
-| -----------------------------------------------------------------------------------------------
+| --------------------------------------------------------------|
+| PAM		| Action	| Ladder	| Climb wall	|
+| --------------|---------------|---------------|---------------|
+| Original 	| Client	| sound		| sound		|
+| Original 	| Others	| -		| -		|
+| --------------|---------------|---------------|---------------|
+| zPAM3.32 	| Client	| -		| -		|
+| zPAM3.32 	| Others	| -		| -		|
+| --------------------------------------------------------------|
 
-If players want to silently climb ladder or wall, they need to bug weapon by scrolling down 2x and hold left mouse (weapon holded down)
+This sound is played only if you regularly and intentionally switch the weapon
+
 */
 
 
@@ -50,7 +50,7 @@ bug_fix()
 		current = self getcurrentweapon();
 		alive = self.sessionstate == "playing";
 
-		if (alive && aliveLast && current != currentLast && currentLast != "none" && weapon1 == weapon1Last && weapon2 == weapon2Last)
+		if (alive && aliveLast && current != currentLast && currentLast != "none" && current != "none" && weapon1 == weapon1Last && weapon2 == weapon2Last)
 		{
 			//self iprintln("^2Climb sound fix");
 

@@ -74,7 +74,15 @@
 			decoration
 		}
 
-
+    		// Bottom separator
+    		itemDef
+		{
+			visible			1
+			rect			5 410 390 1
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
 		itemDef
 		{
 			text        		"@MPUI_SEARCH_AND_DESTROY"
@@ -113,6 +121,30 @@
 		blurWorld		0
 
     		#include "ui_mp/scriptmenus/submenus/scoreboard_lines_sd.menu"
-  	}
 
+
+		itemDef
+		{
+			visible			1
+			rect			11 380 380 15
+			type			ITEM_TYPE_BUTTON
+			forecolor		1 1 1 1
+			text			"^9[Enter]^7 Take Screenshot"
+			textfont		UI_FONT_NORMAL
+			textscale		0.23
+			textalign		ITEM_ALIGN_LEFT
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textaligny		15
+			action
+			{
+				play "mouse_click";
+				exec "screenshotJpeg";
+			}
+			onFocus
+			{
+				play "mouse_over";
+			}
+		}
+		execKeyInt 13 { play "mouse_click"; exec "screenshotJpeg"; } // enter
+  	}
 }

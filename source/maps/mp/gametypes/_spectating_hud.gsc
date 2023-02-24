@@ -9,26 +9,10 @@ init()
 
 	if(game["firstInit"])
 	{
-		precacheString2("STRING_AUTO_SPECTATOR_KEY", &"Press ^3[{+melee_breath}]^7 to disable auto-spectator\nHold ^3[{+attack}]^7 to enable auto-spectator\nPress ^3[{+activate}]^7 to play killcam\nHold ^3[{+activate}]^7 to toggle player names");
-
-		precacheString2("STRING_AUTO_SPECTATOR_HIT_HEAD", 		&"Head");
-		precacheString2("STRING_AUTO_SPECTATOR_HIT_NECK", 		&"Neck");
-		precacheString2("STRING_AUTO_SPECTATOR_HIT_BODY_UPPER", 	&"Body");
-		precacheString2("STRING_AUTO_SPECTATOR_HIT_BODY_LOWE", 		&"Body");
-		precacheString2("STRING_AUTO_SPECTATOR_HIT_SHOULDER", 		&"Shoulder");
-		precacheString2("STRING_AUTO_SPECTATOR_HIT_ARM", 		&"Arm");
-		precacheString2("STRING_AUTO_SPECTATOR_HIT_HAND", 		&"Hand");
-		precacheString2("STRING_AUTO_SPECTATOR_HIT_LEG_UPPEER", 	&"Leg");
-		precacheString2("STRING_AUTO_SPECTATOR_HIT_LEG_LOWER", 		&"Leg");
-		precacheString2("STRING_AUTO_SPECTATOR_HIT_FOOT", 		&"Foot");
-		precacheString2("STRING_AUTO_SPECTATOR_HIT_GRENADE", 		&"Grenade");
-
-		precacheShader("headicon_dead");
+		precacheString2("STRING_AUTO_SPECTATOR_KEY", &"Press ^3[{+melee_breath}]^7 to disable auto-spectator\nHold ^3[{+attack}]^7 to enable auto-spectator\nPress ^3[{+activate}]^7 to play killcam\nHold ^3[{+activate}]^7 to toggle XRAY");
 	}
 
 	addEventListener("onSpawnedSpectator",  ::onSpawnedSpectator);
-	addEventListener("onPlayerDamaged", 	::onPlayerDamaged);
-	addEventListener("onPlayerKilled", 	::onPlayerKilled);
 }
 
 onConnected()
@@ -53,315 +37,20 @@ onSpawnedSpectator()
 }
 
 
-/*
-Called when player has taken damage.
-self is the player that took damage.
-*/
-onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
+
+
+
+
+keys_help()
 {
-	if (isDefined(eAttacker) && isPlayer(eAttacker) && self != eAttacker && isDefined(level.autoSpectating_spectatedPlayer) && eAttacker == level.autoSpectating_spectatedPlayer && !level.in_readyup)
-	{
-		// Count total damage
-		id = self getEntityNumber();
-		if (!isDefined(eAttacker.autoSpectating_hits))
-			eAttacker.autoSpectating_hits = [];
-		if (!isDefined(eAttacker.autoSpectating_hits[id]))
-			eAttacker.autoSpectating_hits[id] = 0;
-		eAttacker.autoSpectating_hits[id] += iDamage;
-		self thread resetDamage(eAttacker, id);
+	self endon("disconnect");
 
-		// Show to all spectators
-		players = getentarray("player", "classname");
-		for(i = 0; i < players.size; i++)
-		{
-			player = players[i];
-			if (player.pers["team"] == "spectator" && player.pers["autoSpectating"])
-			{
-				player thread showDamageInfo(eAttacker.autoSpectating_hits[id], sHitLoc, sMeansOfDeath);
-			}
-		}
-	}
-
-
-	if (isDefined(level.autoSpectating_spectatedPlayer) && self == level.autoSpectating_spectatedPlayer && !level.in_readyup)
-	{
-		// Show to all spectators
-		players = getentarray("player", "classname");
-		for(i = 0; i < players.size; i++)
-		{
-			player = players[i];
-			if (player.pers["team"] == "spectator" && player.pers["autoSpectating"])
-			{
-				player thread showTakenDamageInfo((self.maxhealth - self.health) + iDamage, sHitLoc, sMeansOfDeath);
-			}
-		}
-	}
-}
-
-/*
-Called when player is killed
-self is the player that was killed.
-*/
-onPlayerKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
-{
-	if (isDefined(eAttacker) && isPlayer(eAttacker) && self != eAttacker && isDefined(level.autoSpectating_spectatedPlayer) && eAttacker == level.autoSpectating_spectatedPlayer && !level.in_readyup)
-	{
-		// Show to all spectators
-		players = getentarray("player", "classname");
-		for(i = 0; i < players.size; i++)
-		{
-			player = players[i];
-			if (player.pers["team"] == "spectator" && player.pers["autoSpectating"])
-			{
-				player thread showKillInfo();
-			}
-		}
-	}
-}
-
-
-
-
-resetDamage(eAttacker, id)
-{
-	//self endon("disconnect");
-	eAttacker endon("disconnect");
-
-	self notify("autoSpectating_resetDamage_end");
-	self endon("autoSpectating_resetDamage_end");
+	self thread keys_show();
 
 	wait level.fps_multiplier * 5;
 
-	eAttacker.autoSpectating_hits[id] = undefined;
+	self thread keys_hide();
 }
-
-
-showDamageInfo(iDamage, sHitLoc, sMeansOfDeath)
-{
-	hitLocTexts["head"] = 			game["STRING_AUTO_SPECTATOR_HIT_HEAD"];
-	hitLocTexts["neck"] = 			game["STRING_AUTO_SPECTATOR_HIT_NECK"];
-	hitLocTexts["torso_upper"] = 		game["STRING_AUTO_SPECTATOR_HIT_BODY_UPPER"];
-	hitLocTexts["torso_lower"] = 		game["STRING_AUTO_SPECTATOR_HIT_BODY_LOWE"];
-	hitLocTexts["left_arm_upper"] = 	game["STRING_AUTO_SPECTATOR_HIT_SHOULDER"];
-	hitLocTexts["left_arm_lower"] = 	game["STRING_AUTO_SPECTATOR_HIT_ARM"];
-	hitLocTexts["left_hand"] = 		game["STRING_AUTO_SPECTATOR_HIT_HAND"];
-	hitLocTexts["right_arm_upper"] = 	game["STRING_AUTO_SPECTATOR_HIT_SHOULDER"];
-	hitLocTexts["right_arm_lower"] = 	game["STRING_AUTO_SPECTATOR_HIT_ARM"];
-	hitLocTexts["right_hand"] = 		game["STRING_AUTO_SPECTATOR_HIT_HAND"];
-	hitLocTexts["left_leg_upper"] = 	game["STRING_AUTO_SPECTATOR_HIT_LEG_UPPEER"];
-	hitLocTexts["left_leg_lower"] = 	game["STRING_AUTO_SPECTATOR_HIT_LEG_LOWER"];
-	hitLocTexts["left_foot"] = 		game["STRING_AUTO_SPECTATOR_HIT_FOOT"];
-	hitLocTexts["right_leg_upper"] = 	game["STRING_AUTO_SPECTATOR_HIT_LEG_UPPEER"];
-	hitLocTexts["right_leg_lower"] = 	game["STRING_AUTO_SPECTATOR_HIT_LEG_LOWER"];
-	hitLocTexts["right_foot"] = 		game["STRING_AUTO_SPECTATOR_HIT_FOOT"];
-
-	self endon("disconnect");
-
-	if (isDefined(self.killcam))
-		return;
-
-	self notify("autoSpectating_showDamageInfo_end");
-	self endon("autoSpectating_showDamageInfo_end");
-
-	if (!isDefined(self.hud_damageinfo))
-	{
-		self.hud_damageinfo = newClientHudElem2(self);
-		self.hud_damageinfo.horzAlign = "center";
-		self.hud_damageinfo.vertAlign = "middle";
-		self.hud_damageinfo.x = 50;
-		self.hud_damageinfo.fontscale = 1.2;
-		self.hud_damageinfo.archived = false;
-	}
-
-	if (!isDefined(self.hud_damageinfo_loc))
-	{
-		self.hud_damageinfo_loc = newClientHudElem2(self);
-		self.hud_damageinfo_loc.horzAlign = "center";
-		self.hud_damageinfo_loc.vertAlign = "middle";
-		self.hud_damageinfo_loc.x = 80;
-		self.hud_damageinfo_loc.fontscale = 1.1;
-		self.hud_damageinfo_loc.archived = false;
-	}
-
-	if (iDamage > 100)
-		iDamage = 100;
-
-	self.hud_damageinfo setValue(iDamage);
-
-	if (sMeansOfDeath == "MOD_GRENADE_SPLASH")
-		self.hud_damageinfo_loc setText(game["STRING_AUTO_SPECTATOR_HIT_GRENADE"]);
-	else if (isDefined(hitLocTexts[sHitLoc]))
-		self.hud_damageinfo_loc setText(hitLocTexts[sHitLoc]);
-
-	r = 1;
-	g = 1 - ((iDamage - 50) / 50); 	if (g < 0) g = 0; if (g > 1) g = 1;
-	b = 1 - (iDamage / 50); 	if (b < 0) b = 0; if (b > 1) b = 1;
-
-	// red to orange to yellow -> add green
-	// yellow to white -> add blue
-
-	self.hud_damageinfo.color = (r, g, b);
-	self.hud_damageinfo_loc.color = (1, 1, 1);
-
-	self.hud_damageinfo.y = 0;
-	self.hud_damageinfo.alpha = 1;
-	self.hud_damageinfo_loc.y = 0;
-	self.hud_damageinfo_loc.alpha = 1;
-
-	self.hud_damageinfo moveovertime(2);
-	self.hud_damageinfo.y = -50;
-	self.hud_damageinfo_loc moveovertime(2);
-	self.hud_damageinfo_loc.y = -50;
-
-	wait level.fps_multiplier * 1;
-
-	self.hud_damageinfo FadeOverTime(1);
-	self.hud_damageinfo.alpha = 0;
-	self.hud_damageinfo_loc FadeOverTime(1);
-	self.hud_damageinfo_loc.alpha = 0;
-
-	wait level.fps_multiplier * 2;
-
-	self.hud_damageinfo destroy2();
-	self.hud_damageinfo_loc destroy2();
-}
-
-
-
-showTakenDamageInfo(iDamage, sHitLoc, sMeansOfDeath)
-{
-	hitLocTexts["head"] = 			game["STRING_AUTO_SPECTATOR_HIT_HEAD"];
-	hitLocTexts["neck"] = 			game["STRING_AUTO_SPECTATOR_HIT_NECK"];
-	hitLocTexts["torso_upper"] = 		game["STRING_AUTO_SPECTATOR_HIT_BODY_UPPER"];
-	hitLocTexts["torso_lower"] = 		game["STRING_AUTO_SPECTATOR_HIT_BODY_LOWE"];
-	hitLocTexts["left_arm_upper"] = 	game["STRING_AUTO_SPECTATOR_HIT_SHOULDER"];
-	hitLocTexts["left_arm_lower"] = 	game["STRING_AUTO_SPECTATOR_HIT_ARM"];
-	hitLocTexts["left_hand"] = 		game["STRING_AUTO_SPECTATOR_HIT_HAND"];
-	hitLocTexts["right_arm_upper"] = 	game["STRING_AUTO_SPECTATOR_HIT_SHOULDER"];
-	hitLocTexts["right_arm_lower"] = 	game["STRING_AUTO_SPECTATOR_HIT_ARM"];
-	hitLocTexts["right_hand"] = 		game["STRING_AUTO_SPECTATOR_HIT_HAND"];
-	hitLocTexts["left_leg_upper"] = 	game["STRING_AUTO_SPECTATOR_HIT_LEG_UPPEER"];
-	hitLocTexts["left_leg_lower"] = 	game["STRING_AUTO_SPECTATOR_HIT_LEG_LOWER"];
-	hitLocTexts["left_foot"] = 		game["STRING_AUTO_SPECTATOR_HIT_FOOT"];
-	hitLocTexts["right_leg_upper"] = 	game["STRING_AUTO_SPECTATOR_HIT_LEG_UPPEER"];
-	hitLocTexts["right_leg_lower"] = 	game["STRING_AUTO_SPECTATOR_HIT_LEG_LOWER"];
-	hitLocTexts["right_foot"] = 		game["STRING_AUTO_SPECTATOR_HIT_FOOT"];
-
-	self endon("disconnect");
-
-	if (isDefined(self.killcam))
-		return;
-
-	self notify("autoSpectating_showTakenDamageInfo_end");
-	self endon("autoSpectating_showTakenDamageInfo_end");
-
-	if (!isDefined(self.hud_takendamageinfo))
-	{
-		self.hud_takendamageinfo = newClientHudElem2(self);
-		self.hud_takendamageinfo.horzAlign = "center";
-		self.hud_takendamageinfo.vertAlign = "middle";
-		self.hud_takendamageinfo.x = -20;
-		self.hud_takendamageinfo.fontscale = 1.2;
-		self.hud_takendamageinfo.archived = false;
-	}
-
-	if (!isDefined(self.hud_takendamageinfo_loc))
-	{
-		self.hud_takendamageinfo_loc = newClientHudElem2(self);
-		self.hud_takendamageinfo_loc.horzAlign = "center";
-		self.hud_takendamageinfo_loc.vertAlign = "middle";
-		self.hud_takendamageinfo_loc.x = 10;
-		self.hud_takendamageinfo_loc.fontscale = 1.1;
-		self.hud_takendamageinfo_loc.archived = false;
-	}
-
-	if (iDamage > 100)
-		iDamage = 100;
-
-	self.hud_takendamageinfo setValue(iDamage*-1);
-
-	if (sMeansOfDeath == "MOD_GRENADE_SPLASH")
-		self.hud_takendamageinfo_loc setText(game["STRING_AUTO_SPECTATOR_HIT_GRENADE"]);
-	else if (isDefined(hitLocTexts[sHitLoc]))
-		self.hud_takendamageinfo_loc setText(hitLocTexts[sHitLoc]);
-
-	r = 1;
-	g = 1 - ((iDamage - 50) / 50); 	if (g < 0) g = 0; if (g > 1) g = 1;
-	b = 1 - (iDamage / 50); 	if (b < 0) b = 0; if (b > 1) b = 1;
-
-	// red to orange to yellow -> add green
-	// yellow to white -> add blue
-
-	self.hud_takendamageinfo.color = (r, g, b);
-	self.hud_takendamageinfo_loc.color = (1, 1, 1);
-
-	self.hud_takendamageinfo.y = 80;
-	self.hud_takendamageinfo.alpha = 1;
-	self.hud_takendamageinfo_loc.y = 80;
-	self.hud_takendamageinfo_loc.alpha = 1;
-
-	self.hud_takendamageinfo moveovertime(2);
-	self.hud_takendamageinfo.y = 120;
-	self.hud_takendamageinfo_loc moveovertime(2);
-	self.hud_takendamageinfo_loc.y = 120;
-
-	wait level.fps_multiplier * 1;
-
-	self.hud_takendamageinfo FadeOverTime(1);
-	self.hud_takendamageinfo.alpha = 0;
-	self.hud_takendamageinfo_loc FadeOverTime(1);
-	self.hud_takendamageinfo_loc.alpha = 0;
-
-	wait level.fps_multiplier * 2;
-
-	self.hud_takendamageinfo destroy2();
-	self.hud_takendamageinfo_loc destroy2();
-}
-
-
-
-
-
-showKillInfo()
-{
-	self endon("disconnect");
-
-	if (isDefined(self.killcam))
-		return;
-
-	self notify("autoSpectating_showKillInfo_end");
-	self endon("autoSpectating_showKillInfo_end");
-
-	if (!isDefined(self.hud_damageinfo_kill))
-	{
-		self.hud_damageinfo_kill = newClientHudElem2(self);
-		self.hud_damageinfo_kill.horzAlign = "center";
-		self.hud_damageinfo_kill.vertAlign = "middle";
-		self.hud_damageinfo_kill.x = 30;
-		self.hud_damageinfo_kill.archived = false;
-		self.hud_damageinfo_kill setShader("headicon_dead", 23, 23);
-	}
-
-	self.hud_damageinfo_kill.y = 0;
-	self.hud_damageinfo_kill.alpha = 1;
-	self.hud_damageinfo_kill moveovertime(2);
-	self.hud_damageinfo_kill.y = -50;
-
-	wait level.fps_multiplier * 1;
-
-	self.hud_damageinfo_kill FadeOverTime(1);
-	self.hud_damageinfo_kill.alpha = 0;
-
-	wait level.fps_multiplier * 2;
-
-	self.hud_damageinfo_kill destroy2();
-}
-
-
-
-
-
-
 
 keys_show()
 {
@@ -415,16 +104,6 @@ keys_hide()
 		self.autoSpectatingKeyInfo = undefined;
 	}
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

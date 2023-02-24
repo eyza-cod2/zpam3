@@ -1,16 +1,18 @@
 # Introduction
 
-Mod zPAM3.31 is a new version of PAM mode for COD2. <br>
+Mod zPAM3.32 is a new version of PAM mode for COD2. <br>
 
 The code from the previous zPAM 2.07 version was completely rewritten and ported to a new code base, which helped in the implementation of new features and bug fixes.
 
 Work on this pam was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
-
+❗ Note ❗ <br>
+*This page describe only actual version zPAM 3.32 PREVIEW.<br>
+To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
 - #### Preview version:
-  - 2022/10/13 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.31/zpam331.zip">zPAM 3.31 PREVIEW - zpam331.zip</a></b>
+  - 2023/02/24 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.32/zpam332.zip">zPAM 3.32 PREVIEW - zpam332.zip</a></b>
   - ❗ *Preview version demonstrates changes and new features and is not officially accepted by FPS Challange* ❗
 - #### Stable version:
   - 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.22/zpam322.zip">zPAM 3.22 - zpam322.zip</a></b>
@@ -19,10 +21,11 @@ Work on this pam was initiated by me in 2015 and was never fully finished. On co
 
 
 
-## Previous versions
-
+## Version list
+- 2023/02/24 - <b><a href="https://github.com/eyza-cod2/zpam3">zPAM 3.32 PREVIEW</a></b> - actual preview version
+- 2022/10/13 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/3239562802398e9eb16aecb09c8d03e6f902d7ce">zPAM 3.31 PREVIEW</a></b>
 - 2022/10/07 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f254c512574269b4e37971f730087707417d3dce">zPAM 3.30 PREVIEW</a></b>
-- 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/53e1a8e7243596c763e623318668438d8320b257">zPAM 3.22</a></b>
+- 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/53e1a8e7243596c763e623318668438d8320b257">zPAM 3.22</a></b> - stable version
 - 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/53e1a8e7243596c763e623318668438d8320b257">zPAM 3.22</a></b>
 - 2021/05/16 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f0bea94f83791c4a756909963101bfd9d340757f">zPAM 3.21</a></b>
 - 2021/05/05 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c7d5fa259e6e21a7fc510847421fab5338f19d0d">zPAM 3.20</a></b>
@@ -34,11 +37,44 @@ Work on this pam was initiated by me in 2015 and was never fully finished. On co
 - 2020/04/23 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f58fdedbf23f31c62e29ffd25379d6a1d7993e49">zPAM 3.1 BETA</a></b></b>
 
 
-❗ Note ❗ <br>
-*This page describe only actual version zPAM 3.31 PREVIEW.<br>
-To see description of previous version, click on the links above.*
-
 ## Changelog
+
+
+<details><summary>zPAM 3.32 changes (click to open)</summary>
+<p>
+
+- [3.3.70] Silent weapon switch when climbing - restoring the original behavior + disabling the weapon switch sound that is played only in 1st point of view
+- New hand hitbox fix - addressing the hit problems
+- Fixed pistol being dropped in rifle mode when player is killed
+- Fixed auto-recording in deathmatch
+- Fixed RCON menu - rifle and 2v2 mode had wrong order, (correct comp_rifle_2v2 instead of bad comp_2v2_rifle)
+- Auto-spectator improvements:
+    - new XRAY icons besides player names showing enemies behind walls - all toggle able by holding F
+    - fixed black screen for dead players if killcam is played
+    - damage info moved down next to "You killed XXX" text
+    - when there is more killcams to be played at the end of the round and end time elapsed, its extended so killcams are fully played (players will have disabled weapons in this period)
+- Improved round report
+    - showing damage for kills + fixed showing 0hp damage
+    - red star is added indicating that "Hand hitbox fix" or "Torso hitbox fix" was applied
+- Improved scoreboard
+    - adding a button to take a screenshot of scoreboard with ENTER key (since binds are not working in new scoreboard)
+    - it will always show disconnected players (with [-] prefix) for 5 mins (so you see stats for all players in final scorebard)
+    - only Kills and Deaths will be showed for enemy team (to avoid recognize enemy position by watching the scoreboard)
+    - added statistic of kills with grenade
+    - hits counting changed: Scope/rifle +1,  Semi/Automatic/Shotgun +0.5    (its counted once after the hited player is fully healed)
+    - hits colored yellow if its value is >=5.0 and red if its value is >=10.0
+- Adding 10min settings for time based gametypes (DM, TDM, HQ, CTF, HTF)
+- Added damage info into readyup (testing)
+- Fixed scr_motd not being able to change
+- Disabled killing with grenade in readyup
+- Showing type of server and number of players slots in server info menu
+- Some other minor changes
+
+
+</p>
+</details>
+
+
 
 <details><summary>zPAM 3.31 changes (click to open)</summary>
 <p>
@@ -60,6 +96,9 @@ To see description of previous version, click on the links above.*
 
 </p>
 </details>
+
+
+
 
 <details><summary>zPAM 3.30 changes (click to open)</summary>
 <p>
@@ -237,8 +276,8 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.31/zpam331.zip">zPAM 3.31 PREVIEW</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam331.iwd
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.32/zpam332.zip">zPAM 3.32 PREVIEW</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam332.iwd
 	- ./Call of Duty 2/main/zpam_maps_v2.iwd <i>(*required only for 1.3 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
@@ -255,12 +294,13 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 ❗ Error <b>"PAM is not installed correctly"</b> may show. ❗<br>
 To fix this error, follow instructions in [Troubleshooting](#troubleshooting) section
 
+Make sure the server is runned without a mod (```/fs_game```).
+PAM uses default main folder because mods does not exec player's configs correctly and settings changed in game would not be persisted to next game session.
+
+If you are running server manually, this is example of command line parameters:<br>
+```+set dedicated 2 +set sv_punkbuster 0 +pb_sv_disable +exec server.cfg```
 
 
-<details>
-	<summary>Gameservers.com settings example (click to open)</summary>
-	<img src="/images/gameservers.png"  />
-</details>
 
 <br>
 
@@ -292,7 +332,7 @@ Big thanks for HQ, HTF and RE gametypes integration and overal PAM testing
 Big thanks for PAM promoting
 
 **Other supporters:**<br>
-cokY, Sk1lzZ, YctN, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / dutch, excel, shady
+cokY, Sk1lzZ, YctN, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / dutch, excel, shady, jza
 
 
 <br><br>
@@ -411,15 +451,21 @@ You can debug this in game via command **/rcon debug_torsohitbox 1**<br>
 There are some weird situations when you shot player to the body, but the game process it as a hit only.
 These types of bugs are probably caused by badly implemented hit boxes within the game engine.
 In these situations the game process the hit location as hand / arm instead of body (when the arm is right behind the body)
-Hand hitbox fix tries to address this issue by these rules:
- - if you fire from rifle or scope to left or right arm, and
- - enemy is in ads (zoomed), and
- - distance is more than 200, and
- - left or right hind is in front of body (correct angles check)
- - <img src="/images/hitbox_hand2.png"/>
- - In this case, hit location is changed to body, causing deadly damage
- - You can debug hitbox fix in game via command **/rcon debug_handhitbox 1**
- - **Hand hitbox fix is enabled by default**
+Hand hitbox fix tries to address this issue by the following check:
+<img src="/images/hand_hitbox_fix.png"/>
+ - if you fire from rifle or scope, and
+ - distance between you and enemy is more than 200, and
+ - hit location is inside a box created around head, and
+ - head is visible to player (is not behind wall), and
+ - damage is less then 100 (meaning it was hit only to hand)
+ - 	In that case, damage is changed to 100 (meaning enemy will be killed)
+
+The box is created in a way that its always aligned with your point of view and with deph wider towars you. The box is created in this way to cover hands of enemy inside the box when player is in ADS (zoomed). In that case, if you hit the hand from your point of view, it should be a kill, because body is behind the hand.
+
+To apply this fix, the hit location must be inside the box. If the hitbox is outside the box, original damage values are applied.
+
+You can debug hitbox fix in game via command **/rcon debug_handhitbox 1**<br>
+**Hand hitbox fix is enabled by default**
 
 
 <br>
@@ -436,23 +482,24 @@ At the start of the round and at the end of the round, info about weapons of pla
 
  ### How does the "Climbing fix" works / what is it
 
-If you climb ladder or wall, the "weapon switch" sound was made only for 1st person player, it was silent for other players. Now the sound matches equally, so you hear exactly what other players hear (meaning if you climb ladder or wall, "weapon switch" sound is made for everybody).
-If you want to silently climb ladder or wall, you need to hold weapon down by scrolling down 2x and hold left mouse
+If you climb ladder or wall, the "weapon switch" sound was made only for 1st person player, it was silent for other players. The sound is now removed completly - meaning if you climb ladder or wall, "weapon switch" sound is not played at all - same for everybody
 
 ###### Original:
 
-| Player	| Climb ladder<br><sub>(weapon normal)</sub>	| Climb wall <br><sub>(weapon normal)</sub>	| Climb ladder<br><sub>(weapon holded down)</sub>	| Climb wall <br><sub>(weapon holded down)</sub>	|
-|---------------|---------------|---------------|-----------------|-------------|
-| You	| sound		| sound		| -		  | -		|
-| Others	| -		| -		| -		  | -		|
+| Player	| Climb ladder	| Climb wall 	|
+|---------------|---------------|---------------|
+| You		| sound		| sound		|
+| Others	| -		| -		|
 
 
-###### zPAM3.31:
+###### since zPAM3.32:
 
-| Player	| Climb ladder<br><sub>(weapon normal)</sub>	| Climb wall <br><sub>(weapon normal)</sub>	| Climb ladder<br><sub>(weapon holded down)</sub>	| Climb wall <br><sub>(weapon holded down)</sub>	|
-|---------------|---------------|---------------|-----------------|-------------|
-| You	| sound		| sound		| -		  | -		|
-| Others	| sound		| sound		| -		  | -		|
+| Player	| Climb ladder	| Climb wall 	|
+|---------------|---------------|---------------|
+| You		| -		| -		|
+| Others	| -		| -		|
+
+This sound is played only if you regularly and intentionally switch the weapon
 
 
  <br>
@@ -506,7 +553,7 @@ If you change a color, its applied to team, so your teammates can also see the c
 <br>
 
 ### How does the "Round report" works
-At the end of the round, hit + kill informations are printed. It include damage value, hit location and first hit location. For shotgun it prints number of pellets that hit the target<br>
+At the end of the round, report of hits and kills is printed. It include damage value, hit location and first hit location. For shotgun it prints number of pellets that hit the target and range. Read star indicates that "Hand hitbox fix" or "Torso hitbox fix" was applied.<br>
 <img src="/images/round_report.png" />
 
 <br>
@@ -573,16 +620,26 @@ So diagonal is not affected by PAM.
 
 <br>
 
-### Scoreboard menu - how the Score, Kills, Deaths, Assists, Hits, Plant and Defuses are counted
+
+### Scoreboard menu
 <img src="/images/scoreboard_columns.png" />
+<br><br>
+
+Features:
+- shows statistics of players - Score, Kills, Deaths, Assists, Hits, Grenade kills, Plants and Defuses
+- It will always show disconnected players (with [-] prefix) for 5 mins (so you see stats for all players in final scorebard)
+- Only Kills and Deaths will are showed for enemy team (to avoid recognize enemy position by watching the scoreboard)
+
+##### How the Score, Kills, Deaths, Assists, Hits, Plant and Defuses are counted
 
 | Column  | Description                                                                                                                                                                                |
 |---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Score   | Sum of following items:<br>Kill +1<br>Teamkill -1<br>Assist +0.5<br>Plant +0.5<br>Defuse +0.5                                                                                              |
+| Score   | Sum of following items:<br>- Kill: +1<br>- Teamkill: -1<br>- Assist: +0.5<br>- Plant: +0.5<br>- Defuse: +0.5                                                                                              |
 | Kills   | Number of killed enemy players.<br>Teamkills are not counted (neither substracted)                                                                                                         |
 | Deaths  | Number of times you were killed                                                                                                                                                            |
 | Assists | Number of players you damaged and were killed by your teammate within 5 second                                                                                                             |
-| Hits    | Damage you inflicted to opponent that does not lead to kill.<br>For example, if you damage a player for 75hp, after the player's health is regenerated, you will recieve +0.75 hit points. |
+| Hits    | Points given when you hit an enemy and the enemy is then fully healed<br>- Scopes + rifles (single shot weapons): +1<br>- Semi/Automatic/Shotgun (other weapons): +0.5<br>- Pistols: 0<br><br>The value is counted only once after the hited enemy is fully healed<br>Value is colored yellow if its value is >=5.0 and red if its value is >=10.0 |
+| Grenades  | Number of kills with grenade                                                                                                                                                                       |
 | Plants  | Number of bomb plants                                                                                                                                                                      |
 | Defuses | Number of bomd defuses                                                                                                                                                                     |
 
@@ -612,7 +669,7 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 
 ## Troubleshooting
 ### Error "zPAM is not installed correctly"
-#### Iwd file zpam331.iwd must be installed in main folder. (fs_game)
+#### Iwd file zpam332.iwd must be installed in main folder. (fs_game)
  - From version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that cvars / settings changed in game are not saved into the config when running a game with fs_game set.
 Make sure cvar /fs_game is empty and iwd files are placed in main folder.
@@ -720,7 +777,7 @@ Attackers should take both objectives to the goal (blue box) to win. (or elimina
 |--------|---|
 | mr3, mr10, mr12, mr15    | Max rounds mrxx+1 (SD, RE only) |
 | 20rounds   | first to 21 wins (SD, RE only) |
-| 15min, 30min, 60min, unlim | total time limit (TDM, DM, HQ, CTF, HTF only) |
+| 10min, 15min, 30min, 60min, unlim | total time limit (TDM, DM, HQ, CTF, HTF only) |
 
 
 ##### Options
@@ -929,7 +986,7 @@ Added posibility to call bash mode from menu.<br>
 <img src="/images/team_hit.png" /><br>
 [3.3.44] Cvar system rewrited; any change to server settings is retained even when map changes; new cvar /pam_mode_custom is defined - it tells that changes made to server settings stays between map<br>
 [3.3.45] Warnings about wrong server settings (no password, cheats enabled, punkbuster disabled, cvars changes) is changed; its showed in left top corner under the score; if some of the server settings is changed, detailed list of changed cvars is showed; punkbuster warning is removed<br>
-[3.3.46] Hand hit box fix - if hands are in front of body and game somehow badly interprets it as hit to the hand, PAM change it to hit to the body; its an extension to already existing fix in 3.22 for left hand - now its applies also for right hand<br>
+[3.3.46] <del>Hand hit box fix - if hands are in front of body and game somehow badly interprets it as hit to the hand, PAM change it to hit to the body; its an extension to already existing fix in 3.22 for left hand - now its applies also for right hand</del> <b>replaced with [3.3.??]</b><br>
 [3.3.47] Torso hitbox fix; lower torso hitbox (pelvis area) is slightly enlarged as workaround for bad hitbox registration between torso_lower and right/left_leg_upper; this change effectively applies only for rifles, because other weapons has the same damage for torso_lower and right/left_leg_upper<br>
 [3.3.48] Consistent shotgun - this is the new name for new shotgun; this shotgun fixes close range hits; it replaces rebalanced shotgun <br>
 [3.3.49] <del>Ladder weapon bug fix - silent use of ladder is no more possible; its a situation when you double scroll your weapon, hold fire button and use a ladder</del> <strong>replaced via 3.3.68</strong><br>
@@ -961,12 +1018,19 @@ Added posibility to call bash mode from menu.<br>
 	- between halfs: 2min (previously 5min)<br>
 	- between halfs at overtime: 1min (previously 5min)<br>
 	- for LAN mode, there will be no time limits between halfs and maps<br>
-[3.3.68] Climbing sound fix<br>
+[3.3.68] <del>Climbing sound fix<br>
 	- If you climb ladder or wall, the "weapon switch" sound was made only for 1st person player, it was silent for other players<br>
 	- Now the sound matches equally, so you hear exactly what other players hear (meaning if you climb ladder or wall, "weapon switch" sound is made for everybody)<br>
 	- If you want to silently climb ladder or wall, you need to hold weapon down by scrolling down 2x and hold left mouse<br>
-	- This fix replaces previous [3.3.49] "Ladder weapon fix" in 3.30<br>
+	- This fix replaces previous [3.3.49] "Ladder weapon fix" in 3.30</del> <strong>replaced with 3.3.70</strong><br>
 [3.3.69] SD voiceover sound "Move in!" is now played only if player is not moving (replaces [3.3.62])<br>
+[3.3.70] Climbing sound fix (replaces [3.3.68])<br>
+  - restored original behavior that was affected by [3.3.68] and [3.3.49]<br>
+  - disabling the weapon switch sound that is played only in 1st point of view<br>
+  - meaning that everybody hear the same
+
+
+
 </sub>
 
 #### 3.4 Other

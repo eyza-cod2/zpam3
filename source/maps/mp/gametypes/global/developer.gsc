@@ -13,11 +13,14 @@ init()
 
 
 
-
 	// This is called only if developer_script is set to 1
 	/#
   	//addEventListener("onConnected",     ::onConnected);
 	//addEventListener("onConnected",     ::onConnected2);
+	//addEventListener("onConnected",     ::onConnected3);
+
+
+
 
 /*
 
@@ -94,6 +97,27 @@ loop()
 	}
 
 }
+
+onConnected3()
+{
+	self endon("disconnect");
+
+	for(;;)
+	{
+		if (self.isMoving)
+		{
+			origin1 = self.origin;
+			origin2 = self getOrigin();
+
+			if (origin1 == origin2)
+				self iprintln("EQ");
+			else
+				self iprintln("origin1 != origin2   diff: " + distance(origin1, origin2) );
+		}
+		wait level.frame;
+	}
+}
+
 
 onConnected2()
 {
@@ -261,6 +285,62 @@ key()
 	}
 }
 
+lang()
+{
+	setCvar("lang", -1);
+
+	for(;;)
+	{
+		wait level.frame;
+
+		id = getCvarInt("lang");
+
+		if (id != -1)
+		{
+			players = getentarray("player", "classname");
+			for(p = 0; p < players.size; p++)
+			{
+				player = players[p];
+				if (1)
+				{
+					player setClientCvar("loc_language", id);
+
+					player iprintln("lang " + id);
+				}
+			}
+
+			setcvar("lang", -1);
+		}
+	}
+}
+lang_force()
+{
+	setCvar("lang_force", -1);
+
+	for(;;)
+	{
+		wait level.frame;
+
+		id = getCvarInt("lang_force");
+
+		if (id != -1)
+		{
+			players = getentarray("player", "classname");
+			for(p = 0; p < players.size; p++)
+			{
+				player = players[p];
+				if (1)
+				{
+					player setClientCvar("loc_forceEnglish", id);
+
+					player iprintln("loc_forceEnglish " + id);
+				}
+			}
+
+			setcvar("lang_force", -1);
+		}
+	}
+}
 
 
 skipReadyup()
@@ -294,6 +374,7 @@ showWaypoint(player)
 	self.waypoint.z = origin[2];
 	self.waypoint.alpha = 1;
 	self.waypoint.archived = false;
+	if (isDefined(self.waypoint_color)) self.waypoint.color = self.waypoint_color;
 	self.waypoint setShader("objpoint_default", 2, 2);
 	self.waypoint setwaypoint(true);
 
@@ -944,6 +1025,9 @@ onConnected()
 
 	//if (1)	return;
 
+	if (game["state"] == "intermission")
+		return;
+
 	wait level.fps_multiplier * 1.0;
 
 	//self thread showWaypoint();
@@ -970,10 +1054,11 @@ onConnected()
 
 
 
+
     	self notify("menuresponse", game["menu_serverinfo"], "close");
     	wait level.frame;
 
-	i = 1;
+	i = 0;
 
 	if (i == 0)
 	{
@@ -983,8 +1068,11 @@ onConnected()
     			wait level.frame;
     			self notify("menuresponse", game["menu_weapon_allies"], "m1garand_mp");
 
+
+
 			wait level.fps_multiplier * 4;
 
+			//setCvar("scr_sd_roundlength", 10);
 			//thread skipReadyup();
 		}
 	}
@@ -994,7 +1082,9 @@ onConnected()
 		{
 			self notify("menuresponse", game["menu_team"], "spectator");
 
-			setCvar("scr_bots_add", 8);
+			setCvar("scr_bots_add", 1);
+			setCvar("scr_sd_roundlength", 10);
+
 
 			wait level.fps_multiplier * 5.5;
 

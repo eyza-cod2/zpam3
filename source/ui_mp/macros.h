@@ -605,6 +605,20 @@ itemDef \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textaligny		16 \
 	decoration \
+} \
+itemDef \
+{ \
+	name			"text_serverversion" \
+	visible			1 \
+	rect			0 0 480 130 0 0 \
+	origin			60 410 \
+	forecolor		1 1 1 .4 \
+	dvar			"ui_serverversion" \
+	textfont		UI_FONT_NORMAL \
+	textscale		0.2 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textaligny		16 \
+	decoration \
 }
 
 #define SERVERINFO_DRAW_QUIT \

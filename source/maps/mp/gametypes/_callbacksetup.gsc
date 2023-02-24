@@ -155,7 +155,7 @@ CodeCallback_PlayerConnect()
 		self.pers["antilagTimeOffset"] = 0;
 
 	self thread maps\mp\gametypes\global\events::notifyConnecting();
-	
+
 	// Wait here until player is fully connected
 	self waittill("begin");
 
@@ -268,48 +268,172 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 
 	damageFeedback = 1;
 
-	/*
-	// Debug angle
-	if (isDefined(sWeapon) && isDefined(sHitLoc) && isDefined(eAttacker) && isPlayer(eAttacker))
+
+	// Save info about hits
+	self_num = self getEntityNumber();
+	if (isDefined(eAttacker) && isPlayer(eAttacker))
 	{
-		angleDiff = angleDiff(self, eAttacker);
-		iprintln("Hit angle:"+anglediff+"");
+		// Create variable to hold hit data
+		if (!isDefined(eAttacker.hitData))
+			eAttacker.hitData = [];
+		// Because we can hit multiple players in same time (multikill), we need to save it according to players
+		if (!isDefined(eAttacker.hitData[self_num]))
+		{
+			eAttacker.hitData[self_num] = spawnstruct();
+			eAttacker.hitData[self_num].id = 0;			// inited to 0, but will be incremented. 1 then means first bullet
+			eAttacker.hitData[self_num].adjustedBy = "";		// string telling if hit was adjusted by FIXes
+			eAttacker.hitData[self_num].damage = 0;
+			eAttacker.hitData[self_num].damage_comulated = 0;
+		}
+		eAttacker.hitData[self_num].id++;
+
+		self thread hitDataAutoRestart(eAttacker, self_num);
 	}
-	*/
+
+
+	debug = 0; // 1 = print to console
+
 
 	// Hitbox left and right hand fix
 	if (level.scr_hitbox_hand_fix &&
-		isDefined(sWeapon) && isDefined(sHitLoc) && isDefined(eAttacker) && isPlayer(eAttacker))
+		isDefined(sWeapon) && isDefined(sHitLoc) && isDefined(eAttacker) && isPlayer(eAttacker) && eAttacker != self)
 	{
-		// Player is in ads and is shoted to left arm with rifle or scope
-		if (self playerAds() > 0.5 &&
-		    (sWeapon == "kar98k_mp" || sWeapon == "enfield_mp" || sWeapon == "mosin_nagant_mp" ||
-		     sWeapon == "springfield_mp" || sWeapon == "enfield_scope_mp" || sWeapon == "kar98k_sniper_mp" || sWeapon == "mosin_nagant_sniper_mp"))
-		{
-			// If players are looking to each other, make shot to arm a kill
-			distance = distance(self.origin, eAttacker.origin);
-			angleDiff = angleDiff(self, eAttacker);
+		correctWeapon = (sMeansOfDeath == "MOD_RIFLE_BULLET" && ( // This will ignore bash
+				 	sWeapon == "kar98k_mp" || sWeapon == "enfield_mp" || sWeapon == "mosin_nagant_mp" ||
+		     		 	sWeapon == "springfield_mp" || sWeapon == "enfield_scope_mp" || sWeapon == "kar98k_sniper_mp" || sWeapon == "mosin_nagant_sniper_mp"));
+		damageOk = (iDamage < 100);
+		bodyOrHeadVisible = false;
+		distanceOK = false;
+		applyFix = false;
 
-			// Left arm
-			if (distance > 200 && (
-				(anglediff > 0 && anglediff < 30 && sHitLoc == "left_hand") ||
-				(anglediff > -20 && anglediff < 25 && sHitLoc == "left_arm_lower")
-				) && self.angles[0] > -65 && self.angles[0] < 45)
+		if (correctWeapon && damageOk)
+		{
+			distance = distance(self.origin, eAttacker.origin);
+			distanceOK = (distance > 200);
+
+			if (distanceOK)
 			{
-				if (level.debug_handhitbox) iprintln("^1Hand hitbox fix - making damage to "+sHitLoc+" as kill (angle:"+anglediff+")");
-				//println("### Hand hitbox fix - making damage to "+sHitLoc+" as kill (angle:"+anglediff+")"); // EYZA_DEBUG
-				iDamage = 135;
+				// Head or pelvis is visible to player
+				bodyOrHeadVisible = eAttacker maps\mp\gametypes\global\player::isPlayerInSight(self);
+
+				if (bodyOrHeadVisible)
+				{
+					applyFix = true;
+				}
 			}
-			// Right arm
-			if (distance > 200 && (
-				(anglediff > 0  && anglediff < 75  && sHitLoc == "right_hand") ||
-				(anglediff > 45 && anglediff < 100 && sHitLoc == "right_arm_lower")
-				) && self.angles[0] > -65 && self.angles[0] < 45)
+		}
+
+
+		// Hit with rifle or scope
+		if (level.debug_handhitbox || applyFix)
+		{
+			// Define box around head tag tag will be used to determine, if hit location is inside this box and it should be a kill
+			boxBack = 8;		//	 _________				//	 _________
+			boxFront = 30;		//	|  -[]-	 |	       Back		//	|  _[]_	 |	       Top
+			boxLeft = 9;		//	|   |	 |	Left  [Head]  Right	//	| || ||	 |	Left  [Head]  Right
+			boxRight = 9;		//	|	 |	      Front		//	|__| |___|	      Down
+			boxUp = 8;		//	|________|	        ^		//	   ||
+			boxDown = 14;		//	Top view	      Enemy		//	Front view
+			if (self.isMoving) // if player is moving, make the box bigger so it will compensate poor hitboxes
 			{
-				if (level.debug_handhitbox) iprintln("^1Hand hitbox fix - making damage to "+sHitLoc+" as kill (angle:"+anglediff+")");
-				//println("### Hand hitbox fix - making damage to "+sHitLoc+" as kill (angle:"+anglediff+")"); // EYZA_DEBUG
-				iDamage = 135;
+				boxLeft = 11;
+				boxRight = 11;
 			}
+			stance = self maps\mp\gametypes\global\player::getStance(); // prone crouch stand
+			if (stance == "prone")
+			{
+				boxDown = 8;
+			}
+			attacker_eye = eAttacker maps\mp\gametypes\global\player::getEyeOrigin();
+
+			// Debug the box
+			if (level.debug_handhitbox)
+			{
+				if (!isDefined(self.hit)) self.hit = [];
+				for (i = 0; i < 9; i++)
+				{
+					if (!isDefined(self.hit[i]))
+					{
+						self.hit[i] = spawn("script_origin",(0,0,0));
+						self.hit[i].waypoint_color = (1, 0, 0);
+						self.hit[i] thread maps\mp\gametypes\global\developer::showWaypoint();
+					}
+				}
+				//angles = eAttacker getPlayerAngles();
+				angles = vectortoangles(self.headTag getOrigin() - attacker_eye);
+
+				right = anglestoright(angles);
+				up = anglestoup(angles);
+				forward = anglestoforward(angles);
+
+				pointFront = (forward[0]*(boxFront*-1), forward[1]*(boxFront*-1), forward[2]*(boxFront*-1));
+				pointBack = (forward[0]*boxBack, forward[1]*boxBack, forward[2]*boxBack);
+				pointRight = (right[0]*boxRight, right[1]*boxRight, right[2]*boxRight);
+				pointLeft = (right[0]*(boxLeft*-1), right[1]*(boxLeft*-1), right[2]*(boxLeft*-1));
+				pointUp = (up[0]*boxUp, up[1]*boxUp, up[2]*boxUp);
+				pointDown = (up[0]*(boxDown*-1), up[1]*(boxDown*-1), up[2]*(boxDown*-1));
+
+				self.hit[0].origin = (self.headTag getOrigin()) + pointFront + pointRight + pointUp;
+				self.hit[1].origin = (self.headTag getOrigin()) + pointFront + pointRight + pointDown;
+				self.hit[2].origin = (self.headTag getOrigin()) + pointFront + pointLeft + pointUp;
+				self.hit[3].origin = (self.headTag getOrigin()) + pointFront + pointLeft + pointDown;
+
+				self.hit[4].origin = (self.headTag getOrigin()) + pointBack + pointRight + pointUp;
+				self.hit[5].origin = (self.headTag getOrigin()) + pointBack + pointRight + pointDown;
+				self.hit[6].origin = (self.headTag getOrigin()) + pointBack + pointLeft + pointUp;
+				self.hit[7].origin = (self.headTag getOrigin()) + pointBack + pointLeft + pointDown;
+
+				self.hit[8].origin = vPoint;
+			}
+
+			//angles = eAttacker getPlayerAngles();
+			angles = vectortoangles(self.headTag getOrigin() - attacker_eye);
+			rotationMatrix[0] = anglestoforward(angles); // normalized FORWARD vector of the box
+			rotationMatrix[1] = anglestoright(angles);  // normalized RIGHT vector of the box
+			rotationMatrix[2] = anglestoup(angles);    // normalized UP vector of the box
+
+			vectorToPoint = VectorNormalize(vPoint - self.headTag getOrigin()); // vector pointing from the center of the box to the hit location point
+			rotatedVectorToPoint[0] = VectorDot(rotationMatrix[0], vectorToPoint);
+			rotatedVectorToPoint[1] = VectorDot(rotationMatrix[1], vectorToPoint) * -1; // idk why, but Y needs to be fliped (propably because we have right vector, but Y is pointing left)
+			rotatedVectorToPoint[2] = VectorDot(rotationMatrix[2], vectorToPoint);
+
+			// Get back the hit location but now its aligned to coordinate grid, so we can do simple box checks if point is inside
+			dist = distance(vPoint, self.headTag getOrigin());
+			x = rotatedVectorToPoint[0] * dist;
+			y = rotatedVectorToPoint[1] * dist;
+			z = rotatedVectorToPoint[2] * dist;
+
+			// Hit location is inside box
+			if ((x < boxBack && x > boxFront * -1) && (y < boxLeft && y > boxRight * -1) && (z < boxUp && z > boxDown * -1))
+			{
+				if (level.debug_handhitbox)
+				{
+					if (!correctWeapon) 		eAttacker iprintln("^3Hand hitbox fix - inside, but this weapon is ignored");
+					else if (!damageOk) 		eAttacker iprintln("^3Hand hitbox fix - inside, but this is already determined as KILL");
+					else if (!distanceOK) 		eAttacker iprintln("^3Hand hitbox fix - inside, but your too close to enemy");
+					else if (!bodyOrHeadVisible) 	eAttacker iprintln("^3Hand hitbox fix - inside, but body and head is not visible");
+					else				eAttacker iprintln("^1Hand hitbox fix - hit is inside the box, changing to KILL!");
+				}
+				if (applyFix)
+				{
+					if (debug) println("^1Hand hitbox fix - making damage to "+sHitLoc+" as kill for " + eAttacker.name); // EYZA_DEBUG
+					eAttacker.hitData[self_num].adjustedBy = "hand_hitbox_fix";
+					iDamage = 100;
+				}
+			}
+			else
+			{
+				if (level.debug_handhitbox) eAttacker iprintln("^9Hand hitbox fix - hit is outside the box");
+			}
+
+			/*
+			self.hit[7].origin = (self.headTag getOrigin()) + (0, 150, 0) + (0, 0, 0);
+			self.hit[8].origin = (self.headTag getOrigin()) + (0, 150, 0) + (boxBack, 0, 0);
+			self.hit[9].origin = (self.headTag getOrigin()) + (0, 150, 0) + (0, boxLeft, 0);
+			self.hit[10].origin = (self.headTag getOrigin()) + (0, 150, 0) + (0, boxRight * -1, 0);
+			self.hit[11].origin = (self.headTag getOrigin()) + (0, 150, 0) + (boxFront * -1, 0, 0);
+			self.hit[12].origin = (self.headTag getOrigin()) + (0, 150, 0) + Transform;
+			*/
 		}
 	}
 
@@ -319,22 +443,42 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	{
 		// Bigger torso hitbox
 		// This change efectively applies only for rifles, because other weapons has the same damage for torso_lower and right/left_leg_upper
-		if (sWeapon == "kar98k_mp" || sWeapon == "enfield_mp" || sWeapon == "mosin_nagant_mp")
-		{
-			if (sHitLoc == "left_leg_upper" || sHitLoc == "right_leg_upper")
-			{
-				dist = distance(self.pelvisTag getOrigin(), vPoint);
+		correctWeapon = (sMeansOfDeath == "MOD_RIFLE_BULLET" && ( // This will ignore bash
+				 	sWeapon == "kar98k_mp" || sWeapon == "enfield_mp" || sWeapon == "mosin_nagant_mp"));
 
-				// Distance between pelvis and knee is around 21
-				if (dist < 15.0)
-				{
-					if (level.debug_torsohitbox) iprintln("^1Torso hitbox fix - adjusted damage from " + iDamage + " to 135");
-					//println("### Torso hitbox fix - adjusted damage from " + iDamage + " to 135 for " + eAttacker.name); // EYZA_DEBUG
-					iDamage = 135;
-				}
+		correctHitLoc = (sHitLoc == "left_leg_upper" || sHitLoc == "right_leg_upper");
+		dist = 0;
+		distOk = false;
+		applyFix = false;
+
+		if (correctWeapon && correctHitLoc)
+		{
+			dist = distance(self.pelvisTag getOrigin(), vPoint);
+			distOk = (dist <= 16.5); // Distance between pelvis and knee is around 21
+
+			if (distOk)
+				applyFix = true;
+		}
+
+		if (applyFix)
+		{
+			if (level.debug_torsohitbox)
+			{
+				eAttacker iprintln("^1Torso hitbox fix - adjusted damage from " + iDamage + " to 100");
 			}
+			if (debug) println("### Torso hitbox fix - adjusted damage from " + iDamage + " to 100 for " + eAttacker.name); // EYZA_DEBUG
+			eAttacker.hitData[self_num].adjustedBy = "torso_hitbox_fix";
+			iDamage = 100;
+		}
+		else if (level.debug_torsohitbox)
+		{
+			if (!correctWeapon) 		eAttacker iprintln("^9Torso hitbox fix - no fix, because this weapon is ignored");
+			else if (!correctHitLoc) 	eAttacker iprintln("^9Torso hitbox fix - no fix, because hit location is not LEG_UPPER");
+			else if (!distOk) 		eAttacker iprintln("^9Torso hitbox fix - no fix, because hit distance " + int(dist*10)/10 + " > 16.5");
 		}
 	}
+
+
 
 	// Consistent shotgun
 	if (level.scr_shotgun_consistent && isDefined(eAttacker) && isPlayer(eAttacker) && isDefined(sHitLoc) && isDefined(sMeansOfDeath) && isDefined(sHitLoc) &&
@@ -345,30 +489,13 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		// In the same frame, all pellets that hit the target are called one by one
 		// If one pellet kills the enemy, all other pellets are not called, because the player is already killed and is not part of world anymore
 
-		// Create variable to hold info about shotgun hits
-		if (!isDefined(eAttacker.shotgunHit))
-		{
-			eAttacker.shotgunHit = [];
-			eAttacker thread shotgunCounterAutoRestart();		// will delete eAttacker.shotgunHit after this frame ends
-		}
-
-		// Because we can hit multiple players in same time (multikill), we need to save it according to players
-		self_num = self getEntityNumber();
-		if (!isDefined(eAttacker.shotgunHit[self_num]))
-		{
-			eAttacker.shotgunHit[self_num] = spawnstruct();
-			eAttacker.shotgunHit[self_num].id = 0;			// inited to 0, but will be incremented. 1 then means first pellet
-		}
-		eAttacker.shotgunHit[self_num].id++;
-
-
 		// count distance
 		dist = distance(self getOrigin(), eAttacker getOrigin());
 
 
 		// Make sure pellets do only once a feedback damage
 		// This is the first pellet
-		if (eAttacker.shotgunHit[self_num].id == 1)
+		if (eAttacker.hitData[self_num].id == 1)
 			damageFeedback = 1;
 		else
 			damageFeedback = 0;
@@ -383,19 +510,14 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 			if (sHitLoc == "left_hand" || sHitLoc == "left_arm_lower" || sHitLoc == "right_hand" || sHitLoc == "right_arm_lower" ||
 			    sHitLoc == "left_foot" || sHitLoc == "left_leg_lower" || sHitLoc == "right_foot" || sHitLoc == "right_leg_lower")
 			{
-				eye = eAttacker maps\mp\gametypes\global\player::getEyeOrigin();
-
-				trace = Bullettrace(eye, self.headTag getOrigin(), true, eAttacker);
-				headVisible = isDefined(trace["entity"]) && trace["entity"] == self;
-
-				trace = Bullettrace(eye, self.pelvisTag getOrigin(), true, eAttacker);
-				pelvisVisible = isDefined(trace["entity"]) && trace["entity"] == self;
-
-				//println("### Consistent shotgun: upcoming hit is to leg or hand | headVisible:" + headVisible + " | pelvisVisible:" + pelvisVisible); // EYZA_DEBUG
+				// Head or pelvis is visible to player
+				bodyOrHeadVisible = eAttacker maps\mp\gametypes\global\player::isPlayerInSight(self);
 
 				// Head and pelvis is not at sight (only hand or lags are visible to player) - this should be a hit only
-				if (!headVisible && !pelvisVisible)
+				if (!bodyOrHeadVisible)
 					isKill = false;
+
+				if (debug) println("### Consistent shotgun: upcoming hit is to leg or hand | bodyOrHeadVisible:" + bodyOrHeadVisible); // EYZA_DEBUG
 			}
 
 
@@ -404,14 +526,16 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 				iDamage = 100;
 				damageFeedback = 2; // Do big damage feedback, because this bullet kills the player and the others are canceled due to this
 				if (level.debug_shotgun) eAttacker iprintln("^1Distance " + int(dist) + " | close range 0-250 | KILL");
-				//println("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | close range 0-250 | KILL"); // EYZA_DEBUG
+				if (debug) println("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | close range 0-250 | KILL"); // EYZA_DEBUG
+				eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_1_kill"; // Range 1, kill
 			}
 			else
 			{
 				// Scale the damage based on distance
 				iDamage = damageScale(dist, 0, 250, 100, 50); //distance, distStart, distEnd, hpStart, hpEnd
 				if (level.debug_shotgun) eAttacker iprintln("^1Distance " + int(dist) + " | close range 0-250 | ^3hit to hand or leg");
-				//println("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | close range 0-250 | hit to hand or leg"); // EYZA_DEBUG
+				if (debug) println("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | close range 0-250 | hit to hand or leg"); // EYZA_DEBUG
+				eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_1_hit"; // Range 1, hit only, because head and body is not visible
 			}
 		}
 
@@ -421,9 +545,9 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 			// Scale the damage based on distance
 			iDamage = damageScale(dist, 250, 384, 100, 50); //distance, distStart, distEnd, hpStart, hpEnd
 
-			if (level.debug_shotgun) eAttacker iprintln("^3Distance " + int(dist) + " | mid range 250-384 | " + iDamage + "hp damage (pellet id: " + eAttacker.shotgunHit[self_num].id + ")");
-
-			//println("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | mid range 250-384 | damage:" + iDamage + " | pelletId:" + eAttacker.shotgunHit[self_num].id); // EYZA_DEBUG
+			if (level.debug_shotgun) eAttacker iprintln("^3Distance " + int(dist) + " | mid range 250-384 | " + iDamage + "hp damage (pellet id: " + eAttacker.hitData[self_num].id + ")");
+			if (debug) println("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | mid range 250-384 | damage:" + iDamage + " | pelletId:" + eAttacker.hitData[self_num].id); // EYZA_DEBUG
+			eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_2"; // Range 2
 		}
 
 		// Range 384-500   (3 pellets needed for kill)
@@ -432,23 +556,23 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 			// Scale the damage based on distance
 			iDamage = damageScale(dist, 384, 500, 50, 34); //distance, distStart, distEnd, hpStart, hpEnd
 
-			if (level.debug_shotgun) eAttacker iprintln("^4Distance " + int(dist) + " | mid range 384-500 | " + iDamage + "hp damage (pellet id: " + eAttacker.shotgunHit[self_num].id + ")");
-
-			//println("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | mid range 384-500 | damage:" + iDamage + " | pelletId:" + eAttacker.shotgunHit[self_num].id); // EYZA_DEBUG
+			if (level.debug_shotgun) eAttacker iprintln("^4Distance " + int(dist) + " | mid range 384-500 | " + iDamage + "hp damage (pellet id: " + eAttacker.hitData[self_num].id + ")");
+			if (debug) println("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | mid range 384-500 | damage:" + iDamage + " | pelletId:" + eAttacker.hitData[self_num].id); // EYZA_DEBUG
+			eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_3"; // Range 3
 		}
 
 		// Range 500 - 800   (only 1 pellet is counted, so atleast 3 shots are needed for kill)
 		else
 		{
 			// This is the first pellet
-			if (eAttacker.shotgunHit[self_num].id == 1)
+			if (eAttacker.hitData[self_num].id == 1)
 			{
 				// Scale the damage based on distance
 				iDamage = damageScale(dist, 500, 800, 34, 0); //distance, distStart, distEnd, hpStart, hpEnd
 
 				if (level.debug_shotgun) eAttacker iprintln("^9Distance " + int(dist) + " | far range 500-800 | linear " + iDamage + "hp damage");
-
-				//println("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | far range 500-800 | linear damage:" + iDamage); // EYZA_DEBUG
+				if (debug) println("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | far range 500-800 | linear damage:" + iDamage); // EYZA_DEBUG
+				eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_4"; // Range 4
 			}
 			else
 			{
@@ -466,16 +590,28 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	}
 	// Prevents a pistol from killing in one shot if active
 	if (level.prevent_single_shot_pistol && isDefined(sWeapon) && maps\mp\gametypes\_weapons::isPistol(sWeapon) && isdefined(sHitLoc) && sHitLoc == "head")
-	iDamage = int(iDamage * .85);
+		iDamage = int(iDamage * .85);
 	// Prevents a ppsh from killing in one shot if active
 	if (level.prevent_single_shot_ppsh && isDefined(sWeapon) && sWeapon == "ppsh_mp" && isdefined(sHitLoc) && sHitLoc == "head")
-	iDamage = int(iDamage * .9);
+		iDamage = int(iDamage * .9);
+
+
+
+	// Save affected damage value
+	if (isDefined(eAttacker) && isPlayer(eAttacker))
+		eAttacker.hitData[self_num].damage = iDamage;
 
 
 	//println("##################### " + "notifyDamaging");
 	// Call onDamage event and return if damage was prevented
 	ret = maps\mp\gametypes\global\events::notifyDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
 	if (ret) return;
+
+
+	// Save affected damage value
+	if (isDefined(eAttacker) && isPlayer(eAttacker))
+		eAttacker.hitData[self_num].damage_comulated += iDamage;
+
 
 	//println("##################### " + "notifyDamage");
 	// Call onPlayerDamaged event
@@ -493,27 +629,34 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	}
 }
 
-shotgunCounterAutoRestart()
+hitDataAutoRestart(eAttacker, id)
 {
+	//self endon("disconnect");
+	eAttacker endon("disconnect");
+
+	self notify("hitDataAutoRestart_end");
+	self endon("hitDataAutoRestart_end");
+
+	// Reset data related to a single frame only
 	waittillframeend;
-	self.shotgunHit = undefined;
-}
+	waittillframeend;
+	waittillframeend;
+	waittillframeend;
+	eAttacker.hitData[id].id = 0;
+	eAttacker.hitData[id].damage = 0;
+	eAttacker.hitData[id].adjustedBy = "";
 
-angleDiff(player, eAttacker)
-{
-	myAngle = player.angles[1]; // -180 <-> +180
-	myAngle += 180; // flip direction, now in range 0 <-> 360
-	if (myAngle > 180) myAngle -= 360; // back to range -180 <-> +180
+	// Wait 5 sec if player is still alive
+	for(i = 0; i < 5; i++)
+	{
+		if (!isDefined(self) || !isAlive(self))
+			break;
 
-	enemyAngle = eAttacker.angles[1];
+		wait level.fps_multiplier * 1;
+	}
 
-	anglediff = myAngle - enemyAngle;
-	if (anglediff > 180)		anglediff -= 360;
-	else if (anglediff < -180)	anglediff += 360;
-
-	//iprintln(anglediff);
-
-	return anglediff;
+	// Remove the rest of the data
+	eAttacker.hitData[id] = undefined;
 }
 
 damageScale(dist, distStart, distEnd, hpStart, hpEnd)

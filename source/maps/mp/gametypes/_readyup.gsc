@@ -154,6 +154,10 @@ Start_Readyup_Mode(runned_in_middle_of_game)
 		}
 	}
 
+	waittillframeend; // wait until timeout, overtime etc.. init() func are called
+
+	level.playersready = false;
+
 	// Create "Ready-up Mode", "Waiting On X Players", "Clock", "Waring: PB is off.." atd...
 	createLevelHUD();
 
@@ -293,6 +297,9 @@ onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon
 	if (self.flying)
 		return true;
 
+	if (sMeansOfDeath == "MOD_GRENADE_SPLASH")
+		return true;
+
 	if (isPlayer(eAttacker) && self != eAttacker)
 	{
 		if (eAttacker.flying)
@@ -429,7 +436,7 @@ playerReadyUpThread()
 	}
 
 	// Dont show readyup for just connected players
-	while(self.pers["team"] == "none")
+	while(!isDefined(self.pers["firstTeamSelected"]))
 		wait level.fps_multiplier * 0.1;
 
 	// Dont show readyup if player is in team but weapon is not selected yet (player is in spectator session state)
@@ -460,7 +467,7 @@ playerReadyUpThread()
 				unsetReady();
 
 
-            // Check if all players are ready
+            		// Check if all players are ready
 			level thread Check_All_Ready();
 
 
@@ -473,7 +480,7 @@ playerReadyUpThread()
 		else if (self MeleeButtonPressed() && !level.in_timeout && (self.pers["team"] == "allies" || self.pers["team"] == "axis"))
 		{
 			catch_next = false;
-			for(i=0; i<=10; i++)
+			for(i = 0; i <= level.sv_fps * 0.5; i++)
 			{
 				if(catch_next && self meleeButtonPressed())
 				{
@@ -488,12 +495,12 @@ playerReadyUpThread()
 				else if(!(self meleeButtonPressed()))
 					catch_next = true;
 
-				wait level.fps_multiplier * 0.01;
+				wait level.frame;
 			}
 
 		}
 		else
-			wait level.fps_multiplier * 0.1;
+			wait level.frame;
 
 
 	}
@@ -594,7 +601,7 @@ areAllPlayersReady()
 
 PrintTeamAndHowToUse()
 {
-	if (self.pers["team"] == "none")
+	if (!isDefined(self.pers["firstTeamSelected"]))
 		return;
 
 	// Spawned as spectator when chosing a weapon, wait untill spawned as player or as full spectator
@@ -667,8 +674,6 @@ End_Readyup_Mode()
 
 	wait level.fps_multiplier * level.scr_readyup_start_timer; // (10sec)
 
-	level.in_readyup = 0;
-
 	// reset flag as readyup was runned
 	game["readyup_first_run"] = false;
 
@@ -677,6 +682,9 @@ End_Readyup_Mode()
 		if (!level.pam_mode_change)
 			map_restart(true);
 	}
+	else
+		// Reset only in timeout because normally it will get reseted by map_restart and also this caused to add 1 death to players if in the same frame player was killed
+		level.in_readyup = 0;
 
 }
 
@@ -807,8 +815,6 @@ Update_Players_Count()
 
 createLevelHUD()
 {
-	level.playersready = false;
-
 	// Show name of league + pam version
 	thread maps\mp\gametypes\_pam::PAM_Header();
 
@@ -929,7 +935,7 @@ HUD_Clock()
 
 }
 
-// Ready-Uo Mode / Halft time Ready-Up Mode / Timeout Ready-Up Mode
+// Ready-Up Mode / Halft time Ready-Up Mode / Timeout Ready-Up Mode
 HUD_ReadyUpMode()
 {
     level.readyup_mode = newHudElem2();
@@ -1141,7 +1147,7 @@ HUD_ReadyUp_ResumingIn_Delete()
 // Called each time player is spawned
 HUD_SelectTeam()
 {
-	if (self.pers["team"] == "none")
+	if (!isDefined(self.pers["firstTeamSelected"]))
 	{
 		if (!isDefined(self.selectTeamInfoBG))
 		{

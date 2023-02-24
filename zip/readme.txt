@@ -1,13 +1,13 @@
 Installation
 Extract files into following locations:
-	- ./Call of Duty 2/main/zpam331.iwd
+	- ./Call of Duty 2/main/zpam332.iwd
 	- ./Call of Duty 2/main/zpam_maps_v2.iwd (*required only for 1.3 game version)
 	- ./Call of Duty 2/main/server.cfg
 
 Add +exec server.cfg into command line arguments and edit the server.cfg file to configure your server.
 
 For game version 1.3:
-	- Mappack file zpam_maps_v2.iwd needs to be included in main folder. What is zpam_maps_v1.iwd file?
+	- Mappack file zpam_maps_v2.iwd needs to be included in main folder.
 	- Fast download must be enabled via these settings (custom URL may be used):
 		- sv_wwwDownload 1
 		- sv_wwwBaseURL "http://cod2x.me/zpam"

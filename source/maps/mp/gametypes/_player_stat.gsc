@@ -13,6 +13,7 @@ init()
     addEventListener("onConnected",       ::onConnected);
     addEventListener("onDisconnect",      ::onDisconnect);
     addEventListener("onConnectedAll",    ::onConnectedAll);
+    addEventListener("onJoinedTeam",    ::onJoinedTeam);
 
     //thread printThread();
 }
@@ -147,6 +148,7 @@ print()
       println("game[playerstats]["+i+"][assists]     = " + data["assists"]);
       println("game[playerstats]["+i+"][deaths]      = " + data["deaths"]);
       println("game[playerstats]["+i+"][kills]       = " + data["score"]);
+      println("game[playerstats]["+i+"][grenades]    = " + data["grenades"]);
       println("game[playerstats]["+i+"][plants]      = " + data["plants"]);
       println("game[playerstats]["+i+"][defuses]     = " + data["defuses"]);
     }
@@ -178,55 +180,70 @@ printThread()
 
 onConnected()
 {
-  handleRename();
+	handleRename();
 
-  id = self getEntityNumber();
+	id = self getEntityNumber();
 
-  dataId = findData(self.name, id);
-  if (dataId >= 0 && game["playerstats"][dataId]["isConnected"] == false)
-  {
-    game["playerstats"][dataId]["isConnected"] = true;
-    game["playerstats"][dataId]["lastTime"] = getTime();
+	dataId = findData(self.name, id);
+	if (dataId >= 0 && game["playerstats"][dataId]["isConnected"] == false) // note: isConnected is reseted every map_restart
+	{
+		game["playerstats"][dataId]["player"] = self;
+		game["playerstats"][dataId]["isConnected"] = true;
+		game["playerstats"][dataId]["team"] = self.sessionteam;
+		game["playerstats"][dataId]["lastTime"] = getTime();
 
-    self thread restoreScore(game["playerstats"][dataId]["kills"], game["playerstats"][dataId]["deaths"]);
-  }
-  else
-  {
-    // Player was not found via name and id, give other players connecting in same time time to identified them via name and id before this player will be found only by name.. (to avoid stat steal by duplicating name)
-    waittillframeend;
+		self thread restoreScore(game["playerstats"][dataId]["kills"], game["playerstats"][dataId]["deaths"]);
+	}
+	else
+	{
+		// Player was not found via name and id, give other players connecting in same time time to identified them via name and id before this player will be found only by name.. (to avoid stat steal by duplicating name)
+		waittillframeend;
 
-    dataId = findData(self.name);
-    if (dataId >= 0 && game["playerstats"][dataId]["isConnected"] == false)
-    {
-      game["playerstats"][dataId]["entityId"] = id;
-      game["playerstats"][dataId]["isConnected"] = true;
-      game["playerstats"][dataId]["lastTime"] = getTime();
+		dataId = findData(self.name);
+		if (dataId >= 0 && game["playerstats"][dataId]["isConnected"] == false)
+		{
+			game["playerstats"][dataId]["player"] = self;
+			game["playerstats"][dataId]["entityId"] = id;
+			game["playerstats"][dataId]["isConnected"] = true;
+			game["playerstats"][dataId]["team"] = self.sessionteam;
+			game["playerstats"][dataId]["lastTime"] = getTime();
 
-      self thread restoreScore(game["playerstats"][dataId]["kills"], game["playerstats"][dataId]["deaths"]);
-      //setCvar("sv_playerstats_" + dataId + "_entityId", id);
-    }
-    else
-    {
-      // Create new entry
-      newIndex = game["playerstats"].size;
-      game["playerstats"][newIndex]["deleted"] = false;
-      game["playerstats"][newIndex]["entityId"] = id;
-      game["playerstats"][newIndex]["name"] = self.name;
-      game["playerstats"][newIndex]["isConnected"] = true;
-      game["playerstats"][newIndex]["lastTime"] = getTime();
-      game["playerstats"][newIndex]["kills"] = 0;
-      game["playerstats"][newIndex]["assists"] = 0;
-      game["playerstats"][newIndex]["damage"] = 0;
-      game["playerstats"][newIndex]["deaths"] = 0;
-      game["playerstats"][newIndex]["score"] = 0.0;
-      game["playerstats"][newIndex]["plants"] = 0;
-      game["playerstats"][newIndex]["defuses"] = 0;
-    }
-  }
+			self thread restoreScore(game["playerstats"][dataId]["kills"], game["playerstats"][dataId]["deaths"]);
+			//setCvar("sv_playerstats_" + dataId + "_entityId", id);
+		}
+		else
+		{
+			// Create new entry
+			newIndex = game["playerstats"].size;
+			game["playerstats"][newIndex]["id"] = newIndex;
+			game["playerstats"][newIndex]["player"] = self;
+			game["playerstats"][newIndex]["deleted"] = false;
+			game["playerstats"][newIndex]["entityId"] = id;
+			game["playerstats"][newIndex]["name"] = self.name;
+			game["playerstats"][newIndex]["team"] = self.sessionteam;
+			game["playerstats"][newIndex]["isConnected"] = true;
+			game["playerstats"][newIndex]["lastTime"] = getTime();
+			game["playerstats"][newIndex]["kills"] = 0;
+			game["playerstats"][newIndex]["assists"] = 0;
+			game["playerstats"][newIndex]["damage"] = 0;
+			game["playerstats"][newIndex]["deaths"] = 0;
+			game["playerstats"][newIndex]["score"] = 0.0;
+			game["playerstats"][newIndex]["grenades"] = 0;
+			game["playerstats"][newIndex]["plants"] = 0;
+			game["playerstats"][newIndex]["defuses"] = 0;
+		}
+	}
 
 }
 
-
+onJoinedTeam(team)
+{
+	dataId = findData(self.name, self getEntityNumber());
+	if (dataId >= 0)
+	{
+		game["playerstats"][dataId]["team"] = team;
+	}
+}
 
 
 onDisconnect()
@@ -235,10 +252,10 @@ onDisconnect()
   if (dataId >= 0)
   {
     game["playerstats"][dataId]["isConnected"] = false;
+    game["playerstats"][dataId]["player"] = undefined;
     game["playerstats"][dataId]["lastTime"] = getTime();
+    game["playerstats"][dataId]["name"] = self.name;		// in case player renamed since connect
   }
-
-  //level thread restartIfEmpty();
 }
 
 
@@ -302,6 +319,15 @@ AddDeath()
     if (dataId >= 0)
     {
       game["playerstats"][dataId]["deaths"] += 1;
+    }
+}
+
+AddGrenade()
+{
+    dataId = self getStatId();
+    if (dataId >= 0)
+    {
+      game["playerstats"][dataId]["grenades"] += 1;
     }
 }
 

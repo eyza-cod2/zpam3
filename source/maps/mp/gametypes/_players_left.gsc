@@ -51,14 +51,12 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 onConnected()
 {
-	if (level.scr_show_players_left)
-	{
-		self thread createHUD();
+	// Enable player list by default, can be overwritten by player settings
+	if (!isDefined(self.pers["playersleft_list"]))
+		self.pers["playersleft_list"] = true;
 
-		// Enable player list by default, can be overwritten by player settings
-		if (!isDefined(self.pers["playersleft_list"]))
-			enable();
-	}
+	if (level.scr_show_players_left)
+		self thread createHUD();
 	else
 		self hide(); // hide is set from previous map
 }

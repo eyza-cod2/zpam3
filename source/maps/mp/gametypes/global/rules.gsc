@@ -176,7 +176,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^3Following values are valid:");
 				iprintln("^7pub, comp, warmup");
 				iprintln("^3Sub-modes:");
-				iprintln("^715min, 30min, 60min, unlim");
+				iprintln("^710min, 15min, 30min, 60min, unlim");
 				iprintln("^7_2v2, _rifle, _russian, _lan, _pcw");
 			}
 			else if (level.gametype == "tdm")
@@ -184,7 +184,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^3Following values are valid:");
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
-				iprintln("^715min, 30min, 60min, unlim");
+				iprintln("^710min, 15min, 30min, 60min, unlim");
 				iprintln("^7_2v2, _rifle, _russian, _lan, _pcw");
 			}
 			else if (level.gametype == "ctf")
@@ -192,7 +192,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^3Following values are valid:");
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
-				iprintln("^715min, 30min, 60min, unlim");
+				iprintln("^710min, 15min, 30min, 60min, unlim");
 				iprintln("^7_2v2, _rifle, _russian, _lan, _pcw");
 			}
 			else if (level.gametype == "hq")
@@ -200,7 +200,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^3Following values are valid:");
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
-				iprintln("^715min, 30min, 60min, unlim");
+				iprintln("^710min, 15min, 30min, 60min, unlim");
 				iprintln("^7_2v2, _rifle, _russian, _lan, _pcw");
 			}
 			else if (level.gametype == "htf")
@@ -208,7 +208,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^3Following values are valid:");
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
-				iprintln("^715min, 30min, 60min, unlim");
+				iprintln("^710min, 15min, 30min, 60min, unlim");
 				iprintln("^7_2v2, _rifle, _russian, _lan, _pcw");
 			}
 			else if (level.gametype == "re")
@@ -265,11 +265,11 @@ IsValidPAMModeForGametype(gametype, pammode)
 		{
 			if (!IsToggleSubPamMode(array[i]) && (
 			    (gametype == "sd"  && array[i] != "mr3" && array[i] != "mr10" && array[i] != "mr12" && array[i] != "mr15" && array[i] != "20rounds") ||
-			    (gametype == "dm"  && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
-			    (gametype == "tdm" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
-			    (gametype == "ctf" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
-			    (gametype == "hq" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
-			    (gametype == "htf" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
+			    (gametype == "dm"  && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
+			    (gametype == "tdm" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
+			    (gametype == "ctf" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
+			    (gametype == "hq"  && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
+			    (gametype == "htf" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
 			    (gametype == "re" && array[i] != "mr3" && array[i] != "mr10" && array[i] != "mr12" && array[i] != "mr15" && array[i] != "20rounds")))
 			{
 				isValid = false;
@@ -401,6 +401,7 @@ Load_DM_Rules()
 	{
 		switch(array[i])
 		{
+			case "10min": 	maps\mp\gametypes\rules\dm\score\_10min::Load(); break;
 			case "15min": 	maps\mp\gametypes\rules\dm\score\_15min::Load(); break;
 			case "30min": 	maps\mp\gametypes\rules\dm\score\_30min::Load(); break;
 			case "60min": 	maps\mp\gametypes\rules\dm\score\_60min::Load(); break;
@@ -439,6 +440,7 @@ Load_TDM_Rules()
 	{
 		switch(array[i])
 		{
+			case "10min": 	maps\mp\gametypes\rules\tdm\score\_10min::Load(); break;
 			case "15min": 	maps\mp\gametypes\rules\tdm\score\_15min::Load(); break;
 			case "30min": 	maps\mp\gametypes\rules\tdm\score\_30min::Load(); break;
 			case "60min": 	maps\mp\gametypes\rules\tdm\score\_60min::Load(); break;
@@ -477,6 +479,7 @@ Load_CTF_Rules()
 	{
 		switch(array[i])
 		{
+			case "10min": 	maps\mp\gametypes\rules\ctf\score\_10min::Load(); break;
 			case "15min": 	maps\mp\gametypes\rules\ctf\score\_15min::Load(); break;
 			case "30min": 	maps\mp\gametypes\rules\ctf\score\_30min::Load(); break;
 			case "60min": 	maps\mp\gametypes\rules\ctf\score\_60min::Load(); break;
@@ -515,6 +518,7 @@ Load_HQ_Rules()
 	{
 		switch(array[i])
 		{
+			case "10min": 	maps\mp\gametypes\rules\hq\score\_10min::Load(); break;
 			case "15min": 	maps\mp\gametypes\rules\hq\score\_15min::Load(); break;
 			case "30min": 	maps\mp\gametypes\rules\hq\score\_30min::Load(); break;
 			case "60min": 	maps\mp\gametypes\rules\hq\score\_60min::Load(); break;
@@ -553,6 +557,7 @@ Load_HTF_Rules()
 	{
 		switch(array[i])
 		{
+			case "10min": 	maps\mp\gametypes\rules\htf\score\_10min::Load(); break;
 			case "15min": 	maps\mp\gametypes\rules\htf\score\_15min::Load(); break;
 			case "30min": 	maps\mp\gametypes\rules\htf\score\_30min::Load(); break;
 			case "60min": 	maps\mp\gametypes\rules\htf\score\_60min::Load(); break;

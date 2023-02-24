@@ -236,7 +236,7 @@ isWeaponAvaible(response)
 
 isWeaponDropable(weaponname)
 {
-	if (maps\mp\gametypes\_weapons::isPistol(weaponname))
+	if (maps\mp\gametypes\_weapons::isPistol(weaponname) && getCvarInt("scr_pistol_allow_drop") == 1)
 		return true;
 
 	if (isDefined(level.weapons[weaponname]) && level.weaponclass[level.weapons[weaponname].classname].allow_drop)
@@ -256,7 +256,12 @@ isWeaponPickable(weaponname)
 	{
 		classname = level.weapons[weaponname].classname;
 		if (!level.weaponclass[classname].allow_drop)
-            return false;
+            		return false;
+	}
+	else if (maps\mp\gametypes\_weapons::isPistol(weaponname))
+	{
+		if (getCvarInt("scr_pistol_allow_drop") == 0)
+			return false;
 	}
 
 	return true;

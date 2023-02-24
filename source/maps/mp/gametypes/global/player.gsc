@@ -143,19 +143,11 @@ getEyeOrigin()
 	y = diff[1] * cos(angle) + diff[0] * sin(angle);
 	//iprintln(x + ", " + y);
 
-	// Distance between head and origin
-	stanceHeight = distance((0, 0, head[2]), (0, 0, origin[2]));
-
-	// Determine stance position and lean left / right
-	/*
-	Prone = 	~8 center 	| ~3 down 	| ~10 up
-	Crouch = 	~36 center 	| ~26 down 	| ~32 up 	| 43 moving forward
-	Stand = 	~58 center 	| ~52 down 	| ~51 up 	| 53 moving
-	*/
 	lean = 0;
+	stance = self getStance();
 
 	// Prone
-	if (stanceHeight < 20)
+	if (stance == "prone")
 	{
 		offset = 11;
 
@@ -170,7 +162,7 @@ getEyeOrigin()
 			lean = 1; // lean right
 	}
 	// Crouch
-	else if (stanceHeight < 45)
+	else if (stance == "crouch")
 	{
 		offset = 40;
 
@@ -216,6 +208,33 @@ getEyeOrigin()
 }
 
 
+getStance()
+{
+	origin = self getOrigin();
+	head = self.headTag getOrigin();
+
+	// Distance between head and origin
+	stanceHeight = distance((0, 0, head[2]), (0, 0, origin[2]));
+
+	// Determine stance position and lean left / right
+	/*
+	Prone = 	~8 center 	| ~3 down 	| ~10 up
+	Crouch = 	~36 center 	| ~26 down 	| ~32 up 	| 43 moving forward
+	Stand = 	~58 center 	| ~52 down 	| ~51 up 	| 53 moving
+	*/
+
+	// Prone
+	if (stanceHeight < 20)
+		return "prone";
+	// Crouch
+	else if (stanceHeight < 45)
+		return "crouch";
+	// Stand
+	else
+		return "stand";
+}
+
+
 
 isPlayerLookingAt(entity)
 {
@@ -231,6 +250,29 @@ isPlayerLookingAt(entity)
 
 	return false;
 }
+
+
+/*
+self is player as 1st point of view
+player is player that is checked if is visible in self's point of view
+*/
+isPlayerInSight(player)
+{
+	eye = self getEyeOrigin();
+
+	trace = Bullettrace(eye, player.headTag getOrigin(), true, self);
+	headVisible = isDefined(trace["entity"]) && trace["entity"] == player;
+	if (headVisible)
+		return true;
+
+	trace = Bullettrace(eye, player.pelvisTag getOrigin(), true, self);
+	pelvisVisible = isDefined(trace["entity"]) && trace["entity"] == player;
+	if (pelvisVisible)
+		return true;
+
+	return false;
+}
+
 
 getLookingAtPosition()
 {

@@ -34,8 +34,13 @@ init()
 		game["do_timeout"] = false;	// reset request flag
 	}
 
+	// Run timeout
+	if (level.in_timeout)
+	{
+		level thread Start_Timeout_Mode(false); // runned_in_middle_of_game = false
+	}
+
 	// Register notifications catchup
-	addEventListener("onStartGameType", ::onStartGameType);
 	addEventListener("onConnected",     ::onConnected);
 	addEventListener("onJoinedTeam",    ::onJoinedTeam);
 	addEventListener("onSpawned",     ::onSpawned);
@@ -54,18 +59,6 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "scr_timeout_length": 		level.scr_timeout_length = value; return true;
 	}
 	return false;
-}
-
-// Called after the <gametype>.gsc::main() and <map>.gsc::main() scripts are called
-// At this point game specific variables are defined (like game["allies"], game["axis"], game["american_soldiertype"], ...)
-// Called again for every round in round-based gameplay
-onStartGameType()
-{
-	// Run timeout
-	if (level.in_timeout)
-	{
-		level thread Start_Timeout_Mode(false); // runned_in_middle_of_game = false
-	}
 }
 
 

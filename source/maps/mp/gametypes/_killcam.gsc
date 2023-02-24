@@ -77,7 +77,7 @@ killcam(attackerNum, pastTime, length, offsetTime, respawn, isReplay)
 		self.archivetime = 0;
 		self.psoffsettime = 0;
 
-		self.killcam = false;
+		self.killcam = undefined;
 
 		return;
 	}

@@ -82,7 +82,7 @@ itemDef
 	visible			1
 	origin			60 116
 	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"^9<==^3Mustang^9==>^2Clan  from Hungary^7, hubertgruber / dutch, excel"
+	text			"^9<==^3Mustang^9==>^2Clan  from Hungary^7, hubertgruber / dutch, excel, jza"
 	textfont		UI_FONT_NORMAL
 	textscale		0.25
 	textstyle		ITEM_TEXTSTYLE_SHADOWED

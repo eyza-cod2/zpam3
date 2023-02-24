@@ -168,17 +168,32 @@ addHUDClient(player, x, y, fontSize, color, alignX, alignY, horzAlign, vertAlign
 
     return hud;
 }
+/*
+Makes HUD element to follow head of player in 3D world
+HUD element needs to be aligned with "subleft" and "subtop" to fit between different resolutions and FOVs
+Example:
+    self.spec_waypoint[index] = addHUDClient(self, 0, 0, 1.2, (1,1,1), "center", "middle", "subleft", "subtop");
+    self.spec_waypoint[index] SetPlayerNameString(player);
+    self.spec_waypoint[index].offset = (0, 0, 10);
+    self.spec_waypoint[index] thread SetPlayerWaypoint(self, player);
 
-// Makes HUD element to follow head of player in 3D world
-// HUD element needs to be aligned with "subleft" and "subtop" to fit between different resolutions and FOVs
-// Example:
-//    self.spec_waypoint[index] = addHUDClient(self, 0, 0, 1.2, (1,1,1), "center", "middle", "subleft", "subtop");
-//    self.spec_waypoint[index] SetPlayerNameString(player);
-//    self.spec_waypoint[index] thread SetPlayerWaypoint(self, player, (0, 0, 40));
-SetPlayerWaypoint(camera_player, waypoint_player, offset)
+If its a shader, these variables needs to be set
+    self.spec_waypoint[index] = addHUDClient(self, 0, 0, 1.2, (1,1,1), "center", "middle", "subleft", "subtop");
+    self.spec_waypoint[index].shader = "shader_name";
+    self.spec_waypoint[index].w = 24;
+    self.spec_waypoint[index].h = 24;
+    self.spec_waypoint[index].scale = 1;
+    self.spec_waypoint[index].offset = (0, 0, 10);
+    self.spec_waypoint[index] thread SetPlayerWaypoint(self, player);
+*/
+SetPlayerWaypoint(camera_player, waypoint_player)
 {
-	last_x = 0;
-	last_y = 0;
+	// Make sure only 1 thread is running on this HUD element
+	self notify("SetPlayerWaypoint");
+	self endon("SetPlayerWaypoint");
+
+	last_x = undefined;
+	last_y = undefined;
 
 	waypoint_origin = undefined;
 
@@ -188,13 +203,6 @@ SetPlayerWaypoint(camera_player, waypoint_player, offset)
 
 		if (!isDefined(self) || !isDefined(camera_player) || !isDefined(waypoint_player))
 			break;
-
-		if (isDefined(self.paused) && self.paused)
-		{
-			self.x = -9999;
-			self.y = -9999;
-			continue;
-		}
 
 		camera_player_real = camera_player;
 
@@ -240,9 +248,17 @@ SetPlayerWaypoint(camera_player, waypoint_player, offset)
 			weapon_fov["luger_mp"] = 80;
 			weapon_fov["tt30_mp"] = 80;
 			weapon_fov["webley_mp"] = 80;
+			weapon_fov["mg_mp"] = 60;
 
 			current = camera_player_real getcurrentweapon(); // can be none
 			zoom = camera_player_real playerAds();	// 1 = zoom | 0 = no zoom
+
+			if (camera_player_real.usingMG)
+			{
+				current = "mg_mp";
+				zoom = 1;
+			}
+
 			if (zoom < 0.5)
 				zoom = 0;
 			else
@@ -252,21 +268,51 @@ SetPlayerWaypoint(camera_player, waypoint_player, offset)
 				fov = 80 - (80 - weapon_fov[current]) * zoom;
 		}
 
-		// Update players origin only if he is alive
-		if (!isDefined(waypoint_origin) || isAlive(waypoint_player))
-			waypoint_origin = waypoint_player.headTag.origin + offset;
+		waypoint_origin = waypoint_player.origin + self.offset;
+		if (isDefined(self.tag) && self.tag == "head")
+			waypoint_origin = waypoint_player.headTag.origin + self.offset;
 
-		point = worldToScreen(camera_player_real maps\mp\gametypes\global\player::getEyeOrigin(), camera_player_real getplayerangles(), waypoint_origin, fov/80);
+		point = WorldToScreen(camera_player_real maps\mp\gametypes\global\player::getEyeOrigin(), camera_player_real getplayerangles(), waypoint_origin, fov/80);
 
 		self.x = point[0];
 		self.y = point[1];
-
-		self.x = (last_x + point[0]) / 2;
-		self.y = (last_y + point[1]) / 2;
-
+		/*
+		if (isDefined(last_x) && isDefined(last_y))
+		{
+			self.x = (last_x + point[0]) / 2;
+			self.y = (last_y + point[1]) / 2;
+		}
 		last_x = point[0];
 		last_y = point[1];
+		*/
+		// Shader set
+		if (isDefined(self.shader) && self.shader != "")
+		{
+			dist = distance(waypoint_origin, camera_player_real.origin);
+			if (dist <= 0) dist = 10;
+			const = 1 / (dist * fov/80);
+			w = self.w * self.scale * const;
+			h = self.h * self.scale * const;
+
+			// Scale up if shader is in corners
+			const = 1 + (distance((self.x, self.y - h / 2, 0), (320, 240, 0)) / 640);	// Distance of text from center - text is in 640x480 rectangle aligned left top
+			w = w * const;
+			h = h * const;
+
+			// Limits of the game
+			if (w > 1023) w = 1023;
+			if (h > 1023) h = 1023;
+
+			self setShader(self.shader, int(w), int(h));
+		}
 	}
+}
+
+abs (num)
+{
+	if (num < 0)
+		num *= -1;
+	return num;
 }
 
 WorldToScreen(camera_origin, camera_angles, position, fov_scale)

@@ -324,11 +324,11 @@ saveSubPamMode(str)
 		self.pers["rcon_map_pam_league"] = str;
 
 	else if ((gametype == "sd"  && (str == "mr3" || str == "mr10" || str == "mr12" || str == "mr15" || str == "20rounds")) ||
-	         (gametype == "dm"  && (str == "15min" || str == "30min" || str == "60min" || str == "unlim")) ||
-		 (gametype == "tdm" && (str == "15min" || str == "30min" || str == "60min" || str == "unlim")) ||
-		 (gametype == "hq" && (str == "15min" || str == "30min" || str == "60min" || str == "unlim")) ||
-		 (gametype == "ctf" && (str == "15min" || str == "30min" || str == "60min" || str == "unlim")) ||
-		 (gametype == "htf" && (str == "15min" || str == "30min" || str == "60min" || str == "unlim")) ||
+	         (gametype == "dm"  && (str == "10min" || str == "15min" || str == "30min" || str == "60min" || str == "unlim")) ||
+		 (gametype == "tdm" && (str == "10min" || str == "15min" || str == "30min" || str == "60min" || str == "unlim")) ||
+		 (gametype == "hq"  && (str == "10min" || str == "15min" || str == "30min" || str == "60min" || str == "unlim")) ||
+		 (gametype == "ctf" && (str == "10min" || str == "15min" || str == "30min" || str == "60min" || str == "unlim")) ||
+		 (gametype == "htf" && (str == "10min" || str == "15min" || str == "30min" || str == "60min" || str == "unlim")) ||
 		 (gametype == "re"  && (str == "mr3" || str == "mr10" || str == "mr12" || str == "mr15" || str == "20rounds")))
 	{
 		if (self.pers["rcon_map_pam_gamesettings"] == str)
@@ -372,11 +372,11 @@ joinSubPamModes()
 {
 	str = self.pers["rcon_map_pam_league"];
 	if (self.pers["rcon_map_pam_gamesettings"] != "") 	str += "_" + self.pers["rcon_map_pam_gamesettings"];
+	if (self.pers["rcon_map_pam_rifle"]) 		str += "_rifle";
 	if (self.pers["rcon_map_pam_2v2"]) 		str += "_2v2";
 	if (self.pers["rcon_map_pam_russian"]) 		str += "_russian";
 	if (self.pers["rcon_map_pam_lan"]) 		str += "_lan";
 	if (self.pers["rcon_map_pam_pcw"]) 		str += "_pcw";
-	if (self.pers["rcon_map_pam_rifle"]) 		str += "_rifle";
 	return str;
 }
 

@@ -47,7 +47,7 @@ registerCvars()
 	[[var]]("scr_smg_allow_drop", "BOOL", 1);
 	[[var]]("scr_mg_allow_drop", "BOOL", 1);
 	[[var]]("scr_shotgun_allow_drop", "BOOL", 1);
-
+	[[var]]("scr_pistol_allow_drop", "BOOL", 1);
 
 
 	// Allow/Disallow Weapons
@@ -149,6 +149,9 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "scr_mg_allow_drop":
 		case "scr_shotgun_allow_drop":
             		if (!isRegisterTime) thread updateDrop(cvar, value);
+			return true;
+
+		case "scr_pistol_allow_drop":
 			return true;
 
 
@@ -394,41 +397,41 @@ defineWeapons()
 	switch(game["allies"])
 	{
 	case "american":
-		addWeapon("greasegun_mp", 		"smg", 				"allies", 	"scr_allow_greasegun", 		"ui_allow_greasegun");
+		addWeapon("greasegun_mp", 		"smg", 			"allies", 	"scr_allow_greasegun", 		"ui_allow_greasegun");
 		addWeapon("m1carbine_mp", 		"semiautomatic",	"allies", 	"scr_allow_m1carbine",		"ui_allow_m1carbine");
 		addWeapon("m1garand_mp", 		"semiautomatic", 	"allies", 	"scr_allow_m1garand", 		"ui_allow_m1garand");
-		addWeapon("springfield_mp", 	"sniper", 			"allies", 	"scr_allow_springfield", 	"ui_allow_springfield");
-		addWeapon("thompson_mp", 		"smg", 				"allies", 	"scr_allow_thompson", 		"ui_allow_thompson");
-		addWeapon("bar_mp", 			"mg", 				"allies", 	"scr_allow_bar", 			"ui_allow_bar");
+		addWeapon("springfield_mp", 		"sniper", 		"allies", 	"scr_allow_springfield", 	"ui_allow_springfield");
+		addWeapon("thompson_mp", 		"smg", 			"allies", 	"scr_allow_thompson", 		"ui_allow_thompson");
+		addWeapon("bar_mp", 			"mg", 			"allies", 	"scr_allow_bar", 		"ui_allow_bar");
 		break;
 
 	case "british":
-		addWeapon("sten_mp", 			"smg", 				"allies", 	"scr_allow_sten", 			"ui_allow_sten");
+		addWeapon("sten_mp", 			"smg", 			"allies", 	"scr_allow_sten", 		"ui_allow_sten");
 		addWeapon("enfield_mp", 		"boltaction", 		"allies", 	"scr_allow_enfield", 		"ui_allow_enfield");
 		addWeapon("m1garand_mp", 		"semiautomatic", 	"allies", 	"scr_allow_m1garand", 		"ui_allow_m1garand");
-		addWeapon("enfield_scope_mp", 	"sniper",			"allies", 	"scr_allow_enfieldsniper", 	"ui_allow_enfieldsniper");
-		addWeapon("thompson_mp", 		"smg", 				"allies", 	"scr_allow_thompson", 		"ui_allow_thompson");
-		addWeapon("bren_mp", 			"mg", 				"allies", 	"scr_allow_bren", 			"ui_allow_bren");
+		addWeapon("enfield_scope_mp", 		"sniper",		"allies", 	"scr_allow_enfieldsniper", 	"ui_allow_enfieldsniper");
+		addWeapon("thompson_mp", 		"smg", 			"allies", 	"scr_allow_thompson", 		"ui_allow_thompson");
+		addWeapon("bren_mp", 			"mg", 			"allies", 	"scr_allow_bren", 		"ui_allow_bren");
 		break;
 
 	case "russian":
-		addWeapon("PPS42_mp", 			"smg", 				"allies", 	"scr_allow_pps42", 			"ui_allow_pps42");
-		addWeapon("mosin_nagant_mp", 	"boltaction", 		"allies", 	"scr_allow_nagant", 		"ui_allow_nagant");
-		addWeapon("SVT40_mp", 			"semiautomatic", 	"allies", 	"scr_allow_svt40", 			"ui_allow_svt40");
-		addWeapon("mosin_nagant_sniper_mp", "sniper", 		"allies", 	"scr_allow_nagantsniper", 	"ui_allow_nagantsniper");
-		addWeapon("ppsh_mp", 			"smg", 				"allies", 	"scr_allow_ppsh", 			"ui_allow_ppsh");
+		addWeapon("PPS42_mp", 			"smg", 			"allies", 	"scr_allow_pps42", 		"ui_allow_pps42");
+		addWeapon("mosin_nagant_mp", 		"boltaction", 		"allies", 	"scr_allow_nagant", 		"ui_allow_nagant");
+		addWeapon("SVT40_mp", 			"semiautomatic", 	"allies", 	"scr_allow_svt40", 		"ui_allow_svt40");
+		addWeapon("mosin_nagant_sniper_mp", 	"sniper", 		"allies", 	"scr_allow_nagantsniper", 	"ui_allow_nagantsniper");
+		addWeapon("ppsh_mp", 			"smg", 			"allies", 	"scr_allow_ppsh", 		"ui_allow_ppsh");
 		break;
 	}
 
 	// Germans
-	addWeapon("mp40_mp", 			"smg", 				"axis", 	"scr_allow_mp40", 			"ui_allow_mp40");
+	addWeapon("mp40_mp", 			"smg", 			"axis", 	"scr_allow_mp40", 		"ui_allow_mp40");
 	addWeapon("kar98k_mp", 			"boltaction", 		"axis", 	"scr_allow_kar98k", 		"ui_allow_kar98k");
-	addWeapon("g43_mp", 			"semiautomatic", 	"axis", 	"scr_allow_g43", 			"ui_allow_g43");
-	addWeapon("kar98k_sniper_mp", 	"sniper", 			"axis", 	"scr_allow_kar98ksniper", 	"ui_allow_kar98ksniper");
-	addWeapon("mp44_mp", 			"mg", 				"axis", 	"scr_allow_mp44", 			"ui_allow_mp44");
+	addWeapon("g43_mp", 			"semiautomatic", 	"axis", 	"scr_allow_g43", 		"ui_allow_g43");
+	addWeapon("kar98k_sniper_mp", 		"sniper", 		"axis", 	"scr_allow_kar98ksniper", 	"ui_allow_kar98ksniper");
+	addWeapon("mp44_mp", 			"mg", 			"axis", 	"scr_allow_mp44", 		"ui_allow_mp44");
 
 	// All teams
-	addWeapon("shotgun_mp", 		"shotgun", 			"both", 	"scr_allow_shotgun", 		"ui_allow_shotgun");
+	addWeapon("shotgun_mp", 		"shotgun", 		"both", 	"scr_allow_shotgun", 		"ui_allow_shotgun");
 
 
 	// Array of Available Weapon Classes
@@ -684,6 +687,11 @@ dropWeapon()
 		weapon_class = level.weapons[current].classname;
 
 		if (getCvarInt(level.weaponclass[weapon_class].cvarAllowDrop) == 0)
+			return;
+	}
+	else if (isPistol(current))
+	{
+		if (getCvarInt("scr_pistol_allow_drop") == 0)
 			return;
 	}
 

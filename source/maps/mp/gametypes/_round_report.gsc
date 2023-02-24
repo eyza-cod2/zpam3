@@ -138,6 +138,7 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 			lastDamage.wasKilled = false;
 			lastDamage.teamkill = (self != eAttacker) && (self.pers["team"] == eAttacker.pers["team"]);
 			lastDamage.bombPlanted = level.bombplanted;
+			lastDamage.adjustedBy = eAttacker.hitData[self getEntityNumber()].adjustedBy;
 			lastDamage.time = gettime();
 			lastDamage.firstTime = gettime();
 
@@ -289,31 +290,15 @@ print()
 		{
 			log = self.round_report_array[i];
 
-
-
 			string = getTimeString(log.time, log.bombPlanted) + " ^9";
-
-
-			/*
-
-			[Kar98k] hit to Body
-			[Kar98k] kill to Body
-			[Kar98k] kill to Body, first [Kar98k] hit to Leg
-			[Pistol] kill to leg, first [Kar98k] hit to Leg
-			[MP44] kill to Head, first [Grenade] hit
-			[Bash] kill to Head, first [Bash] hit to Head
-
-			hit to Body (Kar98k)
-			kill to Body [Kar98k]
-			kill to Body [Kar98k], first hit to Leg [Kar98k]
-			kill to leg [Pistol], first hit to Leg [Kar98k]
-			kill to Head [MP44], first hit [Grenade]
-			kill to Head [Bash], first hit to Head [Bash]
-
-			*/
 
 			if (log.wasKilled)
 			{
+				// kill 1 to Arm (M1 Garant)
+				// kill 2 with 1 pellet (M1 Garant)
+				// kill 3 237hp to Head (KAR)
+				// kill 4 to Arm (M1 Garant), first hit 45hp to Leg
+
 				// Kill
 				if (log.teamkill)
 					string += "^1team kill " + killNum + "^9";
@@ -321,18 +306,25 @@ print()
 					string += "^2kill " + killNum + "^9";
 				killNum++;
 
+				if (log.multipleDamage == false)
+				{
+					damage = int(log.firstDamageValue);
+					if (damage == 0) damage = 1;
+					string += " " + damage + "hp";
+				}
+
 				// To
-				if (log.sWeapon != "shotgun_mp")
+				if (log.sWeapon == "shotgun_mp" && log.sMeansOfDeath == "MOD_PISTOL_BULLET")
+				{
+					string += " with " + log.pellets + " pellet";
+					if (log.pellets > 1) string += "s";
+				}
+				else
 				{
 					if (isDefined(hitLocTexts[log.hitLoc]))
 						string += " to " + hitLocTexts[log.hitLoc];
 					else if (log.hitLoc != "none")
 						string += " to " + log.hitLoc;
-				}
-				else
-				{
-					string += " with " + log.pellets + " pellet";
-					if (log.pellets > 1) string += "s";
 				}
 
 				// [Weapon]
@@ -350,16 +342,25 @@ print()
 			{
 				if (log.teamkill)
 					string += "^1team^9 ";
-
 				string += "hit";
 
-				//if (log.sMeansOfDeath == "MOD_RIFLE_BULLET" || log.sFirstWeapon == "shotgun_mp")
-					string += " " + int(log.firstDamageValue) + "hp";
+				damage = int(log.firstDamageValue);
+				if (damage == 0) damage = 1;
+				string += " " + damage + "hp";
 
-				if (log.sFirstWeapon == "shotgun_mp")
+				if (log.sFirstWeapon == "shotgun_mp" && log.sFirstMeansOfDeath == "MOD_PISTOL_BULLET")
 				{
 					string += " " + log.pellets + " pellet";
 					if (log.pellets > 1) string += "s";
+
+					if (log.adjustedBy == "consistent_shotgun_1_kill" || log.adjustedBy == "consistent_shotgun_1_hit")
+						string += " range-1";
+					else if (log.adjustedBy == "consistent_shotgun_2")
+						string += " range-2";
+					else if (log.adjustedBy == "consistent_shotgun_3")
+						string += " range-3";
+					else if (log.adjustedBy == "consistent_shotgun_4")
+						string += " range-4";
 				}
 
 				if (log.sFirstWeapon != "shotgun_mp")
@@ -368,7 +369,6 @@ print()
 						string += " to " + hitLocTexts[log.firstHitLoc];
 					else if (log.firstHitLoc != "none")
 						string += " to " + log.firstHitLoc;
-
 				}
 
 				// Show weapon if only hit is showed or weapons are different
@@ -379,6 +379,12 @@ print()
 						string += " ("+weapon+")";
 				}
 
+			}
+
+			// Hit was adjusted by fixes
+			if (log.adjustedBy == "hand_hitbox_fix" || log.adjustedBy == "torso_hitbox_fix")
+			{
+				string += " ^1*";
 			}
 
 

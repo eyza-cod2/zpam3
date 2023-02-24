@@ -26,6 +26,7 @@ GetCvars(arr)
 	// Allow weapon drop when player die
 	arr = ruleCvarDefault(arr, "scr_boltaction_allow_drop", 0);
 	arr = ruleCvarDefault(arr, "scr_sniper_allow_drop", 0);
+	arr = ruleCvarDefault(arr, "scr_pistol_allow_drop", 0);
 
 	// Allow grenade / smoke drop when player die
 	arr = ruleCvarDefault(arr, "scr_allow_grenade_drop", 0);

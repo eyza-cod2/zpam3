@@ -42,8 +42,9 @@
 
 
 		ITEM_BUTTON_ONDVAR		(ORIGIN_CHOICE1, "1. Change Weapon", 		"ui_allow_weaponchange", showDvar{"1"}, ;, scriptMenuResponse "changeweapon")
-		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE1, "2. Change Weapon", 		"ui_allow_weaponchange", hideDvar{"1"}, ;)
-		ITEM_BUTTON 			(ORIGIN_CHOICE2, "2. Change Team", 		;, scriptMenuResponse "changeteam")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE1, "1. Change Weapon", 		"ui_allow_weaponchange", hideDvar{"1"}, ;)
+		ITEM_BUTTON_ONDVAR		(ORIGIN_CHOICE2, "2. Change Team", 		"ui_allow_changeteam", showDvar{"1"}, ;, scriptMenuResponse "changeteam")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE2, "2. Change Team", 		"ui_allow_changeteam", hideDvar{"1"}, ;)
 		ITEM_BUTTON_ONDVAR		(ORIGIN_CHOICE3, "3. Call Vote", 		"ui_allowvote", showDvar{"1"}, ;, scriptMenuResponse "callvote")
 		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE3, "3. Call Vote", 		"ui_allowvote", hideDvar{"1"}, ;)
 
@@ -230,6 +231,9 @@
 			backcolor		1 1 1 .125
 			decoration
 		}
+
+		ITEM_TEXT("Score:     Kill +1   |   Teamkill -1   |   Assist plant defuse +0.5",  9, 311, .20, ITEM_ALIGN_LEFT, 1 1 1 .25)
+		ITEM_TEXT("Hits:         Scope/Rifle +1   |   Semi/Automatic/Shotgun +0.5",  9, 322, .20, ITEM_ALIGN_LEFT, 1 1 1 .25)
 
 		#include "ui_mp/scriptmenus/submenus/scoreboard_lines_sd.menu"
 	}
