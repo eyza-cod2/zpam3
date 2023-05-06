@@ -25,16 +25,7 @@
 	}
 
 
-	menuDef
-	{
-	  	name quickmessage_spectatingsystem_menu
-	  	fullScreen 0
-	  	visible 0
-	    	rect 0 0 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
-
-		#include "ui_mp/scriptmenus/spectatingsystem.menu"
-	}
-
+	#include "ui_mp/scriptmenus/submenus/spectator.menu"
 
 
 	menuDef

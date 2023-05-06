@@ -38,7 +38,6 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_hq_neutralizing_points", 10);
 	arr = ruleCvarDefault(arr, "scr_hq_radio_respawn_time", 3);
 	arr = ruleCvarDefault(arr, "scr_hq_radio_hold_time", 120);
-	arr = ruleCvarDefault(arr, "scr_hq_multiple_capture", 1);
 
 
 

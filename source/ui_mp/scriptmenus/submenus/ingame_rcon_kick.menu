@@ -8,9 +8,9 @@ onOpen
 #define PLAYERLIST_X	0
 
 #define PLAYERLIST_W	350
-#define PLAYERLIST_H	19
+#define PLAYERLIST_H	15
 
-#define PLAYERLIST_TEXT_ALIGNY 15
+#define PLAYERLIST_TEXT_ALIGNY 13
 
 #define PLAYERLIST_NAME_X 10
 #define PLAYERLIST_KICK_X 270
@@ -18,21 +18,27 @@ onOpen
 
 
 #define PLAYERLIST_LINE_1_Y 0
-#define PLAYERLIST_LINE_2_Y 20
-#define PLAYERLIST_LINE_3_Y 40
-#define PLAYERLIST_LINE_4_Y 60
-#define PLAYERLIST_LINE_5_Y 80
-#define PLAYERLIST_LINE_6_Y 100
-#define PLAYERLIST_LINE_7_Y 120
-#define PLAYERLIST_LINE_8_Y 140
-#define PLAYERLIST_LINE_9_Y 160
-#define PLAYERLIST_LINE_10_Y 180
-#define PLAYERLIST_LINE_11_Y 200
-#define PLAYERLIST_LINE_12_Y 220
-#define PLAYERLIST_LINE_13_Y 240
-#define PLAYERLIST_LINE_14_Y 260
-#define PLAYERLIST_LINE_15_Y 280
-#define PLAYERLIST_LINE_16_Y 300
+#define PLAYERLIST_LINE_2_Y 16
+#define PLAYERLIST_LINE_3_Y 32
+#define PLAYERLIST_LINE_4_Y 48
+#define PLAYERLIST_LINE_5_Y 64
+#define PLAYERLIST_LINE_6_Y 80
+#define PLAYERLIST_LINE_7_Y 96
+#define PLAYERLIST_LINE_8_Y 112
+#define PLAYERLIST_LINE_9_Y 128
+#define PLAYERLIST_LINE_10_Y 144
+#define PLAYERLIST_LINE_11_Y 160
+#define PLAYERLIST_LINE_12_Y 176
+#define PLAYERLIST_LINE_13_Y 192
+#define PLAYERLIST_LINE_14_Y 208
+#define PLAYERLIST_LINE_15_Y 224
+#define PLAYERLIST_LINE_16_Y 240
+#define PLAYERLIST_LINE_17_Y 256
+#define PLAYERLIST_LINE_18_Y 272
+#define PLAYERLIST_LINE_19_Y 288
+#define PLAYERLIST_LINE_20_Y 304
+#define PLAYERLIST_LINE_21_Y 320
+#define PLAYERLIST_LINE_22_Y 336
 
 #define PLAYERLIST_ALLIES_BACKGROUND_COLOR 			0.24 0.42 0.8 0.2
 #define PLAYERLIST_AXIS_BACKGROUND_COLOR 			0.8 0.24 0.24 0.2
@@ -54,7 +60,7 @@ itemDef  \
 	rect			PLAYERLIST_X y_offset PLAYERLIST_W PLAYERLIST_H 0 0 \
 	backcolor		PLAYERLIST_ALLIES_BACKGROUND_COLOR \
 	visible			1 \
-	dvartest		"ui_playerlist_line_" #line_id "_team" \
+	dvartest		"ui_rcon_kick_line_" line_id "_team" \
 	showDvar		{ "1" } \
 	decoration \
 } \
@@ -64,7 +70,7 @@ itemDef  \
 	rect			PLAYERLIST_X y_offset PLAYERLIST_W PLAYERLIST_H 0 0 \
 	backcolor		PLAYERLIST_AXIS_BACKGROUND_COLOR \
 	visible			1 \
-	dvartest		"ui_playerlist_line_" #line_id "_team" \
+	dvartest		"ui_rcon_kick_line_" line_id "_team" \
 	showDvar		{ "2" } \
 	decoration \
 }		 \
@@ -74,7 +80,7 @@ itemDef  \
 	rect			PLAYERLIST_X y_offset PLAYERLIST_W PLAYERLIST_H 0 0 \
 	backcolor		PLAYERLIST_NEUTRAL_BACKGROUND_COLOR \
 	visible			1 \
-	dvartest		"ui_playerlist_line_" #line_id "_team" \
+	dvartest		"ui_rcon_kick_line_" line_id "_team" \
 	showDvar		{ "3" } \
 	decoration \
 }	 \
@@ -84,7 +90,7 @@ itemDef  \
 	rect			PLAYERLIST_X y_offset PLAYERLIST_W PLAYERLIST_H 0 0 \
 	backcolor		PLAYERLIST_HEADING_BACKGROUND_COLOR \
 	visible			1 \
-	dvartest		"ui_playerlist_line_" #line_id "_team" \
+	dvartest		"ui_rcon_kick_line_" line_id "_team" \
 	showDvar		{ "4" } \
 	decoration \
 }	 \
@@ -92,14 +98,14 @@ itemDef  \
  \
 itemDef \
 { \
-	dvar 			"ui_playerlist_line_" #line_id "_name" \
+	dvar 			"ui_rcon_kick_line_" line_id "_name" \
 	textfont		UI_FONT_BIG \
 	textscale		0.25 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textaligny		PLAYERLIST_TEXT_ALIGNY \
 	visible			1 \
 	origin			PLAYERLIST_NAME_X y_offset \
-	dvartest		"ui_playerlist_line_" #line_id "_team" \
+	dvartest		"ui_rcon_kick_line_" line_id "_team" \
 	hideDvar		{ ""; "0" } \
 	decoration \
 } \
@@ -108,15 +114,15 @@ itemDef  \
 { \
 	text			"Kick player" \
 	visible			1 \
-	rect			0 0 60 18 0 0 \
+	rect			0 0 60 PLAYERLIST_H 0 0 \
 	origin			PLAYERLIST_KICK_X y_offset \
 	forecolor		GLOBAL_UNFOCUSED_COLOR \
 	type			ITEM_TYPE_BUTTON \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.25 \
+	textscale		0.22 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textaligny		PLAYERLIST_TEXT_ALIGNY \
-	dvartest		"ui_playerlist_line_" #line_id "_team" \
+	dvartest		"ui_rcon_kick_line_" line_id "_team" \
 	showDvar		{ "1"; "2"; "3" } \
 	onFocus \
 	{ \
@@ -126,22 +132,22 @@ itemDef  \
 	action \
 	{ \
 		play "mouse_click"; \
-		exec "vstr ui_playerlist_line_" #line_id "_kick"; \
+		exec "vstr ui_rcon_kick_line_" line_id "_kick"; \
 	} \
 } \
 itemDef  \
 { \
 	text			"Ban" \
 	visible			1 \
-	rect			0 0 30 18 0 0 \
+	rect			0 0 30 PLAYERLIST_H 0 0 \
 	origin			PLAYERLIST_BAN_X y_offset \
 	forecolor		GLOBAL_UNFOCUSED_COLOR \
 	type			ITEM_TYPE_BUTTON \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.25 \
+	textscale		0.22 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textaligny		PLAYERLIST_TEXT_ALIGNY \
-	dvartest		"ui_playerlist_line_" #line_id "_team" \
+	dvartest		"ui_rcon_kick_line_" line_id "_team" \
 	showDvar		{ "1"; "2"; "3" } \
 	onFocus \
 	{ \
@@ -151,27 +157,33 @@ itemDef  \
 	action \
 	{ \
 		play "mouse_click"; \
-		exec "vstr ui_playerlist_line_" #line_id "_ban"; \
+		exec "vstr ui_rcon_kick_line_" line_id "_ban"; \
 	} \
 }
 
 
-ITEM_PLAYERLIST_LINE(1, PLAYERLIST_LINE_1_Y)
-ITEM_PLAYERLIST_LINE(2, PLAYERLIST_LINE_2_Y)
-ITEM_PLAYERLIST_LINE(3, PLAYERLIST_LINE_3_Y)
-ITEM_PLAYERLIST_LINE(4, PLAYERLIST_LINE_4_Y)
-ITEM_PLAYERLIST_LINE(5, PLAYERLIST_LINE_5_Y)
-ITEM_PLAYERLIST_LINE(6, PLAYERLIST_LINE_6_Y)
-ITEM_PLAYERLIST_LINE(7, PLAYERLIST_LINE_7_Y)
-ITEM_PLAYERLIST_LINE(8, PLAYERLIST_LINE_8_Y)
-ITEM_PLAYERLIST_LINE(9, PLAYERLIST_LINE_9_Y)
-ITEM_PLAYERLIST_LINE(10, PLAYERLIST_LINE_10_Y)
-ITEM_PLAYERLIST_LINE(11, PLAYERLIST_LINE_11_Y)
-ITEM_PLAYERLIST_LINE(12, PLAYERLIST_LINE_12_Y)
-ITEM_PLAYERLIST_LINE(13, PLAYERLIST_LINE_13_Y)
-ITEM_PLAYERLIST_LINE(14, PLAYERLIST_LINE_14_Y)
-ITEM_PLAYERLIST_LINE(15, PLAYERLIST_LINE_15_Y)
-ITEM_PLAYERLIST_LINE(16, PLAYERLIST_LINE_16_Y)
+ITEM_PLAYERLIST_LINE("1", PLAYERLIST_LINE_1_Y)
+ITEM_PLAYERLIST_LINE("2", PLAYERLIST_LINE_2_Y)
+ITEM_PLAYERLIST_LINE("3", PLAYERLIST_LINE_3_Y)
+ITEM_PLAYERLIST_LINE("4", PLAYERLIST_LINE_4_Y)
+ITEM_PLAYERLIST_LINE("5", PLAYERLIST_LINE_5_Y)
+ITEM_PLAYERLIST_LINE("6", PLAYERLIST_LINE_6_Y)
+ITEM_PLAYERLIST_LINE("7", PLAYERLIST_LINE_7_Y)
+ITEM_PLAYERLIST_LINE("8", PLAYERLIST_LINE_8_Y)
+ITEM_PLAYERLIST_LINE("9", PLAYERLIST_LINE_9_Y)
+ITEM_PLAYERLIST_LINE("10", PLAYERLIST_LINE_10_Y)
+ITEM_PLAYERLIST_LINE("11", PLAYERLIST_LINE_11_Y)
+ITEM_PLAYERLIST_LINE("12", PLAYERLIST_LINE_12_Y)
+ITEM_PLAYERLIST_LINE("13", PLAYERLIST_LINE_13_Y)
+ITEM_PLAYERLIST_LINE("14", PLAYERLIST_LINE_14_Y)
+ITEM_PLAYERLIST_LINE("15", PLAYERLIST_LINE_15_Y)
+ITEM_PLAYERLIST_LINE("16", PLAYERLIST_LINE_16_Y)
+ITEM_PLAYERLIST_LINE("17", PLAYERLIST_LINE_17_Y)
+ITEM_PLAYERLIST_LINE("18", PLAYERLIST_LINE_18_Y)
+ITEM_PLAYERLIST_LINE("19", PLAYERLIST_LINE_19_Y)
+ITEM_PLAYERLIST_LINE("20", PLAYERLIST_LINE_20_Y)
+ITEM_PLAYERLIST_LINE("21", PLAYERLIST_LINE_21_Y)
+ITEM_PLAYERLIST_LINE("22", PLAYERLIST_LINE_22_Y)
 
 
 itemDef

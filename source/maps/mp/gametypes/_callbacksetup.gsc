@@ -159,6 +159,10 @@ CodeCallback_PlayerConnect()
 	// Wait here until player is fully connected
 	self waittill("begin");
 
+	/#
+	println("##### " + gettime() + " " + level.frame_num + " ##### Connected: " + self.name);
+	#/
+
 	self thread maps\mp\gametypes\global\events::notifyConnected();
 
 	// If pam is not installed correctly, spawn outside
@@ -185,6 +189,10 @@ self is the player that is disconnecting.
 CodeCallback_PlayerDisconnect()
 {
 	self notify("disconnect");
+
+	/#
+	println("##### " + gettime() + " " + level.frame_num + " ##### Disconnected: " + self.name);
+	#/
 
 	self thread maps\mp\gametypes\global\events::notifyDisconnect();
 }
@@ -221,6 +229,9 @@ sHitLoc
 	right_leg_lower
 	right_foot
 
+client:client_2  health:100 damage:90 hitLoc:torso_lower iDFlags:32 sMeansOfDeath: MOD_RIFLE_BULLET sWeapon: m1garand_mp vPoint: (-61.1327, 1090.97, 25.2369) vDir: (0.651344, -0.728131, -0.213485) timeOffset: 0
+client:client_2  health:55 damage:45 hitLoc:torso_lower iDFlags:0 sMeansOfDeath: MOD_PISTOL_BULLET sWeapon: webley_mp vPoint: (-189.78, 1102.76, 39.3595) vDir: (0.140321, -0.958474, -0.248269) timeOffset: 0
+
 ================*/
 CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset)
 {
@@ -230,25 +241,26 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	resettimeout();
 
 	// Do debug print if it's enabled
-	if(level.debugDamage)
+	if(level.g_debugDamage)
 	{
-		dist = -1; if (isDefined(eAttacker) && isPlayer(eAttacker)) dist = int(distance(self getOrigin(), eAttacker getOrigin()));
-		strAttacker = "undefined"; if (isDefined(eAttacker)) if (isPlayer(eAttacker)) strAttacker = "#" + (eAttacker getEntityNumber()) + " " + eAttacker.name; else strAttacker = "-entity-";
-		sPoint = "undefined";	if (isDefined(vPoint)) sPoint = vPoint;
-		println("#Damage " + getTime() + " " + strAttacker + " -> #" + self getEntityNumber() + " " + self.name + " health:" + self.health + " damage:" + iDamage + " hitLoc:" + sHitLoc + " iDFlags:" + iDFlags +
-		" sMeansOfDeath:" + sMeansOfDeath + " sWeapon:" + sWeapon + " vPoint:" + sPoint + " distance:" + dist);
-
-		//client:client_2  health:100 damage:90 hitLoc:torso_lower iDFlags:32 sMeansOfDeath: MOD_RIFLE_BULLET sWeapon: m1garand_mp vPoint: (-61.1327, 1090.97, 25.2369) vDir: (0.651344, -0.728131, -0.213485) timeOffset: 0
-		//client:client_2  health:55 damage:45 hitLoc:torso_lower iDFlags:0 sMeansOfDeath: MOD_PISTOL_BULLET sWeapon: webley_mp vPoint: (-189.78, 1102.76, 39.3595) vDir: (0.140321, -0.958474, -0.248269) timeOffset: 0
-
 		if (isDefined(eAttacker) && isPlayer(eAttacker))
 		{
+			dist = int(distance(self getOrigin(), eAttacker getOrigin()));
 			eAttacker iprintln("You inflicted " + iDamage + " damage to " + self.name + " (" + sHitLoc + ", "+ sMeansOfDeath +", distance "+dist+")");
 			self iprintln("You recieved " + iDamage + " damage from " + eAttacker.name + " (" + sHitLoc + ", "+ sMeansOfDeath +", distance "+dist+")");
 		}
 		else
-			self iprintln("You recieved " + iDamage + " damage (" + sHitLoc + ", "+ sMeansOfDeath +", distance "+dist+")");
+			self iprintln("You recieved " + iDamage + " damage (" + sHitLoc + ", "+ sMeansOfDeath +")");
 	}
+
+	/#
+	dist = -1; if (isDefined(eAttacker) && isPlayer(eAttacker)) dist = int(distance(self getOrigin(), eAttacker getOrigin()));
+	strAttacker = "undefined"; if (isDefined(eAttacker)) if (isPlayer(eAttacker)) strAttacker = "#" + (eAttacker getEntityNumber()) + " " + eAttacker.name; else strAttacker = "-entity-";
+	sPoint = "undefined";	if (isDefined(vPoint)) sPoint = vPoint;
+
+	println("##### " + gettime() + " " + level.frame_num + " ##### PlayerDamage: " + strAttacker + " -> #" + self getEntityNumber() + " " + self.name + " health:" + self.health + " damage:" + iDamage + " hitLoc:" + sHitLoc + " iDFlags:" + iDFlags +
+	" sMeansOfDeath:" + sMeansOfDeath + " sWeapon:" + sWeapon + " vPoint:" + sPoint + " distance:" + dist);
+	#/
 
 
 	// Save antilag time offset
@@ -273,6 +285,11 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	self_num = self getEntityNumber();
 	if (isDefined(eAttacker) && isPlayer(eAttacker))
 	{
+		// Id of shot in this frame for attacker (to count double kills for example)
+		if (!isDefined(eAttacker.hitId))
+			eAttacker.hitId = 0;			// inited to 0, but will be incremented. 1 then means first bullet
+		eAttacker.hitId++;
+
 		// Create variable to hold hit data
 		if (!isDefined(eAttacker.hitData))
 			eAttacker.hitData = [];
@@ -280,7 +297,7 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		if (!isDefined(eAttacker.hitData[self_num]))
 		{
 			eAttacker.hitData[self_num] = spawnstruct();
-			eAttacker.hitData[self_num].id = 0;			// inited to 0, but will be incremented. 1 then means first bullet
+			eAttacker.hitData[self_num].id = 0;			// inited to 0, but will be incremented. 1 then means first bullet to specific player
 			eAttacker.hitData[self_num].adjustedBy = "";		// string telling if hit was adjusted by FIXes
 			eAttacker.hitData[self_num].damage = 0;
 			eAttacker.hitData[self_num].damage_comulated = 0;
@@ -288,11 +305,13 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		eAttacker.hitData[self_num].id++;
 
 		self thread hitDataAutoRestart(eAttacker, self_num);
+		eAttacker thread hitIdAutoRestart();
 	}
 
 
-	debug = 0; // 1 = print to console
 
+
+	debug = 0; // 1 = print to console
 
 	// Hitbox left and right hand fix
 	if (level.scr_hitbox_hand_fix &&
@@ -304,9 +323,10 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		damageOk = (iDamage < 100);
 		bodyOrHeadVisible = false;
 		distanceOK = false;
+		firstBullet = eAttacker.hitId == 1; // this will ignore double shots
 		applyFix = false;
 
-		if (correctWeapon && damageOk)
+		if (correctWeapon && damageOk && firstBullet)
 		{
 			distance = distance(self.origin, eAttacker.origin);
 			distanceOK = (distance > 200);
@@ -410,6 +430,7 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 				{
 					if (!correctWeapon) 		eAttacker iprintln("^3Hand hitbox fix - inside, but this weapon is ignored");
 					else if (!damageOk) 		eAttacker iprintln("^3Hand hitbox fix - inside, but this is already determined as KILL");
+					else if (!firstBullet) 		eAttacker iprintln("^3Hand hitbox fix - inside, but this is not first bullet (double shot)");
 					else if (!distanceOK) 		eAttacker iprintln("^3Hand hitbox fix - inside, but your too close to enemy");
 					else if (!bodyOrHeadVisible) 	eAttacker iprintln("^3Hand hitbox fix - inside, but body and head is not visible");
 					else				eAttacker iprintln("^1Hand hitbox fix - hit is inside the box, changing to KILL!");
@@ -458,6 +479,19 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 
 			if (distOk)
 				applyFix = true;
+		}
+
+		if (level.debug_torsohitbox)
+		{
+			if (!isDefined(self.hit_pelvis))
+			{
+				self.hit_pelvis = spawn("script_origin", (0,0,0));
+				self.hit_pelvis thread maps\mp\gametypes\global\developer::showWaypoint();
+				self.hit_point = spawn("script_origin", (0,0,0));
+				self.hit_point thread maps\mp\gametypes\global\developer::showWaypoint();
+			}
+			self.hit_pelvis.origin = self.pelvisTag getOrigin();
+			self.hit_point.origin = vPoint;
 		}
 
 		if (applyFix)
@@ -609,7 +643,7 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 
 
 	// Save affected damage value
-	if (isDefined(eAttacker) && isPlayer(eAttacker))
+	if (isDefined(eAttacker) && isPlayer(eAttacker) && isDefined(eAttacker.hitData) && isDefined(eAttacker.hitData[self_num]) && isDefined(eAttacker.hitData[self_num].damage_comulated))
 		eAttacker.hitData[self_num].damage_comulated += iDamage;
 
 
@@ -629,7 +663,7 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	}
 }
 
-hitDataAutoRestart(eAttacker, id)
+hitDataAutoRestart(eAttacker, self_num)
 {
 	//self endon("disconnect");
 	eAttacker endon("disconnect");
@@ -642,9 +676,10 @@ hitDataAutoRestart(eAttacker, id)
 	waittillframeend;
 	waittillframeend;
 	waittillframeend;
-	eAttacker.hitData[id].id = 0;
-	eAttacker.hitData[id].damage = 0;
-	eAttacker.hitData[id].adjustedBy = "";
+
+	eAttacker.hitData[self_num].id = 0;
+	eAttacker.hitData[self_num].damage = 0;
+	eAttacker.hitData[self_num].adjustedBy = "";
 
 	// Wait 5 sec if player is still alive
 	for(i = 0; i < 5; i++)
@@ -656,8 +691,16 @@ hitDataAutoRestart(eAttacker, id)
 	}
 
 	// Remove the rest of the data
-	eAttacker.hitData[id] = undefined;
+	eAttacker.hitData[self_num] = undefined;
 }
+
+hitIdAutoRestart()
+{
+	waittillframeend;
+	self.hitId = undefined;
+}
+
+
 
 damageScale(dist, distStart, distEnd, hpStart, hpEnd)
 {
@@ -696,13 +739,11 @@ CodeCallback_PlayerKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon
 	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
 	resettimeout();
 
-	// Do debug print if it's enabled
-	if(level.debugDamage)
-	{
-		strAttacker = "undefined"; if (isDefined(eAttacker)) if (isPlayer(eAttacker)) strAttacker = "#" + (eAttacker getEntityNumber()) + " " + eAttacker.name; else strAttacker = "-entity-";
-		println("#Kill " + getTime() + " " + strAttacker + " -> #" + self getEntityNumber() + " " + self.name + " health:" + self.health + " damage:" + iDamage + " hitLoc:" + sHitLoc +
-		" sMeansOfDeath:" + sMeansOfDeath + " sWeapon:" + sWeapon + " sessionstate:" + self.sessionstate + " timeOffset:" + timeOffset);
-	}
+	/#
+	strAttacker = "undefined"; if (isDefined(eAttacker)) if (isPlayer(eAttacker)) strAttacker = "#" + (eAttacker getEntityNumber()) + " " + eAttacker.name; else strAttacker = "-entity-";
+	println("##### " + gettime() + " " + level.frame_num + " ##### PlayerKilled: " + strAttacker + " -> #" + self getEntityNumber() + " " + self.name + " health:" + self.health + " damage:" + iDamage + " hitLoc:" + sHitLoc +
+	" sMeansOfDeath:" + sMeansOfDeath + " sWeapon:" + sWeapon + " sessionstate:" + self.sessionstate + " timeOffset:" + timeOffset);
+	#/
 
 	// Player in spectator cannot be killed
 	if(self.sessionteam == "spectator")
@@ -746,6 +787,13 @@ CodeCallback_PlayerKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon
 
 	// Call gametype specific event that is called as last
 	[[level.onAfterPlayerKilled]](eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration);
+
+
+	// Warning about high ping
+	if (isPlayer(eAttacker) && eAttacker != self && timeOffset > 100)
+	{
+		self iprintln("^3You were killed by player with high ping " + timeOffset + "ms!"); // TODO
+	}
 }
 
 

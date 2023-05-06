@@ -730,6 +730,566 @@ itemDef \
 }
 
 
+
+
+
+
+#define SPECTATINGSYSTEM_COLOR_BLUE 0.16 0.28 0.74 .9
+#define SPECTATINGSYSTEM_COLOR_RED 0.5 0 0 .9
+#define SPECTATINGSYSTEM_COLOR_HIGHLIGHT .9 .9 .9 1
+#define SPECTATINGSYSTEM_COLOR_BG .0 .0 .0 .9
+#define SPECTATINGSYSTEM_COLOR_BG_DEAD .0 .0 .0 .5
+
+#define ITEM_SPECTATINGSYSTEM_LINE(cvarprefix, x_offset, y_offset, horizontal_align) \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 130 25 horizontal_align 0 \
+	origin		-1 -1 \
+	backcolor	SPECTATINGSYSTEM_COLOR_HIGHLIGHT \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "0_";  "10_blue_";"10_red_";  "50_blue_";"50_red_";  "80_blue_"; "80_red_";  "100_blue_";"100_red_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
+	backcolor	SPECTATINGSYSTEM_COLOR_BG \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	hideDvar	{ ""; "0"; "0_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
+	backcolor	SPECTATINGSYSTEM_COLOR_BG_DEAD \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "0"; "0_" } \
+	decoration \
+} \
+\
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 128 12 horizontal_align 0 \
+	backcolor	SPECTATINGSYSTEM_COLOR_BLUE \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "100_blue"; "100_blue_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 128 12 horizontal_align 0 \
+	backcolor	SPECTATINGSYSTEM_COLOR_RED \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "100_red"; "100_red_" } \
+	decoration \
+} \
+\
+\
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 104 12 horizontal_align 0 \
+	backcolor	SPECTATINGSYSTEM_COLOR_BLUE \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "80_blue"; "80_blue_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 104 12 horizontal_align 0 \
+	backcolor	SPECTATINGSYSTEM_COLOR_RED \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "80_red"; "80_red_" } \
+	decoration \
+} \
+\
+\
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 65 12 horizontal_align 0 \
+	backcolor	SPECTATINGSYSTEM_COLOR_BLUE \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "50_blue"; "50_blue_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 65 12 horizontal_align 0 \
+	backcolor	SPECTATINGSYSTEM_COLOR_RED \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "50_red"; "50_red_" } \
+	decoration \
+} \
+\
+\
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 10 12 horizontal_align 0 \
+	backcolor	SPECTATINGSYSTEM_COLOR_BLUE \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "10_blue"; "10_blue_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 10 12 horizontal_align 0 \
+	backcolor	SPECTATINGSYSTEM_COLOR_RED \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "10_red"; "10_red_" } \
+	decoration \
+} \
+\
+\
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 10 9 horizontal_align 0 \
+	backcolor	1 1 1 .5 \
+	origin		116 13 \
+	visible		1 \
+	background	"gfx/icons/hud@us_grenade.tga" \
+	dvartest	cvarprefix "_icons" \
+	showDvar	{ "grenade"; "grenade_smoke"; "grenade2_smoke"; "grenade2"; } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 10 9 horizontal_align 0 \
+	backcolor	1 1 1 .5 \
+	origin		113 13 \
+	visible		1 \
+	background	"gfx/icons/hud@us_grenade.tga" \
+	dvartest	cvarprefix "_icons" \
+	showDvar	{ "grenade2"; "grenade2_smoke"; } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 10 9 horizontal_align 0 \
+	backcolor	1 1 1 .5 \
+	origin		107 13 \
+	visible		1 \
+	background	"hud_us_smokegrenade" \
+	dvartest	cvarprefix "_icons" \
+	showDvar	{ "smoke"; "grenade_smoke"; "grenade2_smoke";  } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 15 15 horizontal_align 0 \
+	backcolor	1 1 1 .5 \
+	origin		112 4 \
+	visible		1 \
+	background	"gfx/hud/death_suicide.tga" \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "0"; "0_";  } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 12 10 horizontal_align 0 \
+	origin		132 3 \
+	backcolor	1 1 1 .9 \
+	visible		1 \
+	background	"ui/assets/scrollbar_arrow_left.tga" \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "0_";  "10_blue_";"10_red_";  "50_blue_";"50_red_";  "80_blue_"; "80_red_";  "100_blue_";"100_red_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 12 10 horizontal_align 0 \
+	origin		-14 3 \
+	backcolor	1 1 1 .9 \
+	visible		1 \
+	background	"ui/assets/scrollbar_arrow_right.tga" \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "0_";  "10_blue_";"10_red_";  "50_blue_";"50_red_";  "80_blue_"; "80_red_";  "100_blue_";"100_red_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	rect			x_offset y_offset 0 0 horizontal_align 0 \
+	origin			5 0 \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		1 1 1 1 \
+	textfont		UI_FONT_NORMAL \
+	textscale		.18 \
+	textalign		ITEM_ALIGN_LEFT \
+	textaligny		11 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvar			cvarprefix "_text" \
+	dvartest		cvarprefix "_health" \
+	hideDvar		{ ""; "0"; "0_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	rect			x_offset y_offset 0 0 horizontal_align 0 \
+	origin			5 0 \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		1 1 1 .5 \
+	textfont		UI_FONT_NORMAL \
+	textscale		.18 \
+	textalign		ITEM_ALIGN_LEFT \
+	textaligny		11 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvar			cvarprefix "_text" \
+	dvartest		cvarprefix "_health" \
+	showDvar		{ "0"; "0_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	rect			x_offset y_offset 0 0 horizontal_align 0 \
+	origin			5 10 \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		1 1 1 .8 \
+	textfont		UI_FONT_NORMAL \
+	textscale		.16 \
+	textalign		ITEM_ALIGN_LEFT \
+	textaligny		12 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvar			cvarprefix "_info" \
+	dvartest		cvarprefix "_health" \
+	hideDvar		{ ""; "0"; "0_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	rect			x_offset y_offset 0 0 horizontal_align 0 \
+	origin			5 10 \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		1 1 1 .5 \
+	textfont		UI_FONT_NORMAL \
+	textscale		.16 \
+	textalign		ITEM_ALIGN_LEFT \
+	textaligny		12 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvar			cvarprefix "_info" \
+	dvartest		cvarprefix "_health" \
+	showDvar		{ "0"; "0_" } \
+	decoration \
+}
+
+
+
+#define ITEM_SPECTATINGSYSTEM_KEY(textstring, x, y, fontSize, horizontal_align, cvar) \
+itemDef \
+{ \
+	visible			1 \
+	rect			0 0 1 1 horizontal_align 0 \
+	origin			x y \
+	forecolor		GLOBAL_UNFOCUSED_COLOR \
+	type			ITEM_TYPE_TEXT \
+	text			textstring \
+	textfont		UI_FONT_NORMAL \
+	textscale		fontSize \
+	dvartest		cvar \
+	showDvar		{ "1"; } \
+	decoration \
+}
+
+
+#define ITEM_SPECTATINGSYSTEM_DVAR(x, y, fontsize, cvar, horizontal_align) \
+itemDef \
+{ \
+	visible			1 \
+	rect			0 0 0 0 horizontal_align 0 \
+	origin			x y \
+	forecolor		GLOBAL_UNFOCUSED_COLOR \
+	type			ITEM_TYPE_TEXT \
+	textfont		UI_FONT_NORMAL \
+	textscale		fontsize \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvar			cvar \
+	decoration \
+}
+
+
+
+
+
+
+#define SCOREBOARD_TEXT_ALIGNY 10
+#define SCOREBOARD_HEADING_ALIGNY 25
+
+// Text headings of columns
+#define SCOREBOARD_SCORE_TEXT_X 174
+#define SCOREBOARD_KILLS_TEXT_X 210
+#define SCOREBOARD_DEATHS_TEXT_X 228
+#define SCOREBOARD_ASSISTS_TEXT_X 264
+#define SCOREBOARD_DAMAGE_TEXT_X 294
+#define SCOREBOARD_GRENADES_TEXT_X 324
+#define SCOREBOARD_PLANTS_TEXT_X 354
+#define SCOREBOARD_DEFUSES_TEXT_X 388
+#define SCOREBOARD_DEFUSES_TEXT_X_LINE 384	// last one is aligned right
+
+// Columns
+#define SCOREBOARD_HEADING_X 15
+#define SCOREBOARD_NAME_X 33
+
+#define SCOREBOARD_SCORE_X 167
+#define SCOREBOARD_KILLS_X 209
+#define SCOREBOARD_DEATHS_X 226
+#define SCOREBOARD_ASSISTS_X 262
+#define SCOREBOARD_DAMAGE_X 288
+#define SCOREBOARD_GRENADES_X 322
+#define SCOREBOARD_PLANTS_X 352
+#define SCOREBOARD_DEFUSES_X 382
+#define SCOREBOARD_PING_X 420
+
+
+
+#define SCOREBOARD_LINE_1_Y  30
+#define SCOREBOARD_LINE_2_Y  40
+#define SCOREBOARD_LINE_3_Y  50
+#define SCOREBOARD_LINE_4_Y  59
+#define SCOREBOARD_LINE_5_Y  69
+#define SCOREBOARD_LINE_6_Y  79
+#define SCOREBOARD_LINE_7_Y  88
+#define SCOREBOARD_LINE_8_Y  98
+#define SCOREBOARD_LINE_9_Y  108
+#define SCOREBOARD_LINE_10_Y 117
+#define SCOREBOARD_LINE_11_Y 127
+#define SCOREBOARD_LINE_12_Y 137
+#define SCOREBOARD_LINE_13_Y 146
+#define SCOREBOARD_LINE_14_Y 156
+#define SCOREBOARD_LINE_15_Y 166
+#define SCOREBOARD_LINE_16_Y 175
+#define SCOREBOARD_LINE_17_Y 185
+#define SCOREBOARD_LINE_18_Y 195
+#define SCOREBOARD_LINE_19_Y 204
+#define SCOREBOARD_LINE_20_Y 214
+#define SCOREBOARD_LINE_21_Y 224
+#define SCOREBOARD_LINE_22_Y 233
+#define SCOREBOARD_LINE_23_Y 243
+#define SCOREBOARD_LINE_24_Y 253
+#define SCOREBOARD_LINE_25_Y 263
+#define SCOREBOARD_LINE_26_Y 273
+
+#define SCOREBOARD_LINE_BACKGROUND_COLOR 			            .0 .0 .0 .1
+#define SCOREBOARD_LINE_BACKGROUND_COLOR_HIGHLIGHTED 			.2 .2 .2 .7
+
+/*
+type
+0 = nothink
+1 = player line - odd
+2 = player line - even
+3 = player line - highlighted
+
+added _ means that line can be clicked
+
+*/
+
+#define ITEM_SCOREBOARD_LINE(line_id, x, y, y_offset) \
+itemDef  \
+{ \
+	style			WINDOW_STYLE_FILLED \
+	rect			10 y_offset 380 10 0 0 \
+	origin			x y \
+	backcolor		SCOREBOARD_LINE_BACKGROUND_COLOR \
+	visible			1 \
+	dvartest		"ui_scoreboard_line_" line_id \
+	showDvar		{ "2";"2_" } \
+	decoration \
+} \
+itemDef  \
+{ \
+	style			WINDOW_STYLE_FILLED \
+	rect			10 y_offset 380 10 0 0 \
+	origin			x y \
+	backcolor		SCOREBOARD_LINE_BACKGROUND_COLOR_HIGHLIGHTED \
+	visible			1 \
+	dvartest		"ui_scoreboard_line_" line_id \
+	showDvar		{ "3";"3_" } \
+	decoration \
+}		 \
+itemDef \
+{ \
+	rect			SCOREBOARD_HEADING_X y_offset 1 1 0 0 \
+	origin			x y \
+	dvar 			"ui_scoreboard_line_" line_id \
+	textfont		UI_FONT_BIG \
+	textscale		0.32 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textaligny		SCOREBOARD_HEADING_ALIGNY \
+	visible			1 \
+	dvartest		"ui_scoreboard_line_" line_id \
+	hideDvar		{ ""; "0"; "1"; "2"; "3"; "0_"; "1_"; "2_"; "3_"; } \
+	decoration \
+} \
+\
+itemDef  \
+{ \
+	style			WINDOW_STYLE_FILLED \
+	rect			10 y_offset 16 10 0 0 \
+        origin			x y \
+	backcolor		0 0 0 0.7 \
+	visible			1 \
+	dvartest		"ui_scoreboard_line_" line_id \
+        showDvar		{ "0_"; "1_"; "2_"; "3_"; } \
+	decoration \
+}  \
+itemDef \
+{ \
+	rect			0 y_offset 390 10 0 0 \
+        origin			x y \
+	type			ITEM_TYPE_BUTTON \
+	visible			1 \
+	forecolor		1 1 1 1 \
+	text			"Set" \
+	textfont		UI_FONT_NORMAL \
+	textscale		0.18 \
+	textalign		ITEM_ALIGN_LEFT \
+	textalignx		13 \
+	textaligny		8 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvartest		"ui_scoreboard_line_" line_id \
+        showDvar		{ "0_"; "1_"; "2_"; "3_"; } \
+	action \
+	{ \
+		play "mouse_click"; \
+		exec "openscriptmenu ingame scoreboard_setPlayer" line_id \
+	} \
+	onFocus \
+	{ \
+		play "mouse_over"; \
+	} \
+}
+
+#define ITEM_SCOREBOARD_HEADING(x, y, textstring, x_offset, y_offset, fontsize, txtalign, line_x, line_y, line_height) \
+itemDef \
+{ \
+	rect			x_offset y_offset 1 1 0 0 \
+	origin			x y \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		1 1 1 1 \
+	text			textstring \
+	textfont		UI_FONT_NORMAL \
+	textscale		fontsize \
+	textalign		txtalign \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvartest		"ui_scoreboard_visible" \
+	showDvar		{ "1"; } \
+	decoration \
+}  \
+itemDef \
+{ \
+	style			WINDOW_STYLE_FILLED \
+	rect			line_x line_y 0.75 line_height 0 0 \
+        origin			x y \
+	backcolor		1 1 1 .1 \
+	visible			1 \
+	dvartest		"ui_scoreboard_visible" \
+	showDvar		{ "1"; } \
+	decoration \
+}
+
+
+#define ITEM_SCOREBOARD_COLUMN(x, y, cvar, x_offset, y_offset, fontsize, txtalign) \
+itemDef \
+{ \
+	rect			x_offset y_offset 200 50 0 0 \
+	origin			x y \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		1 1 1 1 \
+	textfont		UI_FONT_NORMAL \
+	textscale		fontsize \
+	textalign		txtalign \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvar			cvar \
+	decoration \
+}
+
+
+#define ITEM_SCOREBOARD(x, y) \
+\
+	ITEM_SCOREBOARD_HEADING(x, y, "Score",    SCOREBOARD_SCORE_TEXT_X,   	23, .21, ITEM_ALIGN_CENTER, 	SCOREBOARD_SCORE_TEXT_X, 	25, 	30) \
+	ITEM_SCOREBOARD_HEADING(x, y, "Kills",    SCOREBOARD_KILLS_TEXT_X,   	23, .21, ITEM_ALIGN_CENTER, 	SCOREBOARD_KILLS_TEXT_X, 	25, 	30) \
+	ITEM_SCOREBOARD_HEADING(x, y, "Deaths",   SCOREBOARD_DEATHS_TEXT_X,  	33, .21, ITEM_ALIGN_CENTER, 	SCOREBOARD_DEATHS_TEXT_X, 	35, 	20) \
+	ITEM_SCOREBOARD_HEADING(x, y, "Assists",  SCOREBOARD_ASSISTS_TEXT_X, 	23, .21, ITEM_ALIGN_CENTER, 	SCOREBOARD_ASSISTS_TEXT_X, 	25, 	30) \
+	ITEM_SCOREBOARD_HEADING(x, y, "Hits",     SCOREBOARD_DAMAGE_TEXT_X,  	33, .21, ITEM_ALIGN_CENTER, 	SCOREBOARD_DAMAGE_TEXT_X, 	35, 	20) \
+	ITEM_SCOREBOARD_HEADING(x, y, "Grenades", SCOREBOARD_GRENADES_TEXT_X,	23, .21, ITEM_ALIGN_CENTER, 	SCOREBOARD_GRENADES_TEXT_X, 	25, 	30) \
+	ITEM_SCOREBOARD_HEADING(x, y, "Plants",   SCOREBOARD_PLANTS_TEXT_X,  	33, .21, ITEM_ALIGN_CENTER, 	SCOREBOARD_PLANTS_TEXT_X, 	35, 	20) \
+	ITEM_SCOREBOARD_HEADING(x, y, "Defuses",  SCOREBOARD_DEFUSES_TEXT_X, 	23, .21, ITEM_ALIGN_RIGHT,  	SCOREBOARD_DEFUSES_TEXT_X_LINE, 25, 	30) \
+\
+	ITEM_SCOREBOARD_LINE("1", x, y, SCOREBOARD_LINE_1_Y) \
+\
+	ITEM_SCOREBOARD_LINE("4", x, y, SCOREBOARD_LINE_4_Y) \
+	ITEM_SCOREBOARD_LINE("5", x, y, SCOREBOARD_LINE_5_Y) \
+	ITEM_SCOREBOARD_LINE("6", x, y, SCOREBOARD_LINE_6_Y) \
+	ITEM_SCOREBOARD_LINE("7", x, y, SCOREBOARD_LINE_7_Y) \
+	ITEM_SCOREBOARD_LINE("8", x, y, SCOREBOARD_LINE_8_Y) \
+	ITEM_SCOREBOARD_LINE("9", x, y, SCOREBOARD_LINE_9_Y) \
+	ITEM_SCOREBOARD_LINE("10", x, y, SCOREBOARD_LINE_10_Y) \
+	ITEM_SCOREBOARD_LINE("11", x, y, SCOREBOARD_LINE_11_Y) \
+	ITEM_SCOREBOARD_LINE("12", x, y, SCOREBOARD_LINE_12_Y) \
+	ITEM_SCOREBOARD_LINE("13", x, y, SCOREBOARD_LINE_13_Y) \
+	ITEM_SCOREBOARD_LINE("14", x, y, SCOREBOARD_LINE_14_Y) \
+	ITEM_SCOREBOARD_LINE("15", x, y, SCOREBOARD_LINE_15_Y) \
+	ITEM_SCOREBOARD_LINE("16", x, y, SCOREBOARD_LINE_16_Y) \
+	ITEM_SCOREBOARD_LINE("17", x, y, SCOREBOARD_LINE_17_Y) \
+	ITEM_SCOREBOARD_LINE("18", x, y, SCOREBOARD_LINE_18_Y) \
+	ITEM_SCOREBOARD_LINE("19", x, y, SCOREBOARD_LINE_19_Y) \
+	ITEM_SCOREBOARD_LINE("20", x, y, SCOREBOARD_LINE_20_Y) \
+	ITEM_SCOREBOARD_LINE("21", x, y, SCOREBOARD_LINE_21_Y) \
+	ITEM_SCOREBOARD_LINE("22", x, y, SCOREBOARD_LINE_22_Y) \
+	ITEM_SCOREBOARD_LINE("23", x, y, SCOREBOARD_LINE_23_Y) \
+	ITEM_SCOREBOARD_LINE("24", x, y, SCOREBOARD_LINE_24_Y) \
+	ITEM_SCOREBOARD_LINE("25", x, y, SCOREBOARD_LINE_25_Y) \
+	ITEM_SCOREBOARD_LINE("26", x, y, SCOREBOARD_LINE_26_Y) \
+\
+	ITEM_SCOREBOARD_COLUMN(x, y, "ui_scoreboard_names",    SCOREBOARD_NAME_X,     40, .2, ITEM_ALIGN_LEFT) \
+	ITEM_SCOREBOARD_COLUMN(x, y, "ui_scoreboard_scores",   SCOREBOARD_SCORE_X,    40, .2, ITEM_ALIGN_LEFT) \
+	ITEM_SCOREBOARD_COLUMN(x, y, "ui_scoreboard_kills",    SCOREBOARD_KILLS_X,    40, .2, ITEM_ALIGN_LEFT) \
+	ITEM_SCOREBOARD_COLUMN(x, y, "ui_scoreboard_deaths",   SCOREBOARD_DEATHS_X,   40, .2, ITEM_ALIGN_LEFT) \
+	ITEM_SCOREBOARD_COLUMN(x, y, "ui_scoreboard_assists",  SCOREBOARD_ASSISTS_X,  40, .2, ITEM_ALIGN_LEFT) \
+	ITEM_SCOREBOARD_COLUMN(x, y, "ui_scoreboard_damages",  SCOREBOARD_DAMAGE_X,   40, .2, ITEM_ALIGN_LEFT) \
+	ITEM_SCOREBOARD_COLUMN(x, y, "ui_scoreboard_grenades", SCOREBOARD_GRENADES_X, 40, .2, ITEM_ALIGN_LEFT) \
+	ITEM_SCOREBOARD_COLUMN(x, y, "ui_scoreboard_plants",   SCOREBOARD_PLANTS_X,   40, .2, ITEM_ALIGN_LEFT) \
+	ITEM_SCOREBOARD_COLUMN(x, y, "ui_scoreboard_defuses",  SCOREBOARD_DEFUSES_X,  40, .2, ITEM_ALIGN_LEFT) \
+	ITEM_SCOREBOARD_COLUMN(x, y, "ui_scoreboard_ping",     SCOREBOARD_PING_X,     40, .2, ITEM_ALIGN_LEFT)
+
+
+
+
+
+
+
+
 // All sub-menus that can be possibly opened at the same time
 #define CLOSE_SUBMENUS close ingame_keys; close team_britishgerman_keys; close team_americangerman_keys; close team_russiangerman_keys; close ingame_scoreboard_sd; close rcon_map; close rcon_map_maps; close rcon_map_pams; close rcon_map_other; close rcon_map_apply; close rcon_settings; close rcon_settings_shared; close rcon_settings_gametypes; close rcon_settings_focus; close rcon_kick; close aboutpam; close pammodes;
 #define CLOSE_ALL CLOSE_SUBMENUS close ingame; close team_britishgerman; close team_americangerman; close team_russiangerman;

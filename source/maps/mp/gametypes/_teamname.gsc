@@ -11,6 +11,89 @@ Init()
 	level.teamname["axis"] = "";
 
 	// Team names are updated only if its needed for other functions (matchinfo, recording, ...)
+/*
+	// Testing
+	names[0] = "UGNC | eyza";
+	names[1] = "UGNC | aske";
+	names[2] = "UGNC | tomik";
+	names[3] = "UGNC | nostry";
+	names[4] = "UGNC | lampy";
+	println(getBestNameFromArray(names));
+
+	names[0] = "ONLINEGAMERS | dymatize";
+	names[1] = "ONLINEGAMERS | DudlajS";
+	names[2] = "ONLINEGAMERS | C A A -";
+	names[3] = "ONLINEGAMERS | VITY";
+	names[4] = "ONLINEGAMERS | hurvajz";
+	println(getBestNameFromArray(names));
+
+	names[0] = "CITRO()NS ajxera";
+	names[1] = "CITRO()NS network";
+	names[2] = "CITRO()NS Za$$kodn1K__";
+	names[3] = "CITRO()NS dur1el -";
+	names[4] = "CITRO()NS CHACHARUS";
+	println(getBestNameFromArray(names));
+
+	names[0] = "Reanimation Sp1RiT";
+	names[1] = "Reanimation pawadox-";
+	names[2] = "Reanimation G4box(..!..)";
+	names[3] = "Reanimation blavex";
+	names[4] = "Reanimation Sk1lzZ<3";
+	println(getBestNameFromArray(names));
+
+	names[0] = "BoMbSQUad vioqor";
+	names[1] = "BoMbSQUad mavalam";
+	names[2] = "BoMbSQUad domz";
+	names[3] = "BoMbSQUad iconz";
+	names[4] = "BoMbSQUad SANTAN";
+	println(getBestNameFromArray(names));
+
+	names[0] = "[ < T N F > ] Blinde";
+	names[1] = "[ < T N F > ] deb1lek";
+	names[2] = "[ < T N F > ] CHARVIS";
+	names[3] = "[ < T N F > ] Fazi";
+	names[4] = "[ < T N F > ] inhox";
+	println(getBestNameFromArray(names));
+
+	names[0] = "(.Y.) seko";
+	names[1] = "(.Y.) l e r i X";
+	names[2] = "(.Y.) C E R K Y S";
+	names[3] = "(.Y.) A N T O N I N";
+	names[4] = "(.Y.)Mekgajver";
+	println(getBestNameFromArray(names));
+
+	names = [];
+
+	names[0] = "";
+	println(getBestNameFromArray(names));
+
+	names[0] = "Single player";
+	println(getBestNameFromArray(names));
+
+	names[0] = "a|";
+	names[1] = "b|";
+	println(getBestNameFromArray(names));
+
+	names[0] = "aa|";
+	names[1] = "bb|";
+	println(getBestNameFromArray(names));
+
+	names[0] = ".";
+	names[1] = "-";
+	println(getBestNameFromArray(names));
+
+	names[0] = "aa";
+	names[1] = "bb";
+	println(getBestNameFromArray(names));
+
+	names[0] = "";
+	names[1] = "";
+	println(getBestNameFromArray(names));
+
+	names[0] = " ";
+	names[1] = " ";
+	println(getBestNameFromArray(names));
+*/
 }
 
 
@@ -36,8 +119,6 @@ refreshTeamName(team)
 
 getTeamName(team)
 {
-	perc = 0.82;
-
 	names = [];
 
 	players = getentarray("player", "classname");
@@ -53,8 +134,11 @@ getTeamName(team)
 		}
 	}
 
+	return getBestNameFromArray(names);
+}
 
-
+getBestNameFromArray(names)
+{
     if (names.size == 0)
     {
         return ""; // EMPTYTEAM
@@ -64,6 +148,7 @@ getTeamName(team)
         return names[0];
     }
 
+	perc = 0.9;
 
 	// Save length of the longest name
 	maxLength = 0;
@@ -235,6 +320,7 @@ getTeamName(team)
 
 	// Remove unallowed chars
 	final_word = getSecureString(final_word);
+	final_word = removeEndSymbols(final_word);
 
     return final_word;
 }
@@ -259,6 +345,45 @@ getSecureString(string)
 	}
 
 	return string_secure;
+}
+
+removeEndSymbols(string)
+{
+	// Remove chars that cannot be used in team name
+	alfanumericChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+	if (string.size <= 2) return string;
+
+	charLast = string[string.size - 1];
+	charLast2 = string[string.size - 2];
+
+	charLast_alfanumeric = false;
+	for (i = 0; i < alfanumericChars.size; i++)
+	{
+		if (alfanumericChars[i] == charLast)
+		{
+			charLast_alfanumeric = true;
+			break;
+		}
+	}
+
+	charLast2_alfanumeric = false;
+	for (i = 0; i < alfanumericChars.size; i++)
+	{
+		if (alfanumericChars[i] == charLast2)
+		{
+			charLast2_alfanumeric = true;
+			break;
+		}
+	}
+
+	// Remove last non-alfanumeric char
+	if (charLast_alfanumeric == false && charLast2_alfanumeric)
+	{
+		return getsubstr(string, 0, string.size - 1);
+	}
+
+	return string;
 }
 
 removeSameItems(array)

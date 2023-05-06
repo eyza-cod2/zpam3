@@ -5,15 +5,25 @@ US_0_order_move_generic_05,,Battlechatter/US/0/US_0_order_move_generic_05.wav,0.
 
 
 
-# Original sound aliases for weapon swap
+# Original sound aliases for weapon swap (canceled out)
 weap_raise,,null.wav,0,,,,,,,,,,,,,,,,
 
-# New name for weapon change sound to be manually controled by script
+# New name for weapon change sound to be manually played by script
 zpam_weap_raise,,misc/wpnarm_2.wav,0.45,0.5,wpnplyr,0.9,1.2,7,500,auto,,,,,,,weap_raise_layer,
 
-# Original sound aliases for weapon swap (comented)
-#name,sequence,file,vol_min,vol_max,vol_mod,pitch_min,pitch_max,dist_min,dist_max,channel,type,probability,loop,masterslave,loadspec,subtitle,compression,secondaryaliasname,volumefalloffcurve,startdelay,speakermap,reverb,lfe percentage
-#weap_raise,,misc/wpnarm_2.wav,0.45,0.5,wpnplyr,0.9,1.2,7,500,auto,,,,,,,,weap_raise_layer,
-#weap_raise_layer,1,misc/pu_weapon01.wav,0.25,0.3,wpnplyr,0.9,0.9,7,500,auto,,,,,,,,,
-#weap_raise_layer,2,misc/pu_weapon02.wav,0.18,0.23,wpnplyr,0.9,0.9,7,500,auto,,,,,,,,,
-#weap_raise_layer,3,misc/pu_weapon04.wav,0.25,0.3,wpnplyr,0.9,0.9,7,500,auto,,,,,,,,,
+# Original sound aliases for weapon swap (these are here only for clarity, they are commented)
+# name,sequence,file,vol_min,vol_max,vol_mod,pitch_min,pitch_max,dist_min,dist_max,channel,type,probability,loop,masterslave,loadspec,subtitle,compression,secondaryaliasname,volumefalloffcurve,startdelay,speakermap,reverb,lfe percentage
+# weap_raise,,misc/wpnarm_2.wav,0.45,0.5,wpnplyr,0.9,1.2,7,500,auto,,,,,,,,weap_raise_layer,
+# weap_raise_layer,1,misc/pu_weapon01.wav,0.25,0.3,wpnplyr,0.9,0.9,7,500,auto,,,,,,,,,
+# weap_raise_layer,2,misc/pu_weapon02.wav,0.18,0.23,wpnplyr,0.9,0.9,7,500,auto,,,,,,,,,
+# weap_raise_layer,3,misc/pu_weapon04.wav,0.25,0.3,wpnplyr,0.9,0.9,7,500,auto,,,,,,,,,
+
+
+# Weapon drop sound
+zpam_weap_drop,,misc/gun_drop01.wav,0.38,0.45,wpnplyr,0.9,0.9,7,500,auto,,,,,,,,,
+
+
+# Aim trainer missed shot
+aim_trainer_spawn,,misc/bomb_plant_notick01.wav,0.05,0.05,,1,1,,,auto2d,,,,,,,,,,
+aim_trainer_hit,,weapons/impact/Impact_Metal_A07.wav,0.7,0.7,,1,1,,,auto2d,,,,,,,,,,
+aim_trainer_missed_shot,,weapons/impact/bullet_water05.wav,1,1,,2,2,,,auto2d,,,,,,,,,,

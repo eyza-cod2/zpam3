@@ -24,7 +24,7 @@ GetCvars(arr)
 		arr = ruleCvarDefault(arr, "scr_re_half_round", 3);
 		arr = ruleCvarDefault(arr, "scr_re_half_score", 0);
 		arr = ruleCvarDefault(arr, "scr_re_end_round", 6);
-		arr = ruleCvarDefault(arr, "scr_re_end_score", 4);
+		arr = ruleCvarDefault(arr, "scr_re_end_score", game["overtime_score"] + 4); // 12 / 12  ->  16 / 16  ->  20 / 20  -> ...
 	}
 
 	arr = ruleCvarDefault(arr, "scr_show_scoreboard_limit", 1);	// show limit in score with slash

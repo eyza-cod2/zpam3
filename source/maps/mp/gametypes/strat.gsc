@@ -27,6 +27,7 @@ main()
 	level.allies = ::menuAllies;
 	level.axis = ::menuAxis;
 	level.spectator = ::menuSpectator;
+	level.streamer = ::menuStreamer;
 	level.weapon = ::menuWeapon;
 
 	level.spawnPlayer = ::spawnPlayer;
@@ -45,6 +46,8 @@ main()
 // Is called only once per map
 precache()
 {
+	precacheStatusIcon("compassping_enemyfiring"); // for streamers
+
 	precacheString2("STRING_FLY_ENABLED", &"Enabled");
 	precacheString2("STRING_FLY_DISABLED", &"Disabled");
 	precacheString2("STRING_ENABLE_HOLD_SHIFT", &"Enable: Hold ^3Bash");
@@ -170,7 +173,10 @@ onConnected()
 	else
 	{
 		// If is team selected from last round, set the real team variable
-		self.sessionteam = self.pers["team"];
+		team = self.pers["team"];
+		if (team == "streamer")
+			team = "spectator";
+		self.sessionteam = team;
 	}
 
 	// Define default variables specific for this gametype
@@ -182,7 +188,7 @@ onConnected()
 onAfterConnected()
 {
 	// Spectator team
-	if (self.pers["team"] == "none" || self.pers["team"] == "spectator")
+	if (self.pers["team"] == "none" || self.pers["team"] == "spectator" || self.pers["team"] == "streamer")
 		spawnSpectator();
 
 	// If team is selected
@@ -539,7 +545,7 @@ menuAutoAssign()
 	{
 		player = players[i];
 
-		if(player.pers["team"] == "spectator" || player.pers["team"] == "none")
+		if(player.pers["team"] != "allies" && player.pers["team"] != "axis")
 			continue;
 
 		numonteam[player.pers["team"]]++;
@@ -661,6 +667,33 @@ menuSpectator()
 	self notify("joined_spectators");
 
 	level notify("joined", "spectator", self); // used in first round to check if someone joined team
+}
+
+menuStreamer()
+{
+	if(self.pers["team"] == "streamer")
+		return;
+
+	self.joining_team = "streamer";
+	self.leaving_team = self.pers["team"];
+
+	if(isAlive(self))
+	{
+		self.switching_teams = true;
+		self suicide();
+	}
+
+	self.sessionteam = "spectator";
+	self.pers["team"] = "streamer";
+	self.pers["weapon"] = undefined;
+	self.pers["savedmodel"] = undefined;
+
+	spawnSpectator();
+
+	self notify("joined", "streamer");
+	self notify("joined_streamers");
+
+	level notify("joined", "streamer", self); // used in first round to check if someone joined team
 }
 
 menuWeapon(response)
@@ -881,7 +914,7 @@ Key_AddBot()
 	for(;;)
 	{
 		waittime = 0;
-		while (self meleebuttonpressed() && self useButtonPressed())
+		while (self meleebuttonpressed() && self useButtonPressed() && self.sessionstate == "playing")
 		{
 			waittime += level.frame;
 
@@ -911,7 +944,7 @@ Key_RecordBot()
 	for(;;)
 	{
 		waittime = 0;
-		while (self attackbuttonpressed() && self useButtonPressed() && !self meleebuttonpressed())
+		while (self attackbuttonpressed() && self useButtonPressed() && !self meleebuttonpressed() && self.sessionstate == "playing")
 		{
 			waittime += level.frame;
 
@@ -945,7 +978,7 @@ Key_PlayRecord()
 	for(;;)
 	{
 		waittime = 0;
-		while (self useButtonPressed() && !self attackbuttonpressed() && !self meleebuttonpressed())
+		while (self useButtonPressed() && !self attackbuttonpressed() && !self meleebuttonpressed() && self.sessionstate == "playing")
 		{
 			waittime += level.frame;
 
@@ -1317,6 +1350,10 @@ handle_bot(player)
 		self setOrigin(self.botLockPosition.origin); // make sure player is always centered with script_model (for proper playing)
 		self linkto(self.botLockPosition);
 		self disableWeapon();
+
+		// Remove head icon
+		self.headicon = "";
+		self.headiconteam = "none";
 
 		while(isAlive(self))	wait level.fps_multiplier * 1;
 	}

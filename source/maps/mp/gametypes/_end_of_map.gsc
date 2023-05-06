@@ -24,6 +24,9 @@ Do_Map_End()
 
 	wait level.fps_multiplier * 2;
 
+	// Wait for spectators in killcam
+	level maps\mp\gametypes\_spectating_system::waitForSpectatorsInKillcam();
+
 	maps\mp\gametypes\_mapvote::Initialize();
 
 

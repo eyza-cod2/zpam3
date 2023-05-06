@@ -109,6 +109,7 @@ main()
 	level.allies = ::menuAllies;
 	level.axis = ::menuAxis;
 	level.spectator = ::menuSpectator;
+	level.streamer = ::menuStreamer;
 	level.weapon = ::menuWeapon;
 
 	level.spawnPlayer = ::spawnPlayer;
@@ -150,7 +151,6 @@ main()
 	// Init all shared modules in this pam (scripts with underscore)
 	InitModules();
 }
-
 
 
 // This function is called when cvar changes value.
@@ -221,6 +221,7 @@ precache()
 	precacheString(&"PLATFORM_HOLD_TO_DEFUSE_EXPLOSIVES");
 	precacheModel("xmodel/mp_tntbomb");
 	precacheModel("xmodel/mp_tntbomb_obj");
+	precacheStatusIcon("compassping_enemyfiring"); // for streamers
 
 	precacheString2("STRING_ROUND", &"Round");
 	precacheString2("STRING_ROUND_STARTING", &"Starting");
@@ -231,8 +232,6 @@ precache()
 
 	// HUD: Strattime
 	precacheString2("STRING_STRAT_TIME", &"Strat Time");
-
-	precacheString2("STRING_SPECTATOR_KILLCAM_REPLAY", &"Spectator killcam replay");
 }
 
 // Called after the <gametype>.gsc::main() and <map>.gsc::main() scripts are called
@@ -256,10 +255,6 @@ onStartGameType()
 		// Main scores
 		game["allies_score"] = 0;
 		game["axis_score"] = 0;
-
-		// For spectators
-		game["allies_score_history"] = "";
-		game["axis_score_history"] = "";
 
 		// Half-separed scoresg
 		game["half_1_allies_score"] = 0;
@@ -457,7 +452,10 @@ onConnected()
 	else
 	{
 		// If is team selected from last round, set the real team variable
-		self.sessionteam = self.pers["team"];
+		team = self.pers["team"];
+		if (team == "streamer")
+			team = "spectator";
+		self.sessionteam = team;
 	}
 
 	// Define default variables specific for this gametype
@@ -491,7 +489,7 @@ onAfterConnected()
 	}
 
 	// Spectator team
-	else if (self.pers["team"] == "spectator")
+	else if (self.pers["team"] == "spectator" || self.pers["team"] == "streamer")
 		spawnSpectator();
 
 	// If team is selected
@@ -507,6 +505,14 @@ onAfterConnected()
 
 	else
 		assertMsg("Unknown team");
+
+/*	TODO delayed
+	// Run thread on player to keep max ammo in strattime
+	if (level.in_strattime)
+	{
+		self thread strattime_keepMaxAmmo();
+	}
+*/
 }
 
 
@@ -1084,12 +1090,20 @@ spawnSpectator(origin, angles)
 
 	if(self.pers["team"] == "spectator")
 		self.statusicon = "";
+	else if(self.pers["team"] == "streamer")
+		self.statusicon = "compassping_enemyfiring"; // recording icon
 	else if (self.pers["team"] == "allies" || self.pers["team"] == "axis") // dead team spectartor
 		self.statusicon = "hud_status_dead";
 
 
 	if(isdefined(origin) && isdefined(angles))
 		self spawn(origin, angles);
+
+	else if(self.pers["team"] == "streamer")
+	{
+		// TODO
+	}
+
 	else
 	{
  		spawnpointname = "mp_global_intermission";
@@ -1116,9 +1130,13 @@ spawnSpectator(origin, angles)
 
 
 	// If is real spectator (is in team spectator, not session state spectator)
-	if(self.pers["team"] == "spectator")
+	if (self.pers["team"] == "spectator")
 	{
 		self notify("spawned_spectator");
+	}
+	else if (self.pers["team"] == "streamer")
+	{
+		self notify("spawned_streamer");
 	}
 }
 
@@ -1158,11 +1176,13 @@ spawnIntermission()
 	if(isdefined(level.bombmodel))
 		level.bombmodel stopLoopSound();
 
-  // Open alternative scoreboard
+	// Open alternative scoreboard
 	self openMenu(game["menu_scoreboard"]);
 	self setClientCvar2("g_scriptMainMenu", game["menu_ingame"]);
 	self setClientCvar2("ui_allow_weaponchange", 0);
 	self setClientCvar2("ui_allow_changeteam", 0);
+	self thread maps\mp\gametypes\_menu_scoreboard::generatePlayerList();
+
 
 	// Notify "spawned" notifications
 	self notify("spawned");
@@ -1263,7 +1283,7 @@ startRound()
 	{
 		player = players[i];
 
-		if (player.pers["team"] == "none" || player.pers["team"] == "spectator")
+		if(player.pers["team"] != "allies" && player.pers["team"] != "axis")
 			continue;
 
 		// Players on a team but without a weapon or dead show as dead since they can not get in this round
@@ -1314,6 +1334,105 @@ strattime_end_ontimeout()
 	level notify("strat_time_end");
 }
 
+/*
+TODO delayed
+strattime_keepMaxAmmo()
+{
+	self endon("disconnect");
+
+	last_weapon1 = "";
+	last_weapon2 = "";
+
+	last_weapon1_clipAmmo = 0;
+	last_weapon2_clipAmmo = 0;
+
+	weapon1_maxClipAmmo = 1;
+	weapon2_maxClipAmmo = 1;
+
+	weapon1_pauseGivingMaxAmmo = 0;
+	weapon2_pauseGivingMaxAmmo = 0;
+
+	for (;;)
+	{
+		wait level.frame;
+
+		if (!level.in_strattime)
+			return;
+
+		if (weapon1_pauseGivingMaxAmmo > 0) weapon1_pauseGivingMaxAmmo--;
+		if (weapon2_pauseGivingMaxAmmo > 0) weapon2_pauseGivingMaxAmmo--;
+
+
+		if((self.pers["team"] != "allies" && self.pers["team"] != "axis") || self.sessionstate != "playing")
+		{
+			last_weapon1 = "";
+			last_weapon2 = "";
+			weapon1_maxClipAmmo = 1;
+			weapon2_maxClipAmmo = 1;
+			continue;
+		}
+
+		weapon1 = self getweaponslotweapon("primary");
+		weapon2 = self getweaponslotweapon("primaryb");
+
+		weapon1_clipAmmo = self getweaponslotclipammo("primary");
+		weapon2_clipAmmo = self getweaponslotclipammo("primaryb");
+
+
+		// If weapons changed in slots, save the maximum ammo in slot
+		if (weapon1 != last_weapon1)
+		{
+			weapon1_maxClipAmmo = weapon1_clipAmmo;
+			//self iprintln("Primary changed " + weapon1_maxClipAmmo);
+
+			last_weapon1_clipAmmo = weapon1_clipAmmo;
+		}
+		if (weapon2 != last_weapon2)
+		{
+			weapon2_maxClipAmmo = weapon2_clipAmmo;
+			//self iprintln("Secondary changed" + weapon2_maxClipAmmo);
+
+			last_weapon2_clipAmmo = weapon2_clipAmmo;
+		}
+
+		last_weapon1 = weapon1;
+		last_weapon2 = weapon2;
+
+		// Weapon fired - for 1 seconds give -1 less ammo to allow reload
+		if (weapon1_clipAmmo < last_weapon1_clipAmmo)
+			weapon1_pauseGivingMaxAmmo = int(level.sv_fps / 1); // how many frames to wait
+		if (weapon2_clipAmmo < last_weapon2_clipAmmo)
+			weapon2_pauseGivingMaxAmmo = int(level.sv_fps / 1); // how many frames to wait
+
+		last_weapon1_clipAmmo = weapon1_clipAmmo;
+		last_weapon2_clipAmmo = weapon2_clipAmmo;
+
+
+		current = self getcurrentweapon();
+
+		// For example player is on ladder
+		if(current == "none")
+			continue;
+
+		// Imidietly after firing give player -1 less ammo to allow reloading animation
+		new_weapon1_clipAmmo = weapon1_maxClipAmmo;
+		if (weapon1_pauseGivingMaxAmmo != 0 && new_weapon1_clipAmmo > 0)
+			new_weapon1_clipAmmo--;
+		new_weapon2_clipAmmo = weapon2_maxClipAmmo;
+		if (weapon2_pauseGivingMaxAmmo != 0 && new_weapon2_clipAmmo > 0)
+			new_weapon2_clipAmmo--;
+
+		// Give ammo
+		// Primary
+		if(current == weapon1)
+			self setweaponclipammo(current, new_weapon1_clipAmmo);
+		// Secondary
+		else if (current == weapon2)
+			self setweaponclipammo(current, new_weapon2_clipAmmo);
+	}
+}
+*/
+
 HUD_Clock(countDownTime)
 {
 	level.clock = newHudElem2();
@@ -1322,6 +1441,60 @@ HUD_Clock(countDownTime)
 	level.clock.horzAlign = "center_safearea";
 	level.clock.vertAlign = "top";
 	level.clock.alignX = "center";
+	level.clock.alignY = "top";
+	level.clock.color = (1, 1, 1);
+	level.clock.x = 0;
+	level.clock.y = 445;
+	level.clock setTimer(countDownTime);
+
+	// If strattime is enabled, show fade-in animation
+	if (level.strat_time > 0)
+	{
+		level.clock.alpha = 0;
+
+		level.clock FadeOverTime(0.5);
+		level.clock.alpha = 1;
+
+		level.clock.x = 40;
+		level.clock moveovertime(0.5);
+		level.clock.x = 0;
+	}
+
+	timeForOrange = 30;
+	timeForRed = 15;
+
+
+	waitTime = countDownTime - timeForOrange - 0.3;
+	if (waitTime <= 0)
+		return;
+
+	wait waitTime * level.fps_multiplier;
+	if (!isDefined(level.clock) || level.roundended || level.bombplanted)
+		return;
+
+	// Orange
+	level.clock.color = (1, 0.6, 0.15);
+
+	waitTime = countDownTime - waitTime - timeForRed;
+	if (waitTime <= 0)
+		return;
+
+	wait waitTime * level.fps_multiplier;
+	if (!isDefined(level.clock) || level.roundended || level.bombplanted)
+		return;
+
+	// Red
+	level.clock.color = (1, 0.25, 0.25);
+}
+
+HUD_Clock_Bomb(countDownTime)
+{
+	level.clock = newHudElem2();
+	level.clock.font = "default";
+	level.clock.fontscale = 2;
+	level.clock.horzAlign = "center_safearea";
+	level.clock.vertAlign = "top";
+	level.clock.alignX = "left";
 	level.clock.alignY = "top";
 	level.clock.color = (1, 1, 1);
 	level.clock.x = 0;
@@ -1448,6 +1621,100 @@ HUD_RoundInfo(time)
 	}
 
 
+}
+
+
+
+// self is bomb trigger
+HUD_ShowBombTimers()
+{
+	self endon("bomb_defused");
+	self endon("bomb_exploded");
+
+	countDownTime = level.bombtimer; // seconds
+
+	level.bombtimerhud = addHUD(6, 76, undefined, undefined, "left", "top", "left", "top");
+	level.bombtimerhud showHUDSmooth(0.1);
+	//level.bombtimerhud.foreground = true;  // visible if menu opened
+	level.bombtimerhud setClock(countDownTime, 60, "hudStopwatch", 48, 48);
+
+
+	level.clock = newHudElem2();
+	level.clock.font = "default";
+	level.clock.fontscale = 1.5;
+	level.clock.horzAlign = "center_safearea";
+	level.clock.vertAlign = "top";
+	level.clock.alignX = "center";
+	level.clock.alignY = "top";
+	level.clock.color = (1, 1, 1);
+	level.clock.x = 0;
+	level.clock.y = 445;
+	//level.clock setTimer(countDownTime - 1.1);
+
+
+	time_start = gettime();
+	value_old = 0;
+	color_old = (1, 1, 1);
+	for(;;)
+	{
+		remaining = level.bombtimer - (gettime() - time_start) / 1000; // decimal seconds
+
+		if (remaining < 20)
+			value = int(remaining * 10) / 10;
+		else
+			value = int(remaining);
+
+		if (value < 0)
+			value = 0;
+
+		if (value != value_old)
+		{
+			level.clock setValue(value);
+
+			color = (1, 1, 1);
+			if      (value < 15)	color = (1, 0.25, 0.25); // Red
+			else if (value < 20) 	color = (1, 0.6, 0.15); // Orange
+
+			if (color != color_old)
+			{
+				level.clock.color = color;
+				color_old = color_old;
+			}
+
+			value_old = value;
+		}
+
+		wait level.fps_multiplier * 0.1;
+	}
+}
+
+// Called when bomb exploded or bomb is defused
+HUD_DeleteBombTimers()
+{
+	if (isDefined(level.bombtimerhud))
+		level.bombtimerhud removeHUD();
+
+	// Set real remaining time
+	if (isDefined(level.clock))
+	{
+		if (level.bombexploded)
+		{
+			level.clock removeHUD();
+		}
+		else
+		{
+			remaining = level.bombtimer - (level.bombtimerend - level.bombtimerstart) / 1000; // decimal seconds
+
+			// Update time to more precision if time was less than 0.5 second
+			if (remaining < 0.5)
+			{
+				value = int(remaining * 100) / 100;
+				if (value < 0) value = 0;
+				level.clock setValue(value);
+			}
+			level.clock.color = (1, 1, 1);
+		}
+	}
 }
 
 
@@ -1614,21 +1881,7 @@ endRound(roundwinner)
 	setTeamScore("axis", game["axis_score"]);
 
 	// History score for spectators
-	if(roundwinner == "allies")
-	{
-		game["allies_score_history"] += "^2#";
-		game["axis_score_history"] += "^1=";
-	}
-	else if(roundwinner == "axis")
-	{
-		game["allies_score_history"] += "^1=";
-		game["axis_score_history"] += "^2#";
-	}
-	else // draw
-	{
-		game["allies_score_history"] += "^7-";
-		game["axis_score_history"] += "^7-";
-	}
+	level maps\mp\gametypes\_spectating_system_hud::ScoreProgress_AddWinner(roundwinner);
 
 
 	// Update score
@@ -1768,55 +2021,8 @@ endRound(roundwinner)
 	}
 
 
-	// Check if some spectator is in killcam
-	in_killcam = level isSpectatorInKillcam();
-	if (in_killcam)
-	{
-		// HUD
-		hud = addHUD(-85, 280, 1.2, (1,1,0), "center", "middle", "right");
-		hud showHUDSmooth(.5);
-		hud setText(game["STRING_SPECTATOR_KILLCAM_REPLAY"]);
-
-		// Disable players weapons
-		players = getentarray("player", "classname");
-		for(i = 0; i < players.size; i++)
-		{
-			player = players[i];
-			if (player.sessionstate == "playing")
-				player disableWeapon();
-		}
-
-		for (i = 0; i < level.weaponnames.size; i++)
-		{
-			weapon = level.weaponnames[i];
-
-			// Delete weapons in map
-			weapons = getentarray("weapon_" + weapon, "classname");
-			for(j = 0; j < weapons.size; j++)
-			{
-				weapons[j] delete();
-			}
-		}
-
-		count = 2;
-		for(;;)
-		{
-			wait level.fps_multiplier * 1;
-			in_killcam = level isSpectatorInKillcam();
-
-			if (!in_killcam)
-				count--;
-			else
-				count = 2;
-
-			if (count <= 0)
-				break;
-		}
-
-		hud hideHUDSmooth(.5);
-
-		wait level.fps_multiplier * 0.5;
-	}
+	// Wait for spectators in killcam
+	level maps\mp\gametypes\_spectating_system::waitForSpectatorsInKillcam();
 
 	// Used for balance team at the end of the round
 	level notify("restarting");
@@ -1827,25 +2033,6 @@ endRound(roundwinner)
 
 }
 
-
-isSpectatorInKillcam()
-{
-	in_killcam = false;
-
-	players = getentarray("player", "classname");
-	for(i = 0; i < players.size; i++)
-	{
-		player = players[i];
-
-		if (player.sessionstate == "spectator" && isDefined(player.killcam) && player.killcam == true)
-		{
-			in_killcam = true;
-			break;
-		}
-	}
-
-	return in_killcam;
-}
 
 checkTimeLimit()
 {
@@ -2299,14 +2486,14 @@ bombzone_think(bombzone_other)
 
 					level thread soundPlanted(player);
 
+					// Remove clock if bomb is planted
+					if (isDefined(level.clock))
+						level.clock removeHUD();
+
 					bombtrigger thread bomb_think();
 					bombtrigger thread bomb_countdown();
 
 					level notify("bomb_planted");
-
-					// Remove clock if bomb is planted
-					if (isDefined(level.clock))
-						level.clock removeHUD();
 
 					return;	//TEMP, script should stop after the wait level.frame
 				}
@@ -2337,7 +2524,7 @@ bomb_countdown()
 
 	//PAM
 	if (level.show_bombtimer)
-		thread showBombTimers();
+		self thread HUD_ShowBombTimers();
 	level.bombmodel playLoopSound("bomb_tick");
 
 	wait level.fps_multiplier * level.bombtimer;
@@ -2346,10 +2533,13 @@ bomb_countdown()
 	objective_delete(0);
 	thread maps\mp\gametypes\_objpoints::removeTeamObjpoints("allies");
 	thread maps\mp\gametypes\_objpoints::removeTeamObjpoints("axis");
-	thread deleteBombTimers();
 
 	level.bombexploded = true;
+	level.bombtimerend = gettime();
 	self notify("bomb_exploded");
+
+	// Stop timers
+	thread HUD_DeleteBombTimers();
 
 	// Call object explosion
 	if(isdefined(level.bombexploder))
@@ -2461,9 +2651,13 @@ bomb_think()
 					objective_delete(0);
 					thread maps\mp\gametypes\_objpoints::removeTeamObjpoints("allies");
 					thread maps\mp\gametypes\_objpoints::removeTeamObjpoints("axis");
-					thread deleteBombTimers();
+
+					level.bombtimerend = gettime();
 
 					self notify("bomb_defused");
+
+					thread HUD_DeleteBombTimers();
+
 					level.bombmodel stopLoopSound();
 					level.bombglow delete();
 					self delete();
@@ -2565,22 +2759,6 @@ sayObjectiveIfPlayerIsNotMoving(sound)
 	self playLocalSound(sound);
 }
 
-showBombTimers()
-{
-	timeleft = (level.bombtimer - (getTime() - level.bombtimerstart) / 1000);
-
-	level.bombtimerhud = addHUD(6, 76, undefined, undefined, "left", "top", "left", "top");
-	level.bombtimerhud showHUDSmooth(0.1);
-	//level.bombtimerhud.foreground = true;  // visible if menu opened
-	level.bombtimerhud setClock(timeleft, 60, "hudStopwatch", 48, 48);
-}
-
-deleteBombTimers()
-{
-	if (isDefined(level.bombtimerhud))
-		level.bombtimerhud removeHUD();
-}
-
 announceWinner(winner, delay)
 {
 	wait level.fps_multiplier * delay;
@@ -2636,7 +2814,7 @@ menuAutoAssign()
 	{
 		player = players[i];
 
-		if(player.pers["team"] == "spectator" || player.pers["team"] == "none")
+		if(player.pers["team"] != "allies" && player.pers["team"] != "axis")
 			continue;
 
 		numonteam[player.pers["team"]]++;
@@ -2780,6 +2958,37 @@ menuSpectator()
 	self notify("joined_spectators");
 
 	level notify("joined", "spectator", self); // used in first round to check if someone joined team
+}
+
+menuStreamer()
+{
+	if(self.pers["team"] == "streamer")
+		return;
+
+	self.joining_team = "streamer";
+	self.leaving_team = self.pers["team"];
+
+	if(isAlive(self))
+	{
+		self.switching_teams = true;
+		self suicide();
+	}
+
+	self.sessionteam = "spectator";
+	self.statusicon = "";
+	self.pers["team"] = "streamer";
+	self.pers["weapon"] = undefined;
+	self.pers["weapon1"] = undefined;
+	self.pers["weapon2"] = undefined;
+	self.pers["savedmodel"] = undefined;
+
+
+	spawnSpectator();
+
+	self notify("joined", "streamer");
+	self notify("joined_streamers");
+
+	level notify("joined", "streamer", self); // used in first round to check if someone joined team
 }
 
 menuWeapon(response)
@@ -3002,6 +3211,7 @@ soundPlanted(player)
 	level playSoundOnPlayers(alliedsound, "allies");
 	level playSoundOnPlayers(axissound, "axis");
 	level playSoundOnPlayers(alliedsound, "spectator");
+	level playSoundOnPlayers(alliedsound, "streamer");
 /*
 	wait level.fps_multiplier * 1.5;
 

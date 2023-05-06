@@ -249,7 +249,7 @@ fadeOutPlayerHUD(animation)
 	if(isEnabled())
 		return;
 
-	if (self.pers["team"] == "spectator")
+	if (self.pers["team"] == "spectator" || self.pers["team"] == "streamer")
 		return;
 
 	// Score is hided yet

@@ -27,6 +27,7 @@ main()
 	level.allies = ::menuAllies;
 	level.axis = ::menuAxis;
 	level.spectator = ::menuSpectator;
+	level.streamer = ::menuStreamer;
 	level.weapon = ::menuWeapon;
 
 	level.spawnPlayer = ::spawnPlayer;
@@ -51,7 +52,6 @@ main()
 
 	registerCvar("scr_hq_radio_respawn_time", "INT", 15, 0, 300);
 	registerCvar("scr_hq_radio_hold_time", "INT", 120, 0, 300);
-	registerCvar("scr_hq_multiple_capture", "BOOL", 1);
 	registerCvar("scr_hq_restricted_smoke", "BOOL", 0);
 
 
@@ -86,7 +86,6 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "scr_hq_neutralizing_points": 	level.neutralizingpoints = value; return true;
 		case "scr_hq_radio_respawn_time": 	level.radiospawndelay = value; return true;
 		case "scr_hq_radio_hold_time": 		level.radiomaxholdseconds = value; return true;
-		case "scr_hq_multiple_capture": 	level.multiplecapturebias = value; return true;
 		case "scr_hq_restricted_smoke": 	level.restricted_smoke = value; return true;
 	}
 	return false;
@@ -129,8 +128,6 @@ precache()
 	precacheShader("field_radio");
 	precacheShader(game["radio_allies"]);
 	precacheShader(game["radio_axis"]);
-	precacheStatusIcon("hud_status_dead");
-	precacheStatusIcon("hud_status_connecting");
 	precacheRumble("damage_heavy");
 	precacheModel(game["radio_model"]);
 	precacheModel(game["radio_model_obj"]);
@@ -146,6 +143,7 @@ precache()
 	precacheString(&"MP_RESPAWN_WHEN_RADIO_NEUTRALIZED");
 	precacheString(&"MP_MATCHSTARTING");
 	precacheString(&"MP_MATCHRESUMING");
+	precacheStatusIcon("compassping_enemyfiring"); // for streamers
 
 	// HUD: Strattime
 	precacheString2("STRING_STRAT_TIME", &"Strat Time");
@@ -379,7 +377,10 @@ onConnected()
 	else
 	{
 		// If is team selected from last round, set the real team variable
-		self.sessionteam = self.pers["team"];
+		team = self.pers["team"];
+		if (team == "streamer")
+			team = "spectator";
+		self.sessionteam = team;
 	}
 
 	// Define default variables specific for this gametype
@@ -411,7 +412,7 @@ onAfterConnected()
 	}
 
 	// Spectator team
-	else if (self.pers["team"] == "spectator")
+	else if (self.pers["team"] == "spectator" || self.pers["team"] == "streamer")
 		spawnSpectator();
 
 	// If team is selected
@@ -751,6 +752,8 @@ spawnSpectator(origin, angles)
 
 	if(self.pers["team"] == "spectator")
 		self.statusicon = "";
+	else if(self.pers["team"] == "streamer")
+		self.statusicon = "compassping_enemyfiring"; // recording icon
 	else if (self.pers["team"] == "allies" || self.pers["team"] == "axis") // dead team spectartor
 		self.statusicon = "hud_status_dead";
 
@@ -780,9 +783,13 @@ spawnSpectator(origin, angles)
 
 
 	// If is real spectator (is in team spectator, not session state spectator)
-	if(self.pers["team"] == "spectator")
+	if (self.pers["team"] == "spectator")
 	{
 		self notify("spawned_spectator");
+	}
+	else if (self.pers["team"] == "streamer")
+	{
+		self notify("spawned_streamer");
 	}
 }
 
@@ -1112,7 +1119,7 @@ endMap()
 
 		player closeMenu();
 		player closeInGameMenu();
-		player setClientCvar("cg_objectiveText", text);
+		player setClientCvar2("cg_objectiveText", text);
 	}
 
 
@@ -1149,9 +1156,9 @@ hq_randomize_radioarray()
 	for(i = 0; i < level.radio.size; i++)
 	{
 		rand = randomint(level.radio.size);
-    	temp = level.radio[i];
-    	level.radio[i] = level.radio[rand];
-    	level.radio[rand] = temp;
+	    	temp = level.radio[i];
+	    	level.radio[i] = level.radio[rand];
+	    	level.radio[rand] = temp;
 	}
 }
 
@@ -1252,6 +1259,7 @@ hq_obj_think(radio)
 	}
 }
 
+// Is called for every radio script_model created on map
 hq_radio_think(radio)
 {
 	level endon("intermission");
@@ -1261,15 +1269,18 @@ hq_radio_think(radio)
 
 	while(!level.mapended)
 	{
-		wait level.fps_multiplier * 0.05;
+		wait level.frame;
 		if(!radio.hidden)
 		{
+			if (level.in_timeout || level.in_strattime)
+				continue;
+
 			players = getentarray("player", "classname");
 			radio.allies = 0;
 			radio.axis = 0;
 			for(i = 0; i < players.size; i++)
 			{
-				if(isdefined(players[i].pers["team"]) && players[i].pers["team"] != "spectator" && players[i].sessionstate == "playing")
+				if(isdefined(players[i].pers["team"]) && (players[i].pers["team"] == "allies" || players[i].pers["team"] == "axis") && players[i].sessionstate == "playing")
 				{
 					if(((distance(players[i].origin,radio.origin)) <= radio.radius) && (distance((0,0,players[i].origin[2]),(0,0,radio.origin[2])) <= level.zradioradius))
 					{
@@ -1278,15 +1289,6 @@ hq_radio_think(radio)
 
 						if((level.captured_radios[players[i].pers["team"]] > 0) && (radio.team == "none"))
 							continue;
-
-
-						while (level.in_timeout || level.in_strattime)
-							wait level.frame;
-
-						// Player disconnect in middle of timeout
-						if (!isDefined(players[i]))
-							continue;
-
 
 						if((!isdefined(players[i].radioicon)) || (!isdefined(players[i].radioicon[0])))
 						{
@@ -1511,14 +1513,22 @@ hq_radio_think(radio)
 				radio.collector_allies = 0;
 			if (radio.holdtime_axis == 0)
 				radio.collector_axis = 0;
-			multiplier = 1/level.fps_multiplier;
+
+			// On old pam it took 5.689sec to capture radio
+			// On 207 it took 9.449sec to capture radio
+
+			// Now if the thread will run every frame (instead of every 2 frames on 207), it will run every 33ms on sv_fps 30
+			// If we want to wait 10sec to capture, we need to increment (0.033 / 10) * 190 (width) = 0.627
+			holdtime = 10; // seconds
+			multiplier = ((level.frame / holdtime) * (level.progressBarWidth - 4)) / 2;
+
 
 			if(radio.team == "none") // Radio is captured if no enemies around
 			{
 				if((radio.allies > 0) && (radio.axis <= 0) && (radio.team != "allies"))
 				{
-					radio.collector_allies = (.667 + radio.collector_allies + (radio.allies * level.MultipleCaptureBias) * multiplier);
-					radio.holdtime_allies = int(radio.collector_allies);
+					radio.collector_allies = (multiplier + radio.collector_allies + (radio.allies * multiplier));
+					radio.holdtime_allies = 1 + int(radio.collector_allies);
 					//radio.holdtime_allies = int( .667 + (radio.holdtime_allies + (radio.allies * level.MultipleCaptureBias)));
 
 					if(radio.holdtime_allies >= (level.progressBarWidth - 4))
@@ -1531,8 +1541,8 @@ hq_radio_think(radio)
 				}
 				else if((radio.axis > 0) && (radio.allies <= 0) && (radio.team != "axis"))
 				{
-					radio.collector_axis = (.667 + radio.collector_axis + (radio.axis * level.MultipleCaptureBias) * multiplier);
-					radio.holdtime_axis = int(radio.collector_axis);
+					radio.collector_axis = (multiplier + radio.collector_axis + (radio.axis * multiplier));
+					radio.holdtime_axis = 1 + int(radio.collector_axis);
 					//radio.holdtime_axis = int( .667 + (radio.holdtime_axis + (radio.axis * level.MultipleCaptureBias)));
 
 					if(radio.holdtime_axis >= (level.progressBarWidth - 4))
@@ -1551,7 +1561,7 @@ hq_radio_think(radio)
 					players = getentarray("player", "classname");
 					for(i = 0; i < players.size; i++)
 					{
-						if(isdefined(players[i].pers["team"]) && players[i].pers["team"] != "spectator" && players[i].sessionstate == "playing")
+						if(isdefined(players[i].pers["team"]) && (players[i].pers["team"] == "allies" || players[i].pers["team"] == "axis") && players[i].sessionstate == "playing")
 						{
 							if(((distance(players[i].origin,radio.origin)) <= radio.radius) && (distance((0,0,players[i].origin[2]),(0,0,radio.origin[2])) <= level.zradioradius))
 							{
@@ -1593,27 +1603,18 @@ hq_radio_think(radio)
 					radio.collector_axis = 0;
 
 
-				// Timeout ended or defending team disconnects and there are no defending players -> kill radio
-				if (hq_check_radio_defenders_alive() == 0 && !level.in_timeout)
-				{
-					wait level.frame; // to get OnPlayerKilled called first if last player was killed
-
-					if (radio.team != "none")
-						level hq_radio_capture(radio, "none", true);
-				}
-
 				if((radio.allies > 0) && (radio.team == "axis"))
 				{
-					radio.collector_allies = (.667 + radio.collector_allies + (radio.allies * level.MultipleCaptureBias) * multiplier);
-					radio.holdtime_allies = int(radio.collector_allies);
+					radio.collector_allies = (multiplier + radio.collector_allies + (radio.allies * multiplier));
+					radio.holdtime_allies = 1 + int(radio.collector_allies);
 					//radio.holdtime_allies = int(.667 + (radio.holdtime_allies + (radio.allies * level.MultipleCaptureBias)));
 					if(radio.holdtime_allies >= (level.progressBarWidth - 4))
 						level hq_radio_capture(radio, "none");
 				}
 				else if((radio.axis > 0) && (radio.team == "allies"))
 				{
-					radio.collector_axis = (.667 + radio.collector_axis + (radio.axis * level.MultipleCaptureBias) * multiplier);
-					radio.holdtime_axis = int(radio.collector_axis);
+					radio.collector_axis = (multiplier + radio.collector_axis + (radio.axis * multiplier));
+					radio.holdtime_axis = 1 + int(radio.collector_axis);
 					//radio.holdtime_axis = int(.667 + (radio.holdtime_axis + (radio.axis * level.MultipleCaptureBias)));
 					if(radio.holdtime_axis >= (level.progressBarWidth - 4))
 						level hq_radio_capture(radio, "none");
@@ -1628,7 +1629,7 @@ hq_radio_think(radio)
 	}
 }
 
-hq_radio_capture(radio, team, teamdead)
+hq_radio_capture(radio, team)
 {
 	radio.holdtime_allies = 0;
 	radio.holdtime_axis = 0;
@@ -1638,7 +1639,7 @@ hq_radio_capture(radio, team, teamdead)
 	{
 		players[i].WaitingOnTimer = undefined;
 		players[i].WaitingOnNeutralize = undefined;
-		if(isdefined(players[i].pers["team"]) && players[i].pers["team"] != "spectator" && players[i].sessionstate == "playing")
+		if(isdefined(players[i].pers["team"]) && (players[i].pers["team"] == "allies" || players[i].pers["team"] == "axis") && players[i].sessionstate == "playing")
 		{
 			if((isdefined(players[i].radioicon)) && (isdefined(players[i].radioicon[0])))
 			{
@@ -1661,10 +1662,7 @@ hq_radio_capture(radio, team, teamdead)
 		// Print some text
 		if(radio.team == "allies")
 		{
-			if(!isDefined(teamdead))
-				iprintln(&"MP_SHUTDOWN_ALLIED_HQ");
-			else
-				iprintln("Allied HQ has been shut down");
+			iprintln(&"MP_SHUTDOWN_ALLIED_HQ");
 
 			if(isdefined(level.progressbar_axis_neutralize))
 				level.progressbar_axis_neutralize destroy();
@@ -1675,10 +1673,7 @@ hq_radio_capture(radio, team, teamdead)
 		}
 		else if(radio.team == "axis")
 		{
-			if(!isDefined(teamdead))
-				iprintln(&"MP_SHUTDOWN_AXIS_HQ");
-			else
-				iprintln("Axis HQ has been shut down");
+			iprintln(&"MP_SHUTDOWN_AXIS_HQ");
 
 			if(isdefined(level.progressbar_allies_neutralize))
 				level.progressbar_allies_neutralize destroy();
@@ -1851,6 +1846,7 @@ hq_radio_capture(radio, team, teamdead)
 	level thread hq_obj_think(radio);
 }
 
+
 hq_maxholdtime_think()
 {
 	level endon("Radio State Changed");
@@ -1911,7 +1907,7 @@ hq_radio_resetall()
 	{
 		players[i].WaitingOnTimer = undefined;
 		players[i].WaitingOnNeutralize = undefined;
-		if(isdefined(players[i].pers["team"]) && players[i].pers["team"] != "spectator" && players[i].sessionstate == "playing")
+		if(isdefined(players[i].pers["team"]) && (players[i].pers["team"] == "allies" || players[i].pers["team"] == "axis") && players[i].sessionstate == "playing")
 		{
 			if((isdefined(players[i].radioicon)) && (isdefined(players[i].radioicon[0])))
 			{
@@ -2073,7 +2069,7 @@ updateTeamStatus()
 	players = getentarray("player", "classname");
 	for(i = 0; i < players.size; i++)
 	{
-		if(isdefined(players[i].pers["team"]) && players[i].pers["team"] != "spectator" && players[i].sessionstate == "playing")
+		if(isdefined(players[i].pers["team"]) && (players[i].pers["team"] == "allies" || players[i].pers["team"] == "axis") && players[i].sessionstate == "playing")
 			level.exist[players[i].pers["team"]]++;
 	}
 }
@@ -2103,7 +2099,7 @@ menuAutoAssign()
 	{
 		player = players[i];
 
-		if(player.pers["team"] == "spectator" || player.pers["team"] == "none")
+		if(player.pers["team"] != "allies" && player.pers["team"] != "axis")
 			continue;
 
 		numonteam[player.pers["team"]]++;
@@ -2231,6 +2227,34 @@ menuSpectator()
 	self notify("joined_spectators");
 
 	level notify("joined", "spectator", self); // used in first round to check if someone joined team
+}
+
+menuStreamer()
+{
+	if(self.pers["team"] == "streamer")
+		return;
+
+	self.joining_team = "streamer";
+	self.leaving_team = self.pers["team"];
+
+	if(isAlive(self))
+	{
+		self.switching_teams = true;
+		self suicide();
+	}
+
+	self.sessionteam = "spectator";
+	self.statusicon = "";
+	self.pers["team"] = "streamer";
+	self.pers["weapon"] = undefined;
+	self.pers["savedmodel"] = undefined;
+
+	spawnSpectator();
+
+	self notify("joined", "streamer");
+	self notify("joined_streamers");
+
+	level notify("joined", "streamer", self); // used in first round to check if someone joined team
 }
 
 menuWeapon(response)

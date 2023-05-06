@@ -242,8 +242,8 @@ print()
 	hitLocTexts["head"] = "Head";
 	hitLocTexts["neck"] = "Neck";
 
-	hitLocTexts["torso_upper"] = "Body";
-	hitLocTexts["torso_lower"] = "Body";
+	hitLocTexts["torso_upper"] = "Torso-upper";
+	hitLocTexts["torso_lower"] = "Torso-lower";
 
 	hitLocTexts["left_arm_upper"] = "Shoulder";
 	hitLocTexts["left_arm_lower"] = "Arm";

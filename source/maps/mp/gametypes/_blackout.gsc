@@ -12,7 +12,7 @@ init()
 		precacheString2("STRING_BLACKOUT_PROTECTION", &"Blackout Protection");
 		precacheString2("STRING_BLACKOUT_INFO", &"You see this map background because match is in progress.");
 
-		precacheStatusIcon("icon_blackout");
+		//precacheStatusIcon("icon_blackout"); // removed due to max 8 precached status icons for streamers icon
 	}
 
 	addEventListener("onConnected",     ::onConnected);
@@ -66,7 +66,7 @@ spawnBlackout()
     [[level.spawnSpectator]]((999999, 999999, -999999), (90, 0, 0));
 
 	// Special icon for player in "none" team
-	self.statusicon = "icon_blackout";
+	//self.statusicon = "icon_blackout";
 
 	// Shows map background
     self setClientCvar2("ui_blackout", "1");
@@ -121,8 +121,8 @@ showWarningMessage()
 
 removeBlackout()
 {
-	if (self.statusicon == "icon_blackout")
-		self.statusicon = "";
+	//if (self.statusicon == "icon_blackout")
+		//self.statusicon = "";
 
     self setClientCvar2("ui_blackout", "0");
 

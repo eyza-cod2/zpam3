@@ -18,8 +18,10 @@ init()
   	//addEventListener("onConnected",     ::onConnected);
 	//addEventListener("onConnected",     ::onConnected2);
 	//addEventListener("onConnected",     ::onConnected3);
+	//addEventListener("onConnected",     ::onConnected4);
 
-
+	//level thread measuring_test();
+	//level thread measuring_test2();
 
 
 /*
@@ -81,21 +83,38 @@ ERROR: File neco.iwd.iwd not found on server for auto-downloading.
 
 	//level thread loop();
 
+
+	//println("running tests");
 }
 
-loop()
-{
-	precacheString(&"PAM_TEST");
-	wait level.frame * 3;
 
+
+
+onConnected4()
+{
+	self endon("disconnect");
+
+	setcvar("client", -1);
+
+	wait level.fps_multiplier * 1;
+/*
 	for(;;)
 	{
-		iprintln(&"PAM_TEST");
-		iprintln("Muj ahoj");
+		self setClientCvarIfChanged("ui_serverinfo_hud",
+		"self.spectatorclient = " + self.spectatorclient + "\n" +
+		"self.sessionstate = " + self.sessionstate + "\n" +
+		"level.spectatingSystem_playerID = " + level.spectatingSystem_playerID + "\n" +
+		"self.spectatingSystem_turnedOn = " + self.spectatingSystem_turnedOn + "\n" +
+		"self.spectatingSystem_freeSpectating = " + self.spectatingSystem_freeSpectating + "\n" +
+		"self.spectatingSystem_inCinematic = " + self.spectatingSystem_inCinematic + "\n" +
+		"level.spectatingSystem_playerID = " + level.spectatingSystem_playerID + "\n" +
+		"level.spectatingSystem_auto_runThreads = " + level.spectatingSystem_auto_runThreads + "\n" +
 
-		wait level.fps_multiplier * 1;
+		"");
+
+		wait level.frame;
 	}
-
+*/
 }
 
 onConnected3()
@@ -251,6 +270,63 @@ bots()
 
 
 
+
+measuring_test()
+{
+	level.i1 = 0;
+	time = gettime();
+	for (i = 0; ; i++)
+	{
+		//if (isDefined(level.fps_multiplier))	println(gettime() + " test> frame " + i + "  sv_fps:" + getcvar("sv_fps") + "  fps_mult:" + level.fps_multiplier + "  frame:" + level.frame);
+		//else					println(gettime() + " test> frame " + i + "  sv_fps:" + getcvar("sv_fps"));
+
+		wait level.frame;
+
+		//println(gettime() + "  " + i);
+
+		if (gettime() - time != level.frame * 1000)
+		{
+			println("Time " + (gettime() - time));
+		}
+
+		level.i1 = i;
+
+		time = gettime();
+	}
+}
+
+
+measuring_test2()
+{
+	level.i2 = 0;
+	time = gettime();
+	for (i = 0; ; i++)
+	{
+		//if (isDefined(level.fps_multiplier))	println(gettime() + " test2> frame " + i + "  sv_fps:" + getcvar("sv_fps") + "  fps_mult:" + level.fps_multiplier + "  frame:" + level.frame);
+		//else					println(gettime() + " test2> frame " + i + "  sv_fps:" + getcvar("sv_fps"));
+
+		if (isDefined(level.frame))
+			wait level.frame;
+		else
+			wait 0.000001;
+
+		level.i2 = i;
+/*
+		if (level.i1 - level.i2 > 1)
+		{
+			println("Mismatch i1 != i2  " + level.i1 + " != " + level.i2);
+		}
+*/
+		if (gettime() - time != level.frame * 1000)
+		{
+			println("Time " + (gettime() - time));
+		}
+
+		time = gettime();
+	}
+}
+
+
 key()
 {
 	setCvar("id", -1);
@@ -285,62 +361,7 @@ key()
 	}
 }
 
-lang()
-{
-	setCvar("lang", -1);
 
-	for(;;)
-	{
-		wait level.frame;
-
-		id = getCvarInt("lang");
-
-		if (id != -1)
-		{
-			players = getentarray("player", "classname");
-			for(p = 0; p < players.size; p++)
-			{
-				player = players[p];
-				if (1)
-				{
-					player setClientCvar("loc_language", id);
-
-					player iprintln("lang " + id);
-				}
-			}
-
-			setcvar("lang", -1);
-		}
-	}
-}
-lang_force()
-{
-	setCvar("lang_force", -1);
-
-	for(;;)
-	{
-		wait level.frame;
-
-		id = getCvarInt("lang_force");
-
-		if (id != -1)
-		{
-			players = getentarray("player", "classname");
-			for(p = 0; p < players.size; p++)
-			{
-				player = players[p];
-				if (1)
-				{
-					player setClientCvar("loc_forceEnglish", id);
-
-					player iprintln("loc_forceEnglish " + id);
-				}
-			}
-
-			setcvar("lang_force", -1);
-		}
-	}
-}
 
 
 skipReadyup()
@@ -357,9 +378,14 @@ skipReadyup()
 }
 
 
-showWaypoint(player)
+showWaypoint(player, size)
 {
-	origin = self getOrigin();
+	origin = self.origin;
+	if (isPlayer(self))
+		origin = self getOrigin();
+
+	if (!isDefined(size))
+		size = 2;
 
 	waypoint = undefined;
 	if (isDefined(player))
@@ -375,7 +401,7 @@ showWaypoint(player)
 	self.waypoint.alpha = 1;
 	self.waypoint.archived = false;
 	if (isDefined(self.waypoint_color)) self.waypoint.color = self.waypoint_color;
-	self.waypoint setShader("objpoint_default", 2, 2);
+	self.waypoint setShader("objpoint_default", size, size);
 	self.waypoint setwaypoint(true);
 
 	for (;;)
@@ -389,7 +415,12 @@ showWaypoint(player)
 		if (!isDefined(self))
 			break;
 
-		origin = self getOrigin();
+		origin = self.origin;
+		if (isPlayer(self))
+			origin = self getOrigin();
+
+		if (!isDefined(self.waypoint))
+			return;
 
 		self.waypoint.x = origin[0];
 		self.waypoint.y = origin[1];
@@ -1030,24 +1061,13 @@ onConnected()
 
 	wait level.fps_multiplier * 1.0;
 
-	//self thread showWaypoint();
 
-
-	//thread testTime1();
-	//thread testTime2();
-	//thread testTime3();
-
-	thread angledebug();
 
 	//self iprintln("ClientID: " + self getEntityNumber());
 
 	if (isDefined(self.pers["_temp_"]))
 		return;
 	self.pers["_temp_"] = true;
-
-	//self openMenu(game["menu_scoreboard"]);
-	//self closeMenu();
-	//self closeInGameMenu();
 
 
 	self.pers["killer"] = 1;
@@ -1058,7 +1078,9 @@ onConnected()
     	self notify("menuresponse", game["menu_serverinfo"], "close");
     	wait level.frame;
 
-	i = 0;
+	i = 1;
+
+
 
 	if (i == 0)
 	{
@@ -1073,20 +1095,25 @@ onConnected()
 			wait level.fps_multiplier * 4;
 
 			//setCvar("scr_sd_roundlength", 10);
-			//thread skipReadyup();
+			setCvar("scr_sd_PlantTime", 1);
+			setCvar("scr_sd_strat_time", 1);
+
+			thread skipReadyup();
 		}
 	}
 	else if (i==1)
 	{
 		if (self.name == "client_1 ")
 		{
-			self notify("menuresponse", game["menu_team"], "spectator");
+			self notify("menuresponse", game["menu_team"], "streamer");
 
-			setCvar("scr_bots_add", 1);
+			setCvar("scr_bots_add", 0);
 			setCvar("scr_sd_roundlength", 10);
+			setCvar("scr_sd_PlantTime", 1);
+			//setCvar("scr_sd_strat_time", 1);
 
 
-			wait level.fps_multiplier * 5.5;
+			wait level.fps_multiplier * 3.5;
 
 
 
@@ -1184,36 +1211,5 @@ onConnected()
 			thread skipReadyup();
 		}
 	}
-
-
-	wait level.frame*5;
-
-
-	//self notify("menuresponse", "ingame", "serveroptions");
-	wait level.frame;
-	//self notify("menuresponse", "server_options", "open");
-
-
-
-
-        wait level.fps_multiplier * 0.5;
-
-/*
-        self.sessionstate = "playing";
-
-        spawnpointname = "mp_global_intermission";
-    		spawnpoints = getentarray(spawnpointname, "classname");
-    		spawnpoint = maps\mp\gametypes\_spawnlogic::getSpawnpoint_Random(spawnpoints);
-
-    		if(isdefined(spawnpoint))
-    			self spawn(spawnpoint.origin, spawnpoint.angles);
-
-
-        // Link script_model to grenade from players position offset
-      	self.hilfsObjekt = spawn("script_model", spawnpoint.origin);
-      	self.hilfsObjekt.angles = spawnpoint.angles;
-      	self linkto(self.hilfsObjekt);
-*/
-
 
 }

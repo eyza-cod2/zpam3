@@ -31,11 +31,12 @@ init()
 
 onConnected()
 {
-    if (!isDefined(self.pers["rcon_logged_in"]))
-    {
-        self.pers["rcon_logged_in"] = false;
-        self setClientCvar2("ui_rcon_logged_in", "0");
-    }
+	if (!isDefined(self.pers["rcon_logged_in"]))
+	{
+		self.pers["rcon_logged_in"] = false;
+
+		self setClientCvar2("ui_rcon_logged_in", "0");
+	}
 
 	self generateUUID();
 }

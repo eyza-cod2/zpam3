@@ -15,6 +15,7 @@ Init()
 	registerCvarEx("I", "scr_bots_removeAll", "BOOL", 0);		// remove all bots from server
 	registerCvarEx("I", "scr_bots_fillEnabled", "BOOL", 0);		// enable / disable fill the server with bots automaticly up to limit
 	registerCvarEx("I", "scr_bots_fillMaxBots", "INT", 6, 0, 64); 	// maximum number of bots
+	registerCvarEx("I", "scr_bots_freeze", "BOOL", 1); 	// freeze bots movement
 
 	// Watch cvar change
 	level thread bots_autoFill();
@@ -58,6 +59,10 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 		case "scr_bots_fillenabled": 		level.bots_fillEnabled = value;		return true;
 		case "scr_bots_fillmaxbots": 		level.bots_fillMaxBots = value;		return true;
+		case "scr_bots_freeze": 		level.bots_freeze = value;		return true;
+
+
+
 	}
 	return false;
 }
@@ -158,6 +163,13 @@ removeBots(number)
 		if (isDefined(players[i].pers["isTestClient"]))
 		{
 			userid = players[i] getEntityNumber();
+
+			// For bots only
+			if (isDefined(players[i].botLockPosition))
+			{
+				players[i].botLockPosition delete();
+			}
+
 			kick(userid);
 
 			kickedBots++;
@@ -168,7 +180,6 @@ removeBots(number)
 		}
 	}
 }
-
 
 
 bots_autoFill()
@@ -297,6 +308,8 @@ bot_think()
 
 	wait level.fps_multiplier * 0.1;
 
+	self thread bot_think_freeze();
+
 	// Wait while client is connected
 	while(!isdefined(self.pers["team"]))
 		wait level.fps_multiplier * .2;
@@ -321,7 +334,38 @@ bot_think()
 			wait level.fps_multiplier * 0.2;
 		}
 
+
+
 		wait level.fps_multiplier * 3;
 	}
+
+}
+
+bot_think_freeze()
+{
+	self endon("disconnect");
+
+	for(;;)
+	{
+		if (!isDefined(self.botLockPosition))
+		{
+			self.botLockPosition = spawn("script_model", (0,0,0));
+		}
+
+		wait level.fps_multiplier * .25;
+
+		for (;;)
+		{
+			self enableWeapon();
+			self unlink();
+			while(!isAlive(self) || !level.bots_freeze)	wait level.fps_multiplier * 1;
+
+			self linkto(self.botLockPosition);
+			self disableWeapon();
+
+			while(isAlive(self) && level.bots_freeze)	wait level.fps_multiplier * 1;
+		}
+	}
+
 
 }

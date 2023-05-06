@@ -9,6 +9,7 @@ init()
 	if(game["firstInit"])
 	{
 		game["overtime_active"] = false;
+		game["overtime_score"] = 0;
 
 		precacheString2("STRING_GOING_TO_OVERTIME", &"Going to Over-time");
 	}
@@ -33,17 +34,17 @@ Do_Overtime()
 
 	wait level.fps_multiplier * 5;
 
-    // Activate overtime
-    game["overtime_active"] = true;
-    logPrint("OverTime;\n");
+	// Wait for spectators in killcam
+	level maps\mp\gametypes\_spectating_system::waitForSpectatorsInKillcam();
+
+	// Activate overtime
+	game["overtime_active"] = true;
+	logPrint("OverTime;\n");
 
 
+	// Use this variable to set new end score
+	game["overtime_score"] = game["allies_score"]; // score of allies and axis should be the same when overtime is called
 
-	// Reset main scores
-	game["allies_score"] = 0;
-	game["axis_score"] = 0;
-	setTeamScore("allies", game["allies_score"]);
-	setTeamScore("axis", game["axis_score"]);
 
 	// Reset score at halfs
 	game["half_1_allies_score"] = 0;
@@ -61,6 +62,10 @@ Do_Overtime()
 	// Other variables
 	game["roundsplayed"] = 0;
 	game["round"] = 0;
+
+
+	// History score for spectators
+	level maps\mp\gametypes\_spectating_system_hud::ScoreProgress_AddOvertime();
 
 
 	// Drop saved weapons

@@ -18,10 +18,12 @@ Init()
 	level.events.onSpawned = [];
 	level.events.onSpawnedPlayer = [];
 	level.events.onSpawnedSpectator = [];
+	level.events.onSpawnedStreamer = [];
 	level.events.onSpawnedIntermission = [];
 	level.events.onJoinedTeam = [];
 	level.events.onJoinedAlliesAxis = [];
 	level.events.onJoinedSpectator = [];
+	level.events.onJoinedStreamer = [];
 	level.events.onPlayerDamaging = [];
 	level.events.onPlayerDamaged = [];
 	level.events.onPlayerKilling = [];
@@ -34,18 +36,20 @@ Init()
 	/#
 	addListener("onStartGameType",    	::onStartGameType);
 
-	addListener("onConnecting",    	::onConnecting);
-	addListener("onConnected",     	::onConnected);
+	addListener("onConnecting",    		::onConnecting);
+	addListener("onConnected",     		::onConnected);
 	addListener("onConnectedAll",     	::onConnectedAll);
-	addListener("onDisconnect",    	::onDisconnect);
+	addListener("onDisconnect",    		::onDisconnect);
 
-	addListener("onSpawned",           ::onSpawned);
-	addListener("onSpawnedPlayer",     ::onSpawnedPlayer);
-	addListener("onSpawnedSpectator",  ::onSpawnedSpectator);
+	addListener("onSpawned",           	::onSpawned);
+	addListener("onSpawnedPlayer",     	::onSpawnedPlayer);
+	addListener("onSpawnedSpectator",  	::onSpawnedSpectator);
+	addListener("onSpawnedStreamer",  	::onSpawnedStreamer);
 
-	addListener("onJoinedTeam",        ::onJoinedTeam);
-	addListener("onJoinedAlliesAxis",  ::onJoinedAlliesAxis);
-	addListener("onJoinedSpectator",   ::onJoinedSpectator);
+	addListener("onJoinedTeam",        	::onJoinedTeam);
+	addListener("onJoinedAlliesAxis",  	::onJoinedAlliesAxis);
+	addListener("onJoinedSpectator",   	::onJoinedSpectator);
+	addListener("onJoinedStreamer",   	::onJoinedStreamer);
 
 	addListener("onPlayerKilling",   	::onPlayerKilling);
 	addListener("onPlayerKilled",   	::onPlayerKilled);
@@ -79,6 +83,8 @@ addListener(eventName, funcPointer)
 		level.events.onSpawnedPlayer[level.events.onSpawnedPlayer.size] = funcPointer;
 	else if (eventName == "onSpawnedSpectator")
 		level.events.onSpawnedSpectator[level.events.onSpawnedSpectator.size] = funcPointer;
+	else if (eventName == "onSpawnedStreamer")
+		level.events.onSpawnedStreamer[level.events.onSpawnedStreamer.size] = funcPointer;
 	else if (eventName == "onSpawnedIntermission")
 		level.events.onSpawnedIntermission[level.events.onSpawnedIntermission.size] = funcPointer;
 
@@ -88,6 +94,8 @@ addListener(eventName, funcPointer)
 		level.events.onJoinedAlliesAxis[level.events.onJoinedAlliesAxis.size] = funcPointer;
 	else if (eventName == "onJoinedSpectator")
 		level.events.onJoinedSpectator[level.events.onJoinedSpectator.size] = funcPointer;
+	else if (eventName == "onJoinedStreamer")
+		level.events.onJoinedStreamer[level.events.onJoinedStreamer.size] = funcPointer;
 
 	else if (eventName == "onPlayerDamaging")
 		level.events.onPlayerDamaging[level.events.onPlayerDamaging.size] = funcPointer;
@@ -130,11 +138,13 @@ notifyConnected()
 	self thread _onSpawned();
 	self thread _onSpawnedPlayer();
 	self thread _onSpawnedSpectator();
+	self thread _onSpawnedStreamer();
 	self thread _onSpawnedIntermission();
 
 	self thread _onJoinedTeam();
 	self thread _onJoinedAlliesAxis();
 	self thread _onJoinedSpectator();
+	self thread _onJoinedStreamer();
 
 	self thread _onMenuResponse();
 
@@ -226,6 +236,8 @@ _onSpawned()
 }
 _onSpawnedCallEvents()
 {
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
 	for (i = 0; i < level.events.onSpawned.size; i++)
 		self thread [[level.events.onSpawned[i]]]();
 }
@@ -242,6 +254,8 @@ _onSpawnedPlayer()
 }
 _onSpawnedPlayerCallEvents()
 {
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
 	for (i = 0; i < level.events.onSpawnedPlayer.size; i++)
 		self thread [[level.events.onSpawnedPlayer[i]]]();
 }
@@ -258,8 +272,28 @@ _onSpawnedSpectator()
 }
 _onSpawnedSpectatorCallEvents()
 {
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
 	for (i = 0; i < level.events.onSpawnedSpectator.size; i++)
 		self thread [[level.events.onSpawnedSpectator[i]]]();
+}
+
+
+_onSpawnedStreamer()
+{
+	self endon("disconnect");
+	for(;;)
+	{
+		self waittill("spawned_streamer");
+		self thread _onSpawnedStreamerCallEvents();
+	}
+}
+_onSpawnedStreamerCallEvents()
+{
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
+	for (i = 0; i < level.events.onSpawnedStreamer.size; i++)
+		self thread [[level.events.onSpawnedStreamer[i]]]();
 }
 
 
@@ -274,6 +308,8 @@ _onSpawnedIntermission()
 }
 _onSpawnedIntermissionCallEvents()
 {
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
 	for (i = 0; i < level.events.onSpawnedIntermission.size; i++)
 		self thread [[level.events.onSpawnedIntermission[i]]]();
 }
@@ -290,6 +326,8 @@ _onJoinedTeam()
 }
 _onJoinedTeamCallEvents(teamName)
 {
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
 	for (i = 0; i < level.events.onJoinedTeam.size; i++)
 		self thread [[level.events.onJoinedTeam[i]]](teamName);
 }
@@ -306,6 +344,8 @@ _onJoinedAlliesAxis()
 }
 _onJoinedAlliesAxisCallEvents()
 {
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
 	for (i = 0; i < level.events.onJoinedAlliesAxis.size; i++)
 		self thread [[level.events.onJoinedAlliesAxis[i]]]();
 }
@@ -322,9 +362,30 @@ _onJoinedSpectator()
 }
 _onJoinedSpectatorCallEvents()
 {
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
 	for (i = 0; i < level.events.onJoinedSpectator.size; i++)
 		self thread [[level.events.onJoinedSpectator[i]]]();
 }
+
+
+_onJoinedStreamer()
+{
+	self endon("disconnect");
+	for(;;)
+	{
+		self waittill("joined_streamers");
+		self thread _onJoinedStreamerCallEvents();
+	}
+}
+_onJoinedStreamerCallEvents()
+{
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
+	for (i = 0; i < level.events.onJoinedStreamer.size; i++)
+		self thread [[level.events.onJoinedStreamer[i]]]();
+}
+
 
 
 _onMenuResponse()
@@ -336,12 +397,18 @@ _onMenuResponse()
 	{
 		self waittill("menuresponse", menu, response);
 
+		/#
+		println("##### " + gettime() + " " + level.frame_num + " ##### menuresponse("+menu+", "+response+"): " + self.name);
+		#/
+
 		// Process events
 		self thread _onMenuResponseCallEvents(menu, response);
 	}
 }
 _onMenuResponseCallEvents(menu, response)
 {
+	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
+	resettimeout();
 	// Call events one by one and if true is returned, it means menuresponse was handled and no other events need to be called
 	for (i = 0; i < level.events.onMenuResponse.size; i++)
 	{
@@ -421,6 +488,11 @@ onSpawnedSpectator()
     if (getCvar("debug") == "1") self iprintln(GetTime() + ": ^6CATCHED: spawned_spectator, "+self.name);
 }
 
+onSpawnedStreamer()
+{
+    if (getCvar("debug") == "1") self iprintln(GetTime() + ": ^6CATCHED: spawned_streamer, "+self.name);
+}
+
 onJoinedTeam(teamName)
 {
     if (getCvar("debug") == "1") self iprintln(GetTime() + ": ^6CATCHED: joined("+teamName+"), "+self.name);
@@ -434,6 +506,11 @@ onJoinedAlliesAxis()
 onJoinedSpectator()
 {
     if (getCvar("debug") == "1") self iprintln(GetTime() + ": ^6CATCHED: joined_spectators, "+self.name);
+}
+
+onJoinedStreamer()
+{
+    if (getCvar("debug") == "1") self iprintln(GetTime() + ": ^6CATCHED: joined_streamers, "+self.name);
 }
 
 onPlayerKilling(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration)

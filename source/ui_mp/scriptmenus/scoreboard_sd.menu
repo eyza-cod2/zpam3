@@ -120,8 +120,12 @@
 		style			WINDOW_STYLE_EMPTY
 		blurWorld		0
 
-    		#include "ui_mp/scriptmenus/submenus/scoreboard_lines_sd.menu"
+		onOpen
+		{
+			exec "openscriptmenu ingame scoreboard_refresh";	// this will update info
+		}
 
+		ITEM_SCOREBOARD(0, 0)
 
 		itemDef
 		{

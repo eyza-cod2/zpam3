@@ -64,8 +64,9 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 onConnected()
 {
-    // Set actual timeout status on player connect + when round restart in SD
-    self Update_Player_HUD_Cvar();
+	// Set actual timeout status on player connect + when round restart in SD
+	if (isDefined(self.pers["firstTeamSelected"])) // save cvars sent to player on first connect
+		self Update_Player_HUD_Cvar();
 }
 
 onJoinedTeam(teamName)
@@ -77,7 +78,8 @@ onJoinedTeam(teamName)
 onSpawned()
 {
     // Set actual timeout status on player connect + when round restart in SD
-    self Update_Player_HUD_Cvar();
+    if (isDefined(self.pers["firstTeamSelected"])) // save cvars sent to player on first connect
+    	self Update_Player_HUD_Cvar();
 
     // Disable weapons
     if (level.in_timeout)
@@ -355,6 +357,12 @@ Start_Timeout_Mode(runned_in_middle_of_game)
 			player Update_Player_HUD_Cvar();
 		}
 	}
+
+	waittillframeend; // wait untill spectating_system is initialized
+
+	// History score for spectators
+	level maps\mp\gametypes\_spectating_system_hud::ScoreProgress_AddTimeout();
+
 
 	time_start = gettime();
 

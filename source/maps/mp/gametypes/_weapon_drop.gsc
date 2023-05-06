@@ -122,7 +122,17 @@ playersWeaponDrop()
 				// Used in strattime to check if some weapon was dropped
 				self.dropped_weapons++;
 
-				wait level.fps_multiplier * 1;
+
+				wait level.fps_multiplier * .25;
+
+				// Play sound in strattime indicating where the weapon is dropped
+				if (isDefined(level.in_strattime) && level.in_strattime)
+				{
+					// TODO delayed
+					//self playSound("zpam_weap_drop");
+				}
+
+				wait level.fps_multiplier * .75;
 
 				break;
 			}
@@ -143,6 +153,8 @@ Weapon_PickUp_Monitor()
 	{
 		level waittill("weapon_dropped", weaponname, player);
 
+		//iprintln("Weapon dropped -> " + weaponname + " by " + player.name);
+
 		// Run thread on all dropped weapons, grenades, smokes
 		entities = getentarray("weapon_"+weaponname, "classname");
 		for(i = 0; i < entities.size; i++)
@@ -161,7 +173,7 @@ pickup_think(weaponname) {
 
 	self.hasBrain = true;
 
-//	iprintln("## Running thread on spawend weapon " + weaponname);
+	//iprintln("## Running thread on spawend weapon " + weaponname);
 
 	//iprintln(self.count);
 	//iprintln(self.spawnflags);

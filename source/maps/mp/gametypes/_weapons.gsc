@@ -7,6 +7,8 @@ init()
 	registerCvars();
 
 	addEventListener("onStartGameType", ::onStartGameType);
+
+	level.scr_smoke_fix = true; // TODO smoke
 }
 
 // Called from start_gametype when registring cvars
@@ -288,13 +290,24 @@ precacheWeaponsRifle()
 
 	// Weapons for all
 	precacheItem("binoculars_mp");
+
 }
 
 precacheWeapons()
 {
+	// There is a weird bug with smoke
+	// If precacheItem() with smoke is called as first before any other weapons, the smoke renders in old way with siluets
+	// If precacheItem() with smoke is called after weapons, the smoke renders in new way with thick textures
+
 	switch(game["allies"])
 	{
 	case "american":
+
+		if (level.scr_smoke_fix == false) // old way
+		{
+			precacheItem("frag_grenade_american_mp");
+			precacheItem("smoke_grenade_american_mp");
+		}
 
 		precacheItem("greasegun_mp");
 		precacheItem("m1carbine_mp");
@@ -304,14 +317,23 @@ precacheWeapons()
 		precacheItem("thompson_mp");
 		precacheItem("bar_mp");
 
-		precacheItem("frag_grenade_american_mp");
-		precacheItem("smoke_grenade_american_mp");
+		if (level.scr_smoke_fix) // new way
+		{
+			precacheItem("frag_grenade_american_mp");
+			precacheItem("smoke_grenade_american_mp");
+		}
 
 		precacheItem("colt_mp");
 
 		break;
 
 	case "british":
+
+		if (level.scr_smoke_fix == false) // old way
+		{
+			precacheItem("frag_grenade_british_mp");
+			precacheItem("smoke_grenade_british_mp");
+		}
 
 		precacheItem("sten_mp");
 		precacheItem("enfield_mp");
@@ -321,14 +343,23 @@ precacheWeapons()
 		precacheItem("thompson_mp");
 		precacheItem("bren_mp");
 
-		precacheItem("frag_grenade_british_mp");
-		precacheItem("smoke_grenade_british_mp");
+		if (level.scr_smoke_fix) // new way
+		{
+			precacheItem("frag_grenade_british_mp");
+			precacheItem("smoke_grenade_british_mp");
+		}
 
 		precacheItem("webley_mp");
 
 		break;
 
 	case "russian":
+
+		if (level.scr_smoke_fix == false) // old way
+		{
+			precacheItem("frag_grenade_russian_mp");
+			precacheItem("smoke_grenade_russian_mp");
+		}
 
 		precacheItem("PPS42_mp");
 		precacheItem("mosin_nagant_mp");
@@ -337,8 +368,11 @@ precacheWeapons()
 		//precacheItem("shotgun_mp");
 		precacheItem("ppsh_mp");
 
-		precacheItem("frag_grenade_russian_mp");
-		precacheItem("smoke_grenade_russian_mp");
+		if (level.scr_smoke_fix) // new way
+		{
+			precacheItem("frag_grenade_russian_mp");
+			precacheItem("smoke_grenade_russian_mp");
+		}
 
 		precacheItem("TT30_mp");
 
@@ -346,6 +380,12 @@ precacheWeapons()
 	}
 
 	// German weapons
+	if (level.scr_smoke_fix == false) // old way
+	{
+		precacheItem("frag_grenade_german_mp");
+		precacheItem("smoke_grenade_german_mp");
+	}
+
 	precacheItem("mp40_mp");
 	precacheItem("kar98k_mp");
 	precacheItem("g43_mp");
@@ -353,8 +393,11 @@ precacheWeapons()
 	//precacheItem("shotgun_mp");
 	precacheItem("mp44_mp");
 
-	precacheItem("frag_grenade_german_mp");
-	precacheItem("smoke_grenade_german_mp");
+	if (level.scr_smoke_fix) // new way
+	{
+		precacheItem("frag_grenade_german_mp");
+		precacheItem("smoke_grenade_german_mp");
+	}
 
 	precacheItem("luger_mp");
 
@@ -697,7 +740,7 @@ dropWeapon()
 
 	if(clipsize || reservesize) {
 		self dropItem(current);
-
+		waittillframeend; // wait before next "weapon_dropped" can be called
 		level notify("weapon_dropped", current, self);
 	}
 
@@ -708,57 +751,84 @@ dropNade()
 	if (!level.allow_nadedrops)
 		return;
 
-	grenadetype = self GetGrenadeTypeName();
 
-	if(grenadetype != "none")
+	grenades = self getFragGrenadeCount();
+
+	if(grenades > 0)
 	{
-		ammosize = self getammocount(grenadetype);
+		/*
+		- Droped grenade bug -
+		If player has cooked grenade and is killed, that grenade will be throwed to ground.
+		And because that grenade is not removed from players slot, extra grenade is dropped to ground for pickup
 
-		if(ammosize)
+		To fix this bug, we will look for grenade entities in map close to player
+		To detect it correctly, these rules must apply:
+			- throwed grenade is always spawned with 40 offset from player origin in Z axis
+			- that greande will blow in exacly 3.8 seconds
+
+		Avoid greande drop if these rules applies!
+		*/
+
+		// Loop grenades in map
+		grenades = getentarray("grenade","classname");
+		for(i=0;i<grenades.size;i++)
 		{
-			/*
-			- Droped grenade bug -
-			If player has cooked grenade and is killed, that grenade will be throwed to ground.
-			And because that grenade is not removed from players slot, extra grenade is dropped to ground for pickup
-
-			To fix this bug, we will look for grenade entities in map close to player
-			To detect it correctly, these rules must apply:
-				- throwed grenade is always spawned with 40 offset from player origin in Z axis
-				- that greande will blow in exacly 3.8 seconds
-
-			Avoid greande drop if these rules applies!
-			*/
-
-			// Loop grenades in map
-			grenades = getentarray("grenade","classname");
-			grenadeToWatch = undefined;
-			for(i=0;i<grenades.size;i++)
+			if(isDefined(grenades[i].origin))
 			{
-				if(isDefined(grenades[i].origin))
+				distanceZ = grenades[i].origin[2] - self.origin[2];
+				// This grenade is close to player
+				if (distanceZ > 39 && distanceZ < 41) // cooked grenade is always spawned with 40 offset in Z coordinate
 				{
-					distance = distance(grenades[i].origin, self.origin);
-					distanceZ = grenades[i].origin[2] - self.origin[2]; // must be positive
-					// This grenade is close to player
-					if (distance < 50 && distanceZ > 38 && distanceZ < 42)
+					//self iprintln("^1This was cooked grenade! " + distanceZ);
+
+					// Remove this type of grenade from slot so this grenade is not dropped
+					currentGrenadeType = self getcurrentoffhand();
+
+					if (currentGrenadeType != "none")
 					{
-						grenadeToWatch = grenades[i];
-						break;
+						count = self getammocount(currentGrenadeType);
+
+						if (count > 0)
+						{
+							self setWeaponClipAmmo(currentGrenadeType, count - 1); // remove 1 grenade of this type
+
+							//countAfter = self getammocount(currentGrenadeType);
+
+							//self iprintln("^3 Removed 1 grenade of type " + currentGrenadeType + " (before:" + count + " after:" + countAfter + ")");
+						}
 					}
+
+
+					break;
 				}
 			}
-			// There is grenade close to player
-			if (isDefined(grenadeToWatch))
-			{
-				// Wait right before grenade explode
-				wait level.fps_multiplier * 3.5;
+		}
 
-				// Grenade still does not explode - we are sure that this grande is throwed from this player and will explode in a few miliseconds
-				if (isDefined(grenadeToWatch))
-					return; // Cancel extra grenade drop
-			}
 
-			self dropItem(grenadetype);
-			level notify("weapon_dropped", grenadetype, self);
+		// Drop every possible grenade
+		if (self getammocount("frag_grenade_american_mp"))
+		{
+			self dropItem("frag_grenade_american_mp");
+			waittillframeend; // wait before next "weapon_dropped" can be called
+			level notify("weapon_dropped", "frag_grenade_american_mp", self);
+		}
+		if (self getammocount("frag_grenade_british_mp"))
+		{
+			self dropItem("frag_grenade_british_mp");
+			waittillframeend; // wait before next "weapon_dropped" can be called
+			level notify("weapon_dropped", "frag_grenade_british_mp", self);
+		}
+		if (self getammocount("frag_grenade_russian_mp"))
+		{
+			self dropItem("frag_grenade_russian_mp");
+			waittillframeend; // wait before next "weapon_dropped" can be called
+			level notify("weapon_dropped", "frag_grenade_russian_mp", self);
+		}
+		if (self getammocount("frag_grenade_german_mp"))
+		{
+			self dropItem("frag_grenade_german_mp");
+			waittillframeend; // wait before next "weapon_dropped" can be called
+			level notify("weapon_dropped", "frag_grenade_german_mp", self);
 		}
 	}
 }
@@ -776,6 +846,7 @@ dropSmoke()
 
 		if(ammosize) {
 			self dropItem(grenadetype);
+			waittillframeend; // wait before next "weapon_dropped" can be called
 			level notify("weapon_dropped", grenadetype, self);
 		}
 	}
@@ -800,23 +871,23 @@ getWeaponBasedSmokeGrenadeCount(weapon)
 
 getFragGrenadeCount()
 {
-	grenadetype = self GetGrenadeTypeName();
-
-	if (grenadetype == "none")
-		return 0;
-
-	count = self getammocount(grenadetype);
+	// Because player can pickup nades also from enemy team, all grenade types are counted
+	count = 0;
+	count += self getammocount("frag_grenade_american_mp");
+	count += self getammocount("frag_grenade_british_mp");
+	count += self getammocount("frag_grenade_russian_mp");
+	count += self getammocount("frag_grenade_german_mp");
 	return count;
 }
 
 getSmokeGrenadeCount()
 {
-	grenadetype = self GetSmokeTypeName();
-
-	if (grenadetype == "none")
-		return 0;
-
-	count = self getammocount(grenadetype);
+	// Because player can pickup nades also from enemy team, all grenade types are counted
+	count = 0;
+	count += self getammocount("smoke_grenade_american_mp");
+	count += self getammocount("smoke_grenade_british_mp");
+	count += self getammocount("smoke_grenade_russian_mp");
+	count += self getammocount("smoke_grenade_german_mp");
 	return count;
 }
 
@@ -1072,6 +1143,13 @@ getWeaponName2(weapon)
 		weaponname = "Scope";
 		break;
 
+	// Pistols
+	case "colt_mp":
+	case "webley_mp":
+	case "luger_mp":
+	case "TT30_mp":
+		weaponname = "Pistol";
+		break;
 
 	default:
 		weaponname = weapon;

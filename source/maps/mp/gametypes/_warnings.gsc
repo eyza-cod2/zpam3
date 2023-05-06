@@ -86,7 +86,7 @@ update()
 	{
 		ver = "_v2";
 		if (map == "mp_burgundy") ver = "_v1";
-	
+
 		errors += "^3This is an old map, use " + map + "_fix" + ver + "^7\n";
 	}
 

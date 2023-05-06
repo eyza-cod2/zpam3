@@ -2,15 +2,11 @@
 
 init()
 {
-	level.spectatingSystem = false;
-
-	if (!game["is_public_mode"] && (level.gametype == "sd" || level.gametype == "tdm" || level.gametype == "dm" || level.gametype == "ctf" || level.gametype == "hq" || level.gametype == "htf" || level.gametype == "re"))
-		level.spectatingSystem = true;
-
 	addEventListener("onCvarChanged", ::onCvarChanged);
 
 	registerCvar("scr_spectatefree", "BOOL", 0);
 	registerCvar("scr_spectateenemy", "BOOL", 0);
+	registerCvar("scr_spectatingsystem", "BOOL", 0);
 
 	addEventListener("onJoinedTeam",    ::onJoinedTeam);
 	addEventListener("onSpawned",    ::onSpawned);
@@ -34,6 +30,14 @@ onCvarChanged(cvar, value, isRegisterTime)
 			if (!isRegisterTime)
 				level thread setSpectatePermissionsToAll();
 			return true;
+
+		case "scr_spectatingsystem":
+			if (isRegisterTime)
+				level.spectatingSystem = value;
+			else
+				iprintln("Map needs to be restarted to apply the changes.");
+			return true;
+
 	}
 	return false;
 }

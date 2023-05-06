@@ -27,21 +27,14 @@ init()
 		precacheString2("STRING_READYUP_MODE_TIMEOUT", &"Time-Out Ready-Up Mode");
 		precacheString2("STRING_READYUP_MODE_OVERTIME", &"Overtime Ready-Up Mode");
 
-		// problem with precache...
-		game["STRING_READYUP_ALL_PlAYERS_ARE_READY"] = "All players are ready.";
-
-		// Readyup (problem with precache...)
-		game["readyup_team_allies"] = 		"^7You are on ^3Team Allies";
-		game["readyup_team_axis"] = 		"^7You are on ^3Team Axis";
-		game["readyup_team_spectator"] = 	"^7You are on ^3Team Spectator";
-		game["readyup_press_activate"] = 	"Press the ^3[{+activate}] ^7button to Ready-Up.";
-		game["readyup_hold_melee"] = 		"Double press the ^3[{+melee_breath}] ^7button to disable killing.";
-
-		game["readyup_timeExpired"] = 		"Time to ready-up is over.";
-		game["readyup_skip"] = 			"Set your team as ready to skip the Ready-Up.";
-
-		game["objective_readyup"] = game["readyup_press_activate"] + "\n" + game["readyup_hold_melee"];
-		game["objective_timeout"] = game["readyup_press_activate"];
+		// Strings (problem with precache...)
+		game["STRING_READYUP_KEY_ACTIVATE_PRESS"] = 		"Press the ^3[{+activate}] ^7button to Ready-Up.";
+		game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS"] = 		"Double press ^3[{+melee_breath}] ^7to disable killing.";
+		game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS_TRAINER"] = 	"Double press ^3[{+melee_breath}] ^7to disable killing / aim trainer.";
+		game["STRING_READYUP_KEY_MELEE_HOLD"] = 		"Hold ^3[{+melee_breath}] ^7to switch aim trainer modes.";
+		game["STRING_READYUP_ALL_PLAYERS_ARE_READY"] = 		"All players are ready.";
+		game["STRING_READYUP_TIME_EXPIRED"] = 			"Time to ready-up is over.";
+		game["STRING_READYUP_TIME_EXPIRED_SKIP"] = 		"Set your team as ready to skip the Ready-Up.";
 
 
 		precacheString2("STRING_READYUP_SELECT_TEAM", &"Select team!");
@@ -62,6 +55,7 @@ init()
 		precacheStatusIcon("party_ready");
 		precacheStatusIcon("party_notready");
 	}
+
 
 	// Define level default variables
 	level.in_readyup = false;
@@ -294,7 +288,7 @@ onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon
 	if (level.in_timeout || level.playersready)
 		return true;
 
-	if (self.flying)
+	if (self.flying || self.aimTrainerMode != 0)
 		return true;
 
 	if (sMeansOfDeath == "MOD_GRENADE_SPLASH")
@@ -305,7 +299,8 @@ onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon
 		if (eAttacker.flying)
 			return true;
 
-		eAttacker enableKilling();
+		if (eAttacker.aimTrainerMode == 0)
+			eAttacker enableKilling();
 	}
 
 	if (!self.pers["killer"])
@@ -429,9 +424,9 @@ playerReadyUpThread()
 	//Set ready for bots
 	if (isDefined(self.pers["isTestClient"]))
 	{
-		self.isReady = true;
-		self.statusicon = "party_ready";
+		self setReady();
 		level thread Check_All_Ready(); // Check if all players are ready
+		self.pers["killer"] = true; // set bots killable
 		return;
 	}
 
@@ -443,7 +438,15 @@ playerReadyUpThread()
 	while((self.pers["team"] == "allies" || self.pers["team"] == "axis") && !isDefined(self.pers["weapon"]))
 		wait level.fps_multiplier * 0.1;
 
+	// Show hud
 	self thread HUD_Player_Status();
+
+	// Set ready for spectators
+	if (self.pers["team"] == "spectator" || self.pers["team"] == "streamer")
+	{
+		self setReady();
+		//level thread Check_All_Ready();
+	}
 
 	if (!level.in_timeout)
 		self thread HUD_Player_Killing_Status();
@@ -477,36 +480,64 @@ playerReadyUpThread()
 		}
 
 		// Disable killing
-		else if (self MeleeButtonPressed() && !level.in_timeout && (self.pers["team"] == "allies" || self.pers["team"] == "axis"))
+		else if (self MeleeButtonPressed() && !level.in_timeout)
 		{
-			catch_next = false;
-			for(i = 0; i <= level.sv_fps * 0.5; i++)
+			i = 0;
+			holdTime = 0;
+			keyReleased = false;
+			while(self.pers["team"] == "allies" || self.pers["team"] == "axis")
 			{
-				if(catch_next && self meleeButtonPressed())
+				// Half second for secondary press
+				if (i < level.sv_fps * 0.4 && keyReleased && self meleeButtonPressed())
 				{
+					if (self.aimTrainerMode == 0)
+					{
+						self iprintln("Killing was disabled");
+					}
+					else
+					{
+						self maps\mp\gametypes\_aim_trainer::turnOff();
+					}
+
 					// Disable killing
 					self disableKilling();
-
-					self iprintln("Killing was disabled");
 
 					wait level.fps_multiplier * 1;
 					break;
 				}
-				else if(!(self meleeButtonPressed()))
-					catch_next = true;
 
+				// Key was released atleast once
+				if(self meleeButtonPressed() == false)
+					keyReleased = true;
+
+				if (self meleebuttonpressed() && self playerAds() != 1)
+					holdTime += 1;
+
+				// Key was holded for some time
+				if (keyReleased == false && holdTime == level.sv_fps * 0.8)
+				{
+					self maps\mp\gametypes\_aim_trainer::toggle();
+
+					while (self meleebuttonpressed())
+						wait level.frame;
+					break;
+				}
+
+				// Exit after 1 second
+				if (i > level.sv_fps * 1)
+					break;
+
+				i++;
 				wait level.frame;
 			}
 
 		}
-		else
-			wait level.frame;
 
-
+		wait level.frame;
 	}
 
 	//self iprintlnbold("Playing ^2"+level.pam_mode+"^7 mode");
-    	self iprintlnbold(game["STRING_READYUP_ALL_PlAYERS_ARE_READY"]);
+    	self iprintlnbold(game["STRING_READYUP_ALL_PLAYERS_ARE_READY"]);
 
 
 	//self.statusicon = "party_ready";
@@ -608,7 +639,7 @@ PrintTeamAndHowToUse()
 	if ((self.pers["team"] == "allies" || self.pers["team"] == "axis") && !isAlive(self))
 		return;
 
-	if (isDefined(self.readyUp_HowToUse_Printed))
+	if (self.readyUp_HowToUse_Printed)
 		return;
 
 	// Dont print again
@@ -635,11 +666,19 @@ PrintTeamAndHowToUse()
 
 
 	// Press F for readyup
-	self iprintlnbold(game["readyup_press_activate"]);
+	self iprintlnbold(game["STRING_READYUP_KEY_ACTIVATE_PRESS"]);
 
 	// Double Press Shift to disable killing
-	if (self.pers["team"] != "spectator" && level.in_timeout == false)
-		self iprintlnbold(game["readyup_hold_melee"]);
+	if ((self.pers["team"] == "allies" || self.pers["team"] == "axis") && level.in_timeout == false)
+	{
+		if (level.aimTargets.size == 0)
+			self iprintlnbold(game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS"]);
+		else
+		{
+			self iprintlnbold(game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS_TRAINER"]);
+			self iprintlnbold(game["STRING_READYUP_KEY_MELEE_HOLD"]);
+		}
+	}
 
 
 	// Length of readyup
@@ -710,6 +749,9 @@ ReadyUp_AutoResume(minutes)
 		player = players[i];
 
 		if (player maps\mp\gametypes\_bots::isBot())
+			continue;
+
+		if (player.pers["team"] != "allies" && player.pers["team"] != "axis")
 			continue;
 
 		player unsetReady();
@@ -1077,8 +1119,8 @@ HUD_ReadyUp_ResumingIn_ExtraTime()
         level.setYourTeamAsReady.color = (1, 0, 0);
 	level.setYourTeamAsReady setText(game["STRING_READYUP_SET_YOUR_TEAM_AS_READY"]);
 
-	iprintlnbold(game["readyup_timeExpired"]);
-	iprintlnbold(game["readyup_skip"]);
+	iprintlnbold(game["STRING_READYUP_TIME_EXPIRED"]);
+	iprintlnbold(game["STRING_READYUP_TIME_EXPIRED_SKIP"]);
 
 	// Red extra time
 	level.ht_resume_clock_extra = newHudElem2();

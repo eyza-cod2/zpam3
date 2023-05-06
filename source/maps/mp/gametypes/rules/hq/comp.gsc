@@ -22,7 +22,6 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_hq_neutralizing_points", 10);
 	arr = ruleCvarDefault(arr, "scr_hq_radio_respawn_time", 15);
 	arr = ruleCvarDefault(arr, "scr_hq_radio_hold_time", 120);
-	arr = ruleCvarDefault(arr, "scr_hq_multiple_capture", 1);
 	arr = ruleCvarDefault(arr, "scr_hq_restricted_smoke", 0);		// Get smoke only if radio is take by some team
 
 
@@ -83,6 +82,7 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_teambalance", 0);
 	arr = ruleCvarDefault(arr, "scr_spectatefree", 0);
 	arr = ruleCvarDefault(arr, "scr_spectateenemy", 0);
+	arr = ruleCvarDefault(arr, "scr_spectatingsystem", 1);				// Enable spectating system (menu overlay with auto-killcam, auto-spectator, xray, etc.. features)
 
 	arr = ruleCvarDefault(arr, "g_allowVote", 0);
 	arr = ruleCvarDefault(arr, "g_maxDroppedWeapons", 10);

@@ -57,11 +57,18 @@ isPlayerInSight(player)
 {
 	return maps\mp\gametypes\global\player::isPlayerInSight(player);
 }
+isEntityInSight(entity)
+{
+	return maps\mp\gametypes\global\player::isEntityInSight(entity);
+}
 getLookingAtPosition()
 {
 	return maps\mp\gametypes\global\player::getLookingAtPosition();
 }
-
+getFOV()
+{
+	return maps\mp\gametypes\global\player::getFOV();
+}
 
 /*************************************************************************************************************
 * Cvar system

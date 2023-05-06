@@ -21,8 +21,15 @@ Do_Half_Time()
 	// Cancel timeout if called
 	level maps\mp\gametypes\_timeout::Cancel();
 
+	// Switch score progress For spectators
+	level maps\mp\gametypes\_spectating_system_hud::ScoreProgress_AddHalftime();
+
 
 	wait level.fps_multiplier * 4;
+
+
+	// Wait for spectators in killcam
+	level maps\mp\gametypes\_spectating_system::waitForSpectatorsInKillcam();
 
 	// Activate half-time
 	game["is_halftime"] = true;
@@ -51,14 +58,6 @@ Do_Half_Time()
 		match_team1_side = game["match_team1_side"];
 		game["match_team1_side"] = game["match_team2_side"];
 		game["match_team2_side"] = match_team1_side;
-	}
-
-	// Switch score progress For spectators
-	if (level.gametype == "sd")
-	{
-		allies_score_history = game["allies_score_history"];
-		game["allies_score_history"] = game["axis_score_history"] + "^7|";
-		game["axis_score_history"] = allies_score_history + "^7|";
 	}
 
 

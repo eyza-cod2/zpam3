@@ -55,6 +55,9 @@
 		// Bottom: 4. Spectate
 		ITEM_BUTTON			(ORIGIN_CHOICE4, "@MPUI_4_SPECTATE", ;, scriptMenuResponse "spectator")
 
+		// Bottom: 5. Streamer
+		ITEM_BUTTON_ONDVAR		(ORIGIN_CHOICE5, "5. Streamer", "ui_allow_joinstreamer", showDvar{"1"}, ; , scriptMenuResponse "streamer")
+
 
 		// Rcon buttons
 		#include "ui_mp/scriptmenus/submenus/rcon_buttons.menu"
@@ -81,6 +84,7 @@
 		execKey "2" { play "mouse_click"; exec "openscriptmenu team_britishgerman allies" }
 		execKey "3" { play "mouse_click"; exec "openscriptmenu team_britishgerman axis" }
 		execKey "4" { play "mouse_click"; exec "openscriptmenu team_britishgerman spectator" }
+		execKey "5" { play "mouse_click"; exec "openscriptmenu team_russiangerman streamer" }
 
 		execKeyInt 32 { play "mouse_click"; close team_britishgerman; open main; } // space
 		execKeyInt 105 { play "mouse_click"; exec "openscriptmenu ingame serverinfo" } // i

@@ -1,0 +1,348 @@
+menuDef
+{
+  	name			quickmessage_spectatingsystem_menu
+	rect			0 0 0 0
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	style			WINDOW_STYLE_EMPTY
+	fullscreen		0
+
+	onOpen
+	{
+		// First open scoreboard
+		// Its in separated menu because of number of items game limitatin
+		close quickmessage_spectatingsystem_menu_scoreboard_sd;
+		uiScript openMenuOnDvar ui_scoreboard_show "sd" quickmessage_spectatingsystem_menu_scoreboard_sd;
+		uiScript openMenuOnDvar ui_scoreboard_show "sd" quickmessage_spectatingsystem_menu_scoreboard_sd_lines;
+
+		// Overlay
+		open "quickmessage_spectatingsystem_menu_overlay"
+	}
+	onClose
+	{
+		close "quickmessage_spectatingsystem_menu_overlay"
+		close "quickmessage_spectatingsystem_menu_scoreboard_sd"
+		close "quickmessage_spectatingsystem_menu_scoreboard_sd_lines"
+		close "quickmessage_spectatingsystem_menu_killcam"
+	}
+}
+
+menuDef
+{
+  	name			quickmessage_spectatingsystem_menu_overlay
+	rect			-128 0 896 480
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	style			WINDOW_STYLE_EMPTY
+	fullscreen		0
+
+	onOpen
+	{
+		exec "openscriptmenu spectatingsystem menu_open";
+	}
+	onClose
+	{
+		setDvar cl_bypassMouseInput "0" // enable cursor movement
+	}
+	onEsc
+	{
+		exec "openscriptmenu spectatingsystem menu_close";
+		close quickmessage_spectatingsystem_menu;
+	}
+
+
+	execKeyInt 200 { play "mouse_click"; exec "openscriptmenu spectatingsystem mouse1" } // left mouse
+	execKeyInt 201 { play "mouse_click"; exec "openscriptmenu spectatingsystem mouse2" } // right mouse
+	execKeyInt 202 { play "mouse_click"; exec "openscriptmenu spectatingsystem mouse3" } // middle
+
+	// shift
+	execKeyInt 160 {
+		play "mouse_click";
+		exec "openscriptmenu spectatingsystem shift;";
+		close quickmessage_spectatingsystem_menu;
+	}
+
+
+	execKey "1" { play "mouse_click"; exec "openscriptmenu spectatingsystem follow_1" }
+	execKey "2" { play "mouse_click"; exec "openscriptmenu spectatingsystem follow_2" }
+	execKey "3" { play "mouse_click"; exec "openscriptmenu spectatingsystem follow_3" }
+	execKey "4" { play "mouse_click"; exec "openscriptmenu spectatingsystem follow_4" }
+	execKey "5" { play "mouse_click"; exec "openscriptmenu spectatingsystem follow_5" }
+	execKey "6" { play "mouse_click"; exec "openscriptmenu spectatingsystem follow_6" }
+	execKey "7" { play "mouse_click"; exec "openscriptmenu spectatingsystem follow_7" }
+	execKey "8" { play "mouse_click"; exec "openscriptmenu spectatingsystem follow_8" }
+	execKey "9" { play "mouse_click"; exec "openscriptmenu spectatingsystem follow_9" }
+	execKey "0" { play "mouse_click"; exec "openscriptmenu spectatingsystem follow_10" }
+
+
+	execKey "r" { play "mouse_click"; open quickmessage_spectatingsystem_menu_killcam; }
+	execKey "x"  { play "mouse_click"; exec "openscriptmenu spectatingsystem xray" }
+	execKey "h"  { play "mouse_click"; exec "openscriptmenu spectatingsystem hit" }
+	execKey "f"  { play "mouse_click"; exec "+activate; -activate" } // simulate F bind press
+	execKeyInt 32 { play "mouse_click"; exec "openscriptmenu spectatingsystem help" } // space
+
+
+	execKey "t"  { play "mouse_click"; exec "openscriptmenu spectatingsystem warning" }
+
+	execKeyInt 9 { play "mouse_click"; exec "openscriptmenu spectatingsystem score" } // tab
+
+	execKeyInt 178 { play "mouse_click"; exec "screenshotJpeg"; } // F12
+
+	//
+	// Horizontal align right items have for some reason offset -128
+	//
+
+
+	ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team1_player0", 128, 154, HORIZONTAL_ALIGN_LEFT)
+	ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team1_player1", 128, 178, HORIZONTAL_ALIGN_LEFT)
+	ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team1_player2", 128, 202, HORIZONTAL_ALIGN_LEFT)
+	ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team1_player3", 128, 226, HORIZONTAL_ALIGN_LEFT)
+	ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team1_player4", 128, 250, HORIZONTAL_ALIGN_LEFT)
+
+	ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team2_player0", 0, 154, HORIZONTAL_ALIGN_RIGHT)
+	ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team2_player1", 0, 178, HORIZONTAL_ALIGN_RIGHT)
+	ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team2_player2", 0, 202, HORIZONTAL_ALIGN_RIGHT)
+	ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team2_player3", 0, 226, HORIZONTAL_ALIGN_RIGHT)
+	ITEM_SPECTATINGSYSTEM_LINE("ui_spectatingsystem_team2_player4", 0, 250, HORIZONTAL_ALIGN_RIGHT)
+
+	// Team 1: ###########
+	ITEM_SPECTATINGSYSTEM_DVAR(240, 453, 0.2, "ui_spectatingsystem_team1_scoreProgress", HORIZONTAL_ALIGN_LEFT)
+	ITEM_SPECTATINGSYSTEM_DVAR(240, 463, 0.2, "ui_spectatingsystem_team2_scoreProgress", HORIZONTAL_ALIGN_LEFT)
+
+	// 5v5  5v4  5v3  4v3
+	ITEM_SPECTATINGSYSTEM_DVAR(-157, 463, 0.2, "ui_spectatingsystem_playerProgress", HORIZONTAL_ALIGN_RIGHT)
+
+
+
+	// Keys weclome
+	itemDef
+	{
+		style			WINDOW_STYLE_FILLED
+		visible			1
+		rect			43 205 170 90 HORIZONTAL_ALIGN_CENTER 0
+		backcolor		0 0 0 0.7975
+		dvartest		"ui_spectatorsystem_keysWelcome"
+		showDvar 		{ "1" }
+		decoration
+	}
+	ITEM_SPECTATINGSYSTEM_KEY("Spectating system", 						48, 220, 0.22, HORIZONTAL_ALIGN_CENTER, "ui_spectatorsystem_keysWelcome")
+
+	ITEM_SPECTATINGSYSTEM_KEY("You are now in spectating system menu.", 			48, 240, 0.18, HORIZONTAL_ALIGN_CENTER, "ui_spectatorsystem_keysWelcome")
+	ITEM_SPECTATINGSYSTEM_KEY("Your binds are not working in this mode.", 			48, 250, 0.18, HORIZONTAL_ALIGN_CENTER, "ui_spectatorsystem_keysWelcome")
+	ITEM_SPECTATINGSYSTEM_KEY("To use them (for scoreboard or chat) you have", 		48, 260, 0.18, HORIZONTAL_ALIGN_CENTER, "ui_spectatorsystem_keysWelcome")
+	ITEM_SPECTATINGSYSTEM_KEY("to first close spectating system with ^3[ESC]^7 key.", 	48, 270, 0.18, HORIZONTAL_ALIGN_CENTER, "ui_spectatorsystem_keysWelcome")
+
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[Space]^7 to confirm (and show / hide help).", 	48, 290, 0.18, HORIZONTAL_ALIGN_CENTER, "ui_spectatorsystem_keysWelcome")
+
+
+
+	// Keys help
+	itemDef
+	{
+		style			WINDOW_STYLE_FILLED
+		visible			1
+		rect			-52 27 170 115 HORIZONTAL_ALIGN_RIGHT 0
+		backcolor		0 0 0 0.7975
+		dvartest		"ui_spectatorsystem_keys"
+		showDvar 		{ "1" }
+		decoration
+	}
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[Left Mouse]^7 to follow next player", 	-48, 40, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[Right Mouse]^7 to follow previous player", 	-48, 50, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[Middle Mouse]^7 to toggle Auto-Spectator", 	-48, 60, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[R]^7 to replay kill", 			-48, 70, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[X]^7 to toggle XRAY", 			-48, 80, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[H]^7 to toggle showing hit values", 	-48, 90, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[1,2,3,4,5]^7 to follow player from team 1", -48, 100, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[6,7,8,9,0]^7 to follow player from team 2", -48, 110, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[TAB]^7 to show / hide scoreboard", 		-48, 120, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[ESC]^7 to close spectating system menu", 	-48, 130, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+	ITEM_SPECTATINGSYSTEM_KEY("Press ^3[Space]^7 to show / hide help", 		-48, 140, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+
+}
+
+
+menuDef
+{
+  	name			quickmessage_spectatingsystem_menu_killcam
+	rect			-430 0 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
+	style			0
+	fullscreen		0
+
+	onOpen
+	{
+		exec "openscriptmenu spectatingsystem killcam_open";
+	}
+	onClose
+	{
+	}
+	onEsc
+	{
+		play "mouse_click";
+		close quickmessage_spectatingsystem_menu_killcam;
+		exec "openscriptmenu spectatingsystem killcam_close";
+	}
+	execKey "r"
+	{
+		play "mouse_click";
+		close quickmessage_spectatingsystem_menu_killcam;
+		exec "openscriptmenu spectatingsystem killcam_close";
+	}
+	// shift
+	execKeyInt 160 {
+		// avoid shift press when free spectating
+	}
+
+	execKey "1" { close quickmessage_spectatingsystem_menu_killcam; exec "openscriptmenu spectatingsystem killcam_1" }
+	execKey "2" { close quickmessage_spectatingsystem_menu_killcam; exec "openscriptmenu spectatingsystem killcam_2" }
+	execKey "3" { close quickmessage_spectatingsystem_menu_killcam; exec "openscriptmenu spectatingsystem killcam_3" }
+	execKey "4" { close quickmessage_spectatingsystem_menu_killcam; exec "openscriptmenu spectatingsystem killcam_4" }
+	execKey "5" { close quickmessage_spectatingsystem_menu_killcam; exec "openscriptmenu spectatingsystem killcam_5" }
+	execKey "6" { close quickmessage_spectatingsystem_menu_killcam; exec "openscriptmenu spectatingsystem killcam_6" }
+	execKey "7" { close quickmessage_spectatingsystem_menu_killcam; exec "openscriptmenu spectatingsystem killcam_7" }
+	execKey "8" { close quickmessage_spectatingsystem_menu_killcam; exec "openscriptmenu spectatingsystem killcam_8" }
+	execKey "9" { close quickmessage_spectatingsystem_menu_killcam; exec "openscriptmenu spectatingsystem killcam_9" }
+	execKey "0" { close quickmessage_spectatingsystem_menu_killcam; exec "openscriptmenu spectatingsystem killcam_10" }
+
+
+
+	itemDef
+	{
+		name			"window_background"
+		visible			1
+		rect			160 250 200 170 0 0
+		origin			0 0
+		style			WINDOW_STYLE_FILLED
+		forecolor		1 1 1 1
+		backcolor		0 0 0 0.7975
+		decoration
+	}
+
+	ITEM_TEXT("Actions to replay:", 170, 270, 0.25, ITEM_ALIGN_LEFT, 1 1 1 1)
+
+	ITEM_DVAR("ui_spectatorsystem_menu_text", 170, 285, .2, ITEM_ALIGN_LEFT, 1 1 1 1)
+
+	ITEM_TEXT("(only 40 seconds of history can be saved)", 170, 405, 0.18, ITEM_ALIGN_LEFT, 1 1 1 0.5)
+
+	ITEM_TEXT("@QUICKMESSAGE_ESC_EXIT", 170, 415, 0.2, ITEM_ALIGN_LEFT, 1 1 1 1)
+}
+
+
+
+
+menuDef
+{
+	name			"quickmessage_spectatingsystem_menu_scoreboard_sd"
+	rect			120 40 400 430
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	style			WINDOW_STYLE_EMPTY
+	blurWorld		0
+
+
+	itemDef
+	{
+		style			WINDOW_STYLE_FILLED
+		rect			0 0 400 400 0 0
+		backcolor		.0 .0 .0 .8
+		visible			1
+		dvartest		"ui_scoreboard_visible"
+	        showDvar		{ "1"; }
+		decoration
+	}
+
+
+	// WINDOW LINES 400x430
+	itemDef // TOP
+	{
+		visible			1
+		rect			3 3 394 2
+		style			WINDOW_STYLE_FILLED
+		backcolor		1 1 1 .125
+		dvartest		"ui_scoreboard_visible"
+	        showDvar		{ "1"; }
+		decoration
+	}
+	itemDef // RIGHT
+	{
+		visible			1
+		rect			395 5 2 390
+		style			WINDOW_STYLE_FILLED
+		backcolor		1 1 1 .125
+		dvartest		"ui_scoreboard_visible"
+	        showDvar		{ "1"; }
+		decoration
+	}
+	itemDef // BOTTOM
+	{
+		visible			1
+		rect			3 395 394 2
+		style			WINDOW_STYLE_FILLED
+		backcolor		1 1 1 .125
+		dvartest		"ui_scoreboard_visible"
+	        showDvar		{ "1"; }
+		decoration
+	}
+	itemDef // LEFT
+	{
+		visible			1
+		rect			3 5 2 390
+		style			WINDOW_STYLE_FILLED
+		backcolor		1 1 1 .125
+		dvartest		"ui_scoreboard_visible"
+	        showDvar		{ "1"; }
+		decoration
+	}
+
+	// Top separator
+	itemDef
+	{
+		visible			1
+		rect			5 30 390 1
+		style			WINDOW_STYLE_FILLED
+		backcolor		1 1 1 .125
+		dvartest		"ui_scoreboard_visible"
+	        showDvar		{ "1"; }
+		decoration
+	}
+
+	itemDef
+	{
+		text        		"@MPUI_SEARCH_AND_DESTROY"
+		textfont		UI_FONT_BIG
+		textscale		0.4
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textaligny		0
+		textalign		ITEM_ALIGN_LEFT
+		visible			1
+		origin			10 26
+		dvartest		"ui_scoreboard_visible"
+	        showDvar		{ "1"; }
+		decoration
+	}
+
+	itemDef
+	{
+		dvar 			"ui_scoreboard_map"
+		textfont		UI_FONT_BIG
+		textscale		0.4
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textaligny		0
+		textalign		ITEM_ALIGN_RIGHT
+		visible			1
+		origin			390 26
+		dvartest		"ui_scoreboard_visible"
+	        showDvar		{ "1"; }
+		decoration
+	}
+}
+
+
+
+menuDef
+{
+	name			"quickmessage_spectatingsystem_menu_scoreboard_sd_lines"
+	rect			120 68 400 430
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	style			WINDOW_STYLE_EMPTY
+	blurWorld		0
+
+	ITEM_SCOREBOARD(0, 0)
+}

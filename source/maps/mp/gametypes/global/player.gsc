@@ -23,17 +23,28 @@ IsMoving()
 	self.isMoving = false;
 	self.isWaling = false;
 	self.movingDifference = 0;
+	self.movingVector = (0, 0, 0);
 
-	origin = self getOrigin();
+	origin = (0, 0, 0);
 	origin_old = origin;
+	firstFrame = true;
 
 	for (;;)
 	{
 		wait level.fps_multiplier * .1;
 
+		if (firstFrame)
+		{
+			firstFrame = false;
+			origin = self getOrigin();
+			origin_old = origin;
+		}
+
 		origin = self getOrigin();
 
 		self.movingDifference = distance(origin, origin_old);
+		self.movingVector = origin - origin_old;
+
 		if (self.movingDifference > 5.0)
 		{/*
 		  if (!self.isMoving)
@@ -79,7 +90,8 @@ AddTags()
 	self.pelvisTag = spawn("script_origin",(0,0,0));
 	//self.pelvisTag thread maps\mp\gametypes\global\developer::showWaypoint();
 
-	dead = true;
+	waitFrameBeforeLink = true;
+	isLinked = false;
 	for (;;)
 	{
 		wait level.frame;
@@ -87,32 +99,45 @@ AddTags()
 		// If player is not alive, or model is not set, wait
 		if (self.sessionstate != "playing" || !isDefined(self.pers["savedmodel"]))
 		{
-			dead = true;
+			if (isLinked)
+			{
+				self.headTag unlink();
+				self.pelvisTag unlink();
+				isLinked = false;
+			}
+			waitFrameBeforeLink = true;
 			continue;
 		}
 
-		// We can call linkto() after 1 frame or it will cause runtime error "failed to link entity since parent model 'xmodel/playerbody_german_africa01' is invalid"
-		if (dead)
+		if (!isLinked)
 		{
-			dead = false;
-			continue;
+			// We can call linkto() after 1 frame or it will cause runtime error "failed to link entity since parent model 'xmodel/playerbody_german_africa01' is invalid"
+			if (waitFrameBeforeLink)
+			{
+				waitFrameBeforeLink = false;
+				continue;
+			}
+			// Link tags
+			self.headTag linkto (self, "J_Head",(0,0,0),(0,0,0));
+			self.pelvisTag linkto (self, "pelvis",(0,0,0),(0,0,0));
+
+			isLinked = true;
 		}
-
-		// Link tags
-		self.headTag unlink();
-		self.headTag linkto (self, "J_Head",(0,0,0),(0,0,0));
-
-		self.pelvisTag unlink();
-		self.pelvisTag linkto (self, "pelvis",(0,0,0),(0,0,0));
 	}
 }
 
 DeleteTags()
 {
 	if (isDefined(self.headTag))
+	{
+		self.headTag unlink();
 		self.headTag delete();
+	}
 	if (isDefined(self.pelvisTag))
+	{
+		self.pelvisTag unlink();
 		self.pelvisTag delete();
+	}
 }
 
 
@@ -126,7 +151,7 @@ getEyeOrigin()
 {
 	origin = self getOrigin();
 
-	if (self.sessionteam == "spectator")
+	if (self.sessionstate == "spectator")
 	{
 		return origin + (0, 0, 8);
 	}
@@ -236,6 +261,62 @@ getStance()
 
 
 
+// Field of view based on current weapon
+getFOV()
+{
+	weapon_fov["m1carbine_mp"] = 55;
+	weapon_fov["m1garand_mp"] = 50;
+	weapon_fov["thompson_mp"] = 65;
+	weapon_fov["bar_mp"] = 50;
+	weapon_fov["springfield_mp"] = 15;
+	weapon_fov["greasegun_mp"] = 65;
+	weapon_fov["shotgun_mp"] = 65;
+	weapon_fov["enfield_mp"] = 50;
+	weapon_fov["sten_mp"] = 65;
+	weapon_fov["bren_mp"] = 50;
+	weapon_fov["enfield_scope_mp"] = 15;
+	weapon_fov["mosin_nagant_mp"] = 50;
+	weapon_fov["SVT40_mp"] = 50;
+	weapon_fov["PPS42_mp"] = 65;
+	weapon_fov["ppsh_mp"] = 65;
+	weapon_fov["mosin_nagant_sniper_mp"] = 15;
+	weapon_fov["kar98k_mp"] = 50;
+	weapon_fov["g43_mp"] = 50;
+	weapon_fov["mp40_mp"] = 65;
+	weapon_fov["mp44_mp"] = 50;
+	weapon_fov["kar98k_sniper_mp"] = 15;
+	weapon_fov["colt_mp"] = 80;
+	weapon_fov["luger_mp"] = 80;
+	weapon_fov["tt30_mp"] = 80;
+	weapon_fov["webley_mp"] = 80;
+	weapon_fov["mg_mp"] = 60;
+
+	fov = 80;
+
+	if (isAlive(self))
+	{
+		current = self getcurrentweapon(); // can be none
+		zoom = self playerAds();	// 1 = zoom | 0 = no zoom
+
+		if (self.usingMG)
+		{
+			current = "mg_mp";
+			zoom = 1;
+		}
+
+		if (zoom < 0.5)
+			zoom = 0;
+		else
+			zoom = (zoom*2)-1;
+
+		if (isDefined(weapon_fov[current]))
+			fov = 80 - (80 - weapon_fov[current]) * zoom;
+	}
+
+	return fov;
+}
+
+
 isPlayerLookingAt(entity)
 {
 	eye = self getEyeOrigin();
@@ -268,6 +349,19 @@ isPlayerInSight(player)
 	trace = Bullettrace(eye, player.pelvisTag getOrigin(), true, self);
 	pelvisVisible = isDefined(trace["entity"]) && trace["entity"] == player;
 	if (pelvisVisible)
+		return true;
+
+	return false;
+}
+
+
+isEntityInSight(entity)
+{
+	eye = self getEyeOrigin();
+
+	trace = Bullettrace(eye, entity.origin, true, self); // BulletTrace( <start>, <end>, <hit characters>, <ignore entity> )
+	visible = isDefined(trace["entity"]) && trace["entity"] == entity;
+	if (visible)
 		return true;
 
 	return false;

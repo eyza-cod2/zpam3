@@ -62,7 +62,7 @@ GetCvars(arr)
 		arr = ruleCvarDefault(arr, "scr_sd_half_round", 3);
 		arr = ruleCvarDefault(arr, "scr_sd_half_score", 0);
 		arr = ruleCvarDefault(arr, "scr_sd_end_round", 6);
-		arr = ruleCvarDefault(arr, "scr_sd_end_score", 4);
+		arr = ruleCvarDefault(arr, "scr_sd_end_score", game["overtime_score"] + 4); // 12 / 12  ->  16 / 16  ->  20 / 20  -> ...
 
 		// Half auto-resume time
 		arr = ruleCvarDefault(arr, "scr_readyup_autoresume_half", 1); 	// Minutes to auto-resume halftime [0 - 10] 0 = disabled
@@ -110,6 +110,7 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_teambalance", 0);
 	arr = ruleCvarDefault(arr, "scr_spectatefree", 0);
 	arr = ruleCvarDefault(arr, "scr_spectateenemy", 0);
+	arr = ruleCvarDefault(arr, "scr_spectatingsystem", 1);				// Enable spectating system (menu overlay with auto-killcam, auto-spectator, xray, etc.. features)
 
 	arr = ruleCvarDefault(arr, "g_allowVote", 0);
 	arr = ruleCvarDefault(arr, "g_maxDroppedWeapons", 32);

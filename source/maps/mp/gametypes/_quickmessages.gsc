@@ -13,7 +13,7 @@ init()
 
 quickcommands(response)
 {
-	if(!isdefined(self.pers["team"]) || self.pers["team"] == "spectator" || self.pers["team"] == "none" || isdefined(self.spamdelay))
+	if(!isdefined(self.pers["team"]) || (self.pers["team"] != "allies" && self.pers["team"] != "axis") || isdefined(self.spamdelay))
 		return;
 
 	self.spamdelay = true;
@@ -258,7 +258,7 @@ quickcommands(response)
 
 quickstatements(response)
 {
-	if(!isdefined(self.pers["team"]) || self.pers["team"] == "spectator" || self.pers["team"] == "none" || isdefined(self.spamdelay))
+	if(!isdefined(self.pers["team"]) || (self.pers["team"] != "allies" && self.pers["team"] != "axis") || isdefined(self.spamdelay))
 		return;
 
 	self.spamdelay = true;
@@ -503,7 +503,7 @@ quickstatements(response)
 
 quickresponses(response)
 {
-	if(!isdefined(self.pers["team"]) || self.pers["team"] == "spectator" || self.pers["team"] == "none" || isdefined(self.spamdelay))
+	if(!isdefined(self.pers["team"]) || (self.pers["team"] != "allies" && self.pers["team"] != "axis") || isdefined(self.spamdelay))
 		return;
 
 	self.spamdelay = true;

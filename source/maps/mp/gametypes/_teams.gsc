@@ -12,6 +12,7 @@ init()
     	addEventListener("onDisconnect",    	::onDisconnect);
     	addEventListener("onJoinedAlliesAxis",  ::onJoinedAlliesAxis);
         addEventListener("onJoinedSpectator",   ::onJoinedSpectator);
+	addEventListener("onJoinedStreamer",  ::onJoinedStreamer);
 }
 
 
@@ -70,6 +71,12 @@ onStartGameType()
 
 onConnected()
 {
+	self endon("disconnect");
+
+	// Wait till response about downloaded mod from player is received - we know player is not in lag
+	while (!self.pers["modDownloaded"])
+		wait level.frame;
+
 	self updateAutoAssignCvar();
 	level thread updateTeamChangeCvars();
 }
@@ -89,6 +96,14 @@ onJoinedAlliesAxis()
 }
 
 onJoinedSpectator()
+{
+	self.pers["teamTime"] = undefined;
+
+	self updateAutoAssignCvar();
+	level thread updateTeamChangeCvars();
+}
+
+onJoinedStreamer()
 {
 	self.pers["teamTime"] = undefined;
 
@@ -319,38 +334,36 @@ updateTeamChangeCvars()
 	{
 		player = players[i];
 
-		if(player.pers["team"] != "spectator" && player.pers["team"] != "none")
+
+		if(player.pers["team"] == "allies")
 		{
-			if(player.pers["team"] == "allies")
+			if(!isdefined(player.allow_joinallies) || player.allow_joinallies != 2)
 			{
-				if(!isdefined(player.allow_joinallies) || player.allow_joinallies != 2)
-				{
-					player.allow_joinallies = 2;
-					player setClientCvar2("ui_allow_joinallies", player.allow_joinallies);
-				}
-
-				if(!isdefined(player.allow_joinaxis) || player.allow_joinaxis != joinaxis)
-				{
-					player.allow_joinaxis = joinaxis;
-					player setClientCvar2("ui_allow_joinaxis", player.allow_joinaxis);
-				}
+				player.allow_joinallies = 2;
+				player setClientCvar2("ui_allow_joinallies", player.allow_joinallies);
 			}
-			else if(player.pers["team"] == "axis")
-			{
-				if(!isdefined(player.allow_joinallies) || player.allow_joinallies != joinallies)
-				{
-					player.allow_joinallies = joinallies;
-					player setClientCvar2("ui_allow_joinallies", player.allow_joinallies);
-				}
 
-				if(!isdefined(player.allow_joinaxis) || player.allow_joinaxis != 2)
-				{
-					player.allow_joinaxis = 2;
-					player setClientCvar2("ui_allow_joinaxis", player.allow_joinaxis);
-				}
+			if(!isdefined(player.allow_joinaxis) || player.allow_joinaxis != joinaxis)
+			{
+				player.allow_joinaxis = joinaxis;
+				player setClientCvar2("ui_allow_joinaxis", player.allow_joinaxis);
 			}
 		}
-		else
+		else if(player.pers["team"] == "axis")
+		{
+			if(!isdefined(player.allow_joinallies) || player.allow_joinallies != joinallies)
+			{
+				player.allow_joinallies = joinallies;
+				player setClientCvar2("ui_allow_joinallies", player.allow_joinallies);
+			}
+
+			if(!isdefined(player.allow_joinaxis) || player.allow_joinaxis != 2)
+			{
+				player.allow_joinaxis = 2;
+				player setClientCvar2("ui_allow_joinaxis", player.allow_joinaxis);
+			}
+		}
+		else // spectator, streamer, none
 		{
 			if(!isdefined(player.allow_joinallies) || player.allow_joinallies != joinallies)
 			{
@@ -364,6 +377,9 @@ updateTeamChangeCvars()
 				player setClientCvar2("ui_allow_joinaxis", player.allow_joinaxis);
 			}
 		}
+
+
+		player setClientCvar2("ui_allow_joinstreamer", level.spectatingSystem);
 	}
 }
 

@@ -220,53 +220,7 @@ SetPlayerWaypoint(camera_player, waypoint_player)
 			}
 		}
 
-		fov = 80;
-		if (isAlive(camera_player_real))
-		{
-			weapon_fov["m1carbine_mp"] = 55;
-			weapon_fov["m1garand_mp"] = 50;
-			weapon_fov["thompson_mp"] = 65;
-			weapon_fov["bar_mp"] = 50;
-			weapon_fov["springfield_mp"] = 15;
-			weapon_fov["greasegun_mp"] = 65;
-			weapon_fov["shotgun_mp"] = 65;
-			weapon_fov["enfield_mp"] = 50;
-			weapon_fov["sten_mp"] = 65;
-			weapon_fov["bren_mp"] = 50;
-			weapon_fov["enfield_scope_mp"] = 15;
-			weapon_fov["mosin_nagant_mp"] = 50;
-			weapon_fov["SVT40_mp"] = 50;
-			weapon_fov["PPS42_mp"] = 65;
-			weapon_fov["ppsh_mp"] = 65;
-			weapon_fov["mosin_nagant_sniper_mp"] = 15;
-			weapon_fov["kar98k_mp"] = 50;
-			weapon_fov["g43_mp"] = 50;
-			weapon_fov["mp40_mp"] = 65;
-			weapon_fov["mp44_mp"] = 50;
-			weapon_fov["kar98k_sniper_mp"] = 15;
-			weapon_fov["colt_mp"] = 80;
-			weapon_fov["luger_mp"] = 80;
-			weapon_fov["tt30_mp"] = 80;
-			weapon_fov["webley_mp"] = 80;
-			weapon_fov["mg_mp"] = 60;
-
-			current = camera_player_real getcurrentweapon(); // can be none
-			zoom = camera_player_real playerAds();	// 1 = zoom | 0 = no zoom
-
-			if (camera_player_real.usingMG)
-			{
-				current = "mg_mp";
-				zoom = 1;
-			}
-
-			if (zoom < 0.5)
-				zoom = 0;
-			else
-				zoom = (zoom*2)-1;
-
-			if (isDefined(weapon_fov[current]))
-				fov = 80 - (80 - weapon_fov[current]) * zoom;
-		}
+		fov = camera_player_real maps\mp\gametypes\global\player::getFOV();
 
 		waypoint_origin = waypoint_player.origin + self.offset;
 		if (isDefined(self.tag) && self.tag == "head")
@@ -285,6 +239,8 @@ SetPlayerWaypoint(camera_player, waypoint_player)
 		last_x = point[0];
 		last_y = point[1];
 		*/
+
+
 		// Shader set
 		if (isDefined(self.shader) && self.shader != "")
 		{
@@ -315,6 +271,8 @@ abs (num)
 	return num;
 }
 
+
+
 WorldToScreen(camera_origin, camera_angles, position, fov_scale)
 {
 	width = 640;
@@ -322,33 +280,224 @@ WorldToScreen(camera_origin, camera_angles, position, fov_scale)
 	fov_x = 80 * fov_scale;
 	fov_y = 63 * fov_scale;	// 63 - i dont know how its computed
 
-	left = anglestoright(camera_angles);
+	right = anglestoright(camera_angles);
 	up = anglestoup(camera_angles);
 	forward = anglestoforward(camera_angles);
 
-	Position = position - camera_origin;
-        Transform[0] = VectorDot(Position, left);
-        Transform[1] = VectorDot(Position, up);
-        Transform[2] = VectorDot(Position, forward);
+	relativePos = vectornormalize(position - camera_origin);
 
+        forwardDot = VectorDot(relativePos, forward);
+        rightDot = VectorDot(relativePos, right);
+        upDot = VectorDot(relativePos, up);
+
+	// Avoid devision by 0
+	if (forwardDot == 0) forwardDot = 0.001;
+
+	// Calculate screen position
+        x = (width / 2) * (1 + (rightDot / tan(fov_x/2) / forwardDot));
+        y = (height / 2) * (1 - (upDot / tan(fov_y/2) / forwardDot));
+
+	// Point is behind camera, move it offscreen
+	if (forwardDot <= 0)
+	{
+		if (x < width / 2)	x = width * 2;
+		else 			x = width * -1;
+	}
+
+	ret[0] = x;
+	ret[1] = y;
+	return ret;
+}
+
+
+WorldToScreen2(camera_origin, camera_angles, position, fov_scale)
+{
+	width = 640;
+	height = 480;
+	fov_x = 80 * fov_scale;
+	fov_y = 63 * fov_scale;	// 63 - i dont know how its computed
+
+	right = anglestoright(camera_angles);
+	up = anglestoup(camera_angles);
+	forward = anglestoforward(camera_angles);
+
+	relativePos = position - camera_origin;
+	relativePosNorm = vectornormalize(relativePos);
+
+        forwardDot = VectorDot(relativePos, forward);
+        rightDot = VectorDot(relativePos, right);
+        upDot = VectorDot(relativePos, up);
+/*
         // make sure it is in front of us
-        if (Transform[2] < 0.1)
+        if (forwardDot < 0.1)
 	{
 		ret[0] = -1000;
 	        ret[1] = -1000;
 		return ret;
 	}
+*/
+    // Check if the point is behind the camera
+    if (forwardDot <= 0) {
 
-        ret[0] = (width * 0.5) * (1 - (Transform[0] / tan(fov_x/2) / Transform[2]));
-        ret[1] = (height * 0.5) * (1 - (Transform[1] / tan(fov_y/2) / Transform[2]));
+        farPoint = vectoradd(camera_origin, vectorscale(forward, 1000));
 
-	ret[0] = width - ret[0]; // flip x
+        relativePosNorm = vectornormalize(farPoint - camera_origin);
 
-	//iprintln(ret[0] + " " + ret[1]);
+        forwardDot = VectorDot(forward, relativePosNorm);
+        rightDot = VectorDot(right, relativePosNorm);
+        upDot = VectorDot(up, relativePosNorm);
+    }
 
+	// Calculate screen position
+        x = (width * 0.5) * (1 - (rightDot / tan(fov_x/2) / forwardDot));
+        y = (height * 0.5) * (1 - (upDot / tan(fov_y/2) / forwardDot));
+
+	x = width - x; // flip x
+
+	// check if target point is outside viewable screen area
+	if (x < 0.0 || x > 640.0 || y < 0.0 || y > 480.0)
+	{
+		    halfFOVH = fov_x / 2;
+		    halfFOVV = fov_y / 2;
+		    tanHalfFOVH = tan(halfFOVH);
+		    tanHalfFOVV = tan(halfFOVV);
+		    aspectRatio = width / height;
+
+	        // Compute the edge of the screen that is closest to the 3D point
+	        edgePoint = position;
+	        edgeDist = distance(position, camera_origin);
+	        edgeX = width / 2 + (rightDot / tanHalfFOVH) * height / aspectRatio / 2;
+	        edgeY = height / 2 - (upDot / tanHalfFOVV) * height / 2;
+
+	        // Check the left edge
+	        leftX = 0;
+	        leftY = height / 2 - (upDot / tanHalfFOVV) * height / 2;
+	        leftPoint = vectoradd(camera_origin, vectorscale(forward, (leftX - width / 2) / (rightDot / tanHalfFOVH)));
+	        leftDist = distance(leftPoint, position);
+	        if (leftDist < edgeDist) {
+	            edgePoint = leftPoint;
+	            edgeDist = leftDist;
+	            edgeX = leftX;
+	            edgeY = leftY;
+	        }
+
+	        // Check the right edge
+	        rightX = width;
+	        rightY = height / 2 - (upDot / tanHalfFOVV) * height / 2;
+	        rightPoint = vectoradd(camera_origin, vectorscale(forward, (rightX - width / 2) / (rightDot / tanHalfFOVH)));
+		rightDist = distance(rightPoint, position);
+		if (rightDist < edgeDist) {
+			edgePoint = rightPoint;
+			edgeDist = rightDist;
+			edgeX = rightX;
+			edgeY = rightY;
+		}
+
+		// Check the top edge
+		topX = width / 2 + (rightDot / tanHalfFOVH) * height / aspectRatio / 2;
+		topY = 0;
+		topPoint = vectoradd(camera_origin, vectorscale(up, (topY - height / 2) / (upDot / tanHalfFOVV)));
+		topDist = distance(topPoint, position);
+		if (topDist < edgeDist) {
+			edgePoint = topPoint;
+			edgeDist = topDist;
+			edgeX = topX;
+			edgeY = topY;
+		}
+
+		// Check the bottom edge
+		bottomX = width / 2 + (rightDot / tanHalfFOVH) * height / aspectRatio / 2;
+		bottomY = height;
+		bottomPoint = vectoradd(camera_origin, vectorscale(up, (bottomY - height / 2) / (upDot / tanHalfFOVV)));
+		bottomDist = distance(bottomPoint, position);
+		if (bottomDist < edgeDist) {
+			edgePoint = bottomPoint;
+			edgeDist = bottomDist;
+			edgeX = bottomX;
+			edgeY = bottomY;
+		}
+
+
+		// Compute the screen coordinates of the edge point
+		edgeScreenX = edgeX;
+		edgeScreenY = edgeY;
+		if (edgeX < 0) {
+			edgeScreenY = height / 2 - (upDot / tanHalfFOVV) * edgeX / (rightDot / tanHalfFOVH) / aspectRatio;
+			edgeScreenX = 0;
+		} else if (edgeX > width) {
+			edgeScreenY = height / 2 + (upDot / tanHalfFOVV) * (edgeX - width) / (rightDot / tanHalfFOVH) / aspectRatio;
+			edgeScreenX = width;
+		}
+		if (edgeY < 0) {
+			edgeScreenX = width / 2 + (rightDot / tanHalfFOVH) * edgeY / (upDot / tanHalfFOVV);
+			edgeScreenY = 0;
+		} else if (edgeY > height) {
+			edgeScreenX = width / 2 + (rightDot / tanHalfFOVH) * (edgeY - height) / (upDot / tanHalfFOVV);
+			edgeScreenY = height;
+		}
+
+			ret[0] = edgeScreenX;
+			ret[1] = edgeScreenY;
+			return ret;
+	}
+/*
+   // Check if the waypoint is outside the screen bounds
+    if (x < 0) {
+        x = 0;
+    } else if (x > 640) {
+        x = 640;
+    }
+
+    if (y < 0) {
+        y = 0;
+    } else if (y > 480) {
+        y = 480;
+    }
+*/
+
+	//aspectRatio = width / height;
+/*
+    // Check if the waypoint is outside the screen bounds and adjust it if necessary
+    if (x < 0) {
+        newX = 0;
+        newZ = (newX - width / 2) * aspectRatio / height * tan(fov_x/2);
+        newPoint = vectoradd(camera_origin, vectorscale(forward, newZ / forwardDot));
+	return WorldToScreen(camera_origin, camera_angles, newPoint, fov_scale);
+    } else if (x > width) {
+        newX = width;
+        newZ = (newX - width / 2) * aspectRatio / height * tan(fov_x/2);
+        newPoint = vectoradd(camera_origin, vectorscale(forward, newZ / forwardDot));
+        return WorldToScreen(camera_origin, camera_angles, newPoint, fov_scale);
+    }
+
+   if (y < 0) {
+        newY = 0;
+        newZ = -1 * (newY - height / 2) * tan(fov_y/2);
+        newPoint = vectoradd(camera_origin, vectorscale(forward, newZ / forwardDot));
+        return WorldToScreen(camera_origin, camera_angles, newPoint, fov_scale);
+    } else if (y > height) {
+        newY = height;
+        newZ = -1 * (newY - height / 2) * tan(fov_y/2);
+        newPoint = vectoradd(camera_origin, vectorscale(forward, newZ / forwardDot));
+        return WorldToScreen(camera_origin, camera_angles, newPoint, fov_scale);
+}*/
+
+
+	ret[0] = x;
+	ret[1] = y;
 	return ret;
 }
 
+vectoradd(v1, v2)
+{
+	return v1 + v2;
+}
+
+
+vectorscale(v1, multiplier)
+{
+	return (v1[0] * multiplier, v1[1] * multiplier, v1[2] * multiplier);
+}
 
 watchArchived()
 {

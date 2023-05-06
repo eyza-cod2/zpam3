@@ -1,31 +1,31 @@
 // Team color bg
-MATCHINFO_BGCOLOR(-131 0 130 15, 0.3 0 0 .8, "ui_matchinfo_team1_sideColor", showDvar { "1" }) // Red
-MATCHINFO_BGCOLOR(-131 0 130 15, .0 0.4 .0 .8, "ui_matchinfo_team1_sideColor", showDvar { "2" }) // Green
-MATCHINFO_BGCOLOR(-131 0 130 15, 0.3 0.3 0.9 .9, "ui_matchinfo_team1_sideColor", showDvar { "3" }) // Blue
-MATCHINFO_BGCOLOR(-131 0 130 15, .3 .3 .3 .9, "ui_matchinfo_team1_sideColor", showDvar { "4" }) // Gray
+MATCHINFO_BGCOLOR(-131 0 130 15, 0.7 0 0 .8, 		"ui_matchinfo_team1_color", showDvar { "1" }) // Red
+MATCHINFO_BGCOLOR(-131 0 130 15, .0 0.4 .0 .8, 		"ui_matchinfo_team1_color", showDvar { "2" }) // Green
+MATCHINFO_BGCOLOR(-131 0 130 15, 0.3 0.3 0.9 .9, 	"ui_matchinfo_team1_color", showDvar { "3" }) // Blue
+MATCHINFO_BGCOLOR(-131 0 130 15, .3 .3 .3 .9, 		"ui_matchinfo_team1_color", showDvar { "4" }) // Gray
 // Team background
-MATCHINFO_BGCOLOR(-131 0 130 14, .1 .1 .1 .8, "ui_matchinfo_team1_sideColor", showDvar { "1"; "2"; "3"; "4" })
+MATCHINFO_BGCOLOR(-131 0 130 14, .1 .1 .1 .8, 		"ui_matchinfo_team1_color", showDvar { "1"; "2"; "3"; "4" })
 // Icon
-MATCHINFO_ICON(-128 1, "hudicon_russian", "ui_matchinfo_team1_sideColor", showDvar { "1" } )
-MATCHINFO_ICON(-128 1, "hudicon_american", "ui_matchinfo_team1_sideColor", showDvar { "2" } )
-MATCHINFO_ICON(-128 1, "hudicon_british", "ui_matchinfo_team1_sideColor", showDvar { "3" } )
-MATCHINFO_ICON(-128 1, "hudicon_german", "ui_matchinfo_team1_sideColor", showDvar { "4" } )
+MATCHINFO_ICON(-128 1, "hudicon_russian", 		"ui_matchinfo_team1_team", showDvar { "russian" } )
+MATCHINFO_ICON(-128 1, "hudicon_american", 		"ui_matchinfo_team1_team", showDvar { "american" } )
+MATCHINFO_ICON(-128 1, "hudicon_british", 		"ui_matchinfo_team1_team", showDvar { "british" } )
+MATCHINFO_ICON(-128 1, "hudicon_german", 		"ui_matchinfo_team1_team", showDvar { "german" } )
 
 
 
 
 // Team color bg
-MATCHINFO_BGCOLOR(1 0 130 15, 0.3 0 0 .8, "ui_matchinfo_team2_sideColor", showDvar { "1" }) // Red
-MATCHINFO_BGCOLOR(1 0 130 15, .0 0.4 .0 .8, "ui_matchinfo_team2_sideColor", showDvar { "2" }) // Green
-MATCHINFO_BGCOLOR(1 0 130 15, 0.3 0.3 0.9 .9, "ui_matchinfo_team2_sideColor", showDvar { "3" }) // Blue
-MATCHINFO_BGCOLOR(1 0 130 15, .3 .3 .3 .9, "ui_matchinfo_team2_sideColor", showDvar { "4" }) // Gray
+MATCHINFO_BGCOLOR(1 0 130 15, 0.7 0 0 .8, 		"ui_matchinfo_team2_color", showDvar { "1" }) // Red
+MATCHINFO_BGCOLOR(1 0 130 15, .0 0.4 .0 .8, 		"ui_matchinfo_team2_color", showDvar { "2" }) // Green
+MATCHINFO_BGCOLOR(1 0 130 15, 0.3 0.3 0.9 .9, 		"ui_matchinfo_team2_color", showDvar { "3" }) // Blue
+MATCHINFO_BGCOLOR(1 0 130 15, .3 .3 .3 .9, 		"ui_matchinfo_team2_color", showDvar { "4" }) // Gray
 // Team background
-MATCHINFO_BGCOLOR(1 0 130 14, .1 .1 .1 .8, "ui_matchinfo_team2_sideColor", showDvar { "1"; "2"; "3"; "4" })
+MATCHINFO_BGCOLOR(1 0 130 14, .1 .1 .1 .8, 		"ui_matchinfo_team2_color", showDvar { "1"; "2"; "3"; "4" })
 // Icon
-MATCHINFO_ICON(3 1, "hudicon_russian", "ui_matchinfo_team2_sideColor", showDvar { "1" } )
-MATCHINFO_ICON(3 1, "hudicon_american", "ui_matchinfo_team2_sideColor", showDvar { "2" } )
-MATCHINFO_ICON(3 1, "hudicon_british", "ui_matchinfo_team2_sideColor", showDvar { "3" } )
-MATCHINFO_ICON(3 1, "hudicon_german", "ui_matchinfo_team2_sideColor", showDvar { "4" } )
+MATCHINFO_ICON(3 1, "hudicon_russian", 			"ui_matchinfo_team2_team", showDvar { "russian" } )
+MATCHINFO_ICON(3 1, "hudicon_american", 		"ui_matchinfo_team2_team", showDvar { "american" } )
+MATCHINFO_ICON(3 1, "hudicon_british", 			"ui_matchinfo_team2_team", showDvar { "british" } )
+MATCHINFO_ICON(3 1, "hudicon_german", 			"ui_matchinfo_team2_team", showDvar { "german" } )
 
 
 

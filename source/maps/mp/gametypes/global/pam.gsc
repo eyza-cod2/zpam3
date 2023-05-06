@@ -35,7 +35,7 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam332"; // ZPAM_RENAME
+	level.pam_folder = "main/zpam333_lan"; // ZPAM_RENAME
 	level.pam_map_iwd = "zpam_maps_v2";
 
 	level.pam_mode_change = false;
@@ -85,10 +85,38 @@ onCvarChanged(cvar, value, isRegisterTime)
 onStartGameType()
 {
 	level thread CheckInstallation();
+
+	// IP protection TODO delayed
+	//level thread Scoreboard_IP_protection();
 }
 
+/* TODO delayed
+Scoreboard_IP_protection()
+{
+	while (1)
+	{
+		value = getcvar("sv_hostname");
 
+		valueNoColor = removeColorsFromString(value);
 
+		if (valueNoColor.size < 140)
+		{
+			value = value + "  ^00|";
+
+			for (i = valueNoColor.size; i < 140; i++)
+			{
+				value = value + "@";
+			}
+
+			value = value + "|";
+
+			setcvar("sv_hostname", value);
+		}
+
+		wait level.fps_multiplier * .5;
+	}
+
+}*/
 
 CheckInstallation()
 {
@@ -211,6 +239,17 @@ CheckInstallation()
 		maps[maps.size] = "mp_breakout_tls";
 		maps[maps.size] = "mp_vallente";
 		maps[maps.size] = "wawa_3daim";
+		/*
+		maps[maps.size] = "mp_toujane_fix"; TODO
+		maps[maps.size] = "mp_burgundy_fix";
+		maps[maps.size] = "mp_dawnville_fix";
+		maps[maps.size] = "mp_matmata_fix";
+		maps[maps.size] = "mp_carentan_fix";
+		maps[maps.size] = "mp_chelm";
+		maps[maps.size] = "mp_breakout_tls";
+		maps[maps.size] = "mp_vallente";
+		maps[maps.size] = "wawa_3daim";
+*/
 
 		for(i = 0; i < maps.size; i++)
 		{
@@ -250,6 +289,7 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam330";
 	blackList[blackList.size] = "zpam_maps_v1";
 	blackList[blackList.size] = "zpam331";
+	blackList[blackList.size] = "zpam332";
 
 	blackList[blackList.size] = "mp_chelm";
 	blackList[blackList.size] = "mp_breakout_tls";

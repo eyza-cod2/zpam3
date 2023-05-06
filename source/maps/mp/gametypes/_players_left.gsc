@@ -179,7 +179,7 @@ updateHUD(alliesChanged, axisChanged)
 	teamRight = "axis";
 
 	// If match info is enabled, ensure teams are in correct sides
-	if (self.pers["team"] == "spectator")
+	if (self.sessionteam == "spectator")
 	{
 		if (game["scr_matchinfo"] == 1 || game["scr_matchinfo"] == 2)
 		{
@@ -261,7 +261,7 @@ updateHUD(alliesChanged, axisChanged)
 		self.playersLeft_enemy_num setValue(level.axis_alive);
 	}
 
-	if (self.pers["team"] == "spectator")
+	if (self.sessionteam == "spectator")
 	{
 		self.playersLeft_myTeam.color = (1,1,1);
 		self.playersLeft_myTeam_num.color = (1,1,1);
@@ -344,6 +344,15 @@ hide()
 updateEnemyList()
 {
 	//self iprintln("updating...");
+
+
+	// For spectating system set invisible char to show smaller version of weapon name in HUD
+	if (self.sessionteam == "spectator")
+	{
+		self setClientCvarIfChanged("ui_playersleft_list", " ");
+		return;
+	}
+
 	if (game["is_public_mode"] || !level.scr_show_players_left || self isEnabled() == false)
 	{
 		self setClientCvarIfChanged("ui_playersleft_list", "");
@@ -376,6 +385,15 @@ updateEnemyList()
 			}
 
 			name += removeColorsFromString(playerList[i].name);
+
+			// Remove leading spaces
+			while (name.size > 0 && name[0] == " ")
+				name = getsubstr(name, 1); // start from second character
+
+			if (name == "")
+			{
+				name = "(empty name id:" + playerList[i] getentitynumber() + ")";
+			}
 
 			nameList[nameList.size] = name;
 		}

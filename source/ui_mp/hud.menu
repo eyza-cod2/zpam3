@@ -27,53 +27,6 @@
 			#include "ui_mp/scriptmenus/submenus/matchinfo_hud.menu"
 	}
 
-
-
-	menuDef
-	{
-	  	name spectatingsystem_left
-	  	fullScreen MENU_FALSE
-	  	visible MENU_TRUE
-	    	rect 0 160 200 40 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
-
-		#include "ui_mp/scriptmenus/submenus/spectatingsystem_left.menu"
-	}
-
-	menuDef
-	{
-	  	name spectatingsystem_right
-	  	fullScreen MENU_FALSE
-	  	visible MENU_TRUE
-	    	rect 0 160 200 40 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
-
-		#include "ui_mp/scriptmenus/submenus/spectatingsystem_right.menu"
-	}
-
-	menuDef
-	{
-	  	name spectatingsystem_players
-	  	fullScreen MENU_FALSE
-	  	visible MENU_TRUE
-	    	rect 0 0 200 80 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
-
-
-		ITEM_DVAR("ui_spectatingsystem_team1_scoreProgress", -285, -41, .2, ITEM_ALIGN_LEFT, 1 1 1 1)
-		ITEM_DVAR("ui_spectatingsystem_team2_scoreProgress", -285, -31, .2, ITEM_ALIGN_LEFT, 1 1 1 1)
-
-		ITEM_DVAR("ui_spectatingsystem_playerProgress", -285, -18, .18, ITEM_ALIGN_LEFT, 1 1 1 1)
-	}
-
-	menuDef
-	{
-	  	name spectatingsystem_killcam_proposing
-	  	fullScreen MENU_FALSE
-	  	visible MENU_TRUE
-	    	rect 0 0 200 80 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
-
-		ITEM_DVAR("ui_spectatingsystem_killcamProposing", -140, 350, .18, ITEM_ALIGN_LEFT, 1 1 1 1)
-
-	}
-
 	menuDef
 	{
 	  	name enemylist

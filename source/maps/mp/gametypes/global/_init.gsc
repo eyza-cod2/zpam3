@@ -43,7 +43,6 @@ InitModules()
 
 	thread maps\mp\gametypes\_pam::init();
 	thread maps\mp\gametypes\_force_download::init();
-	thread maps\mp\gametypes\_language::init();
 	thread maps\mp\gametypes\_cvar_forces::init();
 
 	thread maps\mp\gametypes\_log::init();
@@ -86,11 +85,12 @@ InitModules()
 	thread maps\mp\gametypes\_matchinfo::init();	// depends on readyup, teamname, bash, overtime
 	thread maps\mp\gametypes\_record::init();	// depends on matchinfo
 	thread maps\mp\gametypes\_players_left::Init(); // depends on matchinfo
-	thread maps\mp\gametypes\_spectating_auto::init(); // depends on readyup
-	thread maps\mp\gametypes\_spectating_hud::init(); // depends on readyup, matchinfo
-	thread maps\mp\gametypes\_spectating_hud_esp::init(); // depends on readyup, matchinfo
-	thread maps\mp\gametypes\_spectating_hud_damage::init(); // depends on readyup
-	thread maps\mp\gametypes\_spectating_killcam::init(); // depends on _spectating_auto
+	thread maps\mp\gametypes\_spectating_system::init(); // depends on readyup, matchinfo
+	thread maps\mp\gametypes\_spectating_system_auto::init(); // depends on readyup
+	thread maps\mp\gametypes\_spectating_system_hud::init(); // depends on readyup, matchinfo
+	thread maps\mp\gametypes\_spectating_system_xray::init(); // depends on readyup, matchinfo
+	thread maps\mp\gametypes\_spectating_system_damage::init(); // depends on readyup
+	thread maps\mp\gametypes\_spectating_system_killcam::init(); // depends on _spectating_system_auto
 	thread maps\mp\gametypes\_archive::init(); // depends on spectating_system and killcam
 
 
@@ -112,6 +112,7 @@ InitModules()
 	thread maps\mp\gametypes\_score_set::init(); // depends on readyup, halftime, sd
 	thread maps\mp\gametypes\_sniper_shotgun_info::init();
 	thread maps\mp\gametypes\_warnings::init();
+	thread maps\mp\gametypes\_aim_trainer::init();		// depends on readyup
 
 
 	thread maps\mp\gametypes\_objective::init(); // depends on readyup, timeout

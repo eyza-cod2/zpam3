@@ -16,7 +16,6 @@ onStartGameType()
 	if (!isDefined(game["menuPrecached"]))
 	{
 		game["menu_moddownload"] = "moddownload";
-		game["menu_language"] = "language";
 		game["menu_ingame"] = "ingame";
 		game["menu_team"] = "team_" + game["allies"] + game["axis"];	// team_britishgerman
 		game["menu_weapon_allies"] = "weapon_" + game["allies"];
@@ -35,7 +34,6 @@ onStartGameType()
 		game["menu_strat_records"] = "strat_records";
 
 		precacheMenu(game["menu_moddownload"]);
-		precacheMenu(game["menu_language"]);
 		precacheMenu(game["menu_ingame"]);
 		precacheMenu(game["menu_team"]);
 		precacheMenu(game["menu_weapon_allies"]);
@@ -102,13 +100,6 @@ onConnected()
 		self maps\mp\gametypes\_menu_serverinfo::updateServerInfo();
 	}
 
-	// Menu with language was not opened yet
-	else if (!isDefined(self.pers["languageLoaded"]))
-	{
-		scriptMainMenu = game["menu_language"];
-		self openMenu(game["menu_language"]);
-	}
-
 	else if (game["state"] == "intermission")
 	{
 		self setClientCvar2("ui_allow_weaponchange", 0);
@@ -156,7 +147,8 @@ onConnected()
 
 	self setClientCvar2("g_scriptMainMenu", scriptMainMenu);
 
-	self setClientCvar2("ui_allowVote", level.allowvote);
+	if (isDefined(self.pers["firstTeamSelected"]))
+		self setClientCvar2("ui_allowVote", level.allowvote);
 }
 
 onJoinedTeam(team)
@@ -183,11 +175,12 @@ onJoinedTeam(team)
 		self openMenu(game["menu_weapon_axis"]);
 		self setClientCvar2("g_scriptMainMenu", game["menu_weapon_axis"]);
 	}
-	else if (team == "spectator")
+	else if (team == "spectator" || team == "streamer")
 	{
 		self setClientCvar2("g_scriptMainMenu", game["menu_ingame"]);
 	}
 
+	self setClientCvar2("ui_allowVote", level.allowvote);
 }
 
 /*
@@ -210,40 +203,21 @@ onMenuResponse(menu, response)
 	{
 		maps\mp\gametypes\_force_download::modIsDownloaded();
 
-		/*
-		TODO LANG
-		// Open language menu
-		self closeMenu();
-		self closeInGameMenu();
-		self openMenu(game["menu_language"]);
-		self setClientCvar2("g_scriptMainMenu", game["menu_language"]);
-
-		return true;
-	}
-
-	else if (menu == game["menu_language"])
-	{
-		maps\mp\gametypes\_language::saveOriginalLanguage(response);
-		TODO LANG
-		*/
-
-		self.pers["languageLoaded"] = true;
-
 		// Open server info
 		self closeMenu();
 		self closeInGameMenu();
 		self openMenu(game["menu_serverinfo"]);
 		self setClientCvar2("g_scriptMainMenu", game["menu_serverinfo"]);
 		self maps\mp\gametypes\_menu_serverinfo::updateServerInfo();
+
+		if (game["state"] != "intermission")
+			self setClientCvar2("ui_allow_changeteam", 1);
 	}
 
 	else if(menu == game["menu_serverinfo"] && response == "close")
 	{
 		self closeMenu();
 		self closeInGameMenu();
-
-		if (game["state"] != "intermission")
-			self setClientCvar2("ui_allow_changeteam", 1);
 
 		if (!isDefined(self.pers["skipserverinfo"]))	// first time
 		{
@@ -352,6 +326,14 @@ onMenuResponse(menu, response)
 			self [[level.spectator]]();
 			if(self.pers["team"] != teamBefore)
 				self thread printTeamChanged(self.name + " Joined Spectators", "");
+			break;
+
+		case "streamer":
+			self closeMenu();
+			self closeInGameMenu();
+			self [[level.streamer]]();
+			if(self.pers["team"] != teamBefore)
+				self thread printTeamChanged(self.name + " Joined Spectators as streamer", "");
 			break;
 
 		case "options":

@@ -14,6 +14,9 @@
 			close matchinfo;
 			close ingame_scoreboard_sd;
 
+			// Make sure cursor is enable (in case of spectator menu fails)
+			setDvar cl_bypassMouseInput "0" // enable cursor movement
+
 			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
 			uiScript openMenuOnDvar ui_scoreboard_show "sd" ingame_scoreboard_sd;
 			open ingame_keys;
@@ -189,6 +192,11 @@
 		focuscolor		GLOBAL_FOCUSED_COLOR
 		style			WINDOW_STYLE_EMPTY
 
+		onOpen
+		{
+			exec "openscriptmenu ingame scoreboard_refresh";	// this will update info
+		}
+
 		itemDef
 		{
 			style			WINDOW_STYLE_FILLED
@@ -235,7 +243,7 @@
 		ITEM_TEXT("Score:     Kill +1   |   Teamkill -1   |   Assist plant defuse +0.5",  9, 311, .20, ITEM_ALIGN_LEFT, 1 1 1 .25)
 		ITEM_TEXT("Hits:         Scope/Rifle +1   |   Semi/Automatic/Shotgun +0.5",  9, 322, .20, ITEM_ALIGN_LEFT, 1 1 1 .25)
 
-		#include "ui_mp/scriptmenus/submenus/scoreboard_lines_sd.menu"
+		ITEM_SCOREBOARD(0, 0)
 	}
 
 

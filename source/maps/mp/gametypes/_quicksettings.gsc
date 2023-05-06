@@ -13,10 +13,15 @@ onConnected()
 	if (!isDefined(self.pers["quicksettings_saved"]))
 		self.pers["quicksettings_saved"] = false;
 
+	// Wait till response about downloaded mod from player is received - we know player is not in lag
+	while (!self.pers["modDownloaded"])
+		wait level.frame;
+
 	wait level.fps_multiplier * 1;
 
+	// Nothing get loaded, write defaults
 	if (!self.pers["quicksettings_saved"])
-		self updateClientSettings(); // write defaults
+		self updateClientSettings("defaults");
 }
 
 /*
@@ -41,7 +46,7 @@ parseString(string)
 
 	if (string.size == 0)
 	{
-		self updateClientSettings(); // write defaults
+		self updateClientSettings("empty"); // write defaults
 		return;
 	}
 
@@ -72,26 +77,22 @@ parseString(string)
 			else if (item == "playersleft")       self maps\mp\gametypes\_players_left::toggle();
 			else if (item == "playersleft_0")     self maps\mp\gametypes\_players_left::disable();
 			else if (item == "playersleft_1")     self maps\mp\gametypes\_players_left::enable();
-			/* TOTO LANG
-			else if (item == "language")          self maps\mp\gametypes\_language::toggle();
-			else if (item == "language_-1")       self maps\mp\gametypes\_language::select(-1);
-			else if (item == "language_0")        self maps\mp\gametypes\_language::select(0);
-			else if (item == "language_1")        self maps\mp\gametypes\_language::select(1);
-			else if (item == "language_2")        self maps\mp\gametypes\_language::select(2);
-			else if (item == "language_6")        self maps\mp\gametypes\_language::select(6);
-			else if (item == "language_7")        self maps\mp\gametypes\_language::select(7);
-			else if (item == "language_14")       self maps\mp\gametypes\_language::select(14);
-			else if (item == "language_15")       self maps\mp\gametypes\_language::select(15);
-			*/
+
+			else if (item == "joinspectator")       self maps\mp\gametypes\_spectating_system::join_spectator_toggle();
+			else if (item == "joinspectator_0")     self maps\mp\gametypes\_spectating_system::join_spectator_disable(true);  // true = move player into streamers
+			else if (item == "joinspectator_1")     self maps\mp\gametypes\_spectating_system::join_spectator_enable(true); // true = move player into streamers
+
 			lastItemPos = i + 1;
 		}
 	}
 
-	self updateClientSettings();
+	self updateClientSettings("after_load");
 }
 
-updateClientSettings()
+updateClientSettings(reason)
 {
+	//self iprintln("updateClientSettings("+reason+")");
+
 	string = "openscriptmenu quicksettings ";
 	delimiter = "|";
 
@@ -99,7 +100,7 @@ updateClientSettings()
 	matchinfo = self maps\mp\gametypes\_matchinfo::ingame_isEnabled();
 	score = self maps\mp\gametypes\_hud_teamscore::isEnabled();
 	playersleft = self maps\mp\gametypes\_players_left::isEnabled();
-	//language = self maps\mp\gametypes\_language::getValue(); TODO lang
+	joinspectator = self maps\mp\gametypes\_spectating_system::join_spectator_isEnabled();
 
 	string = string + "autorecording_" + recording;
 	string = string + delimiter;
@@ -107,9 +108,9 @@ updateClientSettings()
 	string = string + delimiter;
 	string = string + "score_" + score;
 	string = string + delimiter;
-	string = string + "playersleft_" + playersleft;/*
-	string = string + delimiter; TODO lang
-	string = string + "language_" + language;*/
+	string = string + "playersleft_" + playersleft;
+	string = string + delimiter;
+	string = string + "joinspectator_" + joinspectator;
 
 	self setClientCvar2("server16", string);
 
@@ -118,6 +119,7 @@ updateClientSettings()
 	self setClientCvar2("ui_quicksettings_matchinfo", matchinfo);
 	self setClientCvar2("ui_quicksettings_score", score);
 	self setClientCvar2("ui_quicksettings_playersleft", playersleft);
+	self setClientCvar2("ui_quicksettings_joinspectator", joinspectator);
 
 	self.pers["quicksettings_saved"] = true;
 }

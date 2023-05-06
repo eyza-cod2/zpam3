@@ -235,7 +235,7 @@ debugBasics()
 
 	self setClientCvar2("debug_row_2_line_24", "self attackbuttonpressed()       = " + 	self attackbuttonpressed());
 	self setClientCvar2("debug_row_2_line_25", "self isOnGround()                = " + 	self isOnGround());
-
+	self setClientCvar2("debug_row_2_line_26", "self playerAds()                 = " + 	self playerAds());
 
         //self setClientCvar2("debug_row_2_line_14", "self.dropped_weapons   = " + 		 self.dropped_weapons);
 

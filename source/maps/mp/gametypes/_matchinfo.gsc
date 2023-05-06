@@ -100,11 +100,6 @@ onConnected()
 		self.pers["matchinfo_ingame"] = false;
 		self.pers["matchinfo_ingame_visible"] = false;
 		self.pers["matchinfo_showedForSpectator"] = false;
-
-		// always hide ingame bar on first connect - if is enabled by settings, it will be showed later
-		self setClientCvarIfChanged("ui_matchinfo_ingame_show", "0");
-		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_sideColor", 	""); // bg elements cannot be dependend on _show cvar, needs to be set separately
-		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_sideColor", 	"");
 	}
 
 
@@ -135,19 +130,19 @@ onConnected()
 onJoinedTeam(teamName)
 {
 	// Always show for spectator, even if its not enabled in settings
-	if (teamName == "spectator")
+	if (teamName == "spectator" || teamName == "streamer")
 	{
 		self ingame_show();
 		self.pers["matchinfo_showedForSpectator"] = true;
 	}
 	else
 	{
+		// Always hide ingame bar on team join if is not enabled
+		if (!ingame_isEnabled())
+			ingame_hide();
+
 		if (self.pers["matchinfo_showedForSpectator"])
-		{
-			if (!ingame_isEnabled())
-				ingame_hide();
 			self.pers["matchinfo_showedForSpectator"] = false;
-		}
 	}
 }
 
@@ -199,12 +194,14 @@ ingame_show()
 // Hide match info ingame menu elements in hud menu
 ingame_hide()
 {
-	if (self.pers["matchinfo_ingame_visible"])
+	//if (self.pers["matchinfo_ingame_visible"])
 	{
 		self.pers["matchinfo_ingame_visible"] = false;
 		self setClientCvarIfChanged("ui_matchinfo_ingame_show", "0");
-		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_sideColor", 	""); // bg elements cannot be dependend on _show cvar, needs to be set separately
-		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_sideColor", 	"");
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_color", 	""); // bg elements cannot be dependend on _show cvar, needs to be set separately
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_color", 	"");
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_team", 	""); // bg elements cannot be dependend on _show cvar, needs to be set separately
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_team", 	"");
 		if (game["scr_matchinfo"] > 0)
 			self thread UpdatePlayerCvars();
 	}
@@ -486,7 +483,6 @@ GetMapName(mapname)
 }
 
 
-// May be called when
 UpdatePlayerCvars()
 {
 
@@ -550,44 +546,83 @@ UpdatePlayerCvars()
 		}
 
 
-		side_left_color = "0";
-		side_right_color = "0";
+		side_left_color = "";
+		side_right_color = "";
+		side_left_team = "";
+		side_right_team = "";
 		if (side_left == "allies")
 		{
-			if(game["allies"] == "american")
-				side_left_color = "2"; // green
-			else if(game["allies"] == "british")
+			// For streamers make allies always blue and axis always red
+			// For this there is special sufix indicating the color
+			if (self.pers["team"] == "streamer")
+			{
 				side_left_color = "3"; // blue
-			else if(game["allies"] == "russian")
-				side_left_color = "1"; // red
+				side_right_color = "1"; // red
+			}
+			else
+			{
+				if(game["allies"] == "american")
+					side_left_color = "2"; // green
+				else if(game["allies"] == "british")
+					side_left_color = "3"; // blue
+				else if(game["allies"] == "russian")
+					side_left_color = "1"; // red
 
-			side_right_color = "4"; // gray
+				side_right_color = "4"; // gray
+			}
+
+			side_left_team = game["allies"]; // american british russian
+			side_right_team = game["axis"];	 // german
 		}
 		else
 		{
-			if(game["allies"] == "american")
-				side_right_color = "2"; // green
-			else if(game["allies"] == "british")
+			// For streamers make allies always blue and axis always red
+			// For this there is special sufix indicating the color
+			if (self.pers["team"] == "streamer")
+			{
 				side_right_color = "3"; // blue
-			else if(game["allies"] == "russian")
-				side_right_color = "1"; // red
+				side_left_color = "1"; // red
+			}
+			else
+			{
+				if(game["allies"] == "american")
+					side_right_color = "2"; // green
+				else if(game["allies"] == "british")
+					side_right_color = "3"; // blue
+				else if(game["allies"] == "russian")
+					side_right_color = "1"; // red
 
-			side_left_color = "4"; // gray
+				side_left_color = "4"; // gray
+			}
+
+			side_left_team = game["axis"]; 	  // german
+			side_right_team = game["allies"]; // american british russian
 		}
 
-		// Background color according to team
-		self setClientCvarIfChanged("ui_matchinfo_team1_sideColor", 	side_left_color);
-		self setClientCvarIfChanged("ui_matchinfo_team2_sideColor", 	side_right_color);
 
-		if (self.pers["matchinfo_ingame_visible"])
-		{
-			self setClientCvarIfChanged("ui_matchinfo_ingame_team1_sideColor", 	side_left_color);
-			self setClientCvarIfChanged("ui_matchinfo_ingame_team2_sideColor", 	side_right_color);
-		}
 
 		// Team names
 		self setClientCvarIfChanged("ui_matchinfo_team1_name", ui_name_left);
 		self setClientCvarIfChanged("ui_matchinfo_team2_name", ui_name_right);
+
+		// Background color according to team
+		self setClientCvarIfChanged("ui_matchinfo_team1_color", side_left_color);
+		self setClientCvarIfChanged("ui_matchinfo_team2_color", side_right_color);
+
+		// Team
+		self setClientCvarIfChanged("ui_matchinfo_team1_team", 	side_left_team);
+		self setClientCvarIfChanged("ui_matchinfo_team2_team", 	side_right_team);
+
+		if (self.pers["matchinfo_ingame_visible"])
+		{
+			self setClientCvarIfChanged("ui_matchinfo_ingame_team1_color", 	side_left_color);
+			self setClientCvarIfChanged("ui_matchinfo_ingame_team2_color", 	side_right_color);
+
+			self setClientCvarIfChanged("ui_matchinfo_ingame_team1_team", 	side_left_team);
+			self setClientCvarIfChanged("ui_matchinfo_ingame_team2_team", 	side_right_team);
+		}
+
+
 
 
 
@@ -637,10 +672,15 @@ UpdatePlayerCvars()
 		self setClientCvarIfChanged("ui_matchinfo_team1_name", "");
 		self setClientCvarIfChanged("ui_matchinfo_team2_name", "");
 
-		self setClientCvarIfChanged("ui_matchinfo_team1_sideColor", "");
-		self setClientCvarIfChanged("ui_matchinfo_team2_sideColor", "");
-		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_sideColor", "");
-		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_sideColor", "");
+		self setClientCvarIfChanged("ui_matchinfo_team1_color", "");
+		self setClientCvarIfChanged("ui_matchinfo_team2_color", "");
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_color", "");
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_color", "");
+
+		self setClientCvarIfChanged("ui_matchinfo_team1_team", "");
+		self setClientCvarIfChanged("ui_matchinfo_team2_team", "");
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_team", "");
+		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_team", "");
 
 		// Round
 		self setClientCvarIfChanged("ui_matchinfo_round", "");
@@ -813,29 +853,11 @@ refresh()
 		*** Update history cvars to be able load info in next map
 		/***********************************************************************************************************************************/
 
-		if (!game["overtime_active"])
-		{
-			game["match_team1_score_beforeOvertime"] = game["match_team1_score"];
-			game["match_team2_score_beforeOvertime"] = game["match_team2_score"];
-		}
-
 		// Save data from this map for next map
 		if ((game["match_teams_set"] || game["scr_matchinfo"] == 1) && elapsedTime > (3*60) && game["allies_score"] > 0 && game["axis_score"] > 0) // save map into hostory after 3 mins
 		{
 			setCvarIfChanged("sv_map_name", level.mapname);
-
-			// Dont update score if we are in overtime
-			if (!game["overtime_active"])
-			{
-				setCvarIfChanged("sv_map_score", game["match_team1_score"] + " : " + game["match_team2_score"]);
-			}
-			else
-			{
-				team1add = int(game["match_team1_score"] > game["match_team2_score"]);
-				team2add = int(game["match_team1_score"] < game["match_team2_score"]);
-
-				setCvarIfChanged("sv_map_score", (game["match_team1_score_beforeOvertime"] + team1add) + " : " + (game["match_team2_score_beforeOvertime"] + team2add) + "  OT");
-			}
+			setCvarIfChanged("sv_map_score", game["match_team1_score"] + " : " + game["match_team2_score"]);
 		}
 
 

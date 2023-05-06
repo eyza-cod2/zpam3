@@ -370,6 +370,10 @@ execRecording()
 
 	//self iprintln("exec record");
 
+	// Ignore bots
+	if (isDefined(self.pers["isTestClient"]))
+		return;
+
 	// Auto recording is turned off by player, print atleast warning message
 	if (!self isEnabled())
 	{
@@ -398,7 +402,7 @@ execRecording()
 		//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
 		self closeMenu();
 		self closeInGameMenu();
-		self setClientCvar2("exec_cmd", "stoprecord; record " + demoName + "; openScriptMenu exec_cmd start_recording");
+		self setClientCvar2("exec_cmd", "stoprecord; record " + demoName + "; openScriptMenu exec_cmd start_recording"); // TODO clear;
 		self openMenu(game["menu_exec_cmd"]);		// open menu via script
 		self closeMenu();				// will only close menu opened by script
 
@@ -461,7 +465,7 @@ stopRecording()
 		}
 
 		// Wait a second before next menu opening
-		for (i = 0; i < 9 && !self.pers["recording_executed"]; i++)
+		for (i = 0; i < 9 && !self.pers["recording_stop_executed"]; i++)
 			wait level.fps_multiplier * .1;
 	}
 

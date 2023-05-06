@@ -218,9 +218,8 @@ updatePlayerObjpoints()
 	if (!level.scr_show_objective_icons)
 		return;
 
-	if(isDefined(self.pers["team"]) && self.pers["team"] != "spectator" && self.pers["team"] != "none" && self.sessionstate == "playing")
+	if(isDefined(self.pers["team"]) && (self.pers["team"] == "allies" || self.pers["team"] == "axis") && self.sessionstate == "playing")
 	{
-		assert(self.pers["team"] == "allies" || self.pers["team"] == "axis");
 		if(self.pers["team"] == "allies")
 		{
 			assert(isdefined(level.objpoints_allies));

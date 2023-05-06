@@ -25,11 +25,45 @@ onConnected()
 
 	self.pers["scoreboard_lines_statIds"] = [];
 	if (!isDefined(self.pers["scoreboard_keepRefreshing"]))
-		self.pers["scoreboard_keepRefreshing"] = false;
+		self.pers["scoreboard_keepRefreshing"] = 0;
 
 	// This will make sure menu is still responsible even if map is restarted (next round)
-	if (self.pers["scoreboard_keepRefreshing"])
+	if (self.pers["scoreboard_keepRefreshing"] > 0)
 		self thread generatePlayerList();
+}
+
+// Called also from spectatingsystem after automatically joined streamer (intermission)
+hide_scoreboard(distributed)
+{
+	self endon("disconnect");
+
+	// Streamers have visible scoreboard from previous map (intermission scoreboard)
+	self setClientCvarIfChanged("ui_scoreboard_names", "");
+	self setClientCvarIfChanged("ui_scoreboard_scores", "");
+	self setClientCvarIfChanged("ui_scoreboard_kills", "");
+	self setClientCvarIfChanged("ui_scoreboard_assists", "");
+	self setClientCvarIfChanged("ui_scoreboard_damages", "");
+	self setClientCvarIfChanged("ui_scoreboard_deaths", "");
+	self setClientCvarIfChanged("ui_scoreboard_grenades", "");
+	self setClientCvarIfChanged("ui_scoreboard_plants", "");
+	self setClientCvarIfChanged("ui_scoreboard_defuses", "");
+	self setClientCvarIfChanged("ui_scoreboard_ping", "");
+	self setClientCvarIfChanged("ui_scoreboard_visible", "0");
+
+	if (isDefined(distributed) && distributed)
+		wait level.fps_multiplier * 0.25;
+
+	// Fill empty lines
+	for(j = 1; j <= 26; j++)
+	{
+		// First line is always header and then empty space, skip
+		if (j == 2 || j == 3) continue;
+
+		self setClientCvarIfChanged("ui_scoreboard_line_" + j, "0");
+
+		if (j == 14 && isDefined(distributed) && distributed)
+			wait level.fps_multiplier * 0.25;
+	}
 }
 
 /*
@@ -151,8 +185,10 @@ getTeamPlayersArraySorted()
 		{
 			switch(stat["team"])
 			{
-				case "allies": case "axis": case "spectator": case "none":
-				teamplayers[stat["team"]][teamplayers[stat["team"]].size] = stat;
+				case "allies": case "axis": case "spectator": case "streamer": case "none":
+				team = stat["team"];
+				if (team == "streamer") team = "spectator";
+				teamplayers[team][teamplayers[team].size] = stat;
 			}
 		}
 	}
@@ -169,7 +205,7 @@ getTeamPlayersArraySorted()
 canBeColorChanged(player)
 {
 	// Enable color change only if we are not in first readyup, only for opponent team
-	return !game["is_public_mode"] && !game["readyup_first_run"] && game["state"] != "intermission" &&
+	return !game["is_public_mode"] /*&& !game["readyup_first_run"]*/ && game["state"] != "intermission" &&
 		isDefined(player) &&
 		self.pers["team"] != player.pers["team"] &&
 		(self.pers["team"] == "allies" || self.pers["team"] == "axis") &&
@@ -251,14 +287,17 @@ addPlayerLine(team, stats)
 
 
 	name = stats["name"];
+	if (stats["isConnected"])
+		name = stats["player"].name;	// get actual player name with colors
+
 	// Final intermission scoreboard
 	if (game["state"] == "intermission")
 	{
-		if (stats["isConnected"])
-			name = stats["player"].name;	// get actual player name with colors
+		// use original player name with no changes
 	}
 	// Ingame menu scoreboard
-	else {
+	else
+	{
 		name = removeColorsFromString(name); // remove colors
 
 		if (isPlayer(stats["player"]) && isDefined(stats["player"].pers["scoreboard_color"]) && self canBeColorChanged(stats["player"]))
@@ -268,14 +307,24 @@ addPlayerLine(team, stats)
 			else if (stats["player"].pers["scoreboard_color"] == 2)
 				name = "^4" + name; // blue
 		}
+
+		if (level.in_readyup && stats["isConnected"] && isPlayer(stats["player"]))
+		{
+			if (stats["player"].isReady) 	name = "^2o^7  " + name;
+			else		 		name = "^1o^7  " + name;
+		}
 	}
+
 	// PLayer is disconnected
 	color = "";
 	if (stats["isConnected"] == false)
 	{
-		name = "[-] " + removeColorsFromString(name);
+		name = "^9[-] ^7" + name;
 		color = "^9";
 	}
+
+
+
 
 
 	if (team == "allies" || team == "axis")
@@ -304,7 +353,7 @@ addPlayerLine(team, stats)
 
 
 
-		addLine(stats, color + name, color + score, color + stats["kills"], color + stats["deaths"], color + assists, color + damage, color + grenades, color + plants, color + defuses);
+		addLine(stats, name, color + score, color + stats["kills"], color + stats["deaths"], color + assists, color + damage, color + grenades, color + plants, color + defuses);
 
 		// Debug
 		//addLine(player.name, 48, 32, 18, 4, 3.7, 2, 0);
@@ -317,13 +366,16 @@ addPlayerLine(team, stats)
 }
 
 
-generatePlayerList()
+generatePlayerList(toggle)
 {
 	self endon("disconnect");
 
 	// Make sure onlny 1 thread is running
-	self notify("matchinfo_lock");
-	self endon("matchinfo_lock");
+	self notify("scoreboard_lock");
+	self endon("scoreboard_lock");
+
+	if (!isDefined(toggle))
+		toggle = false;
 
 	waittillframeend;
 
@@ -437,7 +489,7 @@ generatePlayerList()
 		self setClientCvarIfChanged("ui_scoreboard_plants", self.scoreboard.plants);
 		self setClientCvarIfChanged("ui_scoreboard_defuses", self.scoreboard.defuses);
 		self setClientCvarIfChanged("ui_scoreboard_ping", "");
-
+		self setClientCvarIfChanged("ui_scoreboard_visible", "1");
 
 
 
@@ -549,24 +601,50 @@ generatePlayerList()
 		}
 
 
+		// Keep updating even in next round after map restart
+		if (self.pers["scoreboard_keepRefreshing"] == 0)
+		{
+			self.pers["scoreboard_keepRefreshing"] = 1; // 1 = menu  2 = toggled
+			if (toggle)
+				self.pers["scoreboard_keepRefreshing"] = 2; // 1 = menu  2 = toggled
+		}
+
+		// Wait fot initial conditions
+		while(self.pers["scoreboard_keepRefreshing"] == 1 && (self.isMoving || self attackbuttonpressed()))
+			wait level.frame;
+
 		i = 0;
 		while(1)
 		{
 			wait level.frame;
 			i++;
 
-			// 1 sec elapsed
-			if (i > level.sv_fps * 1 || self attackbuttonpressed())
+			// In intermission keep updating forever
+			if (game["state"] == "intermission")
 			{
-				if ((self.sessionstate == "playing" && self.isMoving) || self attackbuttonpressed())
-				{
-					self.pers["scoreboard_keepRefreshing"] = false;	// to refresh in next round
-					return;
-				}
-				else
-					self.pers["scoreboard_keepRefreshing"] = true;
+				wait level.fps_multiplier * 1;
 				break;
 			}
+
+			// Stop scoreboard when
+			// - player is moving (so menu is closed)
+			// - player left clicked
+			// - scoreboard for spectating system is closed
+			if (self.pers["scoreboard_keepRefreshing"] == 0 || (self.pers["scoreboard_keepRefreshing"] == 1 && (self.isMoving || self attackbuttonpressed())))
+			{
+				// Stop refreshing
+				self.pers["scoreboard_keepRefreshing"] = 0;
+
+				self thread hide_scoreboard();
+
+				//self iprintln("^1CANCEL ^7updating scoreboard " + self.pers["scoreboard_keepRefreshing"] + " " + self.isMoving + " " + self attackbuttonpressed());
+
+				return;
+			}
+
+			// 1 sec elapsed, keep updating
+			if (i > level.sv_fps * 1)
+				break;
 		}
 
 		//self iprintln("updating scoreboard...");

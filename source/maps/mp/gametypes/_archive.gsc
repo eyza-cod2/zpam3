@@ -37,7 +37,7 @@ update()
 {
 	if(level.scr_killcam ||
 		level.antilag ||
-		level.autoSpectating_do)
+		level.spectatingSystem)
 		setarchive(true);
 	else
 		setarchive(false);

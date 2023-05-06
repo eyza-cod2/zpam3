@@ -28,6 +28,7 @@ main()
 	level.allies = ::menuAllies;
 	level.axis = ::menuAxis;
 	level.spectator = ::menuSpectator;
+	level.streamer = ::menuStreamer;
 	level.weapon = ::menuWeapon;
 
 	level.spawnPlayer = ::spawnPlayer;
@@ -110,6 +111,7 @@ precache()
 	precacheShader("hint_use_touch");
 	precacheHeadIcon(game["headicon_carrier"]);
 	precacheStatusIcon(game["headicon_carrier"]);
+	precacheStatusIcon("compassping_enemyfiring"); // for streamers
 	precacheString(&"RE_CARRYINGGENERIC");
 	precacheString(&"RE_PICKUPAXISONLYGENERIC");
 	precacheString(&"RE_PICKUPALLIESONLYGENERIC");
@@ -525,10 +527,6 @@ onStartGameType()
 		game["allies_score"] = 0;
 		game["axis_score"] = 0;
 
-		// For spectators
-		game["allies_score_history"] = "";
-		game["axis_score_history"] = "";
-
 		// Half-separed scoresg
 		game["half_1_allies_score"] = 0;
 		game["half_1_axis_score"] = 0;
@@ -802,7 +800,10 @@ onConnected()
 	else
 	{
 		// If is team selected from last round, set the real team variable
-		self.sessionteam = self.pers["team"];
+		team = self.pers["team"];
+		if (team == "streamer")
+			team = "spectator";
+		self.sessionteam = team;
 	}
 
 
@@ -819,7 +820,7 @@ onConnected()
 		self.pers["deaths"] = 0;
 	self.deaths = self.pers["deaths"];
 
-	self setClientCvar("cg_objectiveText", "");
+	self setClientCvar2("cg_objectiveText", "");
 }
 
 // This function is called as last after all events are processed
@@ -839,7 +840,7 @@ onAfterConnected()
 	}
 
 	// Spectator team
-	else if (self.pers["team"] == "spectator")
+	else if (self.pers["team"] == "spectator" || self.pers["team"] == "streamer")
 		spawnSpectator();
 
 	// If team is selected
@@ -1356,10 +1357,10 @@ spawnPlayer()
 	if(!level.in_readyup && !level.in_timeout)
 	{
 		if(self.pers["team"] == game["attackers"])
-			self setClientCvar("cg_objectiveText", &"RE_ATTACKER");
+			self setClientCvar2("cg_objectiveText", &"RE_ATTACKER");
 
 		else if(self.pers["team"] == game["defenders"])
-			self setClientCvar("cg_objectiveText", &"RE_DEFENDER");
+			self setClientCvar2("cg_objectiveText", &"RE_DEFENDER");
 	}
 
 
@@ -1442,6 +1443,8 @@ spawnSpectator(origin, angles)
 
 	if(self.pers["team"] == "spectator")
 		self.statusicon = "";
+	else if(self.pers["team"] == "streamer")
+		self.statusicon = "compassping_enemyfiring"; // recording icon
 	else if (self.pers["team"] == "allies" || self.pers["team"] == "axis") // dead team spectartor
 		self.statusicon = "hud_status_dead";
 
@@ -1471,13 +1474,17 @@ spawnSpectator(origin, angles)
 	// Notify "spawned" notifications
 	self notify("spawned");
 
-	self setClientCvar("cg_objectiveText", "");
+	self setClientCvar2("cg_objectiveText", "");
 
 
 	// If is real spectator (is in team spectator, not session state spectator)
-	if(self.pers["team"] == "spectator")
+	if (self.pers["team"] == "spectator")
 	{
 		self notify("spawned_spectator");
+	}
+	else if (self.pers["team"] == "streamer")
+	{
+		self notify("spawned_streamer");
 	}
 }
 
@@ -1614,7 +1621,7 @@ startRound()
 	{
 		player = players[i];
 
-		if (player.pers["team"] == "none" || player.pers["team"] == "spectator")
+		if(player.pers["team"] != "allies" && player.pers["team"] != "axis")
 			continue;
 
 		// Players on a team but without a weapon or dead show as dead since they can not get in this round
@@ -1960,21 +1967,7 @@ endRound(roundwinner)
 	setTeamScore("axis", game["axis_score"]);
 
 	// History score for spectators
-	if(roundwinner == "allies")
-	{
-		game["allies_score_history"] += "^2#";
-		game["axis_score_history"] += "^1=";
-	}
-	else if(roundwinner == "axis")
-	{
-		game["allies_score_history"] += "^1=";
-		game["axis_score_history"] += "^2#";
-	}
-	else // draw
-	{
-		game["allies_score_history"] += "^7-";
-		game["axis_score_history"] += "^7-";
-	}
+	level maps\mp\gametypes\_spectating_system_hud::ScoreProgress_AddWinner(roundwinner);
 
 
 	// Update score
@@ -3200,7 +3193,7 @@ menuAutoAssign()
 	{
 		player = players[i];
 
-		if(player.pers["team"] == "spectator" || player.pers["team"] == "none")
+		if(player.pers["team"] != "allies" && player.pers["team"] != "axis")
 			continue;
 
 		numonteam[player.pers["team"]]++;
@@ -3345,6 +3338,37 @@ menuSpectator()
 	self notify("joined_spectators");
 
 	level notify("joined", "spectator", self); // used in first round to check if someone joined team
+}
+
+menuStreamer()
+{
+	if(self.pers["team"] == "streamer")
+		return;
+
+	self.joining_team = "streamer";
+	self.leaving_team = self.pers["team"];
+
+	if(isAlive(self))
+	{
+		self.switching_teams = true;
+		self suicide();
+	}
+
+	self.sessionteam = "spectator";
+	self.statusicon = "";
+	self.pers["team"] = "streamer";
+	self.pers["weapon"] = undefined;
+	self.pers["weapon1"] = undefined;
+	self.pers["weapon2"] = undefined;
+	self.pers["savedmodel"] = undefined;
+
+
+	spawnSpectator();
+
+	self notify("joined", "streamer");
+	self notify("joined_streamers");
+
+	level notify("joined", "streamer", self); // used in first round to check if someone joined team
 }
 
 menuWeapon(response)

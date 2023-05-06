@@ -51,17 +51,18 @@ setAllPlayersObjective() {
 
 setPlayerObjective()
 {
+	waittillframeend;
 
 	if (self.sessionstate == "intermission")
 	{
 		if (level.gametype != "dm")
 		{
-	        if(game["allies_score"] == game["axis_score"])
-	    		text = &"MP_THE_GAME_IS_A_TIE";
-	    	else if(game["allies_score"] > game["axis_score"])
-	    		text = &"MP_ALLIES_WIN";
-	    	else
-	    		text = &"MP_AXIS_WIN";
+		        if(game["allies_score"] == game["axis_score"])
+		    		text = &"MP_THE_GAME_IS_A_TIE";
+		    	else if(game["allies_score"] > game["axis_score"])
+		    		text = &"MP_ALLIES_WIN";
+		    	else
+		    		text = &"MP_AXIS_WIN";
 
 			self setClientCvar2("cg_objectiveText", text);
 		}
@@ -75,7 +76,7 @@ setPlayerObjective()
 			{
 				player = players[i];
 
-				if(isdefined(player.pers["team"]) && player.pers["team"] == "spectator")
+				if(player.pers["team"] != "allies" && player.pers["team"] != "axis")
 					continue;
 
 				if(!isdefined(winner))
@@ -103,12 +104,14 @@ setPlayerObjective()
 
 	if (level.in_timeout)
 	{
-		self setClientCvar2("cg_objectiveText", game["objective_timeout"]);
+		self setClientCvar2("cg_objectiveText", game["STRING_READYUP_KEY_ACTIVATE_PRESS"]);
 		return;
 	}
 
-	if (level.in_readyup) {
-		self setClientCvar2("cg_objectiveText", game["objective_readyup"]);
+	if (level.in_readyup)
+	{
+		if (level.aimTargets.size == 0)	self setClientCvar2("cg_objectiveText", game["STRING_READYUP_KEY_ACTIVATE_PRESS"] + "\n" + game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS"]);
+		else				self setClientCvar2("cg_objectiveText", game["STRING_READYUP_KEY_ACTIVATE_PRESS"] + "\n" + game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS"] + "\n" + game["STRING_READYUP_KEY_MELEE_HOLD"]);
 		return;
 	}
 

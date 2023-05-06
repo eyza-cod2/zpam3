@@ -26,7 +26,7 @@ onDisconnect()
 
 onJoinedTeam(teamName)
 {
-	if (teamName == "spectator")
+	if (teamName == "spectator" || teamName == "streamer")
 	{
 		// Update weapons for leaved team
 		if (self.leaving_team == "allies" || self.leaving_team == "axis")
@@ -35,7 +35,7 @@ onJoinedTeam(teamName)
 	else
 	{
 		// Update weapons just for me and my team
-		if (self.leaving_team == "spectator" || self.leaving_team == "none")
+		if (self.leaving_team == "spectator" || self.leaving_team == "streamer" || self.leaving_team == "none")
 			level thread Update_All_Weapon_Limits(); //(teamName); // update my new team
 
 		// Update weapons for all

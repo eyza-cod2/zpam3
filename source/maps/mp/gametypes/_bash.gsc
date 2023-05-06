@@ -52,14 +52,16 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 onConnected()
 {
-    // Set actual bash mode status on player connect + when round restart in SD
-    self setClientCvar2("ui_allow_bash", self Validate_bash(false));
+	// Set actual bash mode status on player connect + when round restart in SD
+	if (isDefined(self.pers["firstTeamSelected"])) // save cvars sent to player on first connect
+		self setClientCvar2("ui_allow_bash", self Validate_bash(false));
 }
 
 onSpawned()
 {
 	// Set actual bash mode status on player connect + when round restart in SD
-	self setClientCvar2("ui_allow_bash", self Validate_bash(false));
+	if (isDefined(self.pers["firstTeamSelected"])) // save cvars sent to player on first connect
+		self setClientCvar2("ui_allow_bash", self Validate_bash(false));
 
 	if (level.in_bash)
 	{

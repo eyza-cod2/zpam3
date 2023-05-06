@@ -303,31 +303,33 @@ setCvarIfChanged(cvar, value)
 
 setClientCvar2(cvar, value, aaa, bbb, ccc)
 {
+	/*
 	/#
-/*
-	if (cvar == "cg_objectiveText")
-      		println("### " + getTime() + " ### " + level.frame_num + " ### " + self.name + " ### " + cvar + " = " + "...localized string...");
-        else
-      		println("### " + getTime() + " ### " + level.frame_num + " ### " + self.name + " ### " + cvar + " = \"" + value + "\"");
+	if (!isDefined(self.pers["isTestClient"]) && !maps\mp\gametypes\global\_global::startsWith(cvar, "debug"))
+	{
+		if (cvar == "cg_objectiveText")
+	      		println("### " + getTime() + " ### " + level.frame_num + " ### " + self.name + " ### " + cvar + " = " + "...localized string...");
+	        else
+	      		println("### " + getTime() + " ### " + level.frame_num + " ### " + self.name + " ### " + cvar + " = \"" + value + "\"");
 
-	self thread countCvarsInSingleFrame();
+		self thread countCvarsInSingleFrame();
 
 
-        if (!isDefined(self.pers["aaa"]))
-        {
-	      	self.pers["aaa"] = [];
-	      	self.pers["sended_cvars"] = 0;
-        }
+	        if (!isDefined(self.pers["aaa"]))
+	        {
+		      	self.pers["aaa"] = [];
+		      	self.pers["sended_cvars"] = 0;
+	        }
+	        if (!isDefined(self.pers["aaa"][cvar]))
+	        {
+		      	self.pers["aaa"][cvar] = 1;
+		      	self.pers["sended_cvars"]++;
 
-        if (!isDefined(self.pers["aaa"][cvar]))
-        {
-	      	self.pers["aaa"][cvar] = 1;
-	      	self.pers["sended_cvars"]++;
-
-	      	//println("### new cvars:" + self.pers["sended_cvars"] + "  " + cvar);
-        }
-*/
+		      	//println("### new cvars:" + self.pers["sended_cvars"] + "  " + cvar);
+	        }
+	}
 	#/
+	*/
 
         self setClientCvar(cvar, value);
 }
@@ -344,10 +346,18 @@ countCvarsInSingleFrame()
 	self notify("cvar2_count_end");
 	self endon("cvar2_count_end");
 
-	wait level.frame;
+	for (i = 0; i < 200; i++)
+	{
+		resettimeout();
+		waittillframeend;
+	}
 
-	if (self.cvars2_count > 20)
-		println(self.name + ": sended cvars in frame " + gettime() + ": " + self.cvars2_count + " (defined cvars: "+self.pers["sended_cvars"]+")");
+	if (self.cvars2_count > 1)
+	{
+		println("-----------------------------------------------------------------------------------");
+		println("### " + getTime() + " ### " + (level.frame_num-1) + " ### " + self.name + " ### sended cvars: " + self.cvars2_count + " (defined cvars: "+self.pers["sended_cvars"]+")");
+		println("-----------------------------------------------------------------------------------");
+	}
 
 	self.cvars2_count = 0;
 }

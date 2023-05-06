@@ -158,7 +158,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "g_voicechattalkingduration":	return true;
 		case "g_voteabstainweight":		return true;
 		case "g_weaponammopools":		return true;
-		case "g_debugdamage":			level.debugDamage = value; return true;
+		case "g_debugdamage":			level.g_debugDamage = value; return true;
 		case "packetdebug":			return true;
 		case "player_togglebinoculars":		return true;
 		case "sv_allowanonymous":		return true;
@@ -262,7 +262,7 @@ ResetCheatCvars()
 	setCvar("player_meleeWidth", "10");
     	setCvar("player_moveThreshhold", "10");	// read-only
 	setCvar("player_scopeExitOnDamage", "0");
-	setCvar("player_spectateSpeedScale", "2");	
+	setCvar("player_spectateSpeedScale", "2");
 	setCvar("player_strafeSpeedScale", "0.8");// pohyb do stran
 
 	setCvar("player_turnAnims", "0");
