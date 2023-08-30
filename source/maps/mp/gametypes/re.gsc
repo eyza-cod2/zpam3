@@ -107,14 +107,18 @@ precache()
 	precacheShader("obj_rally");
 	precacheShader("obj_defend");
 	precacheShader("obj_goal");
-	precacheShader("objpoint_star");
 	precacheShader("hint_use_touch");
+	precacheShader("obj_tnt_large");
 	precacheHeadIcon(game["headicon_carrier"]);
+    precacheHeadIcon(game["hudicon_allies"]);
+    precacheHeadIcon(game["hudicon_axis"]);
 	precacheStatusIcon(game["headicon_carrier"]);
 	precacheStatusIcon("compassping_enemyfiring"); // for streamers
+
 	precacheString(&"RE_CARRYINGGENERIC");
 	precacheString(&"RE_PICKUPAXISONLYGENERIC");
 	precacheString(&"RE_PICKUPALLIESONLYGENERIC");
+	precacheString(&"RE_ALREADYOBJECTIVEGENERIC");
 	precacheString(&"RE_PRESSTOPICKUPGENERIC");
 	precacheString(&"RE_DELAYPICKUPGENERIC");
 	precacheString(&"RE_PICKEDUPGENERIC");
@@ -124,7 +128,6 @@ precache()
 	precacheString(&"RE_CAPTUREDALLIESGENERIC");
 	precacheString(&"RE_CAPTUREDAXISGENERIC");
 	precacheString(&"RE_CAPTUREDALL");
-	precacheString(&"RE_FIELDRADIO");
 	precacheString(&"RE_EXPLOSIVES");
 	precacheString(&"RE_ATTACKER");
 	precacheString(&"RE_DEFENDER");
@@ -144,237 +147,281 @@ precache()
 	precacheString(&"MP_AXISMISSIONACCOMPLISHED");
 	precacheString(&"MP_ALLIESHAVEBEENELIMINATED");
 	precacheString(&"MP_AXISHAVEBEENELIMINATED");
+
+    precacheModel("xmodel/prop_mp_tntbomb_carry");
+    precacheModel("xmodel/prop_mp_tntbomb_carry_obj");
 }
 
-// Placing special retrieval spawnpoints
-// Precache and setup retrieval objectives
-setupTeamSpawnpoints()
+precacheSpawning()
 {
-	spawnpoint_defenders = [];
-	spawnpoint_attackers = [];
+	level.set_spawnpoint_defenders = [];
+	level.set_spawnpoint_attackers = [];
 
-	if(level.mapname == "mp_burgundy" || level.mapname == "mp_burgundy_fix_v1" || level.mapname == "mp_burgundy_fix_v2")
+    level.add_i_attackers = 0;
+    level.add_i_defenders = 0;
+
+	if(level.mapname == "mp_matmata" || level.mapname == "mp_matmata_fix" || level.mapname == "mp_shortmatmata")
+    {
+        setadd_spawnpoint(0, (6176, 6176, -40), 180);
+        setadd_spawnpoint(0, (6176, 6120, -40), 180);
+        setadd_spawnpoint(0, (6176, 6064, -40), 180);
+        setadd_spawnpoint(0, (6176, 6008, -40), 180);
+        setadd_spawnpoint(0, (6144, 5912, -40), 180);
+        setadd_spawnpoint(0, (6064, 5912, -40), 180);
+        setadd_spawnpoint(0, (6112, 6008, -40), 180);
+        setadd_spawnpoint(0, (6112, 6064, -40), 180);
+        setadd_spawnpoint(0, (6112, 6120, -40), 180);
+        setadd_spawnpoint(0, (6112, 6176, -40), 180);
+        setadd_spawnpoint(0, (6048, 6008, -40), 180);
+        setadd_spawnpoint(0, (6048, 6064, -40), 180);
+        setadd_spawnpoint(0, (6048, 6120, -40), 180);
+        setadd_spawnpoint(0, (6160, 6248, -32), 180);
+        setadd_spawnpoint(0, (6088, 6240, -32), 180);
+        setadd_spawnpoint(1, (2696, 7632, 10), 270);
+        setadd_spawnpoint(1, (2760, 7632, 10), 270);
+        setadd_spawnpoint(1, (2824, 7632, 10), 270);
+        setadd_spawnpoint(1, (2712, 7576, 10), 270);
+        setadd_spawnpoint(1, (2776, 7576, 10), 270);
+        setadd_spawnpoint(1, (2840, 7576, 10), 270);
+        setadd_spawnpoint(1, (2704, 7520, 10), 315);
+        setadd_spawnpoint(1, (2768, 7520, 10), 315);
+        setadd_spawnpoint(1, (2848, 7520, 10), 270);
+        setadd_spawnpoint(1, (2706, 7456, 10), 315);
+        setadd_spawnpoint(1, (2664, 7392, 10), 0);
+        setadd_spawnpoint(1, (2664, 7336, 10), 0);
+        setadd_spawnpoint(1, (2664, 7280, 10), 0);
+        setadd_spawnpoint(1, (2728, 7392, 10), 0);
+        setadd_spawnpoint(1, (2768, 7464, 10), 315);
+
+        level.alliedpoints = level.set_spawnpoint_attackers;
+        level.axispoints = level.set_spawnpoint_defenders;
+    }
+
+	else if(level.mapname == "mp_dawnville" || level.mapname == "mp_dawnville_fix" || level.mapname == "mp_shortdawnville")
 	{
-		spawnpoint_attackers[0] = add_array((1944, 2360, 40), (0, 180, 0));
-		spawnpoint_attackers[1] = add_array((1760, 1984, 40), (0, 180, 0));
-		spawnpoint_attackers[2] = add_array((1760, 2104, 40), (0, 180, 0));
-		spawnpoint_attackers[3] = add_array((1760, 2168, 40), (0, 180, 0));
-		spawnpoint_attackers[4] = add_array((1816, 2392, 40), (0, 180, 0));
-		spawnpoint_attackers[5] = add_array((1816, 2456, 40), (0, 180, 0));
-		spawnpoint_attackers[6] = add_array((1888, 2456, 40), (0, 180, 0));
-		spawnpoint_attackers[7] = add_array((1888, 2392, 40), (0, 180, 0));
-		spawnpoint_attackers[8] = add_array((1832, 2176, 40), (0, 180, 0));
-		spawnpoint_attackers[9] = add_array((1824, 1984, 40), (0, 180, 0));
-		spawnpoint_attackers[10] = add_array((1832, 2040, 40), (0, 180, 0));
-		spawnpoint_attackers[11] = add_array((1832, 2112, 40), (0, 180, 0));
-		spawnpoint_attackers[12] = add_array((1912, 1992, 40), (0, 180, 0));
-		spawnpoint_attackers[13] = add_array((1912, 2048, 40), (0, 180, 0));
-		spawnpoint_attackers[14] = add_array((1912, 2112, 40), (0, 180, 0));
-		spawnpoint_attackers[15] = add_array((1912, 2176, 40), (0, 180, 0));
+		setadd_spawnpoint(0, (-976, -16248, 0), 0);
+		setadd_spawnpoint(0, (-976, -16184, 0), 0);
+		setadd_spawnpoint(0, (-976, -16120, 0), 0);
+		setadd_spawnpoint(0, (-976, -16056, 0), 0);
+		setadd_spawnpoint(0, (-976, -15992, 0), 0);
+		setadd_spawnpoint(0, (-976, -15928, 0), 0);
+		setadd_spawnpoint(0, (-848, -15976, 0), 0);
+		setadd_spawnpoint(0, (-955, -15871, 0), 0);
+		setadd_spawnpoint(0, (-912, -16216, 0), 0);
+		setadd_spawnpoint(0, (-912, -16152, 0), 0);
+		setadd_spawnpoint(0, (-912, -16088, 0), 0);
+		setadd_spawnpoint(0, (-912, -16024, 0), 0);
+		setadd_spawnpoint(0, (-912, -15960, 0), 0);
+		setadd_spawnpoint(0, (-853, -15973, 0), 0);
+		setadd_spawnpoint(0, (-802, -16119, 0), 0);
+		setadd_spawnpoint(0, (-844, -16149, 0), 0);
+		setadd_spawnpoint(1, (2704, -15864, 0), 180);
+		setadd_spawnpoint(1, (2704, -15800, 0), 180);
+		setadd_spawnpoint(1, (2704, -15736, 0), 180);
+		setadd_spawnpoint(1, (2704, -15672, 0), 180);
+		setadd_spawnpoint(1, (2640, -15592, 0), 180);
+		setadd_spawnpoint(1, (2640, -15656, 0), 180);
+		setadd_spawnpoint(1, (2640, -15718, 0), 180);
+		setadd_spawnpoint(1, (2640, -15784, 0), 180);
+		setadd_spawnpoint(1, (2661, -15831, 0), 180);
+		setadd_spawnpoint(1, (2704, -15608, 0), 180);
+		setadd_spawnpoint(1, (2576, -15560, 0), 180);
+		setadd_spawnpoint(1, (2576, -15624, 0), 180);
+		setadd_spawnpoint(1, (2576, -15688, 0), 180);
+		setadd_spawnpoint(1, (2576, -15752, 0), 180);
+		setadd_spawnpoint(1, (2576, -15816, 0), 180);
+		setadd_spawnpoint(1, (2576, -15880, 0), 180);
 
-		spawnpoint_defenders[0] = add_array((-1208, 1352, 48), (0, 0, 0));
-		spawnpoint_defenders[1] = add_array((-1208, 1288, 48), (0, 0, 0));
-		spawnpoint_defenders[2] = add_array((-1208, 1224, 48), (0, 0, 0));
-		spawnpoint_defenders[3] = add_array((-1208, 1160, 48), (0, 0, 0));
-		spawnpoint_defenders[4] = add_array((-1208, 1416, 48), (0, 0, 0));
-		spawnpoint_defenders[5] = add_array((-1144, 1384, 48), (0, 0, 0));
-		spawnpoint_defenders[6] = add_array((-1144, 1320, 48), (0, 0, 0));
-		spawnpoint_defenders[7] = add_array((-1144, 1256, 48), (0, 0, 0));
-		spawnpoint_defenders[8] = add_array((-1144, 1192, 48), (0, 0, 0));
-		spawnpoint_defenders[9] = add_array((-1144, 1448, 48), (0, 0, 0));
-		spawnpoint_defenders[10] = add_array((-1080, 1368, 48), (0, 0, 0));
-		spawnpoint_defenders[11] = add_array((-1080, 1304, 48), (0, 0, 0));
-		spawnpoint_defenders[12] = add_array((-1080, 1240, 48), (0, 0, 0));
-		spawnpoint_defenders[13] = add_array((-1080, 1176, 48), (0, 0, 0));
-		spawnpoint_defenders[14] = add_array((-1080, 1432, 48), (0, 0, 0));
-		spawnpoint_defenders[15] = add_array((-1208, 1480, 48), (0, 0, 0));
-
-		level.Allies_Spawnpoints = spawnpoint_attackers;
-		level.Axis_Spawnpoints = spawnpoint_defenders;
+        level.alliedpoints = level.set_spawnpoint_attackers;
+        level.axispoints = level.set_spawnpoint_defenders;
 	}
 
-	else if(level.mapname == "mp_dawnville" || level.mapname == "mp_dawnville_fix" || level.mapname == "mp_dawnville_fix_v2")
-	{
-		spawnpoint_attackers[0] = add_array((-976, -16248, 0), (0, 0, 0));
-		spawnpoint_attackers[1] = add_array((-976, -16184, 0), (0, 0, 0));
-		spawnpoint_attackers[2] = add_array((-976, -16120, 0), (0, 0, 0));
-		spawnpoint_attackers[3] = add_array((-976, -16056, 0), (0, 0, 0));
-		spawnpoint_attackers[4] = add_array((-976, -15992, 0), (0, 0, 0));
-		spawnpoint_attackers[5] = add_array((-976, -15928, 0), (0, 0, 0));
-		spawnpoint_attackers[6] = add_array((-848, -15976, 0), (0, 0, 0));
-		spawnpoint_attackers[7] = add_array((-955, -15871, 0), (0, 0, 0));
-		spawnpoint_attackers[8] = add_array((-912, -16216, 0), (0, 0, 0));
-		spawnpoint_attackers[9] = add_array((-912, -16152, 0), (0, 0, 0));
-		spawnpoint_attackers[10] = add_array((-912, -16088, 0), (0, 0, 0));
-		spawnpoint_attackers[11] = add_array((-912, -16024, 0), (0, 0, 0));
-		spawnpoint_attackers[12] = add_array((-912, -15960, 0), (0, 0, 0));
-		spawnpoint_attackers[13] = add_array((-853, -15973, 0), (0, 0, 0));
-		spawnpoint_attackers[14] = add_array((-802, -16119, 0), (0, 0, 0));
-		spawnpoint_attackers[15] = add_array((-844, -16149, 0), (0, 0, 0));
+    else if(level.mapname == "mp_carentan" || level.mapname == "mp_carentan_fix")
+    {
+        setadd_spawnpoint(0, (1456, -112, 8), 90);
+        setadd_spawnpoint(0, (1520, -112, 8), 90);
+        setadd_spawnpoint(0, (1584, -104, 8), 135);
+        setadd_spawnpoint(0, (1544, 96, 8), 180);
+        setadd_spawnpoint(0, (1544, 24, 8), 180);
+        setadd_spawnpoint(0, (1416, -24, 8), 90);
+        setadd_spawnpoint(0, (1480, -24, 8), 90);
+        setadd_spawnpoint(0, (1608, 80, 8), 180);
+        setadd_spawnpoint(0, (1608, 24, 8), 180);
+        setadd_spawnpoint(0, (1608, -32, 8), 180);
+        setadd_spawnpoint(0, (1352, -24, 8), 90);
+        setadd_spawnpoint(0, (1544, 160, 8), 180);
+        setadd_spawnpoint(0, (1488, 120, 8), 180);
+        setadd_spawnpoint(0, (1416, 32, 8), 90);
+        setadd_spawnpoint(0, (1480, 48, 8), 135);
 
-		spawnpoint_defenders[0] = add_array((2704, -15864, 0), (0, 180, 0));
-		spawnpoint_defenders[1] = add_array((2704, -15800, 0), (0, 180, 0));
-		spawnpoint_defenders[2] = add_array((2704, -15736, 0), (0, 180, 0));
-		spawnpoint_defenders[3] = add_array((2704, -15672, 0), (0, 180, 0));
-		spawnpoint_defenders[4] = add_array((2640, -15592, 0), (0, 180, 0));
-		spawnpoint_defenders[5] = add_array((2640, -15656, 0), (0, 180, 0));
-		spawnpoint_defenders[6] = add_array((2640, -15718, 0), (0, 180, 0));
-		spawnpoint_defenders[7] = add_array((2640, -15784, 0), (0, 180, 0));
-		spawnpoint_defenders[8] = add_array((2661, -15831, 0), (0, 180, 0));
-		spawnpoint_defenders[9] = add_array((2704, -15608, 0), (0, 180, 0));
-		spawnpoint_defenders[10] = add_array((2576, -15560, 0), (0, 180, 0));
-		spawnpoint_defenders[11] = add_array((2576, -15624, 0), (0, 180, 0));
-		spawnpoint_defenders[12] = add_array((2576, -15688, 0), (0, 180, 0));
-		spawnpoint_defenders[13] = add_array((2576, -15752, 0), (0, 180, 0));
-		spawnpoint_defenders[14] = add_array((2576, -15816, 0), (0, 180, 0));
-		spawnpoint_defenders[15] = add_array((2576, -15880, 0), (0, 180, 0));
+        setadd_spawnpoint(1, (-728, 2608, 8), 315);
+        setadd_spawnpoint(1, (-768, 2568, 8), 315);
+        setadd_spawnpoint(1, (-808, 2528, 8), 315);
+        setadd_spawnpoint(1, (-848, 2488, 8), 315);
+        setadd_spawnpoint(1, (-888, 2448, 8), 315);
+        setadd_spawnpoint(1, (-688, 2648, 8), 315);
+        setadd_spawnpoint(1, (-656, 2584, 8), 315);
+        setadd_spawnpoint(1, (-712, 2528, 8), 315);
+        setadd_spawnpoint(1, (-760, 2480, 8), 315);
+        setadd_spawnpoint(1, (-808, 2432, 8), 315);
+        setadd_spawnpoint(1, (-760, 2392, 8), 315);
+        setadd_spawnpoint(1, (-712, 2440, 8), 315);
+        setadd_spawnpoint(1, (-664, 2488, 8), 315);
+        setadd_spawnpoint(1, (-616, 2536, 8), 315);
+        setadd_spawnpoint(1, (-696, 2376, 8), 315);
 
-		level.Allies_Spawnpoints = spawnpoint_attackers;
-		level.Axis_Spawnpoints = spawnpoint_defenders;
+        level.alliedpoints = level.set_spawnpoint_attackers;
+        level.axispoints = level.set_spawnpoint_defenders;
 	}
 
-	else if(level.mapname == "mp_matmata" || level.mapname == "mp_matmata_fix" || level.mapname == "mp_matmata_fix_v2")
-	{
-		spawnpoint_defenders[0] = add_array((3896, 8016, 24), (0, 270, 0));
-		spawnpoint_defenders[1] = add_array((3832, 8016, 24), (0, 270, 0));
-		spawnpoint_defenders[2] = add_array((3768, 8000, 24), (0, 270, 0));
-		spawnpoint_defenders[3] = add_array((3688, 7968, 24), (0, 270, 0));
-		spawnpoint_defenders[4] = add_array((3912, 7936, 24), (0, 270, 0));
-		spawnpoint_defenders[5] = add_array((3912, 7856, 24), (0, 270, 0));
-		spawnpoint_defenders[6] = add_array((3832, 7856, 24), (0, 270, 0));
-		spawnpoint_defenders[7] = add_array((3752, 7856, 24), (0, 270, 0));
-		spawnpoint_defenders[8] = add_array((3688, 7840, 24), (0, 270, 0));
-		spawnpoint_defenders[9] = add_array((3960, 7808, 24), (0, 270, 0));
-		spawnpoint_defenders[10] = add_array((3880, 7792, 24), (0, 270, 0));
-		spawnpoint_defenders[11] = add_array((3800, 7776, 24), (0, 270, 0));
-		spawnpoint_defenders[12] = add_array((3768, 7920, 24), (0, 270, 0));
-		spawnpoint_defenders[13] = add_array((3848, 7936, 24), (0, 270, 0));
-		spawnpoint_defenders[14] = add_array((3720, 7776, 24), (0, 270, 0));
-		spawnpoint_defenders[15] = add_array((3640, 7776, 24), (0, 270, 0));
+    else if(level.mapname == "mp_burgundy" || level.mapname == "mp_burgundy_fix")
+    {
+        setadd_spawnpoint(0, (1384, 2476, 37), 270);
+        setadd_spawnpoint(0, (1440, 2476, 37), 270);
+        setadd_spawnpoint(0, (1496, 2476, 37), 270);
+        setadd_spawnpoint(0, (1552, 2476, 37), 270);
+        setadd_spawnpoint(0, (1608, 2476, 37), 270);
+        setadd_spawnpoint(0, (1664, 2476, 37), 270);
+        setadd_spawnpoint(0, (1696, 2412, 37), 270);
+        setadd_spawnpoint(0, (1632, 2420, 37), 270);
+        setadd_spawnpoint(0, (1576, 2420, 37), 270);
+        setadd_spawnpoint(0, (1520, 2420, 37), 270);
+        setadd_spawnpoint(0, (1464, 2420, 37), 270);
+        setadd_spawnpoint(0, (1392, 2420, 37), 270);
+        setadd_spawnpoint(0, (1456, 2364, 37), 270);
+        setadd_spawnpoint(0, (1528, 2364, 37), 270);
+        setadd_spawnpoint(0, (1600, 2364, 37), 270);
 
-		spawnpoint_attackers[0] = add_array((3816, 5056, 24), (0, 90, 0));
-		spawnpoint_attackers[1] = add_array((3928, 5056, 24), (0, 90, 0));
-		spawnpoint_attackers[2] = add_array((3624, 4880, 24), (0, 90, 0));
-		spawnpoint_attackers[3] = add_array((3608, 5024, 24), (0, 90, 0));
-		spawnpoint_attackers[4] = add_array((3736, 4848, 24), (0, 90, 0));
-		spawnpoint_attackers[5] = add_array((3608, 5104, 24), (0, 90, 0));
-		spawnpoint_attackers[6] = add_array((3880, 5056, 24), (0, 90, 0));
-		spawnpoint_attackers[7] = add_array((3928, 4976, 24), (0, 90, 0));
-		spawnpoint_attackers[8] = add_array((3864, 4992, 24), (0, 90, 0));
-		spawnpoint_attackers[9] = add_array((3864, 4928, 24), (0, 90, 0));
-		spawnpoint_attackers[10] = add_array((3624, 4960, 24), (0, 90, 0));
-		spawnpoint_attackers[11] = add_array((3560, 4960, 24), (0, 90, 0));
-		spawnpoint_attackers[12] = add_array((3560, 4864, 24), (0, 90, 0));
-		spawnpoint_attackers[13] = add_array((3672, 4848, 24), (0, 90, 0));
-		spawnpoint_attackers[14] = add_array((3800, 4848, 24), (0, 90, 0));
-		spawnpoint_attackers[15] = add_array((3864, 4848, 24), (0, 90, 0));
+        setadd_spawnpoint(1, (-1079, 464, 32), 43.6);
+        setadd_spawnpoint(1, (-1039, 424, 32), 45);
+        setadd_spawnpoint(1, (-939, 352, 32), 65);
+        setadd_spawnpoint(1, (-1115, 516, 32), 30);
+        setadd_spawnpoint(1, (-1143, 576, 32), 15);
+        setadd_spawnpoint(1, (-883, 324, 32), 65);
+        setadd_spawnpoint(1, (-907, 412, 32), 65);
+        setadd_spawnpoint(1, (-971, 444, 32), 47.6);
+        setadd_spawnpoint(1, (-1011, 488, 32), 43.2);
+        setadd_spawnpoint(1, (-1047, 544, 32), 30);
+        setadd_spawnpoint(1, (-1083, 596, 32), 15);
+        setadd_spawnpoint(1, (-855, 380, 32), 67.6);
+        setadd_spawnpoint(1, (-911, 480, 32), 59.4);
+        setadd_spawnpoint(1, (-975, 548, 32), 40.4);
+        setadd_spawnpoint(1, (-991, 384, 32), 55);
 
-		level.Allies_Spawnpoints = spawnpoint_attackers;
-		level.Axis_Spawnpoints = spawnpoint_defenders;
+        level.alliedpoints = level.set_spawnpoint_attackers;
+        level.axispoints = level.set_spawnpoint_defenders;
 	}
 
-	else if(level.mapname == "mp_railyard")
-	{
-		spawnpoint_defenders[0] = add_array((120, 1456, 32), (0, 180, 0));
-		spawnpoint_defenders[1] = add_array((120, 1392, 32), (0, 180, 0));
-		spawnpoint_defenders[2] = add_array((184, 1392, 32), (0, 180, 0));
-		spawnpoint_defenders[3] = add_array((184, 1456, 32), (0, 180, 0));
-		spawnpoint_defenders[4] = add_array((248, 1456, 32), (0, 180, 0));
-		spawnpoint_defenders[5] = add_array((248, 1392, 32), (0, 180, 0));
-		spawnpoint_defenders[6] = add_array((248, 1520, 32), (0, 180, 0));
-		spawnpoint_defenders[7] = add_array((248, 1584, 32), (0, 180, 0));
-		spawnpoint_defenders[8] = add_array((248, 1648, 32), (0, 180, 0));
-		spawnpoint_defenders[9] = add_array((184, 1328, 32), (0, 180, 0));
-		spawnpoint_defenders[10] = add_array((248, 1328, 32), (0, 180, 0));
-		spawnpoint_defenders[11] = add_array((56, 1856, 32), (0, 270, 0));
-		spawnpoint_defenders[12] = add_array((-56, 1776, 32), (0, 210, 0));
-		spawnpoint_defenders[13] = add_array((120, 1328, 32), (0, 180, 0));
-		spawnpoint_defenders[14] = add_array((56, 1456, 32), (0, 180, 0));
-		spawnpoint_defenders[15] = add_array((56, 1376, 32), (0, 180, 0));
+    else if(level.mapname == "mp_trainstation" || level.mapname == "mp_shortcaen")
+    {
+        setadd_spawnpoint(0, (5664, -5200, 10), 90);
+        setadd_spawnpoint(0, (5608, -5200, 10), 90);
+        setadd_spawnpoint(0, (5552, -5200, 10), 90);
+        setadd_spawnpoint(0, (5496, -5200, 10), 90);
+        setadd_spawnpoint(0, (5440, -5200, 10), 90);
+        setadd_spawnpoint(0, (5384, -5200, 10), 90);
+        setadd_spawnpoint(0, (5688, -5144, 10), 90);
+        setadd_spawnpoint(0, (5632, -5144, 10), 90);
+        setadd_spawnpoint(0, (5552, -5144, 10), 90);
+        setadd_spawnpoint(0, (5488, -5144, 10), 90);
+        setadd_spawnpoint(0, (5424, -5144, 10), 90);
+        setadd_spawnpoint(0, (5352, -5144, 10), 90);
+        setadd_spawnpoint(0, (5328, -5200, 10), 90);
+        setadd_spawnpoint(0, (5584, -5096, 10), 90);
+        setadd_spawnpoint(0, (5464, -5096, 10), 90);
 
-		spawnpoint_attackers[0] = add_array((-2544, -384, 32), (0, 0, 0));
-		spawnpoint_attackers[1] = add_array((-2544, -480, 32), (0, 0, 0));
-		spawnpoint_attackers[2] = add_array((-2544, -560, 32), (0, 0, 0));
-		spawnpoint_attackers[3] = add_array((-2544, -624, 32), (0, 0, 0));
-		spawnpoint_attackers[4] = add_array((-2624, -656, 32), (0, 0, 0));
-		spawnpoint_attackers[5] = add_array((-2624, -576, 32), (0, 0, 0));
-		spawnpoint_attackers[6] = add_array((-2688, -576, 32), (0, 0, 0));
-		spawnpoint_attackers[7] = add_array((-2688, -656, 32), (0, 0, 0));
-		spawnpoint_attackers[8] = add_array((-2752, -656, 32), (0, 0, 0));
-		spawnpoint_attackers[9] = add_array((-2624, -384, 32), (0, 0, 0));
-		spawnpoint_attackers[10] = add_array((-2688, -384, 32), (0, 0, 0));
-		spawnpoint_attackers[11] = add_array((-2480, -624, 32), (0, 0, 0));
-		spawnpoint_attackers[12] = add_array((-2480, -544, 32), (0, 0, 0));
-		spawnpoint_attackers[13] = add_array((-2480, -464, 32), (0, 0, 0));
-		spawnpoint_attackers[14] = add_array((-2480, -400, 32), (0, 0, 0));
-		spawnpoint_attackers[15] = add_array((-2512, -704, 32), (0, 0, 0));
+        setadd_spawnpoint(1, (6016, -1496, -8), 270);
+        setadd_spawnpoint(1, (5960, -1496, -8), 270);
+        setadd_spawnpoint(1, (6072, -1496, -8), 270);
+        setadd_spawnpoint(1, (5904, -1496, -8), 270);
+        setadd_spawnpoint(1, (5848, -1496, -8), 270);
+        setadd_spawnpoint(1, (5792, -1496, -8), 270);
+        setadd_spawnpoint(1, (5720, -1496, -8), 270);
+        setadd_spawnpoint(1, (6032, -1552, -8), 270);
+        setadd_spawnpoint(1, (5968, -1552, -8), 270);
+        setadd_spawnpoint(1, (5904, -1552, -8), 270);
+        setadd_spawnpoint(1, (5832, -1552, -8), 270);
+        setadd_spawnpoint(1, (5696, -1552, -8), 270);
+        setadd_spawnpoint(1, (5968, -1608, -8), 270);
+        setadd_spawnpoint(1, (5880, -1608, -8), 270);
+        setadd_spawnpoint(1, (6024, -1608, -8), 270);
 
-		level.Allies_Spawnpoints = spawnpoint_attackers;
-		level.Axis_Spawnpoints = spawnpoint_defenders;
+        level.alliedpoints = level.set_spawnpoint_attackers;
+        level.axispoints = level.set_spawnpoint_defenders;
 	}
 
-	else if(level.mapname == "mp_toujane" || level.mapname == "mp_toujane_fix_v2")
-	{
-		spawnpoint_defenders[0] = add_array((1179, -44, 51), (0, 99.3, 0));
-		spawnpoint_defenders[1] = add_array((1108, -55, 51), (0, 95.2, 0));
-		spawnpoint_defenders[2] = add_array((994, 12, 51), (0, 90, 0));
-		spawnpoint_defenders[3] = add_array((1071, 10, 51), (0, 94.5, 0));
-		spawnpoint_defenders[4] = add_array((1186, 25, 51), (0, 98.3, 0));
-		spawnpoint_defenders[5] = add_array((1254, 37, 51), (0, 102.6, 0));
-		spawnpoint_defenders[6] = add_array((1271, 119, 51), (0, 100.5, 0));
-		spawnpoint_defenders[7] = add_array((1206, 108, 51), (0, 98.3, 0));
-		spawnpoint_defenders[8] = add_array((1136, 98, 51), (0, 96.4, 0));
-		spawnpoint_defenders[9] = add_array((1059, 91, 51), (0, 96.3, 0));
-		spawnpoint_defenders[10] = add_array((982, 93, 51), (0, 90, 0));
-		spawnpoint_defenders[11] = add_array((1341, 132, 51), (0, 102, 0));
-		spawnpoint_defenders[12] = add_array((917, 86, 51), (0, 90, 0));
-		spawnpoint_defenders[13] = add_array((1127, 18, 51), (0, 96.5, 0));
-		spawnpoint_defenders[14] = add_array((1158, 172, 51), (0, 95, 0));
-		spawnpoint_defenders[15] = add_array((1179, -44, 51), (0, 99.3, 0));
+    else if(level.mapname == "mp_toujane" || level.mapname == "mp_toujane_fix")
+    {
+        setadd_spawnpoint(0, (3152, 1862, 94), 180);
+        setadd_spawnpoint(0, (3152, 1774, 94), 180);
+        setadd_spawnpoint(0, (3152, 1678, 94), 180);
+        setadd_spawnpoint(0, (3152, 1598, 94), 180);
+        setadd_spawnpoint(0, (3144, 1478, 94), 180);
+        setadd_spawnpoint(0, (3088, 1654, 94), 180);
+        setadd_spawnpoint(0, (3088, 1710, 94), 180);
+        setadd_spawnpoint(0, (3088, 1766, 94), 180);
+        setadd_spawnpoint(0, (3088, 1830, 94), 180);
+        setadd_spawnpoint(0, (3080, 1590, 94), 180);
+        setadd_spawnpoint(0, (3016, 1830, 94), 195);
+        setadd_spawnpoint(0, (3024, 1766, 94), 195);
+        setadd_spawnpoint(0, (3024, 1694, 94), 195);
+        setadd_spawnpoint(0, (3024, 1614, 94), 195);
+        setadd_spawnpoint(0, (2992, 1550, 94), 195);
 
-		spawnpoint_attackers[0] = add_array((854, 3280, 64), (0, 299.7, 0));
-		spawnpoint_attackers[1] = add_array((918, 3312, 64), (0, 299.7, 0));
-		spawnpoint_attackers[2] = add_array((982, 3344, 64), (0, 299.7, 0));
-		spawnpoint_attackers[3] = add_array((1102, 3368, 64), (0, 299.7, 0));
-		spawnpoint_attackers[4] = add_array((1014, 3280, 64), (0, 299.7, 0));
-		spawnpoint_attackers[5] = add_array((950, 3248, 64), (0, 299.7, 0));
-		spawnpoint_attackers[6] = add_array((886, 3216, 64), (0, 299.7, 0));
-		spawnpoint_attackers[7] = add_array((1070, 3304, 64), (0, 299.7, 0));
-		spawnpoint_attackers[8] = add_array((1246, 3304, 72), (0, 284.7, 0));
-		spawnpoint_attackers[9] = add_array((1179, 3215, 64), (0, 299.7, 0));
-		spawnpoint_attackers[10] = add_array((1102, 3168, 64), (0, 299.7, 0));
-		spawnpoint_attackers[11] = add_array((990, 3104, 64), (0, 299.7, 0));
-		spawnpoint_attackers[12] = add_array((926, 3072, 64), (0, 299.7, 0));
-		spawnpoint_attackers[13] = add_array((766, 3160, 64), (0, 299.7, 0));
-		spawnpoint_attackers[14] = add_array((774, 3056, 64), (0, 299.7, 0));
-		spawnpoint_attackers[15] = add_array((822, 3104, 64), (0, 299.7, 0));
+        setadd_spawnpoint(1, (61, 118, 16), 60);
+        setadd_spawnpoint(1, (119, 88, 16), 65);
+        setadd_spawnpoint(1, (7, 158, 16), 50);
+        setadd_spawnpoint(1, (175, 64, 16), 70);
+        setadd_spawnpoint(1, (142, 148, 16), 60);
+        setadd_spawnpoint(1, (78, 188, 16), 50);
+        setadd_spawnpoint(1, (-47, 204, 16), 45);
+        setadd_spawnpoint(1, (-95, 252, 16), 35);
+        setadd_spawnpoint(1, (200, 120, 16), 68);
+        setadd_spawnpoint(1, (26, 228, 16), 46);
+        setadd_spawnpoint(1, (230, 176, 16), 68);
+        setadd_spawnpoint(1, (118, 246, 16), 48);
+        setadd_spawnpoint(1, (238, 42, 16), 76);
+        setadd_spawnpoint(1, (254, 102, 16), 74);
+        setadd_spawnpoint(1, (168, 208, 16), 56);
 
-		level.Allies_Spawnpoints = spawnpoint_attackers;
-		level.Axis_Spawnpoints = spawnpoint_defenders;
+        level.alliedpoints = level.set_spawnpoint_attackers;
+        level.axispoints = level.set_spawnpoint_defenders;
 	}
 }
 
-setupObjectives()
+setadd_spawnpoint(switched, origin, angles)
 {
+    if(!switched)
+    {
+        for(i = level.add_i_attackers; i < 16; i++)
+            level.set_spawnpoint_attackers[i] = add_array(origin, (0, angles, 0));
+        level.add_i_attackers++;
+    }
+    else
+    {
+        for(i = level.add_i_defenders; i < 16; i++)
+            level.set_spawnpoint_defenders[i] = add_array(origin, (0, angles, 0));
+        level.add_i_defenders++;
+    }
+
+}
+
+precacheObjectives()
+{
+	// Objectives were set up directly in map .GSC
+	if(isdefined(level.objectives_decided_gsc))
+		return;
+
 	obj = [];
 	goal = (0,0,0);
 	// obj[i] = (origin, angles, objective name, trigger radius, model, modelobj)
 
-
-	if(level.mapname == "mp_breakout")
-	{
-		game["attackers"] = "allies";
-		game["defenders"] = "axis";
-		goal = (6585, 5102, -30);
-		obj[0] = add_array((4611, 4800, 190), (0, 15, 0), &"RE_FIELDRADIO", 64, "xmodel/military_german_fieldradio_green", "xmodel/military_german_fieldradio_green_obj");
-	}
-
-	else if(level.mapname == "mp_breakout_tls")
+	if(level.mapname == "mp_breakout_tls")
 	{
 		game["attackers"] = "axis";
 		game["defenders"] = "allies";
 		goal = (6581, 5148, -20);
-		obj[0] = add_array((4545, 4060, 90), (0, 292, 0), &"RE_FIELDRADIO", 50, "xmodel/military_german_fieldradio_green", "xmodel/military_german_fieldradio_green_obj");
+		obj[0] = add_array((4545, 4060, 90), (0, 292, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 		obj[1] = add_array((5247, 5351, 233), (0, 271, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 	}
 
@@ -386,81 +433,53 @@ setupObjectives()
 		obj[0] = add_array((1115, -1118, 30), (0, 254, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 	}
 
-	if(level.mapname == "mp_burgundy" || level.mapname == "mp_burgundy_fix_v1" || level.mapname == "mp_burgundy_fix_v2")
+	if(level.mapname == "mp_burgundy" || level.mapname == "mp_burgundy_fix")
 	{
 		game["attackers"] = "allies";
 		game["defenders"] = "axis";
-		goal = (1888, 2208, -24);
-		obj[0] = add_array((899, 9, 100), (0, 126, 0), &"RE_FIELDRADIO", 64, "xmodel/military_german_fieldradio_green", "xmodel/military_german_fieldradio_green_obj");
-		obj[1] = add_array((-451, 2829, 35), (0, 154, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
+		goal = (1640, 2440, -24);
+		obj[0] = add_array((957, 293, 86), (0, 311, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
+		obj[1] = add_array((-727, 2249, 26), (0, 154, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 	}
 
-	else if(level.mapname == "mp_carentan" || level.mapname == "mp_carentan_fix" || level.mapname == "mp_carentan_fix_v2")
+	else if(level.mapname == "mp_shortcarentan")
+    {
+
+    }
+
+	else if(level.mapname == "mp_carentan" || level.mapname == "mp_carentan_fix")
 	{
-		game["attackers"] = "allies";
-		game["defenders"] = "axis";
-		goal = (374, -946, 26);
-		obj[0] = add_array((1060, 1548, 28), (0, 263, 0), &"RE_FIELDRADIO", 50, "xmodel/military_german_fieldradio_green", "xmodel/military_german_fieldradio_green_obj");
-		obj[1] = add_array((354, 2115, 193), (0, 156, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
+		game["attackers"] = "axis";
+		game["defenders"] = "allies";
+		goal = (1488, 8, -40);
+		obj[0] = add_array((1560, 2640, -8), (0, 205, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
+		obj[1] = add_array((26, 1939, -75), (0, 156, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 	}
 
-	else if(level.mapname == "mp_chelm")
+	else if(level.mapname == "mp_chelm" || level.mapname == "mp_chelm_fix")
 	{
 		game["attackers"] = "allies";
 		game["defenders"] = "axis";
 		goal = (10, -604, -110);
-		obj[0] = add_array((-2268, 9, 117), (0, 154, 0), &"RE_FIELDRADIO", 50, "xmodel/military_german_fieldradio_green", "xmodel/military_german_fieldradio_green_obj");
+		obj[0] = add_array((-2268, 9, 117), (0, 154, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 		obj[1] = add_array((-2136, -1549, 150), (0, 23, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 	}
-
-	else if(level.mapname == "mp_dawnville" || level.mapname == "mp_dawnville_fix" || level.mapname == "mp_dawnville_fix_v2")
+	else if(level.mapname == "mp_dawnville" || level.mapname == "mp_dawnville_fix" || level.mapname == "mp_shortdawnville")
 	{
 		game["attackers"] = "allies";
 		game["defenders"] = "axis";
 		goal = (-1204, -16020, -28);
-		obj[0] = add_array((490, -15297, 47), (0, 123, 0), &"RE_FIELDRADIO", 64, "xmodel/military_german_fieldradio_green", "xmodel/military_german_fieldradio_green_obj");
-		obj[1] = add_array((742,-17512, 90), (0, 121, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
+		obj[0] = add_array((1360, -16408, 48), (0, 123, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
+		obj[1] = add_array((1361, -15184, -19), (0, 121, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 	}
 
-	else if(level.mapname == "mp_decoy")
+	else if(level.mapname == "mp_matmata" || level.mapname == "mp_matmata_fix" || level.mapname == "mp_shortmatmata")
 	{
 		game["attackers"] = "allies";
 		game["defenders"] = "axis";
-		goal = (5642, -13824, -570);
-		obj[0] = add_array((7762, -13962, -487), (0, 32, 0), &"RE_EXPLOSIVES", 64, "xmodel/military_german_fieldradio_green", "xmodel/military_german_fieldradio_green_obj");
-	}
-
-	else if(level.mapname == "mp_farmhouse")
-	{
-		game["attackers"] = "axis";
-		game["defenders"] = "allies";
-		goal = (-2505, 365, -100);
-		obj[0] = add_array((-246, -1481, 100), (0, -154, 0), &"RE_FIELDRADIO", 64, "xmodel/military_german_fieldradio_green", "xmodel/military_german_fieldradio_green_obj");
-	}
-
-	else if(level.mapname == "mp_harbor")
-	{
-		game["attackers"] = "allies";
-		game["defenders"] = "axis";
-		goal = (-6637, -7360, -26);
-		obj[0] = add_array((-9245, -8379, 200), (0, 34, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
-	}
-
-	else if(level.mapname == "mp_matmata" || level.mapname == "mp_matmata_fix" || level.mapname == "mp_matmata_fix_v2")
-	{
-		game["attackers"] = "allies";
-		game["defenders"] = "axis";
-		goal = (3157, 5561, -5);
-		obj[0] = add_array((4685, 5912, 180), (0, 230, 0), &"RE_FIELDRADIO", 64, "xmodel/military_german_fieldradio_tan", "xmodel/military_german_fieldradio_tan_obj");
-		obj[1] = add_array((3659, 6175, 200), (0, 20, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
-	}
-
-	else if(level.mapname == "mp_railyard")
-	{
-		game["attackers"] = "allies";
-		game["defenders"] = "axis";
-		goal = (-2732, -476, -10);
-		obj[0] = add_array((-2460, 1380, 20), (0, -62, 0), &"RE_FIELDRADIO", 64, "xmodel/military_german_fieldradio_tan", "xmodel/military_german_fieldradio_tan_obj");
+		goal = (6128, 6088, -88);
+		obj[0] = add_array((3535, 5454, 51), (0, 230, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
+		obj[1] = add_array((4296, 7579, 61), (0, 32, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 	}
 
 	else if(level.mapname == "mp_rhine")
@@ -468,38 +487,36 @@ setupObjectives()
 		game["attackers"] = "allies";
 		game["defenders"] = "axis";
 		goal = (3327, 15517, 300);
-		obj[0] = add_array((5737, 16130, 500), (0, 210, 0), &"RE_FIELDRADIO", 64, "xmodel/military_german_fieldradio_tan", "xmodel/military_german_fieldradio_tan_obj");
+		obj[0] = add_array((5737, 16130, 500), (0, 210, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 		obj[1] = add_array((5802, 15104, 480), (0, 21, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 	}
 
-	else if(level.mapname == "mp_toujane" || level.mapname == "mp_toujane_fix_v2")
+	else if(level.mapname == "mp_toujane" || level.mapname == "mp_toujane_fix")
 	{
 		game["attackers"] = "allies";
 		game["defenders"] = "axis";
-		goal = (1039, 3188, 30);
-		obj[0] = add_array((2, 1119, 52), (0, 59, 0), &"RE_FIELDRADIO", 64, "xmodel/military_german_fieldradio_tan", "xmodel/military_german_fieldradio_tan_obj");
-		obj[1] = add_array((3043, 1925, 160), (0, 100, 0), &"RE_EXPLOSIVES", 50, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
+		goal = (3064, 1688, 32);
+		obj[0] = add_array((1288, 680, 16), (0, 59, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
+		obj[1] = add_array((1024, 1616, 176), (0, 0, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 	}
 
-	else if(level.mapname == "mp_trainstation")
+	else if(level.mapname == "mp_trainstation" || level.mapname == "mp_shortcaen")
 	{
 		game["attackers"] = "axis";
 		game["defenders"] = "allies";
-		goal = (8514, -2994, 0);
-		obj[0] = add_array((5489, -3644, 70), (0, 19, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
+		goal = (5544, -5112, -40);
+		obj[0] = add_array((7080, -3224, 48), (0, 19, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
+		obj[1] = add_array((3976, -3024, 144), (0, 200, 0), &"RE_EXPLOSIVES", 64, "xmodel/mp_tntbomb", "xmodel/mp_tntbomb_obj");
 	}
 
 
+	level.OBJECTIVESARRAY = obj;
+	level.ATTACKERSBASE = goal;
 
-	level.objectivesArray = obj;
-
-	level.attackersbase = goal;
-
-
-	for(i = 0; i < level.objectivesArray.size; i++)
+	for(i = 0; i < level.OBJECTIVESARRAY.size; i++)
 	{
-		precacheModel(level.objectivesArray[i][4]);
-		precacheModel(level.objectivesArray[i][5]);
+		precacheModel(level.OBJECTIVESARRAY[i][4]);
+		precacheModel(level.OBJECTIVESARRAY[i][5]);
 	}
 }
 
@@ -521,6 +538,25 @@ onStartGameType()
 		if(!isdefined(game["defenders"]))
 			game["defenders"] = "axis";
 
+
+        // HUD Team Icons
+        switch(game["allies"])
+        {
+        case "american":
+            game["hudicon_allies"] = "hudicon_american";
+            break;
+
+        case "british":
+            game["hudicon_allies"] = "hudicon_british";
+            break;
+
+        case "russian":
+            game["hudicon_allies"] = "hudicon_russian";
+            break;
+        }
+
+		if(isdefined(game["axis"]))
+            game["hudicon_axis"] = "hudicon_german";
 
 
 		// Main scores
@@ -545,25 +581,24 @@ onStartGameType()
 	setTeamScore("allies", game["allies_score"]);
 	setTeamScore("axis", game["axis_score"]);
 
+
+
+	//
+
+	// retrieval set up
+	level.mapname = getcvar("mapname");
 	game["headicon_carrier"] = "obj_carrier";
 
-
-
-	// Retrieval variable
-	level.mapname = getcvar("mapname");
-	level.Allies_Spawnpoints = undefined;
-	level.Axis_Spawnpoints = undefined;
-	level.Allies_Spawnpoints_Spawned = [];
-	level.Axis_Spawnpoints_Spawned = [];
+	level.alliedpoints = undefined;
+	level.axispoints = undefined;
+	level.spawnpoint_new_allied = [];
+	level.spawnpoint_new_axis = [];
 	level.objectives = [];
 
+	precacheSpawning();
+	precacheObjectives();
 
-
-	// Setup new team spawnpoints
-	setupTeamSpawnpoints();
-
-	// Setup retrieval objectives
-	setupObjectives();
+	//
 
 
 	// Precache gametype specific stuff
@@ -575,9 +610,12 @@ onStartGameType()
 	level.matchstarted = false;
 	level.in_strattime = false;
 	level.starttime = 0;
-	level.roundstarted = false;
-	level.roundended = false;
-	level.mapended = false;
+	level.numobjectives = 0;
+	level.objectives_done = 0;
+	level.hudcount = 0;
+	level.barsize = 288;
+	level.obj_exist = false;
+	level.attackers_defenders_switched = false;
 
 
 	// Variables to determinate endRound()
@@ -586,11 +624,18 @@ onStartGameType()
 	level.exist["teams"] = false;
 	level.didexist["allies"] = false;
 	level.didexist["axis"] = false;
-	level.numobjectives = 0;
-	level.objectives_done = 0;
-	level.hudcount = 0;
-	level.barsize = 288;
-	level.obj_exist = false;
+	level.roundstarted = false;
+	level.roundended = false;
+	level.mapended = false;
+
+
+	// SWITCH ALLIED AND AXIS SIDES
+	if(isdefined(game["attackers"]) && game["attackers"] == "axis")
+	{
+		level.attackers_defenders_switched = true;
+		game["attackers"] = "allies";
+		game["defenders"] = "axis";
+	}
 
 
 	// Spawn points
@@ -619,35 +664,32 @@ onStartGameType()
 		spawnpoints[i] PlaceSpawnpoint();
 
 
-
-	// Custom spawn points
-	if(isdefined(level.Allies_Spawnpoints))
+    // Retrieval spawning points
+	if(isdefined(level.alliedpoints))
 	{
-		for(i = 0; i < level.Allies_Spawnpoints.size; i++)
+		for(i = 0; i < level.alliedpoints.size; i++)
 		{
-			toGround = positionToGround(level.Allies_Spawnpoints[i][0], level.Allies_Spawnpoints[i]);
-			toAngles = level.Allies_Spawnpoints[i][1];
+			pos = positionToGround(level.alliedpoints[i][0], level.alliedpoints[i]);
+			posangles = level.alliedpoints[i][1];
 
-			level.Allies_Spawnpoints_Spawned[i] = spawn("script_origin", toGround);
-			level.Allies_Spawnpoints_Spawned[i].origin = toGround;
-			level.Allies_Spawnpoints_Spawned[i].angles = toAngles;
+			level.spawnpoint_new_allied[i] = spawn("script_origin", pos);
+			level.spawnpoint_new_allied[i].origin = pos;
+			level.spawnpoint_new_allied[i].angles = posangles;
 		}
 	}
 
-	if(isdefined(level.Axis_Spawnpoints))
+	if(isdefined(level.axispoints))
 	{
-		for(i = 0; i < level.Axis_Spawnpoints.size; i++)
+		for(i = 0; i < level.axispoints.size; i++)
 		{
-			toGround = positionToGround(level.Axis_Spawnpoints[i][0], level.Axis_Spawnpoints[i]);
-			toAngles = level.Axis_Spawnpoints[i][1];
+			pos = positionToGround(level.axispoints[i][0], level.axispoints[i]);
+			posangles = level.axispoints[i][1];
 
-			level.Axis_Spawnpoints_Spawned[i] = spawn("script_origin", toGround);
-			level.Axis_Spawnpoints_Spawned[i].origin = toGround;
-			level.Axis_Spawnpoints_Spawned[i].angles = toAngles;
+			level.spawnpoint_new_axis[i] = spawn("script_origin", pos);
+			level.spawnpoint_new_axis[i].origin = pos;
+			level.spawnpoint_new_axis[i].angles = posangles;
 		}
 	}
-
-
 
 
 
@@ -670,7 +712,9 @@ onStartGameType()
 	players = getentarray("player", "classname");
 
 	for(i = 0; i < players.size; i++)
+    {
 		players[i].objs_held = 0;
+    }
 
 
 	minefields = [];
@@ -820,7 +864,7 @@ onConnected()
 		self.pers["deaths"] = 0;
 	self.deaths = self.pers["deaths"];
 
-	self setClientCvar2("cg_objectiveText", "");
+	self setClientCvar("cg_objectiveText", "");
 }
 
 // This function is called as last after all events are processed
@@ -1300,11 +1344,15 @@ spawnPlayer()
 	self.health = self.maxhealth;
 	self.friendlydamage = undefined;
 	self.objs_held = 0;
-	self.timeafterdrop_obj = false;
+	self.obj_drop_time = false;
 	self.obj_carrier = false;
+    self.obj_attached = false;
+
 
 	self.statusicon = "";
 
+
+    self.hud_client_print = undefined;
 
 
 	if (isDefined(self.hintstring))
@@ -1313,29 +1361,31 @@ spawnPlayer()
 	if (isDefined(self.hintstringusehint))
 		self.hintstringusehint destroy();
 
-	self.display_use_hintstring = false;
+	self.display_use_hud_hintstring = false;
+    self.is_touching_obj = "none";
 
 
-	// Select correct spawn position according to selected team
-	if(self.pers["team"] == "allies")
-		spawnpointname = "mp_sd_spawn_attacker";
-	else
-		spawnpointname = "mp_sd_spawn_defender";
+
+    if(self.pers["team"] == "allies")
+        spawnpointname = "mp_sd_spawn_attacker";
+    else
+        spawnpointname = "mp_sd_spawn_defender";
 
 
-	// Select new spawnpoints if they exist
-	if(isdefined(level.Allies_Spawnpoints) && isdefined(level.Axis_Spawnpoints))
+	if(isdefined(level.alliedpoints) && isdefined(level.axispoints))
 	{
 		if(self.pers["team"] == "allies")
-			spawnpoint = getRandomSpawnpoint(level.Allies_Spawnpoints, level.Allies_Spawnpoints_Spawned);
+			spawnpoint = getSpawnpoint_New(level.alliedpoints, level.spawnpoint_new_allied);
 		else
-			spawnpoint = getRandomSpawnpoint(level.Axis_Spawnpoints, level.Axis_Spawnpoints_Spawned);
+			spawnpoint = getSpawnpoint_New(level.axispoints, level.spawnpoint_new_axis);
 	}
 	else
 	{
+
 		spawnpoints = getentarray(spawnpointname, "classname");
 		spawnpoint = maps\mp\gametypes\_spawnlogic::getSpawnpoint_Random(spawnpoints);
 	}
+
 
 	if(isdefined(spawnpoint))
 		self spawn(spawnpoint.origin, spawnpoint.angles);
@@ -1357,10 +1407,10 @@ spawnPlayer()
 	if(!level.in_readyup && !level.in_timeout)
 	{
 		if(self.pers["team"] == game["attackers"])
-			self setClientCvar2("cg_objectiveText", &"RE_ATTACKER");
+			self setClientCvar("cg_objectiveText", &"RE_ATTACKER");
 
 		else if(self.pers["team"] == game["defenders"])
-			self setClientCvar2("cg_objectiveText", &"RE_DEFENDER");
+			self setClientCvar("cg_objectiveText", &"RE_DEFENDER");
 	}
 
 
@@ -1451,6 +1501,11 @@ spawnSpectator(origin, angles)
 
 	if(isdefined(origin) && isdefined(angles))
 		self spawn(origin, angles);
+
+	else if(self.pers["team"] == "streamer")
+	{
+		// Spawn is handled in streamer system
+	}
 	else
 	{
  		spawnpointname = "mp_global_intermission";
@@ -1474,7 +1529,7 @@ spawnSpectator(origin, angles)
 	// Notify "spawned" notifications
 	self notify("spawned");
 
-	self setClientCvar2("cg_objectiveText", "");
+	self setClientCvar("cg_objectiveText", "");
 
 
 	// If is real spectator (is in team spectator, not session state spectator)
@@ -1550,18 +1605,14 @@ startRound()
 		return;
 	}
 
-
 	level.in_strattime = false;
 
 	// Timeout was called from previous round, exit
 	if (level.in_timeout)
 		return;
 
-
-
-	// Starting essential things
+	// Initialize
 	thread startRetrieval();
-
 
 
 	// Show name of league + pam version
@@ -1597,7 +1648,6 @@ startRound()
 	level.roundstarted = true;
 
 
-
 	thread HUD_Clock(level.roundlength * 60);
 
 
@@ -1607,15 +1657,27 @@ startRound()
 	level maps\mp\gametypes\_hud_teamscore::hideScore(0.5);
 
 
-
 	thread sayObjective();
 
 
-
-
-
-
 	players = getentarray("player", "classname");
+
+	// First round game rules explained
+	if(game["round"] == 1)
+	{
+		for(i = 0; i < players.size; i++)
+		{
+			player = players[i];
+
+			if (player.pers["team"] == game["attackers"])
+			{
+				player iprintlnBold("Retrieve and convoy the objectives to your goal \n(Blue Box)");
+			}
+
+			else if(player.pers["team"] == game["defenders"])
+				player iprintlnBold("Protect the objectives from retrieval.\nIf an objective is retrieved, eliminate the carrier until they convoy it up to the goal.");
+		}
+	}
 
 	for(i = 0; i < players.size; i++)
 	{
@@ -1770,7 +1832,7 @@ HUD_RoundInfo(time)
 		roundInfo moveovertime(3);
 		roundInfo.y = 428;
 		level waittill("strat_time_end");
-		roundInfo thread removeHUDSmooth(.5);
+		roundInfo thread destroyHUDSmooth(.5);
 	}
 	// Last round before half
 	else if (level.halfround > 0 && !game["is_halftime"] && game["round"] >= level.halfround)
@@ -1781,7 +1843,7 @@ HUD_RoundInfo(time)
 		roundInfo moveovertime(3);
 		roundInfo.y = 428;
 		level waittill("strat_time_end");
-		roundInfo thread removeHUDSmooth(.5);
+		roundInfo thread destroyHUDSmooth(.5);
 	}
 	// Last match round
 	else if (level.matchround > 0 && game["is_halftime"] && game["round"] >= level.matchround)
@@ -1792,7 +1854,7 @@ HUD_RoundInfo(time)
 		roundInfo moveovertime(3);
 		roundInfo.y = 428;
 		level waittill("strat_time_end");
-		roundInfo thread removeHUDSmooth(.5);
+		roundInfo thread destroyHUDSmooth(.5);
 	}
 	else
 	{
@@ -1804,8 +1866,8 @@ HUD_RoundInfo(time)
 
 		level waittill("strat_time_end");
 
-		roundInfo1 thread removeHUDSmooth(.5);
-		roundInfo2 thread removeHUDSmooth(.5);
+		roundInfo1 thread destroyHUDSmooth(.5);
+		roundInfo2 thread destroyHUDSmooth(.5);
 	}
 
 
@@ -1854,10 +1916,10 @@ HUD_NextRound()
 	while (!game["do_timeout"])
 		wait level.fps_multiplier * 0.2;
 
-	round thread removeHUDSmooth(.5);
-	roundnum thread removeHUDSmooth(.5);
-	starting thread removeHUDSmooth(.5);
-	stopwatch thread removeHUDSmooth(.5);
+	round thread destroyHUDSmooth(.5);
+	roundnum thread destroyHUDSmooth(.5);
+	starting thread destroyHUDSmooth(.5);
+	stopwatch thread destroyHUDSmooth(.5);
 }
 
 
@@ -1881,8 +1943,17 @@ endRound(roundwinner)
 	// If this function was already called, dont do it again
 	if(level.roundended)
 		return;
+
  	level.roundended = true;
 
+
+
+	// Delete objective targets
+
+	objective_delete(2);
+	objective_delete(3);
+	objective_delete(4);
+	objective_delete(5);
 
 
 
@@ -1902,15 +1973,18 @@ endRound(roundwinner)
 			player.progressbar destroy2();
 
 		if(isdefined(player.hintstring))
-			player.hintstring thread removeHUDSmooth(.5);
+			player.hintstring thread destroyHUDSmooth(.5);
 
 		if(isdefined(player.hintstringusehint))
-			player.hintstringusehint thread removeHUDSmooth(.5);
+			player.hintstringusehint thread destroyHUDSmooth(.5);
 
-		player.display_use_hintstring = false;
+		player.display_use_hud_hintstring = false;
+        player.is_touching_obj = "none";
 
-		player unlink();
-		player enableWeapon();
+        player detach_carrier_headicon();
+
+	//	player unlink();
+	//	player enableWeapon();
 	}
 
 	// Say: Axis/Allies Win   after 2 sec
@@ -1967,7 +2041,7 @@ endRound(roundwinner)
 	setTeamScore("axis", game["axis_score"]);
 
 	// History score for spectators
-	level maps\mp\gametypes\_spectating_system_hud::ScoreProgress_AddWinner(roundwinner);
+	level maps\mp\gametypes\_streamer_hud::ScoreProgress_AddWinner(roundwinner);
 
 
 	// Update score
@@ -2253,20 +2327,33 @@ updateTeamStatus()
 
 startRetrieval()
 {
-
-	for(i = 0; i < level.objectivesArray.size; i++)
+	// Objectives error, gametype not supported on the map
+	if (!isdefined( level.OBJECTIVESARRAY ))
 	{
-		script_origin = level.objectivesArray[i][0];
-		script_angles = level.objectivesArray[i][1];
-		script_name = level.objectivesArray[i][2];
-		script_radius = level.objectivesArray[i][3];
-		script_model = level.objectivesArray[i][4];
-		script_objmodel = level.objectivesArray[i][5];
+		println("^1------------ Map Errors ------------");
+		println("^1Objective entities not found on the map \"OBJECTIVESARRAY\"");
+		println("^1------------------------------------");
+		return;
+	}
 
-		level.auxiliary_entity[i] = spawn("misc_model", script_origin);
-		level.auxiliary_entity[i].origin = script_origin;
+	level.objectives_goal = spawn("trigger_radius", level.ATTACKERSBASE, 0, 165, 500);
+	level.objectives_goal thread objective_think_goal();
 
-		plant = level.auxiliary_entity[i] maps\mp\_utility::getPlant();
+    level.auxiliary_ent = undefined;
+
+	for(i = 0; i < level.OBJECTIVESARRAY.size; i++)
+	{
+		script_origin = level.OBJECTIVESARRAY[i][0];
+		script_angles = level.OBJECTIVESARRAY[i][1];
+		script_name = level.OBJECTIVESARRAY[i][2];
+		script_radius = level.OBJECTIVESARRAY[i][3];
+		script_model = level.OBJECTIVESARRAY[i][4];
+		script_objmodel = level.OBJECTIVESARRAY[i][5];
+
+		level.auxiliary_ent[i] = spawn("misc_model", script_origin);
+        level.auxiliary_ent[i].origin = script_origin;
+
+		plant = level.auxiliary_ent[i] maps\mp\_utility::getPlant();
 		end_loc = plant.origin;
 
 		level.objectives[i] = spawn("script_model", end_loc);
@@ -2274,25 +2361,23 @@ startRetrieval()
 		level.objectives[i].angles = script_angles;
 		level.objectives[i].script_objective_name = script_name;
 		level.objectives[i] setModel( script_model );
-		level.objectives[i] notSolid();
+		level.objectives[i] notsolid();
+		level.objectives[i].number = "obj_" + i;
+		level.objectives[i].istouched = false;
 
 		level.objectives[i].obj = spawn("script_model", level.objectives[i].origin);
 		level.objectives[i].obj.origin = level.objectives[i].origin;
 		level.objectives[i].obj.angles = level.objectives[i].angles;
 		level.objectives[i].obj setModel( script_objmodel );
-		level.objectives[i].obj notSolid();
+		level.objectives[i].obj notsolid();
 
 		level.objectives[i].trigger = spawn("trigger_radius", level.objectives[i].origin, 0, script_radius, 32);
 		level.objectives[i].trigger.origin = level.objectives[i].origin;
 
-
 		level.objectives[i] thread objective_think_rally();
 		level.objectives[i] thread objective_think_defend();
-		level.objectives[i] thread retrieval_spawn_objective();
+		level.objectives[i] thread spawn_objective();
 	}
-
-	level.objectives_goal = spawn("trigger_radius", level.attackersbase, 0, 190, 500);
-	level.objectives_goal thread objective_think_goal();
 
 	level.obj_exist = true;
 }
@@ -2363,7 +2448,7 @@ objective_think_goal(type)
 }
 
 
-retrieval_spawn_objective()
+spawn_objective()
 {
 	self.startorigin = self.origin;
 	self.startangles = self.angles;
@@ -2387,45 +2472,125 @@ retrieval_think() //each objective model runs this to find it's trigger and goal
 
 	while(1)
 	{
-		self.trigger waittill ("trigger", other);
+        if(level.in_timeout)
+            return;
+        if(level.in_readyup)
+            return;
+        if(level.roundended)
+            return;
+        if(!level.matchstarted)
+            return;
 
-		wait level.fps_multiplier * 0.08;
 
-		if(level.in_timeout) return;
-		if(level.in_readyup) return;
-		if(level.roundended) return;
-		if(!level.matchstarted) return;
+        wait level.fps_multiplier * .08;
 
-		other thread showHintString(self);
+        players = getentarray("player", "classname");
+        for(i = 0; i < players.size; i++)
+        {
+            player = players[i];
 
-		if((isPlayer(other)) && other useButtonPressed() && (other.pers["team"] == game["attackers"]) && !other.timeafterdrop_obj)
-		{
-			iprintln(&"RE_PICKEDUPGENERIC", self.script_objective_name);
+            if(player.sessionstate != "playing")
+                continue;
 
-			self playsound ("re_pickup_paper");
-			self thread hold_objective(other);
-			other.hasobj[self.objnum] = self;
-			//println("SETTING HASOBJ[" + self.objnum + "] as the " + self.script_objective_name);
-			other.objs_held++;
-			other destroyhintstringhud();
-			/*
-			println("PUTTING OBJECTIVE " + self.objnum + " ON THE PLAYER ENTITY");
-			objective_onEntity(self.objnum, other);
-			*/
-			other thread display_holding_obj(self);
-			return;
+            dist_to_ent = distance(player.origin, self.trigger.origin);
 
-		}
-		else if((isPlayer(other)) && other useButtonPressed() && (other.pers["team"] == game["defenders"]))
-		{
-		//	if(game["attackers"] == "allies")
-		//		other thread client_print(self, &"RE_PICKUPALLIESONLYGENERIC", self.script_objective_name);
-		//	else if(game["attackers"] == "axis")
-		//		other thread client_print(self, &"RE_PICKUPAXISONLYGENERIC", self.script_objective_name);
-		}
+
+            if(isPlayer(player) && !player.obj_drop_time && dist_to_ent < 65)
+            {
+                player.is_touching_obj = self.number;
+
+                player thread show_use_hud_hintstring(self, dist_to_ent);
+
+
+
+
+                if(player useButtonPressed())
+                {
+                    if(player.pers["team"] == game["attackers"] && player.objs_held < 1)
+                    {
+                        //iprintln(&"RE_PICKEDUPGENERIC", self.script_objective_name);
+                        iprintln(&"RE_PICKEDUPGENERIC");
+
+                        self playsound ("re_pickup_paper");
+                        self thread hold_objective(player);
+                        self.istouched = false;
+
+                        player.hasobj[self.objnum] = self;
+                       // println("SETTING HASOBJ[" + self.objnum + "] as the " + self.script_objective_name);
+                        player.objs_held++;
+
+                        player hud_hintstring_destroy();
+                        player.display_use_hud_hintstring = false;
+
+                        player.is_touching_obj = "none";
+                        	player notify("obj_pickedup");
+
+                        /*
+                        println("PUTTING OBJECTIVE " + self.objnum + " ON THE PLAYER ENTITY");
+                        objective_onEntity(self.objnum, player);
+                        */
+                        player thread display_holding_obj(self);
+                        player thread display_holding_obj_shader(self);
+
+
+                        player attach_objective();
+
+                        return;
+                    }
+
+                    else if(player.pers["team"] == game["attackers"] && player.objs_held > 0)
+                    {
+                        player playLocalSound ("re_pickup_paper");
+                        player thread client_print(self, &"RE_ALREADYOBJECTIVEGENERIC");
+                    }
+
+                    else if(player.pers["team"] == game["defenders"])
+                        player thread client_print(self, &"RE_PICKUPALLIESONLYGENERIC", self.script_objective_name);
+                }
+            }
+
+            if(isplayer(player) && dist_to_ent >= 65 && player.is_touching_obj == self.number)
+            {
+                self.istouched = false;
+                player notify("obj_pickedup");
+                player.display_use_hud_hintstring = false;
+
+                player.is_touching_obj = "none";
+                player thread hud_hintstring_destroy();
+            }
+        }
 	}
 }
 
+attach_objective()
+{
+    self attach("xmodel/prop_mp_tntbomb_carry", "J_Spine4", true);
+    self attach("xmodel/prop_mp_tntbomb_carry_obj", "J_Spine4", true);
+    self.obj_attached = true;
+
+    return;
+}
+
+detach_objective()
+{
+    self detach("xmodel/prop_mp_tntbomb_carry", "J_Spine4");
+    self detach("xmodel/prop_mp_tntbomb_carry_obj", "J_Spine4");
+    self.obj_attached = false;
+
+    return;
+}
+
+detach_carrier_headicon()
+{
+    if(self.obj_carrier)
+    {
+        self.statusicon = "";
+        self.obj_carrier = false;
+
+        if(self.pers["team"] == "allies")
+            self.headicon = game["hudicon_allies"];
+    }
+}
 
 hold_objective(player) //the objective model runs this to be held by 'player'
 {
@@ -2441,60 +2606,62 @@ hold_objective(player) //the objective model runs this to be held by 'player'
 
 	//println("PUTTING OBJECTIVE " + self.objnum + " ON THE PLAYER ENTITY");
 	player.statusicon = game["headicon_carrier"];
-	player.obj_carrier = true;
 	objective_onEntity(self.objnum, player);
 	objective_onEntity(self.objnum - 1, player);
 
+	self thread hold_to_drop_objective(player);
+	self thread hold_use_button(player);
 	self thread objective_carrier_atgoal_wait(player);
-	self thread holduse(player);
-	self thread pressuse_notify(player);
 
 	player.headicon = game["headicon_carrier"];
+	player.obj_carrier = true;
+
 	if(getCvar("scr_re_showcarrier") == "0")
+	{
 		player.headiconteam = game["attackers"];
+	}
 	else
+	{
 		player.headiconteam = "none";
+	}
 }
 
 objective_carrier_atgoal_wait(player)
 {
 	self endon("dropped");
-	while(1)
+
+	// no overlapping
+	if (player.obj_carrier)
+		return;
+
+	while (1)
 	{
 		level.objectives_goal waittill("trigger", other);
-		if((other == player) && (isPlayer(player)) && (player.pers["team"] == game["attackers"]))
+
+		if(!level.roundended && player == other && isPlayer(player) && player.pers["team"] == game["attackers"] && player.objs_held > 0)
 		{
-			//player.pers["score"] += 3;
-			//player.score = player.pers["score"];
-			level.objectives_done++;
-
-			objective_delete(self.objnum);
-			objective_delete(self.objnum - 1);
-
+			player.pers["score"] += 1;
+			player.score = player.pers["score"];
+			//level.objectives_done++;
 
 			self notify("completed");
 
 			//org = (player.origin);
 			self thread drop_objective(player, 1);
 
-			objective_delete(self.objnum);
-			objective_delete(self.objnum - 1);
+			//	End round statement
+			if(game["attackers"] == "allies")
 
+				iprintln(&"RE_CAPTUREDALLIESGENERIC");
 
-			self delete();
-			self.obj delete();
-
-			if(level.objectives_done < level.objectives.size)
-			{
-				return;
-			}
 			else
-			{
-				iprintlnbold(&"RE_CAPTUREDALL");
-				level thread playSoundOnPlayers("MP_announcer_objective_captured");
-				level thread endRound(game["attackers"]);
-				return;
-			}
+				iprintln(&"RE_CAPTUREDAXISGENERIC");
+
+
+			level thread playSoundOnPlayers("MP_announcer_objective_captured");
+			level thread endRound(game["attackers"]);
+
+			return;
 		}
 		else
 		{
@@ -2503,11 +2670,11 @@ objective_carrier_atgoal_wait(player)
 	}
 }
 
-drop_objective(player, option)
+drop_objective(player, endround)
 {
 	if(isPlayer(player))
 	{
-		num = (16 - (self.hudnum));
+		num = self.hudnum;
 		if(isdefined(self.objs_held))
 		{
 			if(self.objs_held > 0)
@@ -2526,55 +2693,30 @@ drop_objective(player, option)
 		}
 
 		if((isdefined(player.hudelem)) && (isdefined(player.hudelem[num])))
-			player.hudelem[num] destroy();
+        {
+            player.hudelem[num] destroy();
+            player.hudelem[num + 1] destroy();
+        }
 	}
 
 	//if(isdefined(loc))
 	loc = (player.origin + (0, 0, 25));
 
 
-	if((isdefined(option)) && (option == 1))
+	if((isdefined(endround)) && (endround == 1))
 	{
-		player.objs_held--;
+		player.objs_held = 0;
 
 		if((isdefined(self.objnum)) && (isdefined(player.hasobj[self.objnum])))
 			player.hasobj[self.objnum] = undefined;
 
-
-		objective_delete(self.objnum);
-		objective_delete(self.objnum - 1);
-
-		if(game["attackers"] == "allies")
-			iprintlnbold(&"RE_CAPTUREDALLIESGENERIC", self.script_objective_name);
-		else
-			iprintlnbold(&"RE_CAPTUREDAXISGENERIC", self.script_objective_name);
-
-		level thread playSoundOnPlayers("MP_announcer_objective_captured");
-
 		if(isdefined(self.trigger))
 			self.trigger delete();
 
-		if((isPlayer(player)) && (player.objs_held < 1))
+		if(isPlayer(player))
 		{
-			if(isPlayer(player))
-			{
-				player.statusicon = "";
-				player.obj_carrier = false;
-			}
-			if(player.pers["team"] == "allies")
-			{
-				player.headicon = game["headicon_allies"];
-				player.headiconteam = "allies";
-			}
-			else if(player.pers["team"] == "axis")
-			{
-				player.headicon = game["headicon_axis"];
-				player.headiconteam = "axis";
-			}
-			else
-			{
-				player.headicon = "";
-			}
+            player detach_carrier_headicon();
+            player detach_objective();
 		}
 	}
 	else
@@ -2672,7 +2814,9 @@ drop_objective(player, option)
 		}
 		else
 		{
-			iprintln(&"RE_DROPPEDGENERIC", self.script_objective_name);
+			//iprintln(&"RE_DROPPEDGENERIC", self.script_objective_name);
+            if(count_attackers_alive() > 1)
+                iprintln(&"RE_DROPPEDGENERIC");
 			self playsound ("re_pickup_paper");
 		}
 
@@ -2688,34 +2832,13 @@ drop_objective(player, option)
 		{
 			if(isPlayer(player))
 			{
-				player.statusicon = "";
-				player.obj_carrier = false;
-			}
-			if(player.pers["team"] == "allies")
-			{
-				player.headicon = game["headicon_allies"];
-				player.headiconteam = "allies";
-			}
-			else if(player.pers["team"] == "axis")
-			{
-				player.headicon = game["headicon_axis"];
-				player.headiconteam = "axis";
-			}
-			else
-			{
-				player.headicon = "";
+                player detach_carrier_headicon();
+                player detach_objective();
 			}
 		}
 
-		if(self istouching(level.objectives_goal))
+		if(self istouching(level.objectives_goal) && !level.roundended)
 		{
-			if(game["attackers"] == "allies")
-				iprintlnbold(&"RE_CAPTUREDALLIESGENERIC", self.script_objective_name);
-			else
-				iprintlnbold(&"RE_CAPTUREDAXISGENERIC", self.script_objective_name);
-
-			level thread playSoundOnPlayers("MP_announcer_objective_captured");
-
 			if(isdefined(self.trigger))
 				self.trigger delete();
 
@@ -2723,50 +2846,35 @@ drop_objective(player, option)
 			{
 				if(isPlayer(player))
 				{
-					player.statusicon = "";
-					player.obj_carrier = false;
-				}
-				if(player.pers["team"] == "allies")
-				{
-					player.headicon = game["headicon_allies"];
-					player.headiconteam = "allies";
-				}
-				else if(player.pers["team"] == "axis")
-				{
-					player.headicon = game["headicon_axis"];
-					player.headiconteam = "axis";
-				}
-				else
-				{
-					player.headicon = "";
-				}
+                    player detach_carrier_headicon();
+                    player detach_objective();
+                }
 			}
 
-			//player.pers["score"] += 3;
-			//player.score = player.pers["score"];
-			level.objectives_done++;
+			player.pers["score"] += 1;
+			player.score = player.pers["score"];
+			//level.objectives_done++;
 
 			self notify("completed");
 			level thread clear_player_dropbar(player);
 
-			objective_delete(self.objnum);
-			objective_delete(self.objnum - 1);
-
-
 			self delete();
 			self.obj delete();
 
-			if(level.objectives_done < level.objectives.size)
-			{
-				return;
-			}
+
+			//	End round statement
+			if(game["attackers"] == "allies")
+
+				iprintln(&"RE_CAPTUREDALLIESGENERIC");
+
 			else
-			{
-				iprintlnbold(&"RE_CAPTUREDALL");
-				level thread playSoundOnPlayers("MP_announcer_objective_captured");
-				level thread endRound(game["attackers"]);
-				return;
-			}
+				iprintln(&"RE_CAPTUREDAXISGENERIC");
+
+
+			level thread playSoundOnPlayers("MP_announcer_objective_captured");
+			level thread endRound(game["attackers"]);
+
+			return;
 		}
 
 		self thread objective_timeout();
@@ -2801,7 +2909,7 @@ objective_timeout()
 	objective_position(self.objnum - 1, self.origin);
 }
 
-holduse(player)
+hold_to_drop_objective(player)
 {
 	player endon("killed_player");
 	self endon("completed");
@@ -2883,10 +2991,14 @@ holduse(player)
 						player.progressbar destroy();
 
 					// Delay before picking up
-					player.timeafterdrop_obj = true;
-					player thread delaydrop_objective(self);
+					player.obj_drop_time = true;
+					player thread delay_drop_objective(self);
+
+
+                    player iprintlnBold("You have dropped the objective");
 
 					self thread drop_objective(player);
+
 					self notify("dropped");
 					player unlink();
 					player.isusing = false;
@@ -2905,7 +3017,7 @@ holduse(player)
 	}
 }
 
-delaydrop_objective(objective)
+delay_drop_objective(ent_obj)
 {
 	self endon("disconnect");
 	self endon("killed_player");
@@ -2914,33 +3026,42 @@ delaydrop_objective(objective)
 	delaytime = 0;
 	for(;;)
 	{
-		if (!self.timeafterdrop_obj)
+		if (!self.obj_drop_time)
 			break;
 		delaytime = (delaytime + .05);
 		//iprintlnbold(self.name + " waits "+delaytime);
-		if(delaytime > 1.2) // delaytime
+		if(delaytime > 1.25) // delaytime
 		{
-			if(self istouching(objective.trigger))
-				self thread delaydrop_displayalterhintstring();
-			self.timeafterdrop_obj = false;
+            if(distance(self.origin, ent_obj.trigger.origin) < 65)
+				self thread delaydrop_display_hud_hintstring();
+
+			self.obj_drop_time = false;
+
 			break;
 		}
 		wait level.fps_multiplier * .05;
 	}
 }
 
-delaydrop_displayalterhintstring()
+delaydrop_display_hud_hintstring()
 {
 	if(isdefined(self.hintstring))
 	{
 		self.hintstring hideHUDSmooth(.3);
+		self.hintstring.y = 360;
+		self.hintstring.fontscale = 1.4;
+		self.hintstring.color = (1, 1, 1);
 		self.hintstring.label = &"RE_PRESSTOPICKUPGENERIC";
-		self.hintstring showHUDSmooth(.3);
+		self.hintstring thread showHUDSmooth(.3);
+
+		self.hintstringusehint = addHUDClient(self, 0, 335, 3.4, (1, 1, 1), "center", "bottom", "center_safearea", "top");
+		self.hintstringusehint setShader("hint_use_touch");
+		self.hintstringusehint thread showHUDSmooth(.3);
 	}
 }
 
 
-pressuse_notify(player)
+hold_use_button(player)
 {
 	player endon("killed_player");
 	self endon("dropped");
@@ -2955,7 +3076,7 @@ pressuse_notify(player)
 
 display_holding_obj(obj_ent)
 {
-	num = (16 - (obj_ent.hudnum));
+	num = obj_ent.hudnum;
 
 	if(num > 16)
 		return;
@@ -2967,9 +3088,32 @@ display_holding_obj(obj_ent)
 	self.hudelem[num].alignY = "middle";
 	self.hudelem[num].x = 635;
 	self.hudelem[num].y = (550 - offset);
-	self.hudelem[num].fontscale = 1;
+	self.hudelem[num].fontscale = 1.1;
 	self.hudelem[num].label = &"RE_CARRYINGGENERIC";
-	self.hudelem[num] setText(obj_ent.script_objective_name);
+       	//self.hudelem[num] setText(obj_ent.script_objective_name);
+}
+
+display_holding_obj_shader(obj_ent)
+{
+	num = obj_ent.hudnum + 1;
+
+	if(num > 16)
+		return;
+
+	offset = (180 + (obj_ent.hudnum * 8));
+
+	self.hudelem[num] = newClientHudElem(self);
+	self.hudelem[num].alignX = "right";
+	self.hudelem[num].alignY = "middle";
+	self.hudelem[num].x = 635;
+	self.hudelem[num].y = (550 - offset);
+   /* self.hudelem[num].alignX = "left";
+    self.hudelem[num].alignY = "top";
+    self.hudelem[num].horzAlign = "fullscreen";
+    self.hudelem[num].x = 501;
+    self.hudelem[num].y = 425;
+    */
+	self.hudelem[num] setShader("obj_tnt_large", 37, 37);
 }
 
 triggerOff()
@@ -2979,7 +3123,12 @@ triggerOff()
 
 client_print(obj, text, s)
 {
-	num = (16 - obj.hudnum);
+    if(isdefined(self.hud_client_print))
+        return;
+
+    self.hud_client_print = true;
+
+	num = obj.hudnum + 5;
 
 	if(num > 16)
 		return;
@@ -2987,14 +3136,8 @@ client_print(obj, text, s)
 	self notify("stop client print");
 	self endon("stop client print");
 
-	//if((isdefined(self.hudelem)) && (isdefined(self.hudelem[num])))
-	//	self.hudelem[num] destroy();
-
-	for(i = 1; i < 16; i++)
-	{
-		if((isdefined(self.hudelem)) && (isdefined(self.hudelem[i])))
-			self.hudelem[i] destroy();
-	}
+	if((isdefined(self.hudelem)) && (isdefined(self.hudelem[num])))
+		self.hudelem[num] destroy();
 
 	self.hudelem[num] = newClientHudElem(self);
 	self.hudelem[num].alignX = "center";
@@ -3012,6 +3155,8 @@ client_print(obj, text, s)
 		self.hudelem[num] setText(text);
 
 	wait level.fps_multiplier * 3;
+
+    self.hud_client_print = undefined;
 
 	if((isdefined(self.hudelem)) && (isdefined(self.hudelem[num])))
 		self.hudelem[num] destroy();
@@ -3091,23 +3236,14 @@ drop_objective_on_disconnect_or_death(player)
 	{
 		iprintln(&"RE_INMINESGENERIC", self.script_objective_name);
 
-
 		self.trigger.origin = self.trigger.startorigin;
 		self.origin = self.startorigin;
 		self.angles = self.startangles;
 		self.obj.origin = self.startorigin;
 		self.obj.angles = self.startangles;
 	}
-	else if(self istouching(level.objectives_goal))
+	else if(self istouching(level.objectives_goal) && !level.roundended)
 	{
-		if(game["attackers"] == "allies")
-			iprintlnbold(&"RE_CAPTUREDALLIESGENERIC", self.script_objective_name);
-		else
-			iprintlnbold(&"RE_CAPTUREDAXISGENERIC", self.script_objective_name);
-
-		level thread playSoundOnPlayers("MP_announcer_objective_captured");
-
-
 		if(isdefined(self.trigger))
 			self.trigger delete();
 
@@ -3115,52 +3251,40 @@ drop_objective_on_disconnect_or_death(player)
 		{
 			if(isPlayer(player))
 			{
-				player.statusicon = "";
-				player.obj_carrier = false;
-			}
-			if(player.pers["team"] == "allies")
-			{
-				player.headicon = game["headicon_allies"];
-				player.headiconteam = "allies";
-			}
-			else if(player.pers["team"] == "axis")
-			{
-				player.headicon = game["headicon_axis"];
-				player.headiconteam = "axis";
-			}
-			else
-			{
-				player.headicon = "";
+                player detach_carrier_headicon();
+                player detach_objective();
 			}
 		}
 
-		//player.pers["score"] += 3;
-		//player.score = player.pers["score"];
-		level.objectives_done++;
+		player.pers["score"] += 1;
+		player.score = player.pers["score"];
+		//level.objectives_done++;
 
 		self notify("completed");
 		level thread clear_player_dropbar(player);
 
-		objective_delete(self.objnum);
-		objective_delete(self.objnum - 1);
 		self delete();
 		self.obj delete();
 
-		if(level.objectives_done < level.objectives.size)
-		{
-			return;
-		}
-		else
-		{
-			iprintlnbold(&"RE_CAPTUREDALL");
-			level thread playSoundOnPlayers("MP_announcer_objective_captured");
-			level thread endRound(game["attackers"]);
-			return;
-		}
+	//	End round statement
+	if(game["attackers"] == "allies")
+
+		iprintln(&"RE_CAPTUREDALLIESGENERIC");
+
+	else
+		iprintln(&"RE_CAPTUREDAXISGENERIC");
+
+
+		level thread playSoundOnPlayers("MP_announcer_objective_captured");
+		level thread endRound(game["attackers"]);
+
+		return;
 	}
 	else
 	{
-		iprintln(&"RE_DROPPEDGENERIC", self.script_objective_name);
+		//iprintln(&"RE_DROPPEDGENERIC", self.script_objective_name);
+        if(count_attackers_alive() > 1)
+            iprintln(&"RE_DROPPEDGENERIC");
 		self playsound ("re_pickup_paper");
 	}
 
@@ -3170,7 +3294,18 @@ drop_objective_on_disconnect_or_death(player)
 }
 
 
+count_attackers_alive()
+{
+	allplayers = getentarray("player", "classname");
+	alive = [];
+	for(i = 0; i < allplayers.size; i++)
+	{
+		if(allplayers[i].sessionstate == "playing" && allplayers[i].sessionteam == game["attackers"])
 
+			alive[alive.size] = allplayers[i];
+	}
+	return alive.size;
+}
 
 
 
@@ -3382,7 +3517,7 @@ menuWeapon(response)
 		response = self maps\mp\gametypes\_weapons::getRandomWeapon();
 
 	// Weapon is not valid or is in use
-	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvaible(response))
+	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvailable(response))
 	{
 		// Open menu with weapons again
 		if(self.pers["team"] == "allies")
@@ -3479,7 +3614,7 @@ menuWeapon(response)
 			allowedInStrattime = true;
 		else
 		{
-			if (level.in_strattime && /*self.dropped_weapons == 0 && self.taked_weapons == 0 && */self.spawnsInStrattime < 2)
+			if (level.in_strattime && self.spawnsInStrattime < 2)
 			{
 				// If weapon I spawned with is still in slot, allow change
 				if (self.spawnedWeapon == primary)
@@ -3597,68 +3732,67 @@ announceWinner(winner, delay)
 }
 
 
-showHintString(trig)
+show_use_hud_hintstring(ent_obj, ent_dist)
 {
 	self endon("disconnect");
 	self endon("killed_player");
+	self endon("obj_pickedup");
 
 	if(self.pers["team"] == game["defenders"])
 		return;
 
-	self thread killafterhintstringhud(trig);
+	if (!isAlive(self))
+        return;
 
-	while (self istouching(trig.trigger) && isAlive(self) && !level.roundended)
-	{
-		if (self.display_use_hintstring)
-			return;
-
-		self.display_use_hintstring = true;
-
-		if(!self.timeafterdrop_obj)
-			trigger_label = &"RE_PRESSTOPICKUPGENERIC";
-		else
-			trigger_label = &"RE_DELAYPICKUPGENERIC";
+	if (level.roundended)
+        return;
 
 
-		self.hintstring = addHUDClient(self, 0, 375, 1.3, (1, 1 ,1), "center", "bottom", "center_safearea", "top");
-		self.hintstring.label = trigger_label;
-		self.hintstring setText(trig.script_objective_name);
-		self.hintstring thread showHUDSmooth(.15);
+	while (ent_dist < 65 && self.is_touching_obj == ent_obj.number)
+    {
+		wait level.fps_multiplier * .08;
 
-		self.hintstringusehint = addHUDClient(self, 0, 345, 3.2, (1, 1 ,1), "center", "bottom", "center_safearea", "top");
-		self.hintstringusehint setShader("hint_use_touch");
-		self.hintstringusehint thread showHUDSmooth(.15);
-	}
 
-	self destroyhintstringhud();
+
+        if (self.display_use_hud_hintstring)
+            return;
+
+        self.display_use_hud_hintstring = true;
+
+
+        ent_obj.istouched = true;
+
+        if(!self.obj_drop_time)
+        {
+            self.hintstring = addHUDClient(self, 0, 360, 1, (1, 1, 1), "center", "bottom", "center_safearea", "top");
+            self.hintstring.label = &"RE_PRESSTOPICKUPGENERIC";
+            //self.hintstring setText(ent_obj.script_objective_name);
+            self.hintstring thread showHUDSmooth(.15);
+
+            self.hintstringusehint = addHUDClient(self, 0, 335, 3.5, (1, 1, 1), "center", "bottom", "center_safearea", "top");
+            self.hintstringusehint setShader("hint_use_touch");
+            self.hintstringusehint thread showHUDSmooth(.15);
+        }
+        else
+        {
+            self.hintstring = addHUDClient(self, 0, 350, 1.5, (1, 1, 1), "center", "bottom", "center_safearea", "top");
+            self.hintstring.label = &"RE_DELAYPICKUPGENERIC";
+            //self.hintstring setText(ent_obj.script_objective_name);
+            self.hintstring thread showHUDSmooth(.15);
+        }
+
+    }
+
 }
 
-killafterhintstringhud(objective)
-{
-	self endon("disconnect");
-	self endon("killed_player");
 
-	while(isAlive(self))
-	{
-		wait level.fps_multiplier * .45;
-
-		if(!self istouching(objective.trigger))
-		{
-			self destroyhintstringhud();
-			break;
-		}
-	}
-}
-
-destroyhintstringhud()
+hud_hintstring_destroy()
 {
 	if(isdefined(self.hintstring))
-		self.hintstring thread removeHUDSmooth(.4);
+		self.hintstring thread destroyHUDSmooth(.4);
 
 	if(isdefined(self.hintstringusehint))
-		self.hintstringusehint thread removeHUDSmooth(.4);
-
-	self.display_use_hintstring = false;
+		self.hintstringusehint thread destroyHUDSmooth(.4);
 }
 
 
@@ -3705,9 +3839,9 @@ playSoundOnPlayers(sound, team)
 
 
 
-getRandomSpawnpoint(spawnpointsarray, spawnpoints)
+getSpawnpoint_New(spawnpointsarray, spawnpoints)
 {
-//	level endon("intermission");
+	level endon("intermission");
 
 	// randomize order
 	for(i = 0; i < spawnpointsarray.size; i++)
@@ -3725,52 +3859,34 @@ getRandomSpawnpoint(spawnpointsarray, spawnpoints)
 
 positionToGround(pos, ignoreentity)
 {
-	trace = bulletTrace(pos, pos + (0, 0, -10000), false, ignoreentity);
+	trace = bulletTrace(pos, pos + (0, 0, -30), false, ignoreentity);
 	return trace["position"];
 }
 
-add_array(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19)
+add_array(A, B, C, D, E, F, G, H, I)
 {
-	a=[];
-	if(isdefined(a1))
-	a[a.size] = a1;
-	if(isdefined(a2))
-	a[a.size] = a2;
-	if(isdefined(a3))
-	a[a.size] = a3;
-	if(isdefined(a4))
-	a[a.size] = a4;
-	if(isdefined(a5))
-	a[a.size] = a5;
-	if(isdefined(a6))
-	a[a.size] = a6;
-	if(isdefined(a7))
-	a[a.size] = a7;
-	if(isdefined(a8))
-	a[a.size] = a8;
-	if(isdefined(a9))
-	a[a.size] = a9;
-	if(isdefined(a10))
-	a[a.size] = a10;
-	if(isdefined(a11))
-	a[a.size] = a11;
-	if(isdefined(a12))
-	a[a.size] = a12;
-	if(isdefined(a13))
-	a[a.size] = a13;
-	if(isdefined(a14))
-	a[a.size] = a14;
-	if(isdefined(a15))
-	a[a.size] = a15;
-	if(isdefined(a16))
-	a[a.size] = a16;
-	if(isdefined(a17))
-	a[a.size] = a17;
-	if(isdefined(a18))
-	a[a.size] = a18;
-	if(isdefined(a19))
-	a[a.size] = a19;
-	return a;
+	array = [];
+
+	if(isdefined(A))
+		array[array.size] = A;
+	if(isdefined(B))
+		array[array.size] = B;
+	if(isdefined(C))
+		array[array.size] = C;
+	if(isdefined(D))
+		array[array.size] = D;
+	if(isdefined(E))
+		array[array.size] = E;
+	if(isdefined(F))
+		array[array.size] = F;
+	if(isdefined(G))
+		array[array.size] = G;
+    if(isdefined(H))
+		array[array.size] = H;
+    if(isdefined(I))
+		array[array.size] = I;
+
+	return array;
 }
 
 

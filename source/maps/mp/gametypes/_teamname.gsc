@@ -13,11 +13,39 @@ Init()
 	// Team names are updated only if its needed for other functions (matchinfo, recording, ...)
 /*
 	// Testing
-	names[0] = "UGNC | eyza";
+	names[0] = "UGNC | eyza UG";
 	names[1] = "UGNC | aske";
 	names[2] = "UGNC | tomik";
 	names[3] = "UGNC | nostry";
 	names[4] = "UGNC | lampy";
+	println(getBestNameFromArray(names));
+
+	names[0] = "FRUGO craven";
+	names[1] = "FRUGO law";
+	names[2] = "FRUGO pix";
+	names[3] = "FRUGO crash";
+	names[4] = "FRUGO Fakir";
+	println(getBestNameFromArray(names));
+
+	names[0] = "aaa TEAM NAME";
+	names[1] = "bbb TEAM NAME";
+	names[2] = "ccc TEAM NAME";
+	names[3] = "ddd noclan";
+	names[4] = "eee TEAM NAME";
+	println(getBestNameFromArray(names));
+
+	names[0] = "aaa TEAM NAME";
+	names[1] = "bbb TEAM NAME";
+	names[2] = "ccc 1111";
+	names[3] = "ddd 2222";
+	names[4] = "eee TEAM NAME";
+	println(getBestNameFromArray(names));
+
+	names[0] = "aaa TEAM NAME";
+	names[1] = "bbb TEAM NAME";
+	names[2] = "ccc TEAM NAME";
+	names[3] = "dcc 111";
+	names[4] = "eee TEAM NAME";
 	println(getBestNameFromArray(names));
 
 	names[0] = "ONLINEGAMERS | dymatize";
@@ -76,6 +104,10 @@ Init()
 
 	names[0] = "aa|";
 	names[1] = "bb|";
+	println(getBestNameFromArray(names));
+
+	names[0] = "abc";
+	names[1] = "cba";
 	println(getBestNameFromArray(names));
 
 	names[0] = ".";
@@ -270,6 +302,7 @@ getBestNameFromArray(names)
 				last_word = separes_marged[i][j];
 			}
 		}
+
 		most_used_word[i] = last_word;
 		most_used_count[i] = last_count;
 	}
@@ -283,40 +316,42 @@ getBestNameFromArray(names)
 	}
 */
 
-
-	// Create array of most used words where each word will be presents many times it was used
-	most_used_extended = [];
-	count = 0;
-	for (i = 0; i < most_used_word.size; i++)
+	table_array = [];
+	final_word = "";
+	for (i = names.size-1;   i >= 0 && final_word == "";   i--)
 	{
-		if (most_used_count[i] <= 1)
-			continue;
-
-		for(j = 0; j < most_used_count[i]; j++)
+		// Find words with exact usage as there is players
+		for (j = most_used_count.size-1; j >= 0; j--)
 		{
-			most_used_extended[count] = most_used_word[i];
-			count++;
+			if (most_used_count[j] == i+1)
+			{
+				value = most_used_count[j] * most_used_word[j].size;
+
+				for (k = 0; k < value; k++)
+				{
+					table_array[table_array.size] = most_used_word[j];
+				}
+				break;
+			}
 		}
 	}
 
-    // If there is no char that is used more whan once (for example just two players connected with different chars in their name)
-    if (most_used_extended.size == 0)
-    {
-        most_used_extended[0] = ""; // UNKNOWN
-    }
-
+	if (table_array.size == 0)
+	{
+		table_array[0] = "";
+	}
 
 /*
+	// Debuging
 	println("");
-	for (i = 0; i < most_used_extended.size; i++)
+	for (i = 0; i < table_array.size; i++)
 	{
-		println(i + ": len_" + most_used_extended[i].size + " ---- \"" + most_used_extended[i] + "\"");
+		println("i " + (i+1) + " is \"" + table_array[i] + "\"");
 	}
 */
-
 	// Find the final most used word by percentage
-	index = int(count * perc);
-	final_word = most_used_extended[index];
+	index = int(table_array.size * 0.3);
+	final_word = table_array[index];
 
 	// Remove unallowed chars
 	final_word = getSecureString(final_word);

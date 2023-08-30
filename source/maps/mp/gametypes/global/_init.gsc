@@ -42,12 +42,12 @@ InitModules()
 	#/
 
 	thread maps\mp\gametypes\_pam::init();
+
+	thread maps\mp\gametypes\_bots::Init();			// must be called to indentify bots as first
 	thread maps\mp\gametypes\_force_download::init();
 	thread maps\mp\gametypes\_cvar_forces::init();
-
 	thread maps\mp\gametypes\_log::init();
 	thread maps\mp\gametypes\_server_restart::init();
-
 
 	thread maps\mp\gametypes\_weapons::init();		// must be caled before _menus because of rifle mode
 	thread maps\mp\gametypes\_menus::init();		// must be called before another onMenuResponse
@@ -85,13 +85,13 @@ InitModules()
 	thread maps\mp\gametypes\_matchinfo::init();	// depends on readyup, teamname, bash, overtime
 	thread maps\mp\gametypes\_record::init();	// depends on matchinfo
 	thread maps\mp\gametypes\_players_left::Init(); // depends on matchinfo
-	thread maps\mp\gametypes\_spectating_system::init(); // depends on readyup, matchinfo
-	thread maps\mp\gametypes\_spectating_system_auto::init(); // depends on readyup
-	thread maps\mp\gametypes\_spectating_system_hud::init(); // depends on readyup, matchinfo
-	thread maps\mp\gametypes\_spectating_system_xray::init(); // depends on readyup, matchinfo
-	thread maps\mp\gametypes\_spectating_system_damage::init(); // depends on readyup
-	thread maps\mp\gametypes\_spectating_system_killcam::init(); // depends on _spectating_system_auto
-	thread maps\mp\gametypes\_archive::init(); // depends on spectating_system and killcam
+	thread maps\mp\gametypes\_streamer::init(); // depends on readyup, matchinfo
+	thread maps\mp\gametypes\_streamer_auto::init(); // depends on readyup
+	thread maps\mp\gametypes\_streamer_hud::init(); // depends on readyup, matchinfo
+	thread maps\mp\gametypes\_streamer_xray::init(); // depends on readyup, matchinfo
+	thread maps\mp\gametypes\_streamer_damage::init(); // depends on readyup
+	thread maps\mp\gametypes\_streamer_killcam::init(); // depends on _streamer_auto
+	thread maps\mp\gametypes\_archive::init(); // depends on streamer_system and killcam
 
 
 	thread maps\mp\gametypes\_menu_rcon::init();
@@ -101,7 +101,6 @@ InitModules()
 	thread maps\mp\gametypes\_menu_scoreboard::init(); // depends on matchinfo
 
 
-	thread maps\mp\gametypes\_bots::Init();
 	thread maps\mp\gametypes\_fast_reload::init();
 	thread maps\mp\gametypes\_prone_peek_fix::Init();
 	thread maps\mp\gametypes\_mapvote::Init();

@@ -30,10 +30,10 @@ init()
 		// Strings (problem with precache...)
 		game["STRING_READYUP_KEY_ACTIVATE_PRESS"] = 		"Press the ^3[{+activate}] ^7button to Ready-Up.";
 		game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS"] = 		"Double press ^3[{+melee_breath}] ^7to disable killing.";
-		game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS_TRAINER"] = 	"Double press ^3[{+melee_breath}] ^7to disable killing / aim trainer.";
+		game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS_TRAINER"] = 	"Double press ^3[{+melee_breath}] ^7to disable killing or aim trainer.";
 		game["STRING_READYUP_KEY_MELEE_HOLD"] = 		"Hold ^3[{+melee_breath}] ^7to switch aim trainer modes.";
 		game["STRING_READYUP_ALL_PLAYERS_ARE_READY"] = 		"All players are ready.";
-		game["STRING_READYUP_TIME_EXPIRED"] = 			"Time to ready-up is over.";
+		game["STRING_READYUP_TIME_EXPIRED"] = 			"Time to Ready-Up is over.";
 		game["STRING_READYUP_TIME_EXPIRED_SKIP"] = 		"Set your team as ready to skip the Ready-Up.";
 
 
@@ -43,6 +43,11 @@ init()
 		precacheString2("STRING_READYUP_KILLING_DISABLED", &"Disabled");
 		precacheString2("STRING_READYUP_KILLING_ENABLED", &"Enabled");
 		precacheString2("STRING_READYUP_KILLING", &"Killing");
+		precacheString2("STRING_READYUP_AIM_TRAINER", &"Aim Trainer");
+		precacheString2("STRING_READYUP_AIM_TRAINER_NOT_SUPPORTED", &"Not supported");
+		precacheString2("STRING_READYUP_AIM_TRAINER_AVAIBLE", &"Available");
+		precacheString2("STRING_READYUP_AIM_TRAINER_ACTIVE", &"Active");
+		precacheString2("STRING_READYUP_DASH", &"-");
 
 		// HUD: Half_Start
 		precacheString2("STRING_READYUP_MATCH_BEGINS_IN", &"Match begins in:");
@@ -126,13 +131,13 @@ Start_Readyup_Mode(runned_in_middle_of_game)
 		level.readyup_runned = true;
 
 		// Attach event for new players
-		addEventListener("onConnected",     ::onConnected);
-		addEventListener("onDisconnect",    ::onDisconnect);
-		addEventListener("onSpawned",    ::onSpawned);
-	    	addEventListener("onJoinedTeam",      ::onJoinedTeam);
+		addEventListener("onConnected",     	::onConnected);
+		addEventListener("onDisconnect",    	::onDisconnect);
+		addEventListener("onSpawned",    	::onSpawned);
+	    	addEventListener("onJoinedTeam",      	::onJoinedTeam);
 
-		addEventListener("onPlayerDamaging",  ::onPlayerDamaging);
-		addEventListener("onPlayerKilling",   ::onPlayerKilling);
+		addEventListener("onPlayerDamaging",  	::onPlayerDamaging);
+		addEventListener("onPlayerKilling",   	::onPlayerKilling);
 	}
 
 	// Wait here untill there is atleast one player connected
@@ -203,6 +208,7 @@ onConnected()
 		return false;
 
 	// Defaults
+	self.isReady = false;
 	self.flying = false;
 	self.flaying_enabled = true;
 	self.readyupLastGrenadeThrowTime = 0;
@@ -250,7 +256,7 @@ onSpawned()
         {
 		if (!level.in_timeout)
 		{
-			if (!maps\mp\gametypes\_bots::isBot())
+			if (!self.pers["isBot"])
 				self thread maps\mp\gametypes\strat::Watch_Grenade_Throw(false);
 
 	                // Keep adding grenades in readyup
@@ -288,6 +294,7 @@ onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon
 	if (level.in_timeout || level.playersready)
 		return true;
 
+	// Prevent damage if im flying or im in training mode
 	if (self.flying || self.aimTrainerMode != 0)
 		return true;
 
@@ -296,11 +303,11 @@ onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon
 
 	if (isPlayer(eAttacker) && self != eAttacker)
 	{
-		if (eAttacker.flying)
+		// Im flying or i in training mode, prevent damage
+		if (eAttacker.flying || eAttacker.aimTrainerMode != 0)
 			return true;
 
-		if (eAttacker.aimTrainerMode == 0)
-			eAttacker enableKilling();
+		eAttacker enableKilling();
 	}
 
 	if (!self.pers["killer"])
@@ -422,7 +429,7 @@ playerReadyUpThread()
 
 
 	//Set ready for bots
-	if (isDefined(self.pers["isTestClient"]))
+	if (self.pers["isBot"])
 	{
 		self setReady();
 		level thread Check_All_Ready(); // Check if all players are ready
@@ -438,9 +445,6 @@ playerReadyUpThread()
 	while((self.pers["team"] == "allies" || self.pers["team"] == "axis") && !isDefined(self.pers["weapon"]))
 		wait level.fps_multiplier * 0.1;
 
-	// Show hud
-	self thread HUD_Player_Status();
-
 	// Set ready for spectators
 	if (self.pers["team"] == "spectator" || self.pers["team"] == "streamer")
 	{
@@ -448,9 +452,14 @@ playerReadyUpThread()
 		//level thread Check_All_Ready();
 	}
 
-	if (!level.in_timeout)
-		self thread HUD_Player_Killing_Status();
+	waittillframeend; // needed for aim trainer to be initialized
 
+
+	hudReadyStatusVisible = false;
+	hudKillingStatusVisible = false;
+	hudAimTrainerStatusVisible = false;
+	aimTrainerStatusLast = -1;
+	teamLast = self.pers["team"];
 
 	while(!level.playersready)
 	{
@@ -461,10 +470,70 @@ playerReadyUpThread()
 			return;
 		}
 
+		// Show hud player ready status
+		if (hudReadyStatusVisible == false && self.pers["team"] != "streamer")
+		{
+			self thread HUD_Player_Status();
+			hudReadyStatusVisible = true;
+		}
+		// Hide hud player ready status
+		if (hudReadyStatusVisible && self.pers["team"] == "streamer")
+		{
+			self thread HUD_Player_Status("destroy");
+			hudReadyStatusVisible = false;
+		}
+
+
+		// Show hud player killing status
+		if (hudKillingStatusVisible == false && self.pers["team"] != "streamer")
+		{
+			self thread HUD_Player_Killing_Status();
+			hudKillingStatusVisible = true;
+		}
+		// Hide hud player killing status
+		if (hudKillingStatusVisible && self.pers["team"] == "streamer")
+		{
+			self thread HUD_Player_Killing_Status("destroy");
+			hudKillingStatusVisible = false;
+		}
+
+
+		// Show hud player aim-trainer status
+		if (hudAimTrainerStatusVisible == false && self.pers["team"] != "streamer")
+		{
+			self thread HUD_Player_Aim_Trainer_Status();
+			hudAimTrainerStatusVisible = true;
+		}
+		// Hide hud player killing status
+		if (hudAimTrainerStatusVisible && self.pers["team"] == "streamer")
+		{
+			self thread HUD_Player_Aim_Trainer_Status("destroy");
+			hudAimTrainerStatusVisible = false;
+		}
+
+		self setAimTraining(); // update periodically, there is a check if the state changed from last call
+
+
+
+		// Team change
+		if (teamLast != self.pers["team"] && (self.pers["team"] == "streamer" || self.pers["team"] == "spectator") && self.isReady == false)
+		{
+			setReady();
+			level thread Check_All_Ready();
+		}
+		if (teamLast != self.pers["team"] && (teamLast == "streamer" || teamLast == "spectator") && self.pers["team"] != "streamer" && self.pers["team"] != "spectator" && self.isReady)
+		{
+			unsetReady();
+			level thread Check_All_Ready();
+		}
+		teamLast = self.pers["team"];
+
+
+
 
 		if(self useButtonPressed() && !self.flying)
 		{
-			if (!self.isReady)
+			if (!self.isReady || self.pers["team"] == "streamer")
 				setReady();
 			else
 				unsetReady();
@@ -497,6 +566,8 @@ playerReadyUpThread()
 					else
 					{
 						self maps\mp\gametypes\_aim_trainer::turnOff();
+
+						self setAimTraining();
 					}
 
 					// Disable killing
@@ -517,6 +588,8 @@ playerReadyUpThread()
 				if (keyReleased == false && holdTime == level.sv_fps * 0.8)
 				{
 					self maps\mp\gametypes\_aim_trainer::toggle();
+
+					self setAimTraining();
 
 					while (self meleebuttonpressed())
 						wait level.frame;
@@ -575,7 +648,10 @@ enableKilling()
 	if (isDefined(self.ru_killing_status)) // may be deleted when readyup is ending
 	{
 		self.ru_killing_status.color = (.73, .99, .73);
-		self.ru_killing_status SetText(game["STRING_READYUP_KILLING_ENABLED"]);
+		if (level.in_timeout)
+			self.ru_killing_status SetText(game["STRING_READYUP_DASH"]);
+		else
+			self.ru_killing_status SetText(game["STRING_READYUP_KILLING_ENABLED"]);
 	}
 }
 
@@ -586,7 +662,55 @@ disableKilling()
 	if (isDefined(self.ru_killing_status)) // may be deleted when readyup is ending
 	{
 		self.ru_killing_status.color = (1, .66, .66);
-		self.ru_killing_status SetText(game["STRING_READYUP_KILLING_DISABLED"]);
+		if (level.in_timeout)
+			self.ru_killing_status SetText(game["STRING_READYUP_DASH"]);
+		else
+			self.ru_killing_status SetText(game["STRING_READYUP_KILLING_DISABLED"]);
+	}
+}
+
+
+setAimTraining()
+{
+	// Aim trainer
+	status = -1;
+	if (level.aimTargetsSupported)
+	{
+		if (self.aimTrainerMode > 0)
+			status = 1; // available and active
+		else
+			status = 0; // available, not active
+	}
+
+	// Update killing statuses
+	if (isDefined(self.ru_aimtrainer_status)) // may be deleted when readyup is ending
+	{
+		// No update when there is no change from last call
+		if (isDefined(self.ru_aimtrainer_status.status) && self.ru_aimtrainer_status.status == status)
+			return;
+
+		self.ru_aimtrainer_status.status = status;
+
+		if (level.in_timeout)
+		{
+			self.ru_aimtrainer_status.color = (1, .66, .66);
+			self.ru_aimtrainer_status SetText(game["STRING_READYUP_DASH"]);
+		}
+		else if (status == 0)
+		{
+			self.ru_aimtrainer_status.color = (.73, .99, .73);
+			self.ru_aimtrainer_status SetText(game["STRING_READYUP_AIM_TRAINER_AVAIBLE"]);
+		}
+		else if (status == 1)
+		{
+			self.ru_aimtrainer_status.color = (.73, .99, .73);
+			self.ru_aimtrainer_status SetText(game["STRING_READYUP_AIM_TRAINER_ACTIVE"]);
+		}
+		else
+		{
+			self.ru_aimtrainer_status.color = (1, .66, .66);
+			self.ru_aimtrainer_status SetText(game["STRING_READYUP_AIM_TRAINER_NOT_SUPPORTED"]);
+		}
 	}
 }
 
@@ -625,6 +749,8 @@ areAllPlayersReady()
 			return false;
 		}
 	}
+
+	//iprintln("## areAllPlayersReady() = true");
 
 	return true;
 }
@@ -665,6 +791,10 @@ PrintTeamAndHowToUse()
 		self iprintlnbold("Ready-Up Mode");
 
 
+	// Dont print more for streamers
+	if (self.pers["team"] == "streamer")
+		return;
+
 	// Press F for readyup
 	self iprintlnbold(game["STRING_READYUP_KEY_ACTIVATE_PRESS"]);
 
@@ -694,7 +824,7 @@ PrintTeamAndHowToUse()
 	}
 	else if (in_mapswitch && level.scr_readyup_autoresume_map > 0)
 	{
-		text = "Readyup length: ^1" + level.scr_readyup_autoresume_map + " ^7min"; if (level.scr_readyup_autoresume_map >= 2) text += "s";
+		text = "Ready-Up length: ^1" + level.scr_readyup_autoresume_map + " ^7min"; if (level.scr_readyup_autoresume_map >= 2) text += "s";
 		self iprintlnbold(text);
 	}
 }
@@ -748,7 +878,7 @@ ReadyUp_AutoResume(minutes)
 	{
 		player = players[i];
 
-		if (player maps\mp\gametypes\_bots::isBot())
+		if (player.pers["isBot"])
 			continue;
 
 		if (player.pers["team"] != "allies" && player.pers["team"] != "axis")
@@ -840,7 +970,7 @@ Update_Players_Count()
 /////////////////////////////////////////////////////////////////////////////
 //                                                                          /
 //                                                              Waiting On  /
-// 	                                                                3       /
+// 	                                                            3       /
 //                                                               Players    /
 //                                                                          /
 //                                                                          /
@@ -895,49 +1025,109 @@ createLevelHUD()
 
 
 // Your Status: Ready
-HUD_Player_Status()
+HUD_Player_Status(destroy)
 {
-    self endon("disconnect");
+	self endon("disconnect");
 
-    // Your status
-    self.status = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 120, 1.2, (0.8,1,1), "center", "middle", "right");
-	self.status setText(game["STRING_READYUP_YOUR_STATUS"]);
+	self notify("HUD_Player_Status");
+	self endon("HUD_Player_Status");
 
-	// Ready / Not ready
-    self.readyhud = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 135, 1.2, (1, .66, .66), "center", "middle", "right");
-    self.readyhud.archived = false;         // show my status instead of spectating players status if im following another player
-	self.readyhud setText(game["STRING_READYUP_NOT_READY"]);
+	if (!isDefined(destroy))
+	{
+		// Your status
+		self.status = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 120, 1.2, (0.8,1,1), "center", "middle", "right");
+		self.status.archived = false;         // show only my hud when spectating player
+		self.status setText(game["STRING_READYUP_YOUR_STATUS"]);
 
-    level waittill("rupover");
+		// Ready / Not ready
+		self.readyhud = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 135, 1.2, (1, .66, .66), "center", "middle", "right");
+		self.readyhud.archived = false;         // show my status instead of spectating players status if im following another player
+		self.readyhud setText(game["STRING_READYUP_NOT_READY"]);
 
-    // Remove hud when RUP is over
-    self.status thread removeHUDSmooth(1);
-    self.readyhud thread removeHUDSmooth(1);
+		if (self.isReady)	setReady();
+		else			unsetReady();
+
+		level waittill("rupover");
+
+		// Remove hud when RUP is over
+		self.status thread destroyHUDSmooth(1);
+		self.readyhud thread destroyHUDSmooth(1);
+	}
+	else if (isDefined(self.status))
+	{
+		self.status destroy2();
+		self.readyhud destroy2();
+	}
 }
 
 // Killing: Enabled
-HUD_Player_Killing_Status()
+HUD_Player_Killing_Status(destroy)
 {
-    self endon("disconnect");
+	self endon("disconnect");
 
-    self.ru_killing_text = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 170, 1.2, (.7, 0.9, 0.9), "center", "middle", "right");
-    self.ru_killing_text SetText(game["STRING_READYUP_KILLING"]);
+	self notify("HUD_Player_Killing_Status");
+	self endon("HUD_Player_Killing_Status");
 
-    self.ru_killing_status = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 185, 1.2, (1, .66, .66), "center", "middle", "right");
-    self.ru_killing_status SetText(game["STRING_READYUP_KILLING_DISABLED"]);
+	if (!isDefined(destroy))
+	{
+		self.ru_killing_text = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 170, 1.2, (.7, 0.9, 0.9), "center", "middle", "right");
+		self.ru_killing_text.archived = false;         // show only my hud when spectating player
+		self.ru_killing_text SetText(game["STRING_READYUP_KILLING"]);
 
-    level waittill("rupover");
+		self.ru_killing_status = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 185, 1.2, (1, .66, .66), "center", "middle", "right");
+		self.ru_killing_status.archived = false;         // show only my hud when spectating player
+		if (level.in_timeout)
+			self.ru_killing_status SetText(game["STRING_READYUP_DASH"]);
+		else
+			self.ru_killing_status SetText(game["STRING_READYUP_KILLING_DISABLED"]);
 
-    self.ru_killing_text FadeOverTime(1);
-    self.ru_killing_text.alpha = 0;
-    self.ru_killing_status FadeOverTime(1);
-    self.ru_killing_status.alpha = 0;
+		level waittill("rupover");
 
-    wait level.fps_multiplier * 1;
-
-    self.ru_killing_text destroy2();
-    self.ru_killing_status destroy2();
+		self.ru_killing_text thread destroyHUDSmooth(1);
+		self.ru_killing_status thread destroyHUDSmooth(1);
+	}
+	else if (isDefined(self.ru_killing_text))
+	{
+		self.ru_killing_text destroy2();
+		self.ru_killing_status destroy2();
+	}
 }
+
+
+
+
+// Killing: Enabled
+HUD_Player_Aim_Trainer_Status(destroy)
+{
+	self endon("disconnect");
+
+	self notify("HUD_Player_Aim_Trainer_Status");
+	self endon("HUD_Player_Aim_Trainer_Status");
+
+	if (!isDefined(destroy))
+	{
+		self.ru_aimtrainer_text = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 220, 1.2, (.7, 0.9, 0.9), "center", "middle", "right");
+		self.ru_aimtrainer_text.archived = false;         // show only my hud when spectating player
+		self.ru_aimtrainer_text SetText(game["STRING_READYUP_AIM_TRAINER"]);
+
+		self.ru_aimtrainer_status = addHUDClient(self, level.hud_readyup_offsetX, level.hud_readyup_offsetY + 235, 1.2, (1, .66, .66), "center", "middle", "right");
+		self.ru_aimtrainer_status.archived = false;         // show only my hud when spectating player
+		//self.ru_aimtrainer_status SetText(game["STRING_READYUP_AIM_TRAINER_NOT_SUPPORTED"]);
+
+		self setAimTraining();
+
+		level waittill("rupover");
+
+		self.ru_aimtrainer_text thread destroyHUDSmooth(1);
+		self.ru_aimtrainer_status thread destroyHUDSmooth(1);
+	}
+	else if (isDefined(self.ru_aimtrainer_text))
+	{
+		self.ru_aimtrainer_text destroy2();
+		self.ru_aimtrainer_status destroy2();
+	}
+}
+
 
 
 HUD_Clock()
@@ -945,7 +1135,7 @@ HUD_Clock()
 	// Clock
 	level.timertext = newHudElem2();
 	level.timertext.x = level.hud_readyup_offsetX;
-	level.timertext.y = level.hud_readyup_offsetY + 220; //170
+	level.timertext.y = level.hud_readyup_offsetY + 270;
 	level.timertext.horzAlign = "right";
 	level.timertext.alignX = "center";
 	level.timertext.alignY = "middle";
@@ -955,7 +1145,7 @@ HUD_Clock()
 
 	level.stim = newHudElem2();
 	level.stim.x = level.hud_readyup_offsetX;
-	level.stim.y = level.hud_readyup_offsetY + 235; // 185
+	level.stim.y = level.hud_readyup_offsetY + 285;
 	level.stim.horzAlign = "right";
 	level.stim.alignX = "center";
 	level.stim.alignY = "middle";
@@ -963,16 +1153,16 @@ HUD_Clock()
 	level.stim.color = (.98, .98, .60);
 	level.stim SetTimerUp(0.1);
 
-    level waittill("rupover");
+	level waittill("rupover");
 
-    level.timertext FadeOverTime(1);
-    level.timertext.alpha = 0;
-    level.stim FadeOverTime(1);
-    level.stim.alpha = 0;
+	level.timertext FadeOverTime(1);
+	level.timertext.alpha = 0;
+	level.stim FadeOverTime(1);
+	level.stim.alpha = 0;
 
-    wait level.fps_multiplier * 1;
+	wait level.fps_multiplier * 1;
 
-    level.timertext destroy2();
+	level.timertext destroy2();
 	level.stim destroy2();
 
 }
@@ -1067,7 +1257,7 @@ HUD_ReadyUp_ResumingIn(minutes)
 
     	level.ht_resume = newHudElem2();
 	level.ht_resume.x = level.hud_readyup_offsetX;
-	level.ht_resume.y = level.hud_readyup_offsetY + 220;
+	level.ht_resume.y = level.hud_readyup_offsetY + 270;
 	level.ht_resume.horzAlign = "right";
 	level.ht_resume.color = (0.8, 0.3, 0);
 	level.ht_resume.alignX = "center";
@@ -1078,7 +1268,7 @@ HUD_ReadyUp_ResumingIn(minutes)
 
 	level.ht_resume_clock = newHudElem2();
 	level.ht_resume_clock.x = level.hud_readyup_offsetX;
-	level.ht_resume_clock.y = level.hud_readyup_offsetY + 235;
+	level.ht_resume_clock.y = level.hud_readyup_offsetY + 285;
 	level.ht_resume_clock.horzAlign = "right";
 	level.ht_resume_clock.color = (.98, .98, .60);
 	level.ht_resume_clock.alignX = "center";
@@ -1106,13 +1296,13 @@ HUD_ReadyUp_ResumingIn_ExtraTime()
 	level endon("readyup_removeAutoResume");
 
 	// Set your team as ready to skip readyup
-	level.setYourTeamAsReadyBG = addHUD(-160, 347, undefined, (1,1,1), "left", "top", "center", "top");
+	level.setYourTeamAsReadyBG = addHUD(-160, 337, undefined, (1,1,1), "left", "top", "center", "top");
     	level.setYourTeamAsReadyBG setShader("black", 320, 20);
         level.setYourTeamAsReadyBG.alpha = 0.75;
 
         level.setYourTeamAsReady = newHudElem2();
         level.setYourTeamAsReady.x = 320;
-        level.setYourTeamAsReady.y = 350;
+        level.setYourTeamAsReady.y = 340;
         level.setYourTeamAsReady.alignX = "center";
         level.setYourTeamAsReady.alignY = "top";
         level.setYourTeamAsReady.fontScale = 1.1;
@@ -1125,7 +1315,7 @@ HUD_ReadyUp_ResumingIn_ExtraTime()
 	// Red extra time
 	level.ht_resume_clock_extra = newHudElem2();
 	level.ht_resume_clock_extra.x = level.hud_readyup_offsetX;
-	level.ht_resume_clock_extra.y = level.hud_readyup_offsetY + 248;
+	level.ht_resume_clock_extra.y = level.hud_readyup_offsetY + 298;
 	level.ht_resume_clock_extra.horzAlign = "right";
 	level.ht_resume_clock_extra.color = (.98, .2, .2);
 	level.ht_resume_clock_extra.alignX = "center";

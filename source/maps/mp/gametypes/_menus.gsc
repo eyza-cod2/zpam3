@@ -30,7 +30,7 @@ onStartGameType()
 		game["menu_quicksettings"] = "quicksettings";
 		game["menu_mousesettings"] = "mousesettings";
 		game["menu_scoreboard"] = "scoreboard_sd";
-		game["menu_spectatingsystem"] = "spectatingsystem";
+		game["menu_streamersystem"] = "streamersystem";
 		game["menu_strat_records"] = "strat_records";
 
 		precacheMenu(game["menu_moddownload"]);
@@ -48,7 +48,7 @@ onStartGameType()
 		precacheMenu(game["menu_quicksettings"]);
 		precacheMenu(game["menu_mousesettings"]);
 		precacheMenu(game["menu_scoreboard"]);
-		precacheMenu(game["menu_spectatingsystem"]);
+		precacheMenu(game["menu_streamersystem"]);
 		precacheMenu(game["menu_strat_records"]);
 
 		// Rifle mode use different menu for allies and axis
@@ -333,7 +333,7 @@ onMenuResponse(menu, response)
 			self closeInGameMenu();
 			self [[level.streamer]]();
 			if(self.pers["team"] != teamBefore)
-				self thread printTeamChanged(self.name + " Joined Spectators as streamer", "");
+				self thread printTeamChanged(self.name + " Joined as Streamer", "");
 			break;
 
 		case "options":

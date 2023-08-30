@@ -1,0 +1,8 @@
+// Menu just to allow command /openScriptMenu to use streamersystem as menu name
+menuDef
+{
+  	name			streamersystem
+	rect			0 0 1 1
+	style			0
+	fullscreen		1
+}

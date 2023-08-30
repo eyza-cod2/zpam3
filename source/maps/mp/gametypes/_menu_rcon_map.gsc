@@ -18,14 +18,14 @@ init()
 	map["mp_rhine"] = true;
 	map["mp_toujane"] = true;
 	map["mp_trainstation"] = true;
-	map["mp_toujane_fix_v2"] = true;
-	map["mp_burgundy_fix_v1"] = true;
-	map["mp_dawnville_fix_v2"] = true;
-	map["mp_matmata_fix_v2"] = true;
-	map["mp_carentan_fix_v2"] = true;
+	map["mp_toujane_fix"] = true;
+	map["mp_burgundy_fix"] = true;
+	map["mp_dawnville_fix"] = true;
+	map["mp_matmata_fix"] = true;
+	map["mp_carentan_fix"] = true;
 	map["mp_vallente"] = true;
 	map["mp_breakout_tls"] = true;
-	map["mp_chelm"] = true;
+	map["mp_chelm_fix"] = true;
 	map["wawa_3daim"] = true;
 	map["fast_restart"] = true;
 
@@ -93,12 +93,12 @@ generateUUID()
 	if (!isDefined(self.pers["rcon_map_uuid"]))
 	{
 		// Generate random hash
-		avaibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
+		availableChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
 		hash = "";
 		for (len = 0; len < 32; len++)
 		{
-			randIndex = randomintrange(0, avaibleChars.size);// Returns a random integer r, where min <= r < max
-			hash = hash + "" + avaibleChars[randIndex];
+			randIndex = randomintrange(0, availableChars.size);// Returns a random integer r, where min <= r < max
+			hash = hash + "" + availableChars[randIndex];
 		}
 		//println("uuid " + hash + " generated for player" +self.name);
 
@@ -435,6 +435,8 @@ mapOptions_updateRconCommand()
 	mapChanged = self.pers["rcon_map_map"] != level.mapname;
 	pamChanged = self.pers["rcon_map_pam"] != pam_mode && !stratSelected;
 
+	russianSubModeChanged = contains(self.pers["rcon_map_pam"], "russian") != contains(pam_mode, "russian");
+
 	scoreAlliesChanged = self.pers["rcon_map_scoreAllies"] != -1;
 	scoreAxisChanged = self.pers["rcon_map_scoreAxis"] != -1;
 	scoreAllowed = game["readyup_first_run"] && (self.pers["rcon_map_gametype"] == "sd" || self.pers["rcon_map_gametype"] == "re") && !fastRestart && !pamChanged && !gametypeChanged;
@@ -493,7 +495,7 @@ mapOptions_updateRconCommand()
 			}
 
 			// If map of gametype is changed, map needs to be reseted
-			if (mapChanged || gametypeChanged)
+			if (mapChanged || gametypeChanged || russianSubModeChanged)
 			{
 				rconString += "/rcon map " + self.pers["rcon_map_map"] + "; ";
 				self.pers["rcon_map_apply_action"] = self.pers["rcon_map_map"];

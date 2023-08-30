@@ -19,12 +19,12 @@
 
 	menuDef
 	{
-	  	name matchinfo
+	  	name matchinfo_ingame
 	  	fullScreen MENU_FALSE
 	  	visible MENU_TRUE
-	    rect 0 0 200 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+	    	rect 0 0 200 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
 
-			#include "ui_mp/scriptmenus/submenus/matchinfo_hud.menu"
+		MATCHINFO("ui_matchinfo_ingame_team1_team", "ui_matchinfo_ingame_team2_team", "ui_matchinfo_ingame_show", 0.3 0.3 0.9 .7, 0.7 0 0 .6)
 	}
 
 	menuDef

@@ -99,7 +99,6 @@ onConnected()
 		// By default show match info ingame
 		self.pers["matchinfo_ingame"] = false;
 		self.pers["matchinfo_ingame_visible"] = false;
-		self.pers["matchinfo_showedForSpectator"] = false;
 	}
 
 
@@ -129,20 +128,15 @@ onConnected()
 
 onJoinedTeam(teamName)
 {
-	// Always show for spectator, even if its not enabled in settings
-	if (teamName == "spectator" || teamName == "streamer")
+	// Always hide ingame menu for streamer as they have own menu
+	if (teamName == "streamer")
 	{
-		self ingame_show();
-		self.pers["matchinfo_showedForSpectator"] = true;
+		self ingame_hide();
 	}
 	else
 	{
-		// Always hide ingame bar on team join if is not enabled
-		if (!ingame_isEnabled())
-			ingame_hide();
-
-		if (self.pers["matchinfo_showedForSpectator"])
-			self.pers["matchinfo_showedForSpectator"] = false;
+		if (ingame_isEnabled())
+			ingame_show();
 	}
 }
 
@@ -180,7 +174,7 @@ ingame_toggle()
 // Show match info ingame menu elements in hud menu
 ingame_show()
 {
-	if (!self.pers["matchinfo_ingame_visible"])
+	if (!self.pers["matchinfo_ingame_visible"] && self.pers["team"] != "streamer") // Always hide ingame menu for streamer as they have own menu
 	{
 		self.pers["matchinfo_ingame_visible"] = true;
 		if (game["scr_matchinfo"] > 0)
@@ -198,8 +192,6 @@ ingame_hide()
 	{
 		self.pers["matchinfo_ingame_visible"] = false;
 		self setClientCvarIfChanged("ui_matchinfo_ingame_show", "0");
-		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_color", 	""); // bg elements cannot be dependend on _show cvar, needs to be set separately
-		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_color", 	"");
 		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_team", 	""); // bg elements cannot be dependend on _show cvar, needs to be set separately
 		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_team", 	"");
 		if (game["scr_matchinfo"] > 0)
@@ -252,23 +244,33 @@ processPreviousMapToHistory()
 	// If prev map is defined, it means match started and this score needs to be saved
 	if (prevMap_map != "")
 	{
+		// Move 2. saved map to 3. (removing the third)
+		setCvar("sv_map3_name", 	getCvar("sv_map2_name"));
+		setCvar("sv_map3_team1", 	getCvar("sv_map2_team1"));
+		setCvar("sv_map3_team2", 	getCvar("sv_map2_team2"));
+		setCvar("sv_map3_score1", 	getCvar("sv_map2_score1"));
+		setCvar("sv_map3_score2", 	getCvar("sv_map2_score2"));
+
 		// Move 1. saved map to 2. (removing the second)
 		setCvar("sv_map2_name", 	getCvar("sv_map1_name"));
 		setCvar("sv_map2_team1", 	getCvar("sv_map1_team1"));
 		setCvar("sv_map2_team2", 	getCvar("sv_map1_team2"));
-		setCvar("sv_map2_score", 	getCvar("sv_map1_score"));
+		setCvar("sv_map2_score1", 	getCvar("sv_map1_score1"));
+		setCvar("sv_map2_score2", 	getCvar("sv_map1_score2"));
 
 		// Save previous map to history at first location
 		setCvar("sv_map1_name", prevMap_map);
 		setCvar("sv_map1_team1", getCvar("sv_map_team1"));
 		setCvar("sv_map1_team2", getCvar("sv_map_team2"));
-		setCvar("sv_map1_score", getCvar("sv_map_score"));
+		setCvar("sv_map1_score1", getCvar("sv_map_score1"));
+		setCvar("sv_map1_score2", getCvar("sv_map_score2"));
 
 		// remove prev map info
 		setCvar("sv_map_name", "");
 		setCvar("sv_map_team1", "");
 		setCvar("sv_map_team2", "");
-		setCvar("sv_map_score", "");
+		setCvar("sv_map_score1", "");
+		setCvar("sv_map_score2", "");
 	}
 }
 
@@ -354,7 +356,8 @@ resetAll()
 	setCvar("sv_map_name", "");
 	setCvar("sv_map_team1", "");
 	setCvar("sv_map_team2", "");
-	setCvar("sv_map_score", "");
+	setCvar("sv_map_score1", "");
+	setCvar("sv_map_score2", "");
 
 	setCvar("sv_match_totaltime", "");
 	setCvar("sv_match_players", "");
@@ -367,12 +370,13 @@ resetAll()
 	game["match_totaltime_prev"] = 0;
 
 	// Reset cvars
-	for (i = 1; i <= 2; i++)
+	for (i = 1; i <= 3; i++)
 	{
 		setCvar("sv_map" + i + "_name", 	"");
 		setCvar("sv_map" + i + "_team1", 	"");
 		setCvar("sv_map" + i + "_team2", 	"");
-		setCvar("sv_map" + i + "_score", 	"");
+		setCvar("sv_map" + i + "_score1", 	"");
+		setCvar("sv_map" + i + "_score2", 	"");
 	}
 
 	game["match_team1_name"] = "";
@@ -467,11 +471,13 @@ ToUpper(char)
 
 GetMapName(mapname)
 {
-	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix_v2")			return "Toujane";
-	if (mapname == "mp_burgundy" || mapname == "mp_burgundy_fix_v1")		return "Burgundy";
-	if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix_v2")		return "Dawnville";
-	if (mapname == "mp_matmata" || mapname == "mp_matmata_fix_v2")			return "Matmata";
-	if (mapname == "mp_carentan" || mapname == "mp_carentan_fix_v2")		return "Carentan";
+	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix")		return "Toujane";
+	if (mapname == "mp_burgundy" || mapname == "mp_burgundy_fix")		return "Burgundy";
+	if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix")		return "Dawnville";
+	if (mapname == "mp_matmata" || mapname == "mp_matmata_fix")		return "Matmata";
+	if (mapname == "mp_carentan" || mapname == "mp_carentan_fix")		return "Carentan";
+	if (mapname == "mp_breakout_tls")					return "Breakout TLS";
+	if (mapname == "mp_chelm_fix")						return "Chelm";
 
 	if (mapname == "" || mapname.size < 3)
 		return mapname;
@@ -485,116 +491,49 @@ GetMapName(mapname)
 
 UpdatePlayerCvars()
 {
-
-
 	if (game["scr_matchinfo"] > 0)
 	{
-		side_left  = "";
-		side_right = "";
+		teamNum_left  = "team1";
+		teamNum_right = "team2";
 
-		ui_name_left = "";
-		ui_name_right = "";
-
-		// Match info with team names
-		if (game["scr_matchinfo"] == 2)
+		// Set player's team always on left
+		if (isDefined(self.pers["team"]) && self.pers["team"] == game["match_team2_side"])
 		{
-			// Set player's team always on left
-			team_left  = "team1";
-			team_right = "team2";
-			if (isDefined(self.pers["team"]) && self.pers["team"] == game["match_team2_side"])
-			{
-					team_left  = "team2";
-					team_right = "team1";
-			}
-			side_left = game["match_"+team_left+"_side"];
-			side_right = game["match_"+team_right+"_side"];
-
-			name_left = game["match_"+team_left+"_name"];
-			name_right = game["match_"+team_right+"_name"];
-			// Handle empty teams
-			if (name_left == "")  name_left = "?";
-			if (name_right == "") name_right = "?";
-
-			ui_name_left = game["match_"+team_left+"_score"] + "    " + name_left;
-			ui_name_right = game["match_"+team_right+"_score"] + "    " + name_right;
+			teamNum_left  = "team2";
+			teamNum_right = "team1";
 		}
 
-		// Match info with default allies axis
-		else if (game["scr_matchinfo"] == 1)
+		name_left = game["match_"+teamNum_left+"_name"];
+		name_right = game["match_"+teamNum_right+"_name"];
+		// Rename teams when matchinfo is without team names
+		if (game["scr_matchinfo"] == 1 && isDefined(self.pers["team"]) && (self.pers["team"] == "allies" || self.pers["team"] == "axis"))
 		{
-			// Set player's team always on left
-			side_left  = "allies";
-			side_right = "axis";
-			name_left  = "Allies";
-			name_right = "Axis";
-			if (isDefined(self.pers["team"]))
-			{
-				if (self.pers["team"] == "axis")
-				{
-					side_left  = "axis";
-					side_right = "allies";
-				}
-				if (self.pers["team"] == "allies" || self.pers["team"] == "axis")
-				{
-					name_left  = "My Team";
-					name_right = "Enemy";
-				}
-			}
-
-			ui_name_left = game[side_left+"_score"] + "    " + name_left;
-			ui_name_right = game[side_right+"_score"] + "    " + name_right;
+			name_left  = "My Team";
+			name_right = "Enemy";
 		}
+		// Handle empty teams
+		if (name_left == "")  name_left = "?";
+		if (name_right == "") name_right = "?";
 
 
-		side_left_color = "";
-		side_right_color = "";
+		ui_name_left = game["match_"+teamNum_left+"_score"] + "    " + name_left;
+		ui_name_right = game["match_"+teamNum_right+"_score"] + "    " + name_right;
+
+
+
+
+		side_left = game["match_"+teamNum_left+"_side"];
+		side_right = game["match_"+teamNum_right+"_side"];
+
 		side_left_team = "";
 		side_right_team = "";
 		if (side_left == "allies")
 		{
-			// For streamers make allies always blue and axis always red
-			// For this there is special sufix indicating the color
-			if (self.pers["team"] == "streamer")
-			{
-				side_left_color = "3"; // blue
-				side_right_color = "1"; // red
-			}
-			else
-			{
-				if(game["allies"] == "american")
-					side_left_color = "2"; // green
-				else if(game["allies"] == "british")
-					side_left_color = "3"; // blue
-				else if(game["allies"] == "russian")
-					side_left_color = "1"; // red
-
-				side_right_color = "4"; // gray
-			}
-
 			side_left_team = game["allies"]; // american british russian
 			side_right_team = game["axis"];	 // german
 		}
 		else
 		{
-			// For streamers make allies always blue and axis always red
-			// For this there is special sufix indicating the color
-			if (self.pers["team"] == "streamer")
-			{
-				side_right_color = "3"; // blue
-				side_left_color = "1"; // red
-			}
-			else
-			{
-				if(game["allies"] == "american")
-					side_right_color = "2"; // green
-				else if(game["allies"] == "british")
-					side_right_color = "3"; // blue
-				else if(game["allies"] == "russian")
-					side_right_color = "1"; // red
-
-				side_left_color = "4"; // gray
-			}
-
 			side_left_team = game["axis"]; 	  // german
 			side_right_team = game["allies"]; // american british russian
 		}
@@ -605,19 +544,12 @@ UpdatePlayerCvars()
 		self setClientCvarIfChanged("ui_matchinfo_team1_name", ui_name_left);
 		self setClientCvarIfChanged("ui_matchinfo_team2_name", ui_name_right);
 
-		// Background color according to team
-		self setClientCvarIfChanged("ui_matchinfo_team1_color", side_left_color);
-		self setClientCvarIfChanged("ui_matchinfo_team2_color", side_right_color);
-
 		// Team
 		self setClientCvarIfChanged("ui_matchinfo_team1_team", 	side_left_team);
 		self setClientCvarIfChanged("ui_matchinfo_team2_team", 	side_right_team);
 
 		if (self.pers["matchinfo_ingame_visible"])
 		{
-			self setClientCvarIfChanged("ui_matchinfo_ingame_team1_color", 	side_left_color);
-			self setClientCvarIfChanged("ui_matchinfo_ingame_team2_color", 	side_right_color);
-
 			self setClientCvarIfChanged("ui_matchinfo_ingame_team1_team", 	side_left_team);
 			self setClientCvarIfChanged("ui_matchinfo_ingame_team2_team", 	side_right_team);
 		}
@@ -639,7 +571,7 @@ UpdatePlayerCvars()
 				if (level.gametype == "sd")
 				{
 					if (!game["is_halftime"])
-						halfInfo = "Rounds to half:   " + (level.halfround-game["round"]);
+						halfInfo = "Rounds to half:   " + (level.halfround - game["round"]);
 					else
 						halfInfo = "First half score:   " + game["half_1_"+side_right+"_score"] + " : " + game["half_1_"+side_left+"_score"];
 				}
@@ -659,10 +591,22 @@ UpdatePlayerCvars()
 		self setClientCvarIfChanged("ui_matchinfo_matchtime", matchtimetext);
 
 		// Map history
-		for (j = 1; j <= 2; j++)
+		for (j = 1; j <= 3; j++)
 		{
-			self setClientCvarIfChanged("ui_matchinfo_map" + j, GetMapName(getCvar("sv_map" + j + "_name")) + "  " + getCvar("sv_map" + j + "_score"));
+			map = GetMapName(getCvar("sv_map" + j + "_name"));
+			score1 = getCvar("sv_map" + j + "_score1");
+			score2 = getCvar("sv_map" + j + "_score2");
+			if (teamNum_left == "team2")
+			{
+				temp = score1;
+				score1 = score2;
+				score2 = temp;
+			}
+			score = "";
+			if (score1 != "" && score2 != "")
+				score = score1 + ":" + score2;
 
+			self setClientCvarIfChanged("ui_matchinfo_map" + j, map + "  " + score);
 			//self setClientCvarIfChanged("ui_matchinfo_map" + j, "Toujane  13:7");
 		}
 	}
@@ -671,11 +615,6 @@ UpdatePlayerCvars()
 		// Team names
 		self setClientCvarIfChanged("ui_matchinfo_team1_name", "");
 		self setClientCvarIfChanged("ui_matchinfo_team2_name", "");
-
-		self setClientCvarIfChanged("ui_matchinfo_team1_color", "");
-		self setClientCvarIfChanged("ui_matchinfo_team2_color", "");
-		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_color", "");
-		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_color", "");
 
 		self setClientCvarIfChanged("ui_matchinfo_team1_team", "");
 		self setClientCvarIfChanged("ui_matchinfo_team2_team", "");
@@ -794,14 +733,17 @@ refresh()
 
 		else if (game["scr_matchinfo"] == 1) // basic info (no team names)
 		{
-			game["match_team1_name"] = "Allies";
-			game["match_team2_name"] = "Axis";
+			if (!game["match_teams_set"])
+			{
+				game["match_team1_name"] = "Team 1";
+				game["match_team2_name"] = "Team 2";
 
-			game["match_team1_side"] = "allies";
-			game["match_team2_side"] = "axis";
+				game["match_team1_side"] = "allies";
+				game["match_team2_side"] = "axis";
+			}
 
-			game["match_team1_score"] = game["allies_score"];
-			game["match_team2_score"] = game["axis_score"];
+			game["match_team1_score"] = game[game["match_team1_side"] + "_score"];
+			game["match_team2_score"] = game[game["match_team2_side"] + "_score"];
 		}
 
 
@@ -854,10 +796,11 @@ refresh()
 		/***********************************************************************************************************************************/
 
 		// Save data from this map for next map
-		if ((game["match_teams_set"] || game["scr_matchinfo"] == 1) && elapsedTime > (3*60) && game["allies_score"] > 0 && game["axis_score"] > 0) // save map into hostory after 3 mins
+		if ((game["match_teams_set"] || game["scr_matchinfo"] == 1) && elapsedTime > (3*60) && (game["allies_score"] + game["axis_score"]) > 1) // save map into hostory after 3 mins
 		{
 			setCvarIfChanged("sv_map_name", level.mapname);
-			setCvarIfChanged("sv_map_score", game["match_team1_score"] + " : " + game["match_team2_score"]);
+			setCvarIfChanged("sv_map_score1", game["match_team1_score"]);
+			setCvarIfChanged("sv_map_score2", game["match_team2_score"]);
 		}
 
 
@@ -906,7 +849,7 @@ refresh()
 		if (game["match_team2_name"] != "") 	setCvarIfChanged("_match_team2", game["match_team2_name"]);
 		else					setCvarIfChanged("_match_team2", "-");
 
-		if (getcvar("sv_map_score") != "") 	setCvarIfChanged("_match_score", getcvar("sv_map_score"));
+		if (getcvar("sv_map_score1") != "") 	setCvarIfChanged("_match_score", getcvar("sv_map_score1") + ":" + getcvar("sv_map_score2"));
 		else					setCvarIfChanged("_match_score", "-");
 
 		if (game["match_round"] != "") 		setCvarIfChanged("_match_round", game["match_round"]);

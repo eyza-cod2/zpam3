@@ -35,13 +35,13 @@
 
 
 		// MENU CHOICES
-		ITEM_WEAPON(ORIGIN_CHOICE1, "button_kar98k", 		"@RIFLES_1_KAR98K", 			"ui_allow_kar98k", 			"weapon_kar98", 		show weapon_kar98;, 		scriptMenuResponse "kar98k_mp";, 		"us_grenade_C",	"boltaction")
-		ITEM_WEAPON(ORIGIN_CHOICE2, "button_enfield", 		"@RIFLES_2_LEEENFIELD", 		"ui_allow_enfield", 		"weapon_enfield", 		show weapon_enfield;, 		scriptMenuResponse "enfield_mp";, 		"us_grenade_C",	"boltaction")
-		ITEM_WEAPON(ORIGIN_CHOICE3, "button_nagant", 		"@RIFLES_3_MOSINNAGANT", 		"ui_allow_nagant", 			"weapon_nagant", 		show weapon_nagant;, 		scriptMenuResponse "mosin_nagant_mp";, 	"us_grenade_C",	"boltaction")
-		ITEM_WEAPON(ORIGIN_CHOICE4, "button_kar98k_sniper", 	"@RIFLES_4_SCOPED_KAR98K", 	"ui_allow_kar98ksniper", 	"weapon_kar98scoped", 	show weapon_kar98scoped;, 	scriptMenuResponse "kar98k_sniper_mp";, "us_grenade_C",	"sniper")
-		ITEM_WEAPON(ORIGIN_CHOICE5, "button_enfieldscoped", 	"@RIFLES_5_SCOPED_LEEENFIELD", "ui_allow_enfieldsniper", "weapon_enfieldscoped", 	show weapon_enfieldscoped;, scriptMenuResponse "enfield_scope_mp";, "us_grenade_C",	"sniper")
-		ITEM_WEAPON(ORIGIN_CHOICE6, "button_nagantsniper", 	"@RIFLES_6_SCOPED_MOSINNAGANT","ui_allow_nagantsniper", 	"weapon_nagantscoped", 	show weapon_nagantscoped;, 	scriptMenuResponse "mosin_nagant_sniper_mp";, "us_grenade_C",	"sniper")
-		ITEM_WEAPON(ORIGIN_CHOICE7, "button_springfield", 	"@RIFLES_7_SPRINGFIELD", "ui_allow_springfield", "weapon_springfield", 	show weapon_springfield;, scriptMenuResponse "springfield_mp";, "us_grenade_C",	"sniper")
+		ITEM_WEAPON(ORIGIN_CHOICE1, "button_kar98k", 		"kar98k_mp", 			"@RIFLES_1_KAR98K", 		"ui_allow_kar98k", 		"weapon_kar98", 		show weapon_kar98;, 		scriptMenuResponse "kar98k_mp";, 		"us_grenade_C",	"boltaction")
+		ITEM_WEAPON(ORIGIN_CHOICE2, "button_enfield", 		"enfield_mp", 			"@RIFLES_2_LEEENFIELD", 	"ui_allow_enfield", 		"weapon_enfield", 		show weapon_enfield;, 		scriptMenuResponse "enfield_mp";, 		"us_grenade_C",	"boltaction")
+		ITEM_WEAPON(ORIGIN_CHOICE3, "button_nagant", 		"mosin_nagant_mp", 		"@RIFLES_3_MOSINNAGANT", 	"ui_allow_nagant", 		"weapon_nagant", 		show weapon_nagant;, 		scriptMenuResponse "mosin_nagant_mp";, 		"us_grenade_C",	"boltaction")
+		ITEM_WEAPON(ORIGIN_CHOICE4, "button_kar98k_sniper", 	"kar98k_sniper_mp", 		"@RIFLES_4_SCOPED_KAR98K", 	"ui_allow_kar98ksniper", 	"weapon_kar98scoped", 		show weapon_kar98scoped;, 	scriptMenuResponse "kar98k_sniper_mp";, 	"us_grenade_C",	"sniper")
+		ITEM_WEAPON(ORIGIN_CHOICE5, "button_enfieldscoped", 	"enfield_scope_mp", 		"@RIFLES_5_SCOPED_LEEENFIELD", 	"ui_allow_enfieldsniper", 	"weapon_enfieldscoped", 	show weapon_enfieldscoped;, 	scriptMenuResponse "enfield_scope_mp";, 	"us_grenade_C",	"sniper")
+		ITEM_WEAPON(ORIGIN_CHOICE6, "button_nagantsniper", 	"mosin_nagant_sniper_mp", 	"@RIFLES_6_SCOPED_MOSINNAGANT",	"ui_allow_nagantsniper", 	"weapon_nagantscoped", 		show weapon_nagantscoped;, 	scriptMenuResponse "mosin_nagant_sniper_mp";, 	"us_grenade_C",	"sniper")
+		ITEM_WEAPON(ORIGIN_CHOICE7, "button_springfield", 	"springfield_mp", 		"@RIFLES_7_SPRINGFIELD", 	"ui_allow_springfield", 	"weapon_springfield", 		show weapon_springfield;, 	scriptMenuResponse "springfield_mp";, 		"us_grenade_C",	"sniper")
 
 
 		// Close

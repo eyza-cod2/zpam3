@@ -36,13 +36,52 @@ onConnected()
 {
 	self.dropped_weapons = 0;
 	self.taked_weapons = 0;
+
+	self.weapon_slot0 = "none";
+	self.weapon_slot1 = "none";
+	self.weapon_current = "none";
 }
 
 onSpawnedPlayer()
 {
-    // Monitor Weapon Drop
-    if (!level.in_readyup && level.gametype != "strat")
-        self thread playersWeaponDrop();
+	if (!level.in_readyup && level.gametype != "strat")
+	{
+		self thread playerWeaponWatcher();
+		self thread playersWeaponDrop();
+	}
+}
+
+playerWeaponWatcher()
+{
+	self endon("disconnect");
+
+	primary = "none";
+	primaryb = "none";
+	current = "none";
+
+	for(;;)
+	{
+		wait level.frame;
+		waittillframeend;
+
+		if (!isAlive(self))
+		{
+			wait level.frame;
+			self.weapon_slot0 = "none";
+			self.weapon_slot1 = "none";
+			self.weapon_current = "none";
+			return;
+		}
+
+		self.weapon_slot0 = primary;
+		self.weapon_slot1 = primaryb;
+		self.weapon_current = current;
+
+		primary = self getWeaponSlotWeapon("primary");
+		primaryb = self getWeaponSlotWeapon("primaryb");
+		current = self getcurrentweapon();
+	}
+
 }
 
 
@@ -84,7 +123,7 @@ playersWeaponDrop()
 				// We can drop weapon only if we have 2 weapons
 				if (slot[0] == "none" || slot[1] == "none")
 				{
-					self iprintln("^3You can not drop your last weapon.");
+					self iprintln("^3Cannot drop your last weapon.");
 					break;
 				}
 
@@ -102,15 +141,14 @@ playersWeaponDrop()
 				// Drop primary weapon only if weapon in secondary slot is big weapon
 				if (current == slot[0] && !isDefined(level.weapons[slot[1]]))
 				{
-					self iprintln("^3Primary weapon can be dropped only if there are 2 main weapons.");
+					self iprintln("^3Primary weapon can be dropped only if you have 2 primary weapons.");
 					break;
 				}
 
 
-
-
 				// Drop weapon
 				self dropItem(current);
+				waittillframeend; // wait before next "weapon_dropped" can be called
 				level notify("weapon_dropped", current, self);
 
 				// Switch to wepoan that left
@@ -128,8 +166,7 @@ playersWeaponDrop()
 				// Play sound in strattime indicating where the weapon is dropped
 				if (isDefined(level.in_strattime) && level.in_strattime)
 				{
-					// TODO delayed
-					//self playSound("zpam_weap_drop");
+					self playSound("zpam_weap_drop");
 				}
 
 				wait level.fps_multiplier * .75;
@@ -161,7 +198,7 @@ Weapon_PickUp_Monitor()
 		{
 			if (!isDefined(entities[i].hasBrain))
 			{
-				entities[i] thread pickup_think(weaponname);
+				entities[i] thread dropped_weapon_think(weaponname);
 			}
 		}
 	}
@@ -169,70 +206,216 @@ Weapon_PickUp_Monitor()
 
 
 // self is reference to dropped weapon
-pickup_think(weaponname) {
-
+dropped_weapon_think(weaponname)
+{
 	self.hasBrain = true;
 
 	//iprintln("## Running thread on spawend weapon " + weaponname);
 
-	//iprintln(self.count);
-	//iprintln(self.spawnflags);
 
-
-    for (;;)
-    {
-    	// Called if weapon is picked up or ammo is used
-    	self waittill("trigger", player, dropedWeaponEntitiy);
-
-
-        //iprintln("trigger weapon: " + weaponname);
-
-
-        // Called even if ammo is picked up
-        player.taked_weapons++;
-        level notify("weapon_taked", weaponname, player); // used in weapon_limiter
+	// Undropable weapon (scope, shotgun) may be dropped when weapon is changed with another weapon
+	// Disable pickup by default and handle pickup by player who drop it
+	if (maps\mp\gametypes\_weapon_limiter::isWeaponDropable(weaponname) == false)
+		self thread undroppable_weapon_think(weaponname);
 
 
 
-    	if (isDefined(dropedWeaponEntitiy))
-    	{
-    		//iprintln(weaponname + " picked up and changed with " + dropedWeaponEntitiy.classname);
-
-    		// Run thread on new dropped weapon // From "weapon_m1garand_mp" to "m1garand_mp"
-            dropedWeaponName = getsubstr(dropedWeaponEntitiy.classname, "weapon_".size);
-    		//dropedWeaponEntitiy thread pickup_think(dropedWeaponName);
-
-            level notify("weapon_dropped", dropedWeaponName, player);
-    	}
-    	else
-    	{
-    		// Weapon was picked up to empty slot or just ammo was picked up
-    		//iprintln(weaponname + " - empty slot or ammo picked up.");
-    	}
+	origin = self.origin;
+	angles = self.angles;
+	model = self.model;
 
 
-        waittillframeend;
+	for (;;)
+	{
+		// Called if weapon is picked up or ammo is used
+		self waittill("trigger", player, dropedWeaponEntitiy);
+
+		//iprintln("trigger weapon: " + weaponname);
+
+		// Called even if ammo is picked up
+		player.taked_weapons++;
 
 
-    	// If non-sniper player pickup sniper weapon on the ground, drop it
-    	// Check, if this picked up weapon is allowed to drop
-    	if (!player maps\mp\gametypes\_weapon_limiter::isWeaponPickable(weaponname))
-    	{
+
+
+		if (isDefined(dropedWeaponEntitiy))
+		{
+			//iprintln(weaponname + " picked up and changed with " + dropedWeaponEntitiy.classname);
+
+			// From "weapon_m1garand_mp" to "m1garand_mp"
+			droppedWeaponName = getsubstr(dropedWeaponEntitiy.classname, "weapon_".size);
+
+			// Run thread on new dropped weapon
+			waittillframeend; // wait before next "weapon_dropped" can be called
+			level notify("weapon_dropped", droppedWeaponName, player);
+		}
+		else
+		{
+			// Weapon was picked up to empty slot or just ammo was picked up
+			//iprintln(weaponname + " - empty slot or ammo picked up.");
+
+			// Is main weapon or pistol (ignore grenade and smoke)
+			if (maps\mp\gametypes\_weapons::isMainWeapon(weaponname) || maps\mp\gametypes\_weapons::isPistol(weaponname))
+			{
+				slot0 = player getWeaponSlotWeapon("primary");
+				slot1 = player getWeaponSlotWeapon("primaryb");
+				current = player getcurrentweapon();
+
+				/*
+				iprintln("-------------------");
+				iprintln(player.weapon_slot0);
+				iprintln(player.weapon_slot1);
+				iprintln(player.weapon_current);
+				iprintln("-------------------");
+				iprintln(slot0);
+				iprintln(slot1);
+				iprintln(current);
+				iprintln("-------------------");
+				*/
+
+				// If there was empty slot in previous frame and that slot now contain this weapon, it means this weapon was picked into empty slot (no ammo pickup)
+				if ((player.weapon_slot0 == "none" && slot0 == weaponname && player.weapon_slot1 == slot1 && player.weapon_slot1 == current) ||
+				    (player.weapon_slot1 == "none" && slot1 == weaponname && player.weapon_slot0 == slot0 && player.weapon_slot0 == current))
+				{
+					//iprintln(weaponname + " - picked up into empty slot");
+				}
+				else
+				{
+					//iprintln(weaponname + " - ammo picked up");
+
+					if (isDefined(level.in_strattime) && level.in_strattime)
+					{
+						// Spawn new weapon - this weapon will act as dropped weaon and have gravity animation
+						wep = spawn("weapon_"+weaponname, origin);
+						wep.angles = angles;
+
+						// Run thread on new dropped weapon
+						waittillframeend; // wait before next "weapon_dropped" can be called
+						level notify("weapon_dropped", weaponName, player);
+
+						return;
+					}
+				}
+			}
+
+
+		}
+
+
+		// In strattime, give player max ammo for picked weapon (needed especialy for scriptly dropped weapons - they dont have max ammo for some reason)
+		if (isDefined(level.in_strattime) && level.in_strattime)
+		{
+			if (maps\mp\gametypes\_weapons::isMainWeapon(weaponname) || maps\mp\gametypes\_weapons::isPistol(weaponname))
+			{
+				//iprintln("giving max ammo for " + weaponname + " (strat_time)");
+				player givemaxammo(weaponname);
+			}
+		}
+
+
+		waittillframeend;
+
+
+		// If non-sniper player pickup sniper weapon on the ground, drop it
+		// Check, if this picked up weapon is allowed to drop
+		// This is JUST IN CASE as the pickup enable/disable logic may not work, because pickup is predicted on client side
+		if (!player maps\mp\gametypes\_weapon_limiter::isWeaponPickable(weaponname))
+		{
 			player iprintln("^3You cannot pickup this limited weapon!");
 
 			// Drop back to ground
 			player dropItem(weaponname);
+			waittillframeend; // wait before next "weapon_dropped" can be called
 			level notify("weapon_dropped", weaponname, player);
 
 			primary = player getWeaponSlotWeapon("primary");
 			primaryb = player getWeaponSlotWeapon("primaryb");
 
 			if (primary != "none")
-				player switchToWeapon(primary);
+			player switchToWeapon(primary);
 			else if (primaryb != "none")
-				player switchToWeapon(primaryb);
-    	}
+			player switchToWeapon(primaryb);
+		}
 
-    }
-	//iprintln("\n");
+	}
+}
+
+
+// self is reference to dropped weapon
+undroppable_weapon_think(weaponname)
+{
+	//iprintln("undroppable_weapon_think("+weaponname+")");
+
+
+	isEnabled = false;
+	self disable_pickup();
+
+	for(;;)
+	{
+		wait level.fps_multiplier * 0.05;
+
+		if (!isDefined(self))
+		{
+			//iprintln("deleted weapon");
+			return;
+		}
+
+		enable = false;
+		players = getentarray("player", "classname");
+		for (i = 0; i < players.size; i++)
+		{
+			player = players[i];
+
+			if (isAlive(player) == false)
+				continue;
+
+			eye = player maps\mp\gametypes\global\player::getEyeOrigin();
+
+			dist = distance(eye, self.origin);
+
+			//player iprintln(dist);
+
+			if (dist > (150 + player.movingDifference * 5))	// 100 + moving offset since pickup is predicted (moving difference is around 18 when running)
+				continue;
+
+			if (player maps\mp\gametypes\_weapon_limiter::isWeaponPickable(weaponname))
+				enable = true;
+			else
+			{
+				enable = false;
+				break;
+			}
+		}
+
+		if (isEnabled != enable)
+		{
+			isEnabled = enable;
+
+			if (enable)	self enable_pickup();
+			else		self disable_pickup();
+		}
+	}
+
+}
+
+/*
+	When weapon is dropped, special content bit is set when there is no ammo to disable pickup
+	This makes the weapon not pickable: (reversed code)
+		if ( !clientAmmoCount && !clipIndex )
+			ent->r.contents &= ~0x200000u;
+*/
+enable_pickup()
+{
+	//iprintln("enabled");
+	old = self setcontents(0); // get old content
+	new = old | 2097152; // 0x200000
+	new = self setcontents(new); // get content
+}
+
+disable_pickup()
+{
+	//iprintln("disabled");
+	old = self setcontents(0); // get old content
+	new = old & -2097153; // 0xFFDFFFFF (negated 0x200000)
+	new = self setcontents(new); // get content
 }

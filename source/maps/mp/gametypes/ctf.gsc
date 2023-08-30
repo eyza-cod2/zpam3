@@ -724,6 +724,11 @@ spawnSpectator(origin, angles)
 
 	if(isdefined(origin) && isdefined(angles))
 		self spawn(origin, angles);
+
+	else if(self.pers["team"] == "streamer")
+	{
+		// Spawn is handled in streamer system
+	}
 	else
 	{
  		spawnpointname = "mp_global_intermission";
@@ -1005,7 +1010,7 @@ endMap()
 	{
 		winningteam = "tie";
 		losingteam = "tie";
-		text = "MP_THE_GAME_IS_A_TIE";
+		text = &"MP_THE_GAME_IS_A_TIE";
 	}
 	else if(alliedscore > axisscore)
 	{
@@ -1037,7 +1042,7 @@ endMap()
 
 		player closeMenu();
 		player closeInGameMenu();
-		player setClientCvar2("cg_objectiveText", text);
+		player setClientCvar("cg_objectiveText", text);
 	}
 
 
@@ -1171,7 +1176,7 @@ flag()
 						}
 
 						thread playSoundOnPlayers(friendlyAlias, self.team);
-						thread playSoundOnPlayers(enemyAlias, enemy);
+						thread playSoundOnPlayers(enemyAlias, enemy, 1);
 
 						//PAM
 						other.pers["score"] += 10;
@@ -1220,7 +1225,7 @@ flag()
 				else // Returned flag
 				{
 					println("RETURNED THE FLAG!");
-					thread playSoundOnPlayers("ctf_touchown", self.team);
+					thread playSoundOnPlayers("ctf_touchown", self.team, 1);
 
 					//PAM
 					if(self.team == "axis")
@@ -1270,7 +1275,7 @@ flag()
 				}
 
 				thread playSoundOnPlayers(friendlyAlias, self.team);
-				thread playSoundOnPlayers(enemyAlias, enemy);
+				thread playSoundOnPlayers(enemyAlias, enemy, 1);
 
 				other thread printOnTeam(" ^3has ^1taken ^3your flag!", self.team);
 				other thread printOnTeam(" ^3has ^2taken ^3the enemy flag!", enemy);
@@ -1527,7 +1532,7 @@ deleteHudIcon()
 }
 
 
-playSoundOnPlayers(sound, team)
+playSoundOnPlayers(sound, team, streamersound)
 {
 	players = getentarray("player", "classname");
 
@@ -1535,8 +1540,13 @@ playSoundOnPlayers(sound, team)
 	{
 		for(i = 0; i < players.size; i++)
 		{
-			if((isdefined(players[i].pers["team"])) && (players[i].pers["team"] == team))
+			if(isdefined(players[i].pers["team"]) && players[i].pers["team"] == team)
 				players[i] playLocalSound(sound);
+
+			if(isdefined(streamersound) && isdefined(players[i].pers["team"]) && players[i].pers["team"] == "streamer")
+			{
+				players[i] playLocalSound(sound);
+			}
 		}
 	}
 	else
@@ -1753,7 +1763,7 @@ menuWeapon(response)
 		response = self maps\mp\gametypes\_weapons::getRandomWeapon();
 
 	// Weapon is not valid or is in use
-	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvaible(response))
+	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvailable(response))
 	{
 		// Open menu with weapons again
 		if(self.pers["team"] == "allies")

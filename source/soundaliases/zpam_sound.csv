@@ -20,10 +20,23 @@ zpam_weap_raise,,misc/wpnarm_2.wav,0.45,0.5,wpnplyr,0.9,1.2,7,500,auto,,,,,,,wea
 
 
 # Weapon drop sound
-zpam_weap_drop,,misc/gun_drop01.wav,0.38,0.45,wpnplyr,0.9,0.9,7,500,auto,,,,,,,,,
+zpam_weap_drop,,misc/gun_drop01.wav,0.7,0.7,wpnplyr,0.9,0.9,7,700,auto,,,,,,,,,
+
 
 
 # Aim trainer missed shot
-aim_trainer_spawn,,misc/bomb_plant_notick01.wav,0.05,0.05,,1,1,,,auto2d,,,,,,,,,,
-aim_trainer_hit,,weapons/impact/Impact_Metal_A07.wav,0.7,0.7,,1,1,,,auto2d,,,,,,,,,,
-aim_trainer_missed_shot,,weapons/impact/bullet_water05.wav,1,1,,2,2,,,auto2d,,,,,,,,,,
+aim_trainer_spawn,,misc/bomb_plant_notick01.wav,0.05,0.05,,1,1,,,auto,,,,,,,,,,
+aim_trainer_hit,,weapons/impact/Impact_Metal_A07.wav,0.7,0.7,,1,1,,,auto,,,,,,,,,,
+aim_trainer_missed_shot,,weapons/impact/bullet_water05.wav,1,1,,2,2,,,auto,,,,,,,,,,
+aim_trainer_piano_1,,piano/a1.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
+aim_trainer_piano_2,,piano/a4.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
+aim_trainer_piano_3,,piano/a5.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
+aim_trainer_piano_4,,piano/b4.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
+aim_trainer_piano_5,,piano/c1.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
+aim_trainer_piano_6,,piano/c5.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
+aim_trainer_piano_7,,piano/d5.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
+aim_trainer_piano_8,,piano/e5.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
+aim_trainer_piano_9,,piano/f2.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
+aim_trainer_piano_10,,piano/f4.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
+aim_trainer_horn,,vehicles/horn_beep.wav,0.9,0.9,,1,1,,,auto,,,,,,,,,,
+aim_trainer_horse,,amb_elements/elm_horse10.wav,1,1,,1,1,,,auto,,,,,,,,,,

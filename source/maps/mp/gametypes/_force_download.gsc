@@ -20,16 +20,19 @@ init()
 
 onConnected()
 {
-	// Ignore if pam is not installed correctly
-	if (level.pam_installation_error)
-		return;
-
 	// Define variables
 	if (!isDefined(self.pers["modDownloaded"]))
 	{
 		self.pers["modDownloaded"] = false;
 		self.pers["downloadDisableResponse"] = false;
 	}
+
+	if (self.pers["isBot"])
+		self.pers["modDownloaded"] = true;
+
+	// Ignore if pam is not installed correctly
+	if (level.pam_installation_error)
+		return;
 
 	if (!self.pers["modDownloaded"] && game["state"] != "intermission")
 	{
@@ -65,7 +68,7 @@ checkDownload()
 
 spawnModNotDownloaded()
 {
-  self endon("disconnect");
+  	self endon("disconnect");
 
 	self setClientCvar2("cl_allowdownload", "1"); // enable downloading on client side (just for sure)
 	self setClientCvar2("cl_wwwdownload", "1");

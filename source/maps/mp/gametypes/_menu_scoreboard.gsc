@@ -8,6 +8,8 @@ To make this possible, we will generate 26 lines and text will be colums where l
 
 init()
 {
+	level.scoreboard_lines = 26;
+
 	addEventListener("onConnected",     ::onConnected);
 
 	if (level.gametype != "sd")
@@ -30,9 +32,29 @@ onConnected()
 	// This will make sure menu is still responsible even if map is restarted (next round)
 	if (self.pers["scoreboard_keepRefreshing"] > 0)
 		self thread generatePlayerList();
+
+	self thread UpdateStandartScoreboard();
 }
 
-// Called also from spectatingsystem after automatically joined streamer (intermission)
+
+UpdateStandartScoreboard()
+{
+	self endon("disconnect");
+
+	wait level.fps_multiplier * 0.5;
+	wait level.frame * (self getentitynumber());
+
+	// This command update info inside standart scoreboard without showing it
+	// Usefull when replaying demo since scoreboard is available only when was opened by player
+	while (1)
+	{
+		self ShowScoreBoard();
+		//self iprintln("updated");
+		wait level.fps_multiplier * 1;
+	}
+}
+
+// Called also from streamersystem after automatically joined streamer (intermission)
 hide_scoreboard(distributed)
 {
 	self endon("disconnect");
@@ -54,7 +76,7 @@ hide_scoreboard(distributed)
 		wait level.fps_multiplier * 0.25;
 
 	// Fill empty lines
-	for(j = 1; j <= 26; j++)
+	for(j = 1; j <= level.scoreboard_lines; j++)
 	{
 		// First line is always header and then empty space, skip
 		if (j == 2 || j == 3) continue;
@@ -123,6 +145,8 @@ onMenuResponse(menu, response)
 
 updatePlayerLists()
 {
+	self endon("disconnect");
+
 	// Refresh changed color
 	self thread generatePlayerList();
 
@@ -131,6 +155,10 @@ updatePlayerLists()
 	for(p = 0; p < players.size; p++)
 	{
 		player = players[p];
+
+		// Player may disconnect because of wait
+		if (!isDefined(player)) continue;
+
 		if (player.pers["team"] == self.pers["team"])
 		{
 			wait level.frame * i; // offset cvar sets
@@ -202,6 +230,23 @@ getTeamPlayersArraySorted()
 	return teamplayers;
 }
 
+getPlayerStats()
+{
+	// Loop statistics of players and save them into array according to team
+	for(i = 0; i < game["playerstats"].size; i++)
+	{
+		stat = game["playerstats"][i];
+		if (stat["deleted"] == false)
+		{
+			if (isDefined(stat["player"]) && stat["player"] == self)
+			{
+				return stat;
+			}
+		}
+	}
+	return undefined;
+}
+
 canBeColorChanged(player)
 {
 	// Enable color change only if we are not in first readyup, only for opponent team
@@ -215,6 +260,10 @@ canBeColorChanged(player)
 
 addLine(stats, name, score, kills, deaths, assists, damages, grenades, plants, defuses)
 {
+	// Lines limit reached
+	if (self.scoreboard.i > level.scoreboard_lines)
+		return;
+
 	// If empty line (parameters of function are not set)
 	if (!isDefined(stats))
 	{
@@ -277,18 +326,26 @@ addPlayerLine(team, stats)
 	else
 		value = "1";
 
-	//added _ means that line can be clicked
-	if (self canBeColorChanged(stats["player"]))
+
+	name = stats["name"];
+	if (isPlayer(stats["player"]) && stats["isConnected"])
 	{
-		value = value + "_";
+		name = stats["player"].name;	// get actual player name with colors
+
+		//added _ means that line can be clicked
+		if (self canBeColorChanged(stats["player"]))
+		{
+			value = value + "_"; // player can be set
+		}
 	}
+	else
+	{
+		value = value + "!"; // player is disconnected
+	}
+
 
 	self setClientCvarIfChanged("ui_scoreboard_line_"+self.scoreboard.i, value);
 
-
-	name = stats["name"];
-	if (stats["isConnected"])
-		name = stats["player"].name;	// get actual player name with colors
 
 	// Final intermission scoreboard
 	if (game["state"] == "intermission")
@@ -320,7 +377,7 @@ addPlayerLine(team, stats)
 	if (stats["isConnected"] == false)
 	{
 		name = "^9[-] ^7" + name;
-		color = "^9";
+		color = "^7";
 	}
 
 
@@ -583,11 +640,11 @@ generatePlayerList(toggle)
 
 		toptext = "";
 		if (topplayer != "")
-			toptext = "^9Top player:        ^7" + topplayer + "\n^7";
+			toptext = "^7Top player:        ^7" + topplayer + "\n^7";
 		if (topplanter != "")
-			toptext += "^9Bomb expert:      ^7" + topplanter + "\n^7";
+			toptext += "^7Bomb expert:      ^7" + topplanter + "\n^7";
 		if (topgrenader != "")
-			toptext += "^9Grenade expert:   ^7" + topgrenader;
+			toptext += "^7Grenade expert:   ^7" + topgrenader;
 
 		addEmptyLine();
 		addEmptyLine();
@@ -595,7 +652,7 @@ generatePlayerList(toggle)
 
 
 		// Fill empty lines
-		for(; self.scoreboard.i <= 26; self.scoreboard.i++)
+		for(; self.scoreboard.i <= level.scoreboard_lines; self.scoreboard.i++)
 		{
 			self setClientCvarIfChanged("ui_scoreboard_line_"+self.scoreboard.i, "0");
 		}
@@ -629,7 +686,7 @@ generatePlayerList(toggle)
 			// Stop scoreboard when
 			// - player is moving (so menu is closed)
 			// - player left clicked
-			// - scoreboard for spectating system is closed
+			// - scoreboard for streamer system is closed
 			if (self.pers["scoreboard_keepRefreshing"] == 0 || (self.pers["scoreboard_keepRefreshing"] == 1 && (self.isMoving || self attackbuttonpressed())))
 			{
 				// Stop refreshing

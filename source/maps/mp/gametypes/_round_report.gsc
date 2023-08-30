@@ -38,7 +38,6 @@ onConnected()
 	self.round_report_myKill = undefined;
 
 	self.round_report_debug = [];
-	self.round_report_debug[0] = "-- Is updated at the end of the round. Only rifle, scope, shotgun and grenade hit is saved --";
 
 	// Set default value
 	if (!isDefined(self.pers["round_report_debug_init"]))
@@ -89,11 +88,22 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 		// Debug information
 		if (sMeansOfDeath == "MOD_RIFLE_BULLET" || sWeapon == "shotgun_mp" || sMeansOfDeath == "MOD_GRENADE_SPLASH")
 		{
-			damageDebug = getTimeString(gettime(), level.bombplanted) + "|" + gettime() + "|" + eAttacker.origin + "|" + self.origin + "|" + distance(eAttacker.origin, self.origin) + "|" + (int(iDamage*10)/10) + "|" + self.health + "|" + sWeapon + "|" + sHitLoc + "|";
-			if (isDefined(vPoint))
-				damageDebug += vPoint;
-			else
-				damageDebug += ".";
+			xyz_hit = "?";
+			if (isDefined(vPoint)) xyz_hit = vPoint;
+
+			damageDebug = getTimeString(gettime(), level.bombplanted) +
+				"|" + gettime() +
+				"|dmg:" + (int(iDamage*10)/10) +
+				"|health:" + self.health +
+				"|xyz_my:" + eAttacker.origin +
+				"|xyz_enemy:" + self.origin +
+				//"|dist:" + distance(eAttacker.origin, self.origin) +
+				"|" + sWeapon +
+				"|" + sHitLoc +
+				"|xyz_hit:" + xyz_hit +
+				"|head:" + self.headTag getOrigin() +
+				"|pelvis:" + self.pelvisTag getOrigin();
+
 			eAttacker.round_report_debug[eAttacker.round_report_debug.size] = damageDebug;
 		}
 
@@ -139,6 +149,7 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 			lastDamage.teamkill = (self != eAttacker) && (self.pers["team"] == eAttacker.pers["team"]);
 			lastDamage.bombPlanted = level.bombplanted;
 			lastDamage.adjustedBy = eAttacker.hitData[self getEntityNumber()].adjustedBy;
+			lastDamage.shotgun_distance = eAttacker.hitData[self getEntityNumber()].shotgun_distance;
 			lastDamage.time = gettime();
 			lastDamage.firstTime = gettime();
 
@@ -202,11 +213,11 @@ sendDebugInfo()
 	// offset thread a litle bit
 	wait level.frame * (self getEntityNumber());
 
-	buffer = "";
+	buffer = "Hits from round " + game["roundsplayed"] + " (only rifle, scope, shotgun and grenade hits are saved)\n";
 	debugIndex = 1;
 	for(i = 0; i < self.round_report_debug.size; i++)
 	{
-		buffer += "\n"+self.round_report_debug[i];
+		buffer += self.round_report_debug[i] + "\n";
 
 		if (buffer.size > 400)
 		{
@@ -242,8 +253,8 @@ print()
 	hitLocTexts["head"] = "Head";
 	hitLocTexts["neck"] = "Neck";
 
-	hitLocTexts["torso_upper"] = "Torso-upper";
-	hitLocTexts["torso_lower"] = "Torso-lower";
+	hitLocTexts["torso_upper"] = "Torso Upper";
+	hitLocTexts["torso_lower"] = "Torso Lower";
 
 	hitLocTexts["left_arm_upper"] = "Shoulder";
 	hitLocTexts["left_arm_lower"] = "Arm";
@@ -294,11 +305,6 @@ print()
 
 			if (log.wasKilled)
 			{
-				// kill 1 to Arm (M1 Garant)
-				// kill 2 with 1 pellet (M1 Garant)
-				// kill 3 237hp to Head (KAR)
-				// kill 4 to Arm (M1 Garant), first hit 45hp to Leg
-
 				// Kill
 				if (log.teamkill)
 					string += "^1team kill " + killNum + "^9";
@@ -352,6 +358,11 @@ print()
 				{
 					string += " " + log.pellets + " pellet";
 					if (log.pellets > 1) string += "s";
+
+					if (log.shotgun_distance > 0)
+					{
+						string += " " + (int(int(log.shotgun_distance) / 10) / 10) + "m";
+					}
 
 					if (log.adjustedBy == "consistent_shotgun_1_kill" || log.adjustedBy == "consistent_shotgun_1_hit")
 						string += " range-1";
@@ -429,23 +440,23 @@ getWeapon(sMeansOfDeath, sWeapon)
 	weaponsTexts["m1garand_mp"] = "M1 Garand";
 	weaponsTexts["thompson_mp"] = "Thompson";
 	weaponsTexts["bar_mp"] = "Bar";
-	weaponsTexts["springfield_mp"] = "Scope";
+	weaponsTexts["springfield_mp"] = "Springfield";
 	weaponsTexts["greasegun_mp"] = "Greasegun";
 	weaponsTexts["shotgun_mp"] = "Shotgun";
-	weaponsTexts["enfield_mp"] = "Rifle";
+	weaponsTexts["enfield_mp"] = "Enfield";
 	weaponsTexts["sten_mp"] = "Sten";
 	weaponsTexts["bren_mp"] = "Bren";
-	weaponsTexts["enfield_scope_mp"] = "Scope";
-	weaponsTexts["mosin_nagant_mp"] = "Rifle";
+	weaponsTexts["enfield_scope_mp"] = "Enfield Scoped";
+	weaponsTexts["mosin_nagant_mp"] = "Mosin Nagant";
 	weaponsTexts["SVT40_mp"] = "SVT40";
 	weaponsTexts["PPS42_mp"] = "PPS42";
 	weaponsTexts["ppsh_mp"] = "PPSH";
-	weaponsTexts["mosin_nagant_sniper_mp"] = "Scope";
-	weaponsTexts["kar98k_mp"] = "Rifle";
+	weaponsTexts["mosin_nagant_sniper_mp"] = "Mosin Nagant Scoped";
+	weaponsTexts["kar98k_mp"] = "Kar98k";
 	weaponsTexts["g43_mp"] = "Gewehr";
 	weaponsTexts["mp40_mp"] = "MP40";
 	weaponsTexts["mp44_mp"] = "MP44";
-	weaponsTexts["kar98k_sniper_mp"] = "Scope";
+	weaponsTexts["kar98k_sniper_mp"] = "Kar98k Scoped";
 	weaponsTexts["colt_mp"] = "Pistol";
 	weaponsTexts["webley_mp"] = "Pistol";
 	weaponsTexts["luger_mp"] = "Pistol";

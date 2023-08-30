@@ -348,8 +348,8 @@ itemDef  \
 #define ORIGIN_USEDBY						310 250
 #define ORIGIN_USEDBY2					302 263
 
-#define ITEM_WEAPON_SMOKE(originpos, stringname, stringtext, cvartext, weaponimage, focusaction, doaction, grenadeimage, class_usedby) \
-ITEM_WEAPON(originpos, stringname, stringtext, cvartext, weaponimage, focusaction, doaction, grenadeimage, class_usedby) \
+#define ITEM_WEAPON_SMOKE(originpos, stringname, weaponname, stringtext, cvartext, weaponimage, focusaction, doaction, grenadeimage, weaponclass) \
+ITEM_WEAPON(originpos, stringname, weaponname, stringtext, cvartext, weaponimage, focusaction, doaction, grenadeimage, weaponclass) \
 itemDef \
 { \
 	name			weaponimage \
@@ -361,7 +361,7 @@ itemDef \
 	decoration \
 }
 
-#define ITEM_WEAPON(originpos, stringname, stringtext, cvartext, weaponimage, focusaction, doaction, grenadeimage, class_usedby) \
+#define ITEM_WEAPON(originpos, stringname, weaponname, stringtext, cvartext, weaponimage, focusaction, doaction, grenadeimage, weaponclass) \
 itemDef \
 { \
 	name			stringname \
@@ -488,7 +488,7 @@ itemDef  \
 	textscale		0.3 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textalign		ITEM_ALIGN_LEFT \
-	dvartest		"ui_weapons_" class_usedby "_usedby" \
+	dvartest		"ui_weapons_usedby_" weaponname \
 	hideDvar		{ "" } \
 	decoration \
 } \
@@ -504,8 +504,8 @@ itemDef  \
 	textscale		0.25 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textalign		ITEM_ALIGN_LEFT \
-	dvar			"ui_weapons_" class_usedby "_usedby"  \
-	dvartest		"ui_weapons_" class_usedby "_usedby" \
+	dvar			"ui_weapons_usedby_" weaponname  \
+	dvartest		"ui_weapons_usedby_" weaponname  \
 	hideDvar		{ "" } \
 	decoration \
 }
@@ -704,6 +704,10 @@ itemDef \
 }
 
 
+
+
+
+
 #define MATCHINFO_BGCOLOR(xywh, bc, cvartest, showhidedvar) \
 itemDef \
 { \
@@ -729,47 +733,80 @@ itemDef \
 	decoration \
 }
 
+#define MATCHINFO(cvar_team1_team, cvar_team2_team, cvar_show, color_allies, color_axis) \
+\
+	MATCHINFO_BGCOLOR(-131 0 130 15, color_allies, 		cvar_team1_team, showDvar { "american"; "british"; "russian"; })  \
+	MATCHINFO_BGCOLOR(-131 0 130 15, color_axis, 		cvar_team1_team, showDvar { "german" })  \
+\
+	MATCHINFO_BGCOLOR(-131 0 130 14, .1 .1 .1 .55, 		cvar_team1_team, showDvar { "american"; "british"; "russian"; "german" }) \
+	MATCHINFO_ICON(-128 1, "hudicon_american", 		cvar_team1_team, showDvar { "american" } ) \
+	MATCHINFO_ICON(-128 1, "hudicon_british", 		cvar_team1_team, showDvar { "british" } ) \
+	MATCHINFO_ICON(-128 1, "hudicon_russian", 		cvar_team1_team, showDvar { "russian" } ) \
+	MATCHINFO_ICON(-128 1, "hudicon_german", 		cvar_team1_team, showDvar { "german" } ) \
+\
+\
+	MATCHINFO_BGCOLOR(1 0 130 15, color_allies, 		cvar_team2_team, showDvar { "american"; "british"; "russian"; }) \
+	MATCHINFO_BGCOLOR(1 0 130 15, color_axis, 		cvar_team2_team, showDvar { "german" }) \
+\
+	MATCHINFO_BGCOLOR(1 0 130 14, .1 .1 .1 .55, 		cvar_team2_team, showDvar { "american"; "british"; "russian"; "german" }) \
+	MATCHINFO_ICON(3 1, "hudicon_american", 		cvar_team2_team, showDvar { "american" } ) \
+	MATCHINFO_ICON(3 1, "hudicon_british", 			cvar_team2_team, showDvar { "british" } ) \
+	MATCHINFO_ICON(3 1, "hudicon_russian", 			cvar_team2_team, showDvar { "russian" } ) \
+	MATCHINFO_ICON(3 1, "hudicon_german", 			cvar_team2_team, showDvar { "german" } ) \
+\
+	ITEM_DVAR_DVAR("ui_matchinfo_team1_name", -115, 12, .2, ITEM_ALIGN_LEFT, 1 1 1 1, cvar_show, showDvar { "1" }) \
+	ITEM_DVAR_DVAR("ui_matchinfo_team2_name", 16, 12, .2, ITEM_ALIGN_LEFT, 1 1 1 1, cvar_show, showDvar { "1" }) \
+\
+	ITEM_DVAR_DVAR("ui_matchinfo_round", 0, 24, .18, ITEM_ALIGN_CENTER, 1 1 1 1, cvar_show, showDvar { "1" }) \
+\
+	ITEM_DVAR_DVAR("ui_matchinfo_matchtime", -67, 24, .18, ITEM_ALIGN_CENTER, 1 1 1 1, cvar_show, showDvar { "1" }) \
+	ITEM_DVAR_DVAR("ui_matchinfo_halfInfo", 67, 24, .18, ITEM_ALIGN_CENTER, 1 1 1 1, cvar_show, showDvar { "1" }) \
+\
+	ITEM_DVAR_DVAR("ui_matchinfo_map1", -195, 10, .18, ITEM_ALIGN_LEFT, 1 1 1 1, cvar_show, showDvar { "1" }) \
+	ITEM_DVAR_DVAR("ui_matchinfo_map2", -195, 19, .18, ITEM_ALIGN_LEFT, 1 1 1 1, cvar_show, showDvar { "1" }) \
+	ITEM_DVAR_DVAR("ui_matchinfo_map3", -195, 28, .18, ITEM_ALIGN_LEFT, 1 1 1 1, cvar_show, showDvar { "1" })
 
 
 
 
 
-#define SPECTATINGSYSTEM_COLOR_BLUE 0.16 0.28 0.74 .9
-#define SPECTATINGSYSTEM_COLOR_RED 0.5 0 0 .9
-#define SPECTATINGSYSTEM_COLOR_HIGHLIGHT .9 .9 .9 1
-#define SPECTATINGSYSTEM_COLOR_BG .0 .0 .0 .9
-#define SPECTATINGSYSTEM_COLOR_BG_DEAD .0 .0 .0 .5
 
-#define ITEM_SPECTATINGSYSTEM_LINE(cvarprefix, x_offset, y_offset, horizontal_align) \
+
+
+#define STREAMERSYSTEM_COLOR_HIGHLIGHT .9 .9 .9 1
+#define STREAMERSYSTEM_COLOR_BG_ALIVE_DEAD_BG .0 .0 .0 .6
+#define STREAMERSYSTEM_COLOR_BG_ALIVE_DEAD_FG .0 .0 .0 .3
+
+#define ITEM_STREAMERSYSTEM_LINE(cvarprefix, num, x_offset, y_offset, horizontal_align, color_allies, color_axis, color_background_allies_alive, color_background_axis_alive) \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 130 25 horizontal_align 0 \
 	origin		-1 -1 \
-	backcolor	SPECTATINGSYSTEM_COLOR_HIGHLIGHT \
+	backcolor	STREAMERSYSTEM_COLOR_HIGHLIGHT \
 	visible		1 \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "0_";  "10_blue_";"10_red_";  "50_blue_";"50_red_";  "80_blue_"; "80_red_";  "100_blue_";"100_red_" } \
+	showDvar	{ "0_";  "10_allies_";"10_axis_";  "50_allies_";"50_axis_";  "80_allies_"; "80_axis_";  "100_allies_";"100_axis_" } \
 	decoration \
 } \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 128 23 horizontal_align 0 \
-	backcolor	SPECTATINGSYSTEM_COLOR_BG \
+	backcolor	color_background_allies_alive \
 	visible		1 \
 	dvartest	cvarprefix "_health" \
-	hideDvar	{ ""; "0"; "0_" } \
+	showDvar	{ "10_allies"; "50_allies"; "80_allies"; "100_allies";    "10_allies_"; "50_allies_"; "80_allies_"; "100_allies_" } \
 	decoration \
 } \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 128 23 horizontal_align 0 \
-	backcolor	SPECTATINGSYSTEM_COLOR_BG_DEAD \
+	backcolor	color_background_axis_alive \
 	visible		1 \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "0"; "0_" } \
+	showDvar	{ "10_axis"; "50_axis"; "80_axis"; "100_axis";    "10_axis_"; "50_axis_"; "80_axis_"; "100_axis_" } \
 	decoration \
 } \
 \
@@ -777,20 +814,20 @@ itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 128 12 horizontal_align 0 \
-	backcolor	SPECTATINGSYSTEM_COLOR_BLUE \
+	backcolor	color_allies \
 	visible		1 \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "100_blue"; "100_blue_" } \
+	showDvar	{ "100_allies"; "100_allies_" } \
 	decoration \
 } \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 128 12 horizontal_align 0 \
-	backcolor	SPECTATINGSYSTEM_COLOR_RED \
+	backcolor	color_axis \
 	visible		1 \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "100_red"; "100_red_" } \
+	showDvar	{ "100_axis"; "100_axis_" } \
 	decoration \
 } \
 \
@@ -799,20 +836,20 @@ itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 104 12 horizontal_align 0 \
-	backcolor	SPECTATINGSYSTEM_COLOR_BLUE \
+	backcolor	color_allies \
 	visible		1 \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "80_blue"; "80_blue_" } \
+	showDvar	{ "80_allies"; "80_allies_" } \
 	decoration \
 } \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 104 12 horizontal_align 0 \
-	backcolor	SPECTATINGSYSTEM_COLOR_RED \
+	backcolor	color_axis \
 	visible		1 \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "80_red"; "80_red_" } \
+	showDvar	{ "80_axis"; "80_axis_" } \
 	decoration \
 } \
 \
@@ -821,20 +858,20 @@ itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 65 12 horizontal_align 0 \
-	backcolor	SPECTATINGSYSTEM_COLOR_BLUE \
+	backcolor	color_allies \
 	visible		1 \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "50_blue"; "50_blue_" } \
+	showDvar	{ "50_allies"; "50_allies_" } \
 	decoration \
 } \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 65 12 horizontal_align 0 \
-	backcolor	SPECTATINGSYSTEM_COLOR_RED \
+	backcolor	color_axis \
 	visible		1 \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "50_red"; "50_red_" } \
+	showDvar	{ "50_axis"; "50_axis_" } \
 	decoration \
 } \
 \
@@ -843,20 +880,20 @@ itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 10 12 horizontal_align 0 \
-	backcolor	SPECTATINGSYSTEM_COLOR_BLUE \
+	backcolor	color_allies \
 	visible		1 \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "10_blue"; "10_blue_" } \
+	showDvar	{ "10_allies"; "10_allies_" } \
 	decoration \
 } \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 10 12 horizontal_align 0 \
-	backcolor	SPECTATINGSYSTEM_COLOR_RED \
+	backcolor	color_axis \
 	visible		1 \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "10_red"; "10_red_" } \
+	showDvar	{ "10_axis"; "10_axis_" } \
 	decoration \
 } \
 \
@@ -897,6 +934,18 @@ itemDef \
 	showDvar	{ "smoke"; "grenade_smoke"; "grenade2_smoke";  } \
 	decoration \
 } \
+\
+\
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
+	backcolor	STREAMERSYSTEM_COLOR_BG_ALIVE_DEAD_BG \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "0"; "0_" } \
+	decoration \
+} \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
@@ -918,7 +967,7 @@ itemDef \
 	visible		1 \
 	background	"ui/assets/scrollbar_arrow_left.tga" \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "0_";  "10_blue_";"10_red_";  "50_blue_";"50_red_";  "80_blue_"; "80_red_";  "100_blue_";"100_red_" } \
+	showDvar	{ "0_";  "10_allies_";"10_axis_";  "50_allies_";"50_axis_";  "80_allies_"; "80_axis_";  "100_allies_";"100_axis_" } \
 	decoration \
 } \
 itemDef \
@@ -930,7 +979,24 @@ itemDef \
 	visible		1 \
 	background	"ui/assets/scrollbar_arrow_right.tga" \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "0_";  "10_blue_";"10_red_";  "50_blue_";"50_red_";  "80_blue_"; "80_red_";  "100_blue_";"100_red_" } \
+	showDvar	{ "0_";  "10_allies_";"10_axis_";  "50_allies_";"50_axis_";  "80_allies_"; "80_axis_";  "100_allies_";"100_axis_" } \
+	decoration \
+} \
+itemDef \
+{ \
+	rect			x_offset y_offset 0 0 horizontal_align 0 \
+	origin			123 -1 \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		1 1 1 0.2 \
+	textfont		UI_FONT_NORMAL \
+	textscale		.15 \
+	textalign		ITEM_ALIGN_RIGHT \
+	textaligny		11 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	text			num \
+	dvartest		cvarprefix "_health" \
+	hideDvar		{ ""; "0"; "0_" } \
 	decoration \
 } \
 itemDef \
@@ -945,66 +1011,79 @@ itemDef \
 	textalign		ITEM_ALIGN_LEFT \
 	textaligny		11 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
-	dvar			cvarprefix "_text" \
+	dvar			cvarprefix "_name" \
 	dvartest		cvarprefix "_health" \
-	hideDvar		{ ""; "0"; "0_" } \
+	hideDvar		{ ""; } \
 	decoration \
 } \
 itemDef \
 { \
 	rect			x_offset y_offset 0 0 horizontal_align 0 \
-	origin			5 0 \
+	origin			5 9 \
 	type			ITEM_TYPE_TEXT \
 	visible			1 \
-	forecolor		1 1 1 .5 \
+	forecolor		1 1 1 .7 \
+	textfont		UI_FONT_NORMAL \
+	textscale		.16 \
+	textalign		ITEM_ALIGN_LEFT \
+	textaligny		12 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvar			cvarprefix "_score" \
+	dvartest		cvarprefix "_health" \
+	hideDvar		{ "" } \
+	decoration \
+} \
+itemDef \
+{ \
+	rect			x_offset y_offset 0 0 horizontal_align 0 \
+	origin			30 9 \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		1 1 1 .7 \
+	textfont		UI_FONT_NORMAL \
+	textscale		.15 \
+	textalign		ITEM_ALIGN_LEFT \
+	textaligny		12 \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	dvar			cvarprefix "_weapon" \
+	dvartest		cvarprefix "_health" \
+	hideDvar		{ "" } \
+	decoration \
+} \
+itemDef \
+{ \
+	rect			x_offset y_offset 0 0 horizontal_align 0 \
+	origin			96 9 \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		1 1 1 1 \
 	textfont		UI_FONT_NORMAL \
 	textscale		.18 \
 	textalign		ITEM_ALIGN_LEFT \
-	textaligny		11 \
+	textaligny		12 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
-	dvar			cvarprefix "_text" \
+	dvar			cvarprefix "_round_kills" \
 	dvartest		cvarprefix "_health" \
-	showDvar		{ "0"; "0_" } \
+	hideDvar		{ "" } \
 	decoration \
 } \
 itemDef \
 { \
-	rect			x_offset y_offset 0 0 horizontal_align 0 \
-	origin			5 10 \
-	type			ITEM_TYPE_TEXT \
-	visible			1 \
-	forecolor		1 1 1 .8 \
-	textfont		UI_FONT_NORMAL \
-	textscale		.16 \
-	textalign		ITEM_ALIGN_LEFT \
-	textaligny		12 \
-	textstyle		ITEM_TEXTSTYLE_SHADOWED \
-	dvar			cvarprefix "_info" \
-	dvartest		cvarprefix "_health" \
-	hideDvar		{ ""; "0"; "0_" } \
-	decoration \
-} \
-itemDef \
-{ \
-	rect			x_offset y_offset 0 0 horizontal_align 0 \
-	origin			5 10 \
-	type			ITEM_TYPE_TEXT \
-	visible			1 \
-	forecolor		1 1 1 .5 \
-	textfont		UI_FONT_NORMAL \
-	textscale		.16 \
-	textalign		ITEM_ALIGN_LEFT \
-	textaligny		12 \
-	textstyle		ITEM_TEXTSTYLE_SHADOWED \
-	dvar			cvarprefix "_info" \
-	dvartest		cvarprefix "_health" \
-	showDvar		{ "0"; "0_" } \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
+	backcolor	STREAMERSYSTEM_COLOR_BG_ALIVE_DEAD_FG \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "0"; "0_" } \
 	decoration \
 }
 
 
 
-#define ITEM_SPECTATINGSYSTEM_KEY(textstring, x, y, fontSize, horizontal_align, cvar) \
+
+
+
+#define ITEM_STREAMERSYSTEM_KEY(textstring, x, y, fontSize, horizontal_align, cvar) \
 itemDef \
 { \
 	visible			1 \
@@ -1021,7 +1100,7 @@ itemDef \
 }
 
 
-#define ITEM_SPECTATINGSYSTEM_DVAR(x, y, fontsize, cvar, horizontal_align) \
+#define ITEM_STREAMERSYSTEM_DVAR(x, y, fontsize, cvar, horizontal_align, text_align) \
 itemDef \
 { \
 	visible			1 \
@@ -1032,9 +1111,23 @@ itemDef \
 	textfont		UI_FONT_NORMAL \
 	textscale		fontsize \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textalign		text_align \
 	dvar			cvar \
 	decoration \
 }
+
+#define ITEM_STREAMERSYSTEM_BG(rect2, bgcolor, cvar, showhide) \
+itemDef \
+{ \
+	style			WINDOW_STYLE_FILLED \
+	visible			1 \
+	rect			rect2 \
+	backcolor		bgcolor \
+	dvartest		cvar \
+	showhide \
+	decoration \
+}
+
 
 
 
@@ -1060,7 +1153,7 @@ itemDef \
 #define SCOREBOARD_NAME_X 33
 
 #define SCOREBOARD_SCORE_X 167
-#define SCOREBOARD_KILLS_X 209
+#define SCOREBOARD_KILLS_X 208
 #define SCOREBOARD_DEATHS_X 226
 #define SCOREBOARD_ASSISTS_X 262
 #define SCOREBOARD_DAMAGE_X 288
@@ -1098,20 +1191,20 @@ itemDef \
 #define SCOREBOARD_LINE_25_Y 263
 #define SCOREBOARD_LINE_26_Y 273
 
-#define SCOREBOARD_LINE_BACKGROUND_COLOR 			            .0 .0 .0 .1
-#define SCOREBOARD_LINE_BACKGROUND_COLOR_HIGHLIGHTED 			.2 .2 .2 .7
-
+#define SCOREBOARD_LINE_BACKGROUND_COLOR 		.0 .0 .0 .1
+#define SCOREBOARD_LINE_BACKGROUND_COLOR_HIGHLIGHTED 	.2 .2 .2 .7
+#define SCOREBOARD_LINE_BACKGROUND_COLOR_DISCONNECTED	.2 .0 .0 .2
 /*
 type
-0 = nothink
+0 = hide
 1 = player line - odd
 2 = player line - even
 3 = player line - highlighted
+"<string>" = show team name
 
 added _ means that line can be clicked
-
+added ! means that player is disconnected
 */
-
 #define ITEM_SCOREBOARD_LINE(line_id, x, y, y_offset) \
 itemDef  \
 { \
@@ -1121,7 +1214,7 @@ itemDef  \
 	backcolor		SCOREBOARD_LINE_BACKGROUND_COLOR \
 	visible			1 \
 	dvartest		"ui_scoreboard_line_" line_id \
-	showDvar		{ "2";"2_" } \
+	showDvar		{ "2";"2_"; } \
 	decoration \
 } \
 itemDef  \
@@ -1132,9 +1225,20 @@ itemDef  \
 	backcolor		SCOREBOARD_LINE_BACKGROUND_COLOR_HIGHLIGHTED \
 	visible			1 \
 	dvartest		"ui_scoreboard_line_" line_id \
-	showDvar		{ "3";"3_" } \
+	showDvar		{ "3";"3_"; } \
 	decoration \
-}		 \
+} \
+itemDef  \
+{ \
+	style			WINDOW_STYLE_FILLED \
+	rect			10 y_offset 380 10 0 0 \
+	origin			x y \
+	backcolor		SCOREBOARD_LINE_BACKGROUND_COLOR_DISCONNECTED \
+	visible			1 \
+	dvartest		"ui_scoreboard_line_" line_id \
+	showDvar		{ "1!";"2!";"3!" } \
+	decoration \
+} \
 itemDef \
 { \
 	rect			SCOREBOARD_HEADING_X y_offset 1 1 0 0 \
@@ -1146,7 +1250,7 @@ itemDef \
 	textaligny		SCOREBOARD_HEADING_ALIGNY \
 	visible			1 \
 	dvartest		"ui_scoreboard_line_" line_id \
-	hideDvar		{ ""; "0"; "1"; "2"; "3"; "0_"; "1_"; "2_"; "3_"; } \
+	hideDvar		{ ""; "0"; "1"; "2"; "3";  "0_"; "1_"; "2_"; "3_";  "0!"; "1!"; "2!"; "3!"; } \
 	decoration \
 } \
 \

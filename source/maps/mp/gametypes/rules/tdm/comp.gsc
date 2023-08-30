@@ -71,7 +71,7 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_teambalance", 0);
 	arr = ruleCvarDefault(arr, "scr_spectatefree", 0);
 	arr = ruleCvarDefault(arr, "scr_spectateenemy", 0);
-	arr = ruleCvarDefault(arr, "scr_spectatingsystem", 1);				// Enable spectating system (menu overlay with auto-killcam, auto-spectator, xray, etc.. features)
+	arr = ruleCvarDefault(arr, "scr_streamersystem", 1);				// Enable streamer system (menu overlay with auto-killcam, auto-spectator, xray, etc.. features)
 
 	arr = ruleCvarDefault(arr, "g_allowVote", 0);
 	arr = ruleCvarDefault(arr, "g_maxDroppedWeapons", 10);
@@ -110,7 +110,7 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_smg_smokes", 0);
 	arr = ruleCvarDefault(arr, "scr_sniper_smokes", 0);
 	arr = ruleCvarDefault(arr, "scr_mg_smokes", 0);
-	arr = ruleCvarDefault(arr, "scr_shotgun_smokes", 0);
+	arr = ruleCvarDefault(arr, "scr_shotgun_smokes", 1);
 
 	// Weapon Limits by class per team
 	arr = ruleCvarDefault(arr, "scr_boltaction_limit", 99);

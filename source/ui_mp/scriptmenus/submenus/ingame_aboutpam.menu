@@ -43,7 +43,7 @@ itemDef
 	visible			1
 	origin			0 86
 	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"Creators: eyza, Fjozek"
+	text			"Creators:   eyza, Fjozek"
 	textfont		UI_FONT_NORMAL
 	textscale		0.25
 	textstyle		ITEM_TEXTSTYLE_SHADOWED
@@ -76,13 +76,24 @@ itemDef
 	textalign		ITEM_ALIGN_LEFT
 	decoration
 }
-
 itemDef
 {
 	visible			1
 	origin			60 116
 	forecolor		GLOBAL_UNFOCUSED_COLOR
-	text			"^9<==^3Mustang^9==>^2Clan  from Hungary^7, hubertgruber / dutch, excel, jza"
+	text			"hubertgruber / dutch, excel, jza, Saber, jansen"
+	textfont		UI_FONT_NORMAL
+	textscale		0.25
+	textstyle		ITEM_TEXTSTYLE_SHADOWED
+	textalign		ITEM_ALIGN_LEFT
+	decoration
+}
+itemDef
+{
+	visible			1
+	origin			60 131
+	forecolor		GLOBAL_UNFOCUSED_COLOR
+	text			"^9<==^3Mustang^9==>^2Clan  from Hungary"
 	textfont		UI_FONT_NORMAL
 	textscale		0.25
 	textstyle		ITEM_TEXTSTYLE_SHADOWED
@@ -94,7 +105,7 @@ itemDef
 itemDef
 {
 	visible			1
-	origin			0 141
+	origin			0 161
 	forecolor		GLOBAL_UNFOCUSED_COLOR
 	text			"Join us on discord ^9TLS CoD2 Community ^7in ^9#zpam3-chat ^7channel."
 	textfont		UI_FONT_NORMAL
@@ -108,7 +119,7 @@ itemDef
 itemDef
 {
 	visible			1
-	origin			0 156
+	origin			0 176
 	forecolor		GLOBAL_UNFOCUSED_COLOR
 	text			"discord.gg/HDsC6u5k6y"
 	textfont		UI_FONT_NORMAL

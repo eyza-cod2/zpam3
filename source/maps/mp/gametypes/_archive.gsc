@@ -31,13 +31,13 @@ onCvarChanged(cvar, value, isRegisterTime)
 // This function decides if game archive should be enabled or not
 // If is enabled, all game state is saved in game for history
 // Used especially for killcam to play history of players
-// Is in separate file because of use also in spectating system
+// Is in separate file because of use also in streamer system
 // This function is called from multiple places
 update()
 {
 	if(level.scr_killcam ||
 		level.antilag ||
-		level.spectatingSystem)
+		level.streamerSystem)
 		setarchive(true);
 	else
 		setarchive(false);

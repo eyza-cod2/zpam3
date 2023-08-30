@@ -16,19 +16,19 @@ REFERENCE           OBJ_GAMETYPE
 LANG_ENGLISH        "Retrieval"
 
 REFERENCE           OBJ_TEXT_GAMETYPE
-LANG_ENGLISH        "Attackers:  Retrieve the objectives and take them to your team goal. (Blue Box)\nDefenders:  Defend the objectives from being taken to their goal."
+LANG_ENGLISH        "Attackers:  Retrieve and convoy the objectives to the goal.\nDefenders:  Protect the objectives from retrieval. If an objective is retrieved, eliminate the carrier until they convoy it up to the goal.\n"
 
 REFERENCE           ATTACKER
-LANG_ENGLISH        "Retrieve the objectives and take them to your goal (Blue Box)"
+LANG_ENGLISH        "Retrieve objectives and convoy an objective to your goal (Blue Box)"
 
 REFERENCE           DEFENDER
-LANG_ENGLISH        "Defend the objectives from being taken to the goal(Blue Box)"
+LANG_ENGLISH        "Protect the objectives from retrieval. If an objective is retrieved, eliminate the carrier until they convoy it up to the goal."
 
 REFERENCE           CARRYINGGENERIC
-LANG_ENGLISH        "You are carrying the &&1"
+LANG_ENGLISH        "You are carrying the objective"
 
 REFERENCE           PICKEDUPGENERIC
-LANG_ENGLISH        "A player has picked up the &&1"
+LANG_ENGLISH        "Allies have captured the objective"
 
 REFERENCE           PICKUPAXISONLYGENERIC
 LANG_ENGLISH        "The &&1 can only be picked up by the Axis. Defend it!"
@@ -36,35 +36,44 @@ LANG_ENGLISH        "The &&1 can only be picked up by the Axis. Defend it!"
 REFERENCE           PICKUPALLIESONLYGENERIC
 LANG_ENGLISH        "The &&1 can only be picked up by the Allies. Defend it!"
 
+REFERENCE           ALREADYOBJECTIVEGENERIC
+LANG_ENGLISH        "You are already carrying an objective."
+
 REFERENCE           PRESSTOPICKUPGENERIC
-LANG_ENGLISH        "Press USE [[{+activate}]] to take the &&1"
+LANG_ENGLISH        "Press USE [[{+activate}]] to carry the objective"
 
 REFERENCE           DELAYPICKUPGENERIC
-LANG_ENGLISH        "Waiting time on pick up for &&1"
+LANG_ENGLISH        "Objective dropped!"
 
 REFERENCE           DROPPEDGENERIC
-LANG_ENGLISH        "A player has dropped the &&1"
+LANG_ENGLISH        "Allies have dropped the objective"
 
 REFERENCE           TIMEOUTRETURNINGGENERIC
-LANG_ENGLISH        "Time-out &&1 being on the ground. Returning it to its original location"
+LANG_ENGLISH        "Limit on the ground has been reached (&&1).
 
 REFERENCE           INMINESGENERIC
-LANG_ENGLISH        "Lost &&1 in the minefield. Moving it to its original positions"
+LANG_ENGLISH        "Objective has been dropped in the minefield (&&1)."
 
 REFERENCE           CAPTUREDALLIESGENERIC
-LANG_ENGLISH        "Allies have captured the &&1!"
+LANG_ENGLISH        "Allies have delivered objectives"
 
-REFERENCE           CAPTUREDAXISSGENERIC
-LANG_ENGLISH        "Axis have captured the &&1!"
+REFERENCE           CAPTUREDAXISGENERIC
+LANG_ENGLISH        "Axis have delivered objectives"
 
 REFERENCE           CAPTUREDALL
-LANG_ENGLISH        "All objectives have been captured!"
+LANG_ENGLISH        "Objectives have been delivered"
 
 REFERENCE           FIELDRADIO
-LANG_ENGLISH        "field radio"
+LANG_ENGLISH        "Radio"
+
+REFERENCE           FIELDRADIO1
+LANG_ENGLISH        "Radio 1"
+
+REFERENCE           FIELDRADIO2
+LANG_ENGLISH        "Radio 2"
 
 REFERENCE           EXPLOSIVES
-LANG_ENGLISH        "explosives"
+LANG_ENGLISH        "Explosives"
 
 
 ENDMARKER

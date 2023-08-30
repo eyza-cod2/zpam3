@@ -17,15 +17,15 @@
 
 		onOpen
 		{
-			uiScript openMenuOnDvar ui_quickmessage_spectatormode "0" quickmessage_default;
-			uiScript openMenuOnDvar ui_quickmessage_spectatormode "1" quickmessage_spectatingsystem_menu;
+			uiScript openMenuOnDvar ui_quickmessage_streamer "0" quickmessage_default;
+			uiScript openMenuOnDvar ui_quickmessage_streamer "1" quickmessage_streamersystem_menu;
 
 			close quickmessage
 		}
 	}
 
 
-	#include "ui_mp/scriptmenus/submenus/spectator.menu"
+	#include "ui_mp/scriptmenus/submenus/streamer.menu"
 
 
 	menuDef

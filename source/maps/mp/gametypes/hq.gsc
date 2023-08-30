@@ -53,6 +53,7 @@ main()
 	registerCvar("scr_hq_radio_respawn_time", "INT", 15, 0, 300);
 	registerCvar("scr_hq_radio_hold_time", "INT", 120, 0, 300);
 	registerCvar("scr_hq_restricted_smoke", "BOOL", 0);
+	registerCvar("scr_hq_radio_by_enemy", "BOOL", 1);
 
 
 	// Init all shared modules in this pam (scripts with underscore)
@@ -87,6 +88,8 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "scr_hq_radio_respawn_time": 	level.radiospawndelay = value; return true;
 		case "scr_hq_radio_hold_time": 		level.radiomaxholdseconds = value; return true;
 		case "scr_hq_restricted_smoke": 	level.restricted_smoke = value; return true;
+        case "scr_hq_radio_by_enemy": 		level.radio_establishing_enemy = value; return true;
+
 	}
 	return false;
 }
@@ -117,6 +120,11 @@ precache()
 	assert(isdefined(game["radio_model_obj"]));
 
 
+    game["RADIO_ESTABLISHING_ALLIES"] = &"HQ_RADIO_ESTABLISHING_ALLIES";
+    game["RADIO_ESTABLISHING_AXIS"] = &"HQ_RADIO_ESTABLISHING_AXIS";
+    game["RADIO_RESET_NO_DEFENDERS"] = &"HQ_RADIO_RESET_NO_DEFENDERS";
+
+
 	precacheShader("white");
 	precacheShader("objective");
 	precacheShader("objectiveA");
@@ -143,6 +151,10 @@ precache()
 	precacheString(&"MP_RESPAWN_WHEN_RADIO_NEUTRALIZED");
 	precacheString(&"MP_MATCHSTARTING");
 	precacheString(&"MP_MATCHRESUMING");
+
+	precacheString(game["RADIO_ESTABLISHING_ALLIES"]);
+	precacheString(game["RADIO_ESTABLISHING_AXIS"]);
+
 	precacheStatusIcon("compassping_enemyfiring"); // for streamers
 
 	// HUD: Strattime
@@ -762,9 +774,14 @@ spawnSpectator(origin, angles)
 
 	if(isdefined(origin) && isdefined(angles))
 		self spawn(origin, angles);
+
+	else if(self.pers["team"] == "streamer")
+	{
+		// Spawn is handled in streamer system
+	}
 	else
 	{
-        spawnpointname = "mp_global_intermission";
+        	spawnpointname = "mp_global_intermission";
 		spawnpoints = getentarray(spawnpointname, "classname");
 		spawnpoint = maps\mp\gametypes\_spawnlogic::getSpawnpoint_Random(spawnpoints);
 
@@ -892,6 +909,12 @@ startGame()
 
 	level.matchstarted = true;
 	level.starttime = getTime();
+
+
+
+    // Notify Halftime not to end match until current HQ done
+    level.radio_maxholdtime_reached = false;
+
 
 	level thread hq_obj_think();
 
@@ -1087,7 +1110,7 @@ endMap()
 	{
 		winningteam = "tie";
 		losingteam = "tie";
-		text = "MP_THE_GAME_IS_A_TIE";
+		text = &"MP_THE_GAME_IS_A_TIE";
 	}
 	else if(alliedscore > axisscore)
 	{
@@ -1119,7 +1142,7 @@ endMap()
 
 		player closeMenu();
 		player closeInGameMenu();
-		player setClientCvar2("cg_objectiveText", text);
+		player setClientCvar("cg_objectiveText", text);
 	}
 
 
@@ -1345,6 +1368,19 @@ hq_radio_think(radio)
 								players[i].progressbar_capture3.fontscale = 2;
 								players[i].progressbar_capture3 settext(&"MP_ESTABLISHING_HQ");
 							}
+
+                            // 	This will show your team whether enemies began establishing HQ
+							if((players[i].pers["team"] == "allies") && (radio.team == "none") && level.radio_establishing_enemy)
+							{
+								level thread hq_radio_establish_enemy(radio, "axis", radio.holdtime_allies);
+								level thread hq_radio_progressbar_enemy_establishing_failure();
+
+							}
+							else if((players[i].pers["team"] == "axis") && (radio.team == "none") && level.radio_establishing_enemy)
+							{
+								level thread hq_radio_establish_enemy(radio, "allies", radio.holdtime_axis);
+								level thread hq_radio_progressbar_enemy_establishing_failure();
+							}
 						}
 						else if(radio.team != "none")
 						{
@@ -1497,6 +1533,9 @@ hq_radio_think(radio)
 					{
 						if((isdefined(players[i].radioicon)) || (isdefined(players[i].radioicon[0])))
 							players[i].radioicon[0] destroy();
+
+                        level notify("progressbar_enemy_establishing_destroy");
+
 						if(isdefined(players[i].progressbar_capture))
 							players[i].progressbar_capture destroy();
 						if(isdefined(players[i].progressbar_capture2))
@@ -1565,6 +1604,8 @@ hq_radio_think(radio)
 						{
 							if(((distance(players[i].origin,radio.origin)) <= radio.radius) && (distance((0,0,players[i].origin[2]),(0,0,radio.origin[2])) <= level.zradioradius))
 							{
+ 								level notify("progressbar_enemy_establishing_destroy");
+
 								if(isdefined(players[i].progressbar_capture))
 									players[i].progressbar_capture destroy();
 								if(isdefined(players[i].progressbar_capture2))
@@ -1603,6 +1644,16 @@ hq_radio_think(radio)
 					radio.collector_axis = 0;
 
 
+
+				// Timeout ended or defending team disconnects and there are no defending players -> kill radio
+				if (hq_radio_defenders_alive() < 1)
+				{
+					wait level.frame; // to get OnPlayerKilled called first if last player was killed
+					level thread hq_radio_disconnected_capture(radio);
+				}
+
+
+
 				if((radio.allies > 0) && (radio.team == "axis"))
 				{
 					radio.collector_allies = (multiplier + radio.collector_allies + (radio.allies * multiplier));
@@ -1629,6 +1680,120 @@ hq_radio_think(radio)
 	}
 }
 
+
+
+hq_radio_establish_enemy(radio, team, holdtime)
+{
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		if(isdefined(players[i].pers["team"]) && players[i].pers["team"] == team && players[i].sessionstate == "playing")
+		{
+			if(!isdefined(players[i].progressbar_enemy_establishing))
+			{
+				players[i].progressbar_enemy_establishing = newClientHudElem(players[i]);
+				players[i].progressbar_enemy_establishing.x = 0;
+				players[i].progressbar_enemy_establishing.y = 104;
+				players[i].progressbar_enemy_establishing.alignX = "center";
+				players[i].progressbar_enemy_establishing.alignY = "middle";
+				players[i].progressbar_enemy_establishing.horzAlign = "center_safearea";
+				players[i].progressbar_enemy_establishing.vertAlign = "center_safearea";
+				players[i].progressbar_enemy_establishing.alpha = 0.5;
+			}
+			players[i].progressbar_enemy_establishing setShader("black", level.progressBarWidth, level.progressBarHeight);
+
+			if(!isdefined(players[i].progressbar_enemy_establishing2))
+			{
+				players[i].progressbar_enemy_establishing2 = newClientHudElem(players[i]);
+				players[i].progressbar_enemy_establishing2.x = ((level.progressBarWidth / (-2)) + 2);
+				players[i].progressbar_enemy_establishing2.y = 104;
+				players[i].progressbar_enemy_establishing2.alignX = "left";
+				players[i].progressbar_enemy_establishing2.alignY = "middle";
+				players[i].progressbar_enemy_establishing2.horzAlign = "center_safearea";
+				players[i].progressbar_enemy_establishing2.vertAlign = "center_safearea";
+				players[i].progressbar_enemy_establishing2.color = (.8,0,0);
+			}
+			players[i].progressbar_enemy_establishing2 setShader("white", holdtime + 1, level.progressBarHeight - 4);
+
+			if(!isdefined(players[i].progressbar_enemy_establishing3))
+			{
+				players[i].progressbar_enemy_establishing3 = newClientHudElem(players[i]);
+				players[i].progressbar_enemy_establishing3.x = 0;
+				players[i].progressbar_enemy_establishing3.y = 50;
+				players[i].progressbar_enemy_establishing3.alignX = "center";
+				players[i].progressbar_enemy_establishing3.alignY = "middle";
+				players[i].progressbar_enemy_establishing3.horzAlign = "center_safearea";
+				players[i].progressbar_enemy_establishing3.vertAlign = "center_safearea";
+				players[i].progressbar_enemy_establishing3.archived = true;
+				players[i].progressbar_enemy_establishing3.font = "default";
+				players[i].progressbar_enemy_establishing3.fontscale = 2;
+
+                if(players[i].pers["team"] == "allies")
+                    players[i].progressbar_enemy_establishing3 setText(game["RADIO_ESTABLISHING_AXIS"]);
+                else
+                    players[i].progressbar_enemy_establishing3 setText(game["RADIO_ESTABLISHING_ALLIES"]);
+			}
+		}
+	}
+}
+
+hq_radio_progressbar_enemy_establishing_failure()
+{
+	level endon("intermission");
+	level endon("progressbar_radio_capture");
+
+	players = getentarray("player", "classname");
+
+	level waittill("progressbar_enemy_establishing_destroy");
+
+	//iprintlnBold("^1destroying ...");
+
+	for(i = 0; i < players.size; i++)
+	{
+		if(isdefined(players[i].progressbar_enemy_establishing))
+			players[i].progressbar_enemy_establishing destroy();
+		if(isdefined(players[i].progressbar_enemy_establishing2))
+			players[i].progressbar_enemy_establishing2 destroy();
+		if(isdefined(players[i].progressbar_enemy_establishing3))
+			players[i].progressbar_enemy_establishing3 destroy();
+	}
+
+}
+
+
+hq_radio_disconnected_capture(radio)
+{
+	level endon("intermission");
+
+	wait level.fps_multiplier * 1.5;
+
+	if(radio.team != "none" && level.DefendingRadioTeam != "none" && !level.in_timeout)
+	{
+		level hq_radio_capture(radio, "none");
+		iprintlnBold(game["RADIO_RESET_NO_DEFENDERS"]);
+	}
+}
+
+
+hq_radio_defenders_alive()
+{
+	allplayers = getentarray("player", "classname");
+	alive = [];
+	for(i = 0; i < allplayers.size; i++)
+	{
+		if(allplayers[i].sessionstate == "playing" && allplayers[i].sessionteam == level.DefendingRadioTeam)
+			alive[alive.size] = allplayers[i];
+	}
+	return alive.size;
+}
+
+
+
+
+
+
+
+
 hq_radio_capture(radio, team)
 {
 	radio.holdtime_allies = 0;
@@ -1644,6 +1809,9 @@ hq_radio_capture(radio, team)
 			if((isdefined(players[i].radioicon)) && (isdefined(players[i].radioicon[0])))
 			{
 				players[i].radioicon[0] destroy();
+
+                level notify("progressbar_enemy_establishing_destroy");
+
 				if(isdefined(players[i].progressbar_capture))
 					players[i].progressbar_capture destroy();
 				if(isdefined(players[i].progressbar_capture2))
@@ -1883,6 +2051,10 @@ hq_maxholdtime_think()
 		}
 		//wait (level.fps_multiplier * (level.RadioMaxHoldSeconds - level.frame));
 	}
+
+    level notify("RadioMaxHoldTime");
+    level.radio_maxholdtime_reached = true;
+
 	level thread hq_radio_resetall();
 }
 
@@ -1912,6 +2084,8 @@ hq_radio_resetall()
 			if((isdefined(players[i].radioicon)) && (isdefined(players[i].radioicon[0])))
 			{
 				players[i].radioicon[0] destroy();
+                level notify("progressbar_enemy_establishing_destroy");
+
 				if(isdefined(players[i].progressbar_capture))
 					players[i].progressbar_capture destroy();
 				if(isdefined(players[i].progressbar_capture2))
@@ -2014,6 +2188,9 @@ hq_removeall_hudelems(player)
 		{
 			if((isdefined(player.radioicon)) && (isdefined(player.radioicon[0])))
 				player.radioicon[0] destroy();
+
+            level notify("progressbar_enemy_establishing_destroy");
+
 			if(isdefined(player.progressbar_capture))
 				player.progressbar_capture destroy();
 			if(isdefined(player.progressbar_capture2))
@@ -2033,6 +2210,9 @@ hq_removhudelem_allplayers(radio)
 			continue;
 		if((isdefined(players[i].radioicon)) && (isdefined(players[i].radioicon[0])))
 			players[i].radioicon[0] destroy();
+
+        level notify("progressbar_enemy_establishing_destroy");
+
 		if(isdefined(players[i].progressbar_capture))
 			players[i].progressbar_capture destroy();
 		if(isdefined(players[i].progressbar_capture2))
@@ -2268,7 +2448,7 @@ menuWeapon(response)
 		response = self maps\mp\gametypes\_weapons::getRandomWeapon();
 
 	// Weapon is not valid or is in use
-	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvaible(response))
+	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvailable(response))
 	{
 		// Open menu with weapons again
 		if(self.pers["team"] == "allies")
@@ -2354,12 +2534,11 @@ menuWeapon(response)
 				self thread respawn();
 				self thread updateTimer();
 			}
-
 			// Dont spawn if choosen team is defending radio and in that team are alive players
-			else if(self.pers["team"] == level.DefendingRadioTeam && hq_check_radio_defenders_alive() > 0)
+			else if(level.DefendingRadioTeam != "none" && self.pers["team"] == level.DefendingRadioTeam && hq_radio_defenders_alive() >= 1)
 			{
-				self thread respawn_timer(level.frame);
-				self thread respawn_staydead(level.frame);
+				self thread respawn_timer(level.fps_multiplier * .1);
+				self thread respawn_staydead(level.fps_multiplier * .1);
 				self thread respawn();
 			}
 			else
@@ -2496,7 +2675,7 @@ playSoundOnPlayers(sound, team)
 	{
 		for(i = 0; i < players.size; i++)
 		{
-			if((isdefined(players[i].pers["team"])) && (players[i].pers["team"] == team))
+			if((isdefined(players[i].pers["team"])) && (players[i].pers["team"] == team) || players[i].pers["team"] == "streamer")
 				players[i] playLocalSound(sound);
 		}
 	}

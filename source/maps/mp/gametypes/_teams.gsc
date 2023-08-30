@@ -379,7 +379,7 @@ updateTeamChangeCvars()
 		}
 
 
-		player setClientCvar2("ui_allow_joinstreamer", level.spectatingSystem);
+		player setClientCvar2("ui_allow_joinstreamer", level.streamerSystem);
 	}
 }
 

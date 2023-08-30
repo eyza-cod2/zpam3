@@ -35,13 +35,13 @@
 
 
 		// MENU CHOICES
-		ITEM_WEAPON(ORIGIN_CHOICE1, "button_sten", 			"@MPUI_1_STEN", 			"ui_allow_sten", 			"weapon_sten", 			show weapon_sten;, 			scriptMenuResponse "sten_mp";, 			"british_grenade_C",	"smg")
-		ITEM_WEAPON(ORIGIN_CHOICE2, "button_enfield", 		"@MPUI_2_LEEENFIELD", 		"ui_allow_enfield", 		"weapon_enfield", 		show weapon_enfield;, 		scriptMenuResponse "enfield_mp";, 		"british_grenade_C",	"boltaction")
-		ITEM_WEAPON(ORIGIN_CHOICE3, "button_m1garand", 		"@MPUI_3_M1_GARAND", 		"ui_allow_m1garand", 		"weapon_m1garand", 		show weapon_m1garand;,		scriptMenuResponse "m1garand_mp";, 		"british_grenade_C",	"semiautomatic")
-		ITEM_WEAPON(ORIGIN_CHOICE4, "button_enfieldscoped", "@MPUI_4_SCOPED_LEEENFIELD", "ui_allow_enfieldsniper", "weapon_enfieldscoped", 	show weapon_enfieldscoped;, scriptMenuResponse "enfield_scope_mp";, "british_grenade_C",	"sniper")
-		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, "button_shotgun", "@MPUI_5_SHOTGUN", 			"ui_allow_shotgun", 		"weapon_shotgun", 		show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 		"british_grenade_C",	"shotgun")
-		ITEM_WEAPON(ORIGIN_CHOICE6, "button_thompson", 		"@MPUI_6_THOMPSON", 		"ui_allow_thompson", 		"weapon_thompson", 		show weapon_thompson;, 		scriptMenuResponse "thompson_mp";, 		"british_grenade_C",	"smg")
-		ITEM_WEAPON(ORIGIN_CHOICE7, "button_bren", 			"@MPUI_7_BREN_LMG", 		"ui_allow_bren", 			"weapon_bren",			show weapon_bren;, 			scriptMenuResponse "bren_mp";, 			"british_grenade_C",	"mg")
+		ITEM_WEAPON(ORIGIN_CHOICE1, "button_sten", 		"sten_mp",		"@MPUI_1_STEN", 		"ui_allow_sten", 		"weapon_sten", 			show weapon_sten;, 		scriptMenuResponse "sten_mp";, 			"british_grenade_C",	"smg")
+		ITEM_WEAPON(ORIGIN_CHOICE2, "button_enfield", 		"enfield_mp",		"@MPUI_2_LEEENFIELD", 		"ui_allow_enfield", 		"weapon_enfield", 		show weapon_enfield;, 		scriptMenuResponse "enfield_mp";, 		"british_grenade_C",	"boltaction")
+		ITEM_WEAPON(ORIGIN_CHOICE3, "button_m1garand", 		"m1garand_mp",		"@MPUI_3_M1_GARAND", 		"ui_allow_m1garand", 		"weapon_m1garand", 		show weapon_m1garand;,		scriptMenuResponse "m1garand_mp";, 		"british_grenade_C",	"semiautomatic")
+		ITEM_WEAPON(ORIGIN_CHOICE4, "button_enfieldscoped", 	"enfield_scope_mp",	"@MPUI_4_SCOPED_LEEENFIELD", 	"ui_allow_enfieldsniper",	"weapon_enfieldscoped", 	show weapon_enfieldscoped;, 	scriptMenuResponse "enfield_scope_mp";, 	"british_grenade_C",	"sniper")
+		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, "button_shotgun", 	"shotgun_mp",		"@MPUI_5_SHOTGUN", 		"ui_allow_shotgun", 		"weapon_shotgun", 		show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 		"british_grenade_C",	"shotgun")
+		ITEM_WEAPON(ORIGIN_CHOICE6, "button_thompson", 		"thompson_mp",		"@MPUI_6_THOMPSON", 		"ui_allow_thompson", 		"weapon_thompson", 		show weapon_thompson;, 		scriptMenuResponse "thompson_mp";, 		"british_grenade_C",	"smg")
+		ITEM_WEAPON(ORIGIN_CHOICE7, "button_bren", 		"bren_mp",		"@MPUI_7_BREN_LMG", 		"ui_allow_bren", 		"weapon_bren",			show weapon_bren;, 		scriptMenuResponse "bren_mp";, 			"british_grenade_C",	"mg")
 
 
 

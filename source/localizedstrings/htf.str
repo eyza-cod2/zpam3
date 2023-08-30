@@ -16,27 +16,27 @@ REFERENCE           OBJ_GAMETYPE
 LANG_ENGLISH        "Hold the Flag"
 
 REFERENCE           OBJ_TEXT_GAMETYPE
-LANG_ENGLISH        "Gain points by stealing the flag and then defending it from the enemy team."
+LANG_ENGLISH        "Gain points by taking the flag and protecting it therein from the enemy."
 
 REFERENCE           FLAGRESPAWN
 LANG_ENGLISH        "Flag spawns in &&1 seconds"
 
-REFERENCE           PICKUPFLAG_ALLIES
+REFERENCE           PICKUPFLAGALLIES
 LANG_ENGLISH        "Allies have captured the flag!"
 
-REFERENCE           PICKUPFLAG_AXIS
+REFERENCE           PICKUPFLAGAXIS
 LANG_ENGLISH        "Axis have captured the flag!"
 
 REFERENCE           DROPPEDFLAG
 LANG_ENGLISH        "Flag has been dropped"
 
 REFERENCE          	FLAGAUTORETURN
-LANG_ENGLISH        "Flag idle time-limit reached. Respawning the flag at the alternative position"
+LANG_ENGLISH        "Limit on the ground has been reached."
 
-REFERENCE           RECLAIMEDFLAG_ALLIES
+REFERENCE           RECLAIMEDFLAGALLIES
 LANG_ENGLISH        "Allies have reclaimed the flag!"
 
-REFERENCE           RECLAIMEDFLAG_AXIS
+REFERENCE           RECLAIMEDFLAGAXIS
 LANG_ENGLISH        "Axis have reclaimed the flag!"
 
 ENDMARKER

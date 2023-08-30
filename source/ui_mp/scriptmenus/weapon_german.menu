@@ -35,12 +35,12 @@
 
 
 		// MENU CHOICES
-		ITEM_WEAPON(ORIGIN_CHOICE1, "button_mp40", 			"@MPUI_1_MP40", 			"ui_allow_mp40", 			"weapon_mp40", 			show weapon_mp40;, 			scriptMenuResponse "mp40_mp";, 			"steilhandgrenate_C",	"smg")
-		ITEM_WEAPON(ORIGIN_CHOICE2, "button_kar98k", 		"@MPUI_2_KAR98K", 			"ui_allow_kar98k", 			"weapon_kar98", 		show weapon_kar98;, 		scriptMenuResponse "kar98k_mp";, 		"steilhandgrenate_C",	"boltaction")
-		ITEM_WEAPON(ORIGIN_CHOICE3, "button_g43", 			"@MPUI_3_G43", 				"ui_allow_g43", 			"weapon_g43", 			show weapon_g43;,			scriptMenuResponse "g43_mp";, 			"steilhandgrenate_C",	"semiautomatic")
-		ITEM_WEAPON(ORIGIN_CHOICE4, "button_kar98k_sniper", "@MPUI_4_SCOPED_KAR98K", 	"ui_allow_kar98ksniper", 	"weapon_kar98scoped", 	show weapon_kar98scoped;, 	scriptMenuResponse "kar98k_sniper_mp";, "steilhandgrenate_C",	"sniper")
-		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, "button_shotgun", "@MPUI_5_SHOTGUN", 			"ui_allow_shotgun", 		"weapon_shotgun", 		show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 		"steilhandgrenate_C",	"shotgun")
-		ITEM_WEAPON(ORIGIN_CHOICE6, "button_mp44", 			"@MPUI_6_MP44", 			"ui_allow_mp44", 			"weapon_mp44", 			show weapon_mp44;, 			scriptMenuResponse "mp44_mp";, 			"steilhandgrenate_C",	"mg")
+		ITEM_WEAPON(ORIGIN_CHOICE1, "button_mp40",		"mp40_mp",  		"@MPUI_1_MP40", 		"ui_allow_mp40", 		"weapon_mp40", 		show weapon_mp40;, 		scriptMenuResponse "mp40_mp";, 		"steilhandgrenate_C",	"smg")
+		ITEM_WEAPON(ORIGIN_CHOICE2, "button_kar98k", 		"kar98k_mp", 		"@MPUI_2_KAR98K", 		"ui_allow_kar98k", 		"weapon_kar98", 	show weapon_kar98;, 		scriptMenuResponse "kar98k_mp";, 	"steilhandgrenate_C",	"boltaction")
+		ITEM_WEAPON(ORIGIN_CHOICE3, "button_g43", 		"g43_mp", 		"@MPUI_3_G43", 			"ui_allow_g43", 		"weapon_g43", 		show weapon_g43;,		scriptMenuResponse "g43_mp";, 		"steilhandgrenate_C",	"semiautomatic")
+		ITEM_WEAPON(ORIGIN_CHOICE4, "button_kar98k_sniper", 	"kar98k_sniper_mp", 	"@MPUI_4_SCOPED_KAR98K", 	"ui_allow_kar98ksniper", 	"weapon_kar98scoped", 	show weapon_kar98scoped;, 	scriptMenuResponse "kar98k_sniper_mp";, "steilhandgrenate_C",	"sniper")
+		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, "button_shotgun", 	"shotgun_mp", 		"@MPUI_5_SHOTGUN", 		"ui_allow_shotgun", 		"weapon_shotgun", 	show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 	"steilhandgrenate_C",	"shotgun")
+		ITEM_WEAPON(ORIGIN_CHOICE6, "button_mp44", 		"mp44_mp", 		"@MPUI_6_MP44", 		"ui_allow_mp44", 		"weapon_mp44", 		show weapon_mp44;, 		scriptMenuResponse "mp44_mp";, 		"steilhandgrenate_C",	"mg")
 
 
 

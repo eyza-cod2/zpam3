@@ -1,6 +1,6 @@
-zPAM3.31 PREVIEW
-Released 2022/10/13
+zPAM3.33
+Released 2023/08/30
 
-This mod was created by EYZA
+This mod was created by EYZA and Fjozek
 
-Check changes on https://github.com/eyza-cod2/zpam3
+More info: https://github.com/eyza-cod2/zpam3

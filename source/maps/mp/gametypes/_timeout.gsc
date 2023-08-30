@@ -13,7 +13,7 @@ init()
 	{
 		precacheString2("STRING_TIMEOUT", &"Time-out");
 		precacheString2("STRING_GOING_TO_TIMEOUT", &"Going to Time-out");
-		precacheString2("STRING_GOING_TO_TIMEOUT_IN", &"Going to time-out in");
+		precacheString2("STRING_GOING_TO_TIMEOUT_IN", &"Going to Time-out in");
 
 
 		game["timeout_called_team"] = "";
@@ -105,6 +105,14 @@ onMenuResponse(menu, response)
 }
 
 
+getTeamName(team)
+{
+	if (team == "allies") return "Allies";
+	if (team == "axis") return "Axis";
+	return team;
+}
+
+
 callTimeout()
 {
 
@@ -117,7 +125,7 @@ callTimeout()
 	{
 		game["timeout_called_team"] = self.pers["team"];
 
-		iprintln(self.name + " ^7called a time-out for team " + self.pers["team"]);
+		iprintln(self.name + " ^7called a time-out for team " + getTeamName(self.pers["team"]));
 
 		if (level.gametype == "sd" || level.gametype == "re")
 		{
@@ -164,7 +172,7 @@ callTimeout()
 
 		Cancel();
 
-		iprintln(self.name + " ^7canceled time-out for team " + self.pers["team"]);
+		iprintln(self.name + " ^7canceled time-out for team " + getTeamName(self.pers["team"]));
 
 		logPrint("TO_CANCEL;" + self.pers["team"] + ";" + self.name + "\n");
 	}
@@ -198,7 +206,7 @@ Validate_Timeout(print)
 	// Only for Allies and Axis
 	if (self.pers["team"] != "axis" && self.pers["team"] != "allies")
 	{
-		if (print) { self iprintln("Time-out can be called only for team allies or axis"); return "notallowed"; }
+		if (print) { self iprintln("Time-out can be called only for Allies or Axis"); return "notallowed"; }
 		else return 0; // 0 - invisible
 	}
 
@@ -236,7 +244,7 @@ Validate_Timeout(print)
 		// If is bash mode
 		if (level.in_bash)
 		{
-			if (print) { self iprintln("Time-out can not be called in bash mode"); return "notallowed"; }
+			if (print) { self iprintln("Time-out can not be called in pistol bash"); return "notallowed"; }
 			else return 2; // Call timeout (disabled)
 		}
 
@@ -245,13 +253,13 @@ Validate_Timeout(print)
 		{
 			if (game[self.pers["team"] + "_called_timeouts_half"] >= level.scr_timeouts_half)
 			{
-				if (print) { self iprintln("No more time-outs permitted for "+self.pers["team"]+" in this half"); return "notallowed"; }
+				if (print) { self iprintln("No more time-outs permitted for "+getTeamName(self.pers["team"])+" in this half"); return "notallowed"; }
 				else return 2; // Call timeout (disabled)
 			}
 		}
 		else
 		{
-			if (print) { self iprintln("No more time-outs permitted for "+self.pers["team"]); return "notallowed"; }
+			if (print) { self iprintln("No more time-outs permitted for "+getTeamName(self.pers["team"])); return "notallowed"; }
 			else return 2; // Call timeout (disabled)
 		}
 
@@ -314,7 +322,7 @@ Validate_Timeout(print)
 	// Timeout was already called, so check if i can cancel it
 	else if (game["timeout_called_team"] == self.pers["team"])
 	{
-		if (print) { /*iprintln(self.name + " ^7canceled time-out for team " + self.pers["team"]);*/ return "cancel"; }
+		if (print) { /*iprintln(self.name + " ^7canceled time-out for " + getTeamName(self.pers["team"]));*/ return "cancel"; }
 		else return 5; // Cancel timeout
 	}
 
@@ -358,10 +366,10 @@ Start_Timeout_Mode(runned_in_middle_of_game)
 		}
 	}
 
-	waittillframeend; // wait untill spectating_system is initialized
+	waittillframeend; // wait untill streamer system is initialized
 
 	// History score for spectators
-	level maps\mp\gametypes\_spectating_system_hud::ScoreProgress_AddTimeout();
+	level maps\mp\gametypes\_streamer_hud::ScoreProgress_AddTimeout(game["timeout_called_team"]);
 
 
 	time_start = gettime();

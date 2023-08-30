@@ -34,8 +34,8 @@ competitiveQuality()
 	wait level.fps_multiplier * 0.1;
 
 	// Wait more if player joined spectator (usefull especially for streamers - lot of cvars is beeing sent)
-	if (self.sessionteam == "spectator")
-		wait level.fps_multiplier * 5;
+	if (self.sessionstate == "spectator")
+		wait level.fps_multiplier * 8;
 
 	// More realistic bullet-trace light
 	self setClientCvar2("cg_tracerChance", "1");
@@ -63,8 +63,8 @@ setForcedCvarsByPB()
 	wait level.fps_multiplier * 0.2;
 
 	// Wait more if player joined spectator (usefull especially for streamers - lot of cvars is beeing sent)
-	if (self.sessionteam == "spectator")
-		wait level.fps_multiplier * 5;
+	if (self.sessionstate == "spectator")
+		wait level.fps_multiplier * 8;
 
 	self setClientCvar2("snaps", 30);
 	self setClientCvar2("sc_enable", "0");

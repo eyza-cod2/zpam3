@@ -282,11 +282,14 @@ generateDemoName()
 
 	// Map name
 	mapname = level.mapname;
-	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix_v2")				mapname = "tj";
-	else if (mapname == "mp_burgundy" || mapname == "mp_burgundy_fix_v1")			mapname = "bg";
-	else if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix_v2")			mapname = "dw";
-	else if (mapname == "mp_matmata" || mapname == "mp_matmata_fix_v2")			mapname = "mat";
-	else if (mapname == "mp_carentan" || mapname == "mp_carentan_fix_v2")			mapname = "car";
+	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix")				mapname = "tj";
+	else if (mapname == "mp_burgundy" || mapname == "mp_burgundy_fix")			mapname = "bg";
+	else if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix")			mapname = "dw";
+	else if (mapname == "mp_matmata" || mapname == "mp_matmata_fix")			mapname = "mat";
+	else if (mapname == "mp_carentan" || mapname == "mp_carentan_fix")			mapname = "car";
+	else if (mapname == "mp_breakout_tls")							mapname = "bre";
+	else if (mapname == "mp_chelm_fix")							mapname = "che";
+	else if (mapname == "mp_crossroads")							mapname = "crs";
 	else
 	{
 		if (ToLower(mapname[0]) == "m" && ToLower(mapname[1]) == "p" && ToLower(mapname[2]) == "_")
@@ -371,7 +374,7 @@ execRecording()
 	//self iprintln("exec record");
 
 	// Ignore bots
-	if (isDefined(self.pers["isTestClient"]))
+	if (self.pers["isBot"])
 		return;
 
 	// Auto recording is turned off by player, print atleast warning message
@@ -402,7 +405,7 @@ execRecording()
 		//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
 		self closeMenu();
 		self closeInGameMenu();
-		self setClientCvar2("exec_cmd", "stoprecord; record " + demoName + "; openScriptMenu exec_cmd start_recording"); // TODO clear;
+		self setClientCvar2("exec_cmd", "clear; stoprecord; record " + demoName + "; openScriptMenu exec_cmd start_recording");
 		self openMenu(game["menu_exec_cmd"]);		// open menu via script
 		self closeMenu();				// will only close menu opened by script
 
@@ -482,12 +485,12 @@ stopRecording()
 generateHash(len)
 {
     // Generate random hash (disbled chars: -----   <>:\"/\\|?*   )
-    avaibleChars = "0123456789";//abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    availableChars = "0123456789";//abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     hash = "";
     for (i = 0; i < len; i++)
     {
-        randIndex = randomintrange(0, avaibleChars.size);// Returns a random integer r, where min <= r < max
-        hash = hash + "" + avaibleChars[randIndex];
+        randIndex = randomintrange(0, availableChars.size);// Returns a random integer r, where min <= r < max
+        hash = hash + "" + availableChars[randIndex];
     }
 
     return hash;

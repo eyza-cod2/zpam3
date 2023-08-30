@@ -84,6 +84,8 @@ Update_All_Weapon_Limits()
 	allies_was_limited = [];
 	axis_was_limited = [];   //axis_count["sniper"] = true   -   means there are maximum number of snipers for team axis
 
+	weapons_usedby = [];
+
 	// Loads actual limits in cvar to level.weaponclass[<class>].limit
 	// Load limit dvar from each class
 	for(i = 0; i < level.weaponclasses.size; i++)
@@ -101,6 +103,15 @@ Update_All_Weapon_Limits()
 		axis_was_limited[classname] = level.weaponclass[classname].axis_limited;
 	}
 
+	for(i = 0; i < level.weaponnames.size; i++)
+	{
+		weapon = level.weaponnames[i];
+
+		weapons_usedby[weapon] = [];
+		weapons_usedby[weapon]["allies"] = [];
+		weapons_usedby[weapon]["axis"] = [];
+	}
+
 
 	// Count number of used weapons in each class
 	players = getentarray("player", "classname");
@@ -112,24 +123,37 @@ Update_All_Weapon_Limits()
 		if (!isDefined(player.pers["weapon"]) || !(player.pers["team"] == "allies" || player.pers["team"] == "axis"))
 			continue;
 
-        // Find how many player from each team is using specific classes
+		weaponname = player.pers["weapon"];
+
+		if (!isDefined(level.weapons[weaponname]))
+			continue;
+
+		// List of players using this weapon
+		if (player.pers["team"] == "allies")
+		{
+			weapons_usedby[weaponname]["allies"] [weapons_usedby[weaponname]["allies"].size] = player;
+		}
+		else if (player.pers["team"] == "axis")
+		{
+			weapons_usedby[weaponname]["axis"] [weapons_usedby[weaponname]["axis"].size] = player;
+		}
+
+        	// Find how many player from each team is using specific classes
 		for(i = 0; i < level.weaponclasses.size; i++)
 		{
 			// boltaction sniper semiautomatic smg mg shotgun
 			classname = level.weaponclasses[i];
 
 			// Player have a weapon of class we are looking for
-			if (level.weapons[player.pers["weapon"]].classname == classname)
+			if (level.weapons[weaponname].classname == classname)
 			{
 				if (player.pers["team"] == "allies")
 				{
 					allies_count[classname]++;
-					allies_names[classname][allies_names[classname].size] = player.name;
 				}
 				else if (player.pers["team"] == "axis")
 				{
 					axis_count[classname]++;
-					axis_names[classname][axis_names[classname].size] = player.name;
 				}
 			}
 		}
@@ -137,34 +161,24 @@ Update_All_Weapon_Limits()
 
 
 	// Format player names from array to string
-	for(i = 0; i < level.weaponclasses.size; i++)
+	for(i = 0; i < level.weaponnames.size; i++)
 	{
-		// boltaction sniper semiautomatic smg mg shotgun
-		classname = level.weaponclasses[i];
+		weaponname = level.weaponnames[i];
 
-		level.weaponclass[classname].allies_usedby = "";
-		level.weaponclass[classname].axis_usedby = "";
+		allies_usedby = "";
+		axis_usedby = "";
 
-		for (p = 0; p < allies_names[classname].size; p++)
+		for (p = 0; p < weapons_usedby[weaponname]["allies"].size; p++)
 		{
-			playername = allies_names[classname][p];
-
-			if (p!=0)
-				level.weaponclass[classname].allies_usedby += "\n";
-
-			level.weaponclass[classname].allies_usedby += playername;
+			allies_usedby += weapons_usedby[weaponname]["allies"][p].name + "\n";
+		}
+		for (p = 0; p < weapons_usedby[weaponname]["axis"].size; p++)
+		{
+			axis_usedby += weapons_usedby[weaponname]["axis"][p].name + "\n";
 		}
 
-
-		for (p = 0; p < axis_names[classname].size; p++)
-		{
-			playername = axis_names[classname][p];
-
-			if (p!=0)
-				level.weaponclass[classname].axis_usedby += "\n";
-
-			level.weaponclass[classname].axis_usedby += playername;
-		}
+		level.weapons[weaponname].allies_usedby = allies_usedby;
+		level.weapons[weaponname].axis_usedby = axis_usedby;
 	}
 
 
@@ -221,9 +235,9 @@ Update_All_Weapon_Limits()
 }
 
 // Called only when weapon changed via menu
-isWeaponAvaible(response)
+isWeaponAvailable(response)
 {
-	// This weapon is not defined || is not allowed || is not avaible for my team
+	// This weapon is not defined || is not allowed || is not available for my team
 	if (!isDefined(level.weapons[response]) || !level.weapons[response].allow || !(level.weapons[response].team == "both" || self.pers["team"] == level.weapons[response].team))
 		return false;
 
@@ -255,7 +269,7 @@ isWeaponPickable(weaponname)
 	if (maps\mp\gametypes\_weapons::isMainWeapon(weaponname))
 	{
 		classname = level.weapons[weaponname].classname;
-		if (!level.weaponclass[classname].allow_drop)
+		if (!level.weaponclass[classname].allow_drop)		// sniper and shotgun are not dropable by default
             		return false;
 	}
 	else if (maps\mp\gametypes\_weapons::isPistol(weaponname))
@@ -399,10 +413,10 @@ Update_Client_Weapon(player, weaponname, team)
 
 
 	i_have_this_weapon = isDefined(player.pers["weapon"]) && player.pers["weapon"] == weaponname;
-    i_have_weapon_of_this_class = isDefined(player.pers["weapon"]) && level.weapons[player.pers["weapon"]].classname == weaponclass;
+	i_have_weapon_of_this_class = isDefined(player.pers["weapon"]) && level.weapons[player.pers["weapon"]].classname == weaponclass;
 
-    slot[0] = player getWeaponSlotWeapon("primary");
-    slot[1] = player getWeaponSlotWeapon("primaryb");
+	slot[0] = player getWeaponSlotWeapon("primary");
+	slot[1] = player getWeaponSlotWeapon("primaryb");
 
 
 	cvarValue = -1;
@@ -441,29 +455,27 @@ Update_Client_Weapon(player, weaponname, team)
 		else
 			cvarValue = 2; // 2 = disabled
 
-    /*
-    0 - not visivle
-    1 - visible
-    2 - disabled
-    3 - selected
-    */
+		/*
+		0 - not visivle
+		1 - visible
+		2 - disabled
+		3 - selected
+		*/
 	}
 
 
-
-
-  if (cvarValue != -1)
+	if (cvarValue != -1)
 	{
-		  player setClientCvarIfChanged(level.weapons[weaponname].client_allowcvar, cvarValue);
+		player setClientCvarIfChanged(level.weapons[weaponname].client_allowcvar, cvarValue);
 
-			if (player.pers["team"] == "allies")
-			{
-					player setClientCvarIfChanged("ui_weapons_"+weaponclass+"_usedby", level.weaponclass[weaponclass].allies_usedby);
-			}
-			else if (player.pers["team"] == "axis")
-			{
-					player setClientCvarIfChanged("ui_weapons_"+weaponclass+"_usedby", level.weaponclass[weaponclass].axis_usedby);
-			}
+		if (player.pers["team"] == "allies")
+		{
+			player setClientCvarIfChanged("ui_weapons_usedby_"+weaponname, level.weapons[weaponname].allies_usedby);
+		}
+		else if (player.pers["team"] == "axis")
+		{
+			player setClientCvarIfChanged("ui_weapons_usedby_"+weaponname, level.weapons[weaponname].axis_usedby);
+		}
 	}
 
 }

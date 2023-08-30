@@ -2,23 +2,23 @@
 
 Init()
 {
+	game["bots_allow_connect"] = false;
+
+	if (!isDefined(game["bots_connected"]))
+		game["bots_connected"] = false;
+
+	if (game["bots_connected"])
+		level thread bots_fill_balance();
+
 	addEventListener("onConnecting",    ::onConnecting);
 	addEventListener("onConnected",     ::onConnected);
 	addEventListener("onCvarChanged", ::onCvarChanged);
 
-	// Define cvars here
-	// Default values of these variables are overwrited by rules
-	// Event onCvarChanged is called on every cvar registration, make sure that onCvarChanged event is added first before cvar registration
-
 	registerCvarEx("I", "scr_bots_add", "INT", 0, 0, 64); 		// add <num> bots to the server
 	registerCvarEx("I", "scr_bots_remove", "INT", 0, 0, 64); 	// remove <num> bots from the server
 	registerCvarEx("I", "scr_bots_removeAll", "BOOL", 0);		// remove all bots from server
-	registerCvarEx("I", "scr_bots_fillEnabled", "BOOL", 0);		// enable / disable fill the server with bots automaticly up to limit
-	registerCvarEx("I", "scr_bots_fillMaxBots", "INT", 6, 0, 64); 	// maximum number of bots
-	registerCvarEx("I", "scr_bots_freeze", "BOOL", 1); 	// freeze bots movement
-
-	// Watch cvar change
-	level thread bots_autoFill();
+	registerCvarEx("I", "scr_bots_freeze", "BOOL", 1); 		// freeze bots movement
+	registerCvarEx("I", "scr_bots_spam", "FLOAT", 0); 		// periodically connect and disconnect a bot - the value set time cycle in seconds
 }
 
 
@@ -33,7 +33,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 			if (value > 0)
 			{
 				iprintln("Adding " + value + " bots to the server.");
-				addBots(value);
+				thread addBots(value);
 				changeCvarQuiet("scr_bots_add", 0);
 			}
 			return true;
@@ -42,7 +42,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "scr_bots_remove":
 			if(value > 0) {
 				iprintln("Removing " + value + " bots from the server.");
-				removeBots(value);
+				thread removeBots(value);
 				changeCvarQuiet("scr_bots_remove", 0);
 			}
 			return true;
@@ -52,16 +52,14 @@ onCvarChanged(cvar, value, isRegisterTime)
 			if(value == 1)
 			{
 				iprintln("Removing all bots from the server.");
-				removeBots(64);
+				thread removeBots(64);
 				changeCvarQuiet("scr_bots_removeAll", 0);
 			}
 			return true;
 
-		case "scr_bots_fillenabled": 		level.bots_fillEnabled = value;		return true;
-		case "scr_bots_fillmaxbots": 		level.bots_fillMaxBots = value;		return true;
 		case "scr_bots_freeze": 		level.bots_freeze = value;		return true;
 
-
+		case "scr_bots_spam": 			thread spam_bot(value);		return true;
 
 	}
 	return false;
@@ -70,62 +68,62 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 onConnecting()
 {
-	// If player have name bot1 or this is a testclient from previous map
-	if (self checkBot())
-	{
+	if (!isDefined(self.pers["isBot"]))
+		self.pers["isBot"] = false;
+	if (!isDefined(self.pers["isBotCustom"]))
+		self.pers["isBotCustom"] = false;
+
+	// When map is changed and bots are present, there is a bug that they stay in connecting state
+	// Kick all players with bot prefix to get rid of these bots
+	// When bot is added by script, kick needs to be ignored
+	if (self isBotName() && self.pers["isBot"] == false && game["bots_allow_connect"] == false)
 		kick(self getEntityNumber());
-	}
 }
 
 onConnected()
 {
-	// Run again bots script
-	if (isDefined(self.pers["isTestClient"]))
+	// Run thread on bots again
+	if (self.pers["isBot"] && self.pers["isBotCustom"] == false)
+	{
 		self thread bot_think();
+	}
 }
 
-isBot()
+isBotName()
 {
 	// Check if suffix is number
 	for (i = 0; i < 64; i++)
 	{
-		if (self.name == "bot"+i)
-		{
-			// This player have name as bot (kick him)
+		if (self.name == "bot"+i) // This player have name as bot
 			return true;
-		}
 	}
 	return false;
 }
 
-checkBot()
+addBot(customLogic)
 {
-	// This is original bot
-	if (isDefined(self.pers["isTestClient"]))
-		return false;
-
-	// Bots are enabled (script is adding new bots at the moment)
-	if (isDefined(game["allow_bots"]) && game["allow_bots"] == true)
-		return false;
-
-	// Check if suffix is number
-	if (self isBot())
-		return true;
-
-	return false;
-}
-
-addBot()
-{
-	// Allow connecting players with name bot<number> in onPlayerConnect
-	game["allow_bots"] = true;
+	game["bots_allow_connect"] = true; // addtestclient directly calls OnPlayerConnect
 
 	ent = addtestclient();
+
+	game["bots_allow_connect"] = false;
 
 	if (!isDefined(ent))
 		return undefined;
 
-	ent.pers["modDownloaded"] = true; // to prevent showing warning message mod is not downloaded
+	ent.pers["isBot"] = true; // save its a bot added by script
+
+	// Thread to balance teams
+	if (!isDefined(customLogic))
+	{
+		ent.pers["isBotCustom"] = false; // its a bot spawned by other script
+
+		level thread bots_fill_balance();
+
+		game["bots_connected"] = true;
+	}
+	else
+		ent.pers["isBotCustom"] = true; // its a bot spawned by other script
 
 	return ent;
 }
@@ -143,14 +141,25 @@ addBots(number)
 			break;
 		}
 
-		ent[i].pers["isTestClient"] = true; // run think func when player connect after map_restart
 		ent[i] thread bot_think();
 
 		// Spawnout zasebou, ne naráz
 		wait level.fps_multiplier * 0.25;
 	}
+}
 
-	game["allow_bots"] = false;
+
+removeBot()
+{
+	userid = self getEntityNumber();
+
+	// For bots only
+	if (isDefined(self.botLockPosition))
+	{
+		self.botLockPosition delete();
+	}
+
+	kick(userid);
 }
 
 
@@ -160,17 +169,9 @@ removeBots(number)
 	kickedBots = 0;
 	for(i = 0; i < players.size; i++)
 	{
-		if (isDefined(players[i].pers["isTestClient"]))
+		if (players[i].pers["isBot"])
 		{
-			userid = players[i] getEntityNumber();
-
-			// For bots only
-			if (isDefined(players[i].botLockPosition))
-			{
-				players[i].botLockPosition delete();
-			}
-
-			kick(userid);
+			players[i] removeBot();
 
 			kickedBots++;
 			if (kickedBots >= number)
@@ -182,50 +183,54 @@ removeBots(number)
 }
 
 
-bots_autoFill()
+spam_bot(value)
 {
-	// Wait untill all players/bots are connected
-	wait level.fps_multiplier * 1;
+	level notify("spam_bot");
+	level endon("spam_bot");
 
-	level thread bots_fill_balance();
+	// To not spawn bot in frame 0
+	wait level.frame;
 
-	for (;;)
+	if (value > 0)
 	{
-		if (level.bots_fillEnabled)
+		while (true)
 		{
-
-			players = getentarray("player", "classname");
-			bots_count = 0;
-			players_count = 0;
-			for(i = 0; i < players.size; i++)
+			if (!isDefined(game["bots_spammer"]))
 			{
-				// This player is bot
-				if (isDefined(players[i].pers["isTestClient"]))
-				{
-					bots_count++;
-					continue;
-				}
-
-				// This player is normal and is in team
-				if((players[i].pers["team"] == "allies" || players[i].pers["team"] == "axis"))
-					players_count++;
+				game["bots_spammer"] = addBot();
+				if (!isDefined(game["bots_spammer"])) // adding failed
+					return;
+				game["bots_spammer"] thread bot_think();
 			}
 
-			botsToAdd = (level.bots_fillMaxBots - players_count) - bots_count;
-
-			if (botsToAdd > 0)
-				addBots(botsToAdd);
-			//else if (botsToAdd < 0)
-				//removeBots(botsToAdd*-1);
-
+			wait level.fps_multiplier * value;
+			if (isDefined(game["bots_spammer"]))
+			{
+				game["bots_spammer"] removeBot();
+				game["bots_spammer"] = undefined;
+			}
+			wait level.fps_multiplier * value;
 		}
-
-		wait level.fps_multiplier * 2;
+	}
+	else
+	{
+		if (isDefined(game["bots_spammer"]))
+		{
+			game["bots_spammer"] removeBot();
+			game["bots_spammer"] = undefined;
+		}
 	}
 }
 
 bots_fill_balance()
 {
+	// Make sure only 1 thread is running
+	level notify("bots_fill_balance");
+	level endon("bots_fill_balance");
+
+	// Wait untill all players/bots are connected
+	wait level.fps_multiplier * 1;
+
 	for (;;)
 	{
 		players = getentarray("player", "classname");
@@ -236,7 +241,7 @@ bots_fill_balance()
 		for(i = 0; i < players.size; i++)
 		{
 			// This player is bot
-			if (isDefined(players[i].pers["isTestClient"]))
+			if (players[i].pers["isBot"])
 			{
 				if (players[i].pers["team"] == "allies")
 					allies_bots++;
@@ -267,7 +272,7 @@ bots_fill_balance()
 				players = getentarray("player", "classname");
 				for(i = 0; i < players.size; i++)
 				{
-					if (players[i].pers["team"] == "allies" && isDefined(players[i].pers["isTestClient"]))
+					if (players[i].pers["team"] == "allies" && players[i].pers["isBot"])
 					{
 						players[i] [[level.axis]]();
 
@@ -283,7 +288,7 @@ bots_fill_balance()
 				players = getentarray("player", "classname");
 				for(i = 0; i < players.size; i++)
 				{
-					if (players[i].pers["team"] == "axis" && isDefined(players[i].pers["isTestClient"]))
+					if (players[i].pers["team"] == "axis" && players[i].pers["isBot"])
 					{
 						players[i] [[level.allies]]();
 
@@ -312,7 +317,7 @@ bot_think()
 
 	// Wait while client is connected
 	while(!isdefined(self.pers["team"]))
-		wait level.fps_multiplier * .2;
+		wait level.fps_multiplier * .1;
 
 	for (;;)
 	{
@@ -336,7 +341,7 @@ bot_think()
 
 
 
-		wait level.fps_multiplier * 3;
+		wait level.fps_multiplier * 0.2;
 	}
 
 }

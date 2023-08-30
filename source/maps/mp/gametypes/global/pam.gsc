@@ -5,8 +5,12 @@
 init()
 {
 	// At the start of the server reset cvar pam_mode_custom to make sure default values are used for first time
-        //if (getTime() == 0)
-	//	setCvar("pam_mode_custom", "0");
+        if (getTime() == 0)
+	{
+		setCvar("pam_mode_custom", "0");
+
+		level thread switchMapToFixVersion();
+	}
 
 	addEventListener("onCvarChanged", ::onCvarChanged);
 
@@ -21,12 +25,13 @@ init()
 
 		// Errors
 		precacheString2("STRING_PAM_DONT_STEAL", &"This version of pam is only for testing! Dont steal!");
-		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam332.iwd^7 must be installed in ^9main^7 folder. (fs_game)"); // ZPAM_RENAME
+		precacheString2("STRING_PAM_FS_GAME", &"Cvar /fs_game is not empty!)");
+		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam333.iwd^7 must be installed in ^9main^7 folder."); // ZPAM_RENAME
 		precacheString2("STRING_PAM_GETTING_IWD_FILES_ERROR", &"Error while getting loaded iwd files. Make sure iwd files does not contains spaces.");
-		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v2.iwd^7 must be installed in ^9main^7 folder");
+		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v3.iwd^7 does not exists in ^9main^7 folder");
 		precacheString2("STRING_PAM_MAPS_LOAD_ERROR", &"Error while checking if fixed maps exists. Map printed above was not found on server.");
 		precacheString2("STRING_PAM_WWW_DOWNLOADING", &"WWW downloading must be enabled. Set ^9sv_wwwDownload^7 and ^9sv_wwwBaseURL");
-		precacheString2("STRING_PAM_BLACKLIST", &"Old pam / maps detected in ^9main^7 folder. Delete iwd file you see printed above.");
+		precacheString2("STRING_PAM_BLACKLIST", &"Old zPAM or maps detected in ^9main^7 folder. Delete iwd file you see printed above.");
 
 
 		// Help url
@@ -35,8 +40,8 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam333_lan"; // ZPAM_RENAME
-	level.pam_map_iwd = "zpam_maps_v2";
+	level.pam_folder = "main/zpam333"; // ZPAM_RENAME
+	level.pam_map_iwd = "zpam_maps_v3";
 
 	level.pam_mode_change = false;
 
@@ -85,38 +90,31 @@ onCvarChanged(cvar, value, isRegisterTime)
 onStartGameType()
 {
 	level thread CheckInstallation();
-
-	// IP protection TODO delayed
-	//level thread Scoreboard_IP_protection();
 }
 
-/* TODO delayed
-Scoreboard_IP_protection()
+
+switchMapToFixVersion()
 {
-	while (1)
-	{
-		value = getcvar("sv_hostname");
+	waittillframeend;
 
-		valueNoColor = removeColorsFromString(value);
+	// Wait untill sv_cheats is set
+	wait level.fps_multiplier * 0.2;
 
-		if (valueNoColor.size < 140)
-		{
-			value = value + "  ^00|";
+	// Dont switch the map if devmap were used
+	if (getcvarint("sv_cheats") == 1)
+		return;
 
-			for (i = valueNoColor.size; i < 140; i++)
-			{
-				value = value + "@";
-			}
+	// Change map to FIX version if the server is run for first time
+	map = "";
+	if      (level.mapname == "mp_toujane") map = "mp_toujane_fix";
+	else if (level.mapname == "mp_burgundy") map = "mp_burgundy_fix";
+	else if (level.mapname == "mp_dawnville") map = "mp_dawnville_fix";
+	else if (level.mapname == "mp_matmata") map = "mp_matmata_fix";
+	else if (level.mapname == "mp_carentan") map = "mp_carentan_fix";
+	if (map != "")
+		map(map, false);
+}
 
-			value = value + "|";
-
-			setcvar("sv_hostname", value);
-		}
-
-		wait level.fps_multiplier * .5;
-	}
-
-}*/
 
 CheckInstallation()
 {
@@ -137,7 +135,7 @@ CheckInstallation()
 	//"sv_referencedIwds" is: "-340018619 473749641 181429573 780394069 1101180720 1046874969 1053665859 -1652414412 " default: ""
 	//"sv_referencedIwdNames" is: "main/zpam320_alpha main/iw_15 main/iw_13 main/iw_08 main/iw_07 main/iw_06 main/iw_04" default: ""
 
-	// This contains all avaible iwd names
+	// This contains all available iwd names
 	//"sv_iwdNames" is: "zpam320_alpha mp_burgundy_fix iw_15 iw_14 iw_13 iw_12 iw_11 iw_10 iw_09 iw_08 iw_07 iw_06 iw_05 iw_04 iw_03 iw_02 iw_01 iw_00" default: ""
 	//"sv_iwds" is: "530543226 960396763 181429573 -1449716526 780394069 -1333623355 -1980843666 1334775335 -621896007 1101180720 1046874969 1053665859 1842349204 -1652414412 1659111092 -1085686032 -2025394354 178615151 " default: ""
 
@@ -149,15 +147,14 @@ CheckInstallation()
 		return;
 	}
 */
-
 	// If fs_mode is set
 	if (tolower(level.fs_game) != "")
 	{
-		println("zPAM should be installed in main folder. Now installed in: " + level.fs_game);
-		setError(game["STRING_PAM_MUST_EXISTS_UNDER_MAIN"]);
+		level thread printTextInLoop("Cvar /fs_game = '" + level.fs_game + "'. It needs to be empty", "Make sure IWD files are installed in main folder, not in mod folder.");
+
+		setError(game["STRING_PAM_FS_GAME"]);
 		return;
 	}
-
 
 	// Convert iwd names to array
 	fullNumbersArray = splitString(sv_referencedIwds, " ");
@@ -196,7 +193,7 @@ CheckInstallation()
 	}
 /*
 	/#
-	println("Avaible iwds:");
+	println("Available iwds:");
 	for (i = 0; i < nameArray.size; i++)
 	{
 		println(i + ": " + nameArray[i] + " " + numbersArray[i]);
@@ -212,13 +209,11 @@ CheckInstallation()
 		return;
 	}
 
-
 	if (getCvar("shortversion") == "1.3" && (getCvarInt("sv_wwwDownload") == 0 || getCvar("sv_wwwBaseURL") == ""))
 	{
 		setError(game["STRING_PAM_WWW_DOWNLOADING"]);
 		return;
 	}
-
 
 	if (getCvar("shortversion") == "1.3" && !arrayContains(nameArray, level.pam_map_iwd))
 	{
@@ -226,30 +221,20 @@ CheckInstallation()
 		return;
 	}
 
-
 	if (getCvar("shortversion") == "1.3")
 	{
 		maps = [];
-		maps[maps.size] = "mp_toujane_fix_v2";
-		maps[maps.size] = "mp_burgundy_fix_v1";
-		maps[maps.size] = "mp_dawnville_fix_v2";
-		maps[maps.size] = "mp_matmata_fix_v2";
-		maps[maps.size] = "mp_carentan_fix_v2";
-		maps[maps.size] = "mp_chelm";
-		maps[maps.size] = "mp_breakout_tls";
-		maps[maps.size] = "mp_vallente";
-		maps[maps.size] = "wawa_3daim";
-		/*
-		maps[maps.size] = "mp_toujane_fix"; TODO
+
+		maps[maps.size] = "mp_toujane_fix";
 		maps[maps.size] = "mp_burgundy_fix";
 		maps[maps.size] = "mp_dawnville_fix";
 		maps[maps.size] = "mp_matmata_fix";
 		maps[maps.size] = "mp_carentan_fix";
-		maps[maps.size] = "mp_chelm";
+		maps[maps.size] = "mp_chelm_fix";
 		maps[maps.size] = "mp_breakout_tls";
 		maps[maps.size] = "mp_vallente";
 		maps[maps.size] = "wawa_3daim";
-*/
+
 
 		for(i = 0; i < maps.size; i++)
 		{
@@ -290,8 +275,10 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam_maps_v1";
 	blackList[blackList.size] = "zpam331";
 	blackList[blackList.size] = "zpam332";
+	blackList[blackList.size] = "zpam333_lan";
+	blackList[blackList.size] = "zpam_maps_v2";
 
-	blackList[blackList.size] = "mp_chelm";
+	blackList[blackList.size] = "mp_chelm_fix";
 	blackList[blackList.size] = "mp_breakout_tls";
 	blackList[blackList.size] = "wawa_3daim_tdm";
 	blackList[blackList.size] = "wawa_3daim";
@@ -363,7 +350,16 @@ ChangeTo(mode)
 	// Reset custom cvars
 	setCvar("pam_mode_custom", 0);
 
-	map_restart(false); // fast_restart
+	russianSubModeChanged = contains(level.pam_mode, "russian") != contains(mode, "russian");
+
+	if (russianSubModeChanged)
+	{
+		map(level.mapname, false);
+	}
+	else
+	{
+		map_restart(false); // fast_restart
+	}
 }
 
 

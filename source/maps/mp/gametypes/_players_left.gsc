@@ -27,8 +27,6 @@ init()
 	level.allies_names = [];
 	level.axis_names = [];
 
-	level.player_alive_history = "";
-
 
 	// Updating score:
 	addEventListener("onDisconnect",            ::onDisconnect);
@@ -141,8 +139,33 @@ updatePlayersCount()
 	alliesChanged = allies_alive != level.allies_alive;
 	axisChanged = axis_alive != level.axis_alive;
 
-	alliesKills = level.allies_alive - allies_alive;
-	axisKills = level.axis_alive - axis_alive;
+	// Update history for spectators
+	while (true)
+	{
+		alliesDeaths = level.allies_alive - allies_alive;
+		axisDeaths = level.axis_alive - axis_alive;
+
+		// There are no more kills to process, exit
+		if (alliesDeaths == 0 && axisDeaths == 0)
+			break;
+
+		// Determine who is the killing team
+		winner = ""; // neutral
+		if (alliesDeaths > 0) 		winner = "axis";
+		else if (axisDeaths > 0)	winner = "allies";
+
+		// Decrement alive players kill by kill
+		if (alliesDeaths > 0)		level.allies_alive--;
+		else if (axisDeaths > 0)	level.axis_alive--;
+
+		// Negative deaths means player was spawned - update the count imidietly
+		if (alliesDeaths < 0) 		level.allies_alive = allies_alive;
+		if (axisDeaths < 0) 		level.axis_alive = axis_alive;
+
+		// Player history for streamers
+		if (level.gametype == "sd" || level.gametype == "re")
+			level maps\mp\gametypes\_streamer_hud::PlayerProgress_Add(level.allies_alive, level.axis_alive, winner);
+	}
 
 	level.axis_alive = axis_alive;
 	level.allies_alive = allies_alive;
@@ -160,12 +183,6 @@ updatePlayersCount()
 
 			player thread updateEnemyList();
 		}
-	}
-
-	// Update history for spectators
-	if (alliesKills != 0 || axisKills != 0)
-	{
-		level.player_alive_history += "  " + allies_alive + "v" + axis_alive;
 	}
 }
 
@@ -346,7 +363,7 @@ updateEnemyList()
 	//self iprintln("updating...");
 
 
-	// For spectating system set invisible char to show smaller version of weapon name in HUD
+	// For streamer system set invisible char to show smaller version of weapon name in HUD
 	if (self.sessionteam == "spectator")
 	{
 		self setClientCvarIfChanged("ui_playersleft_list", " ");

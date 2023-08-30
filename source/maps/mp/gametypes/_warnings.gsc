@@ -9,6 +9,8 @@ init()
 
 	if (!isDefined(level.warnings_visible))	// may be already defined if update() is called from another file
 		level.warnings_visible = false;
+	if (!isDefined(level.warnings_text))
+		level.warnings_text = false;
 
 	thread sv_cheats_update();
 
@@ -67,11 +69,11 @@ update()
 
 	str = "";
 	errors = "";
-/*
+
 	// ZPAM_RENAME
-	errors += "^3This is testing version of PAM, server may crash!^7\n";
-	errors += "^3Report feedback to eyza#7930^7\n";
-*/
+	//errors += "^3This is testing version of PAM, server may crash!^7\n";
+	//errors += "^3Report feedback to eyza#7930^7\n";
+
 	if (getcvarint("sv_cheats"))
 	{
 		errors += "^1Cheats are enabled!^7\n";
@@ -84,10 +86,7 @@ update()
 	map = level.mapname;
 	if (map == "mp_toujane" || map == "mp_burgundy" || map == "mp_dawnville" || map == "mp_matmata" || map == "mp_carentan")
 	{
-		ver = "_v2";
-		if (map == "mp_burgundy") ver = "_v1";
-
-		errors += "^3This is an old map, use " + map + "_fix" + ver + "^7\n";
+		errors += "^1This is an old version of map, use " + map + "_fix!^7\n";
 	}
 
 	if (errors != "")

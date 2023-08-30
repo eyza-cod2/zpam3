@@ -110,7 +110,7 @@ callbash()
 	{
 		game["do_bash"] = false;
 
-		iprintlnbold("^9" + self.name + " ^7canceled a bash mode.");
+		iprintlnbold("^9" + self.name + " ^7canceled a pistol bash");
 
 		HUD_Bash();
 	}
@@ -124,10 +124,10 @@ callbash()
 		// Increase number of calls
 		game[self.pers["team"] + "_called_bashes"]++;
 
-		iprintln(self.name + " ^7called a bash mode.");
-		iprintln("Going to bash mode after the ready-up mode.");
+		iprintln(self.name + " ^7called a pistol bash");
+		iprintln("Going to pistol bash after the Ready-Up");
 
-		iprintlnbold("^3" + self.name + " ^7called a bash mode.");
+		iprintlnbold("^3" + self.name + " ^7called a pistol bash");
 
 		logPrint("BASH_CALL;" + self.pers["team"] + ";" + self.name + "\n");
 
@@ -158,10 +158,18 @@ HUD_Bash()
 	}
 	else
 	{
-		level.bash_hud_info removeHUD();
+		level.bash_hud_info destroy2();
 		level.bash_hud_info = undefined;
 	}
 }
+
+getTeamName(team)
+{
+	if (team == "allies") return "Allies";
+	if (team == "axis") return "Axis";
+	return team;
+}
+
 
 
 Validate_bash(print)
@@ -175,14 +183,14 @@ Validate_bash(print)
 	// Only for Allies and Axis
 	if (self.pers["team"] != "axis" && self.pers["team"] != "allies")
 	{
-		if (print) { self iprintln("Bash mode can be called only for team allies or axis"); return "notallowed"; }
+		if (print) { self iprintln("Pistol bash can be called only for allies or axis"); return "notallowed"; }
 		else return 0; // 0 - invisible
 	}
 
 	// We are in bash
 	if (level.in_bash == true)
 	{
-		if (print) { self iprintln("Already in bash mode"); return "notallowed"; }
+		if (print) { self iprintln("Already in pistol bash"); return "notallowed"; }
 		else return 3; // In bash (disabled)
 	}
 
@@ -192,39 +200,39 @@ Validate_bash(print)
 		// Is is supported game type
 		if (!(level.gametype == "sd"))
 		{
-			if (print) { self iprintln("Bash mode is not supported in this gametype"); return "notallowed"; }
+			if (print) { self iprintln("Pistol bash is not supported in this gametype"); return "notallowed"; }
 			else return 0; // Invisible
 		}
 
 		// Is allowed by rules?
 		if(!level.scr_bash)
 		{
-			if (print) { self iprintln("Bash mode is not supported by the rules"); return "notallowed"; }
+			if (print) { self iprintln("Pistol bash is not supported by the rules"); return "notallowed"; }
 			else return 0; // Invisible
 		}
 
 		// If is readyup
 		if (!level.in_readyup)
 		{
-			if (print) { self iprintln("Bash mode can be called only in Ready-Up mode"); return "notallowed"; }
+			if (print) { self iprintln("Pistol bash can be called only in Ready-Up"); return "notallowed"; }
 			else return 2; // Call bash (disabled)
 		}
 
 		// If is first readyup
 		if (!game["readyup_first_run"])
 		{
-			if (print) { self iprintln("Bash mode can be called only in first Ready-Up mode"); return "notallowed"; }
+			if (print) { self iprintln("Pistol bash can be called only in first Ready-Up"); return "notallowed"; }
 			else return 2; // Call bash (disabled)
 		}
 
 		// Check calls
 		if (game[self.pers["team"] + "_called_bashes"] >= 2) // team can call bash mode only twice to avoid spam
 		{
-      if (print) { self iprintln("No more bash mode calls allowed for team "+self.pers["team"]); return "notallowed"; }
+      			if (print) { self iprintln(getTeamName(self.pers["team"]) + " cannot call a pistol bash anymore"); return "notallowed"; }
 			else return 2; // Call bash (disabled)
 		}
 
-    // All ok
+    		// All ok
 		if (print) return "ok";
 		else return 1; // Call bash
 	}
@@ -232,7 +240,7 @@ Validate_bash(print)
 	// bash was called by enemy team
 	else
 	{
-		if (print) { iprintln(self.name + " ^7canceled bash mode."); return "cancel"; }
+		if (print) { iprintln(self.name + " ^7canceled pistol bash"); return "cancel"; }
 		else return 4; // Cancel bash
 	}
 

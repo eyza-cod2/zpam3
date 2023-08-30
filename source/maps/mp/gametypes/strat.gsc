@@ -477,7 +477,7 @@ spawnPlayer()
 
 	self setSpawnWeapon(self.pers["weapon"]);
 
-	if (!maps\mp\gametypes\_bots::isBot())
+	if (!self.pers["isBot"])
 		self thread Watch_Grenade_Throw(true);
 
 	// Notify "spawned" notifications
@@ -707,7 +707,7 @@ menuWeapon(response)
 		response = self maps\mp\gametypes\_weapons::getRandomWeapon();
 
 	// Weapon is not valid or is in use
-	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvaible(response))
+	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvailable(response))
 	{
 		// Open menu with weapons again
 		if(self.pers["team"] == "allies")
@@ -801,7 +801,7 @@ Run_Strat()
 
 
 	// Ignore bots
-	if (maps\mp\gametypes\_bots::isBot())
+	if (self.pers["isBot"])
 		return;
 
 	self thread Show_HUD_Player();
@@ -1177,51 +1177,56 @@ savePos()
 
 Show_HUD_Global()
 {
-	level.granade1 = addHUD(-35, 80, 1.2, (.8,1,1), "right", "top", "right");
+	level.granade1 = addHUD(-35, 60, 1.2, (.8,1,1), "right", "top", "right");
 	level.granade1 setText(&"Grenade flying");
 
 	// Enabled / Disabled
 	// Disable: Hold Shift / Enable: Hold Shift
 
-	level.granade2 = addHUD(-35, 130, .9, (.8,1,1), "right", "top", "right");
+	level.granade2 = addHUD(-35, 110, .9, (.8,1,1), "right", "top", "right");
 	level.granade2 setText(&"Stop: Press ^3Left mouse");
 
-	level.granade3 = addHUD(-35, 140, .9, (.8,1,1), "right", "top", "right");
+	level.granade3 = addHUD(-35, 120, .9, (.8,1,1), "right", "top", "right");
 	level.granade3 setText(&"Return: Press ^3Use");
 
 
 
-	level.positionlogo = addHUD(-35, 180, 1.2, (.8,1,1), "right", "top", "right");
+	level.positionlogo = addHUD(-35, 150, 1.2, (.8,1,1), "right", "top", "right");
 	level.positionlogo setText(&"Position");
 
-	level.savelogo = addHUD(-35, 200, .9, (.8,1,1), "right", "top", "right");
+	level.savelogo = addHUD(-35, 170, .9, (.8,1,1), "right", "top", "right");
 	level.savelogo setText(&"Save: Press ^3Bash ^7twice");
 
-	level.loadlogo = addHUD(-35, 210, .9, (.8,1,1), "right", "top", "right");
+	level.loadlogo = addHUD(-35, 180, .9, (.8,1,1), "right", "top", "right");
 	level.loadlogo setText(&"Load: Press ^3Use ^7twice");
 
 
 
 
-	level.trainingdummy = addHUD(-35, 250, 1.2, (.8,1,1), "right", "top", "right");
+	level.trainingdummy = addHUD(-35, 210, 1.2, (.8,1,1), "right", "top", "right");
 	level.trainingdummy setText(&"Training Bot");
 
 	if (getCvarInt("sv_punkbuster") == 0)
 	{
-		level.trainingdummykey = addHUD(-35, 270, .9, (.8,1,1), "right", "top", "right");
+		level.trainingdummykey = addHUD(-35, 230, .9, (.8,1,1), "right", "top", "right");
 		level.trainingdummykey setText(&"Spawn: Hold ^3Bash ^7+ ^3Use");
 
-		level.trainingdummyrecord = addHUD(-35, 280, .9, (.8,1,1), "right", "top", "right");
+		level.trainingdummyrecord = addHUD(-35, 240, .9, (.8,1,1), "right", "top", "right");
 		level.trainingdummyrecord setText(&"Record: Hold ^3Left mouse ^7+ ^3Use");
 
-		level.trainingdummyplay = addHUD(-35, 290, .9, (.8,1,1), "right", "top", "right");
+		level.trainingdummyplay = addHUD(-35, 250, .9, (.8,1,1), "right", "top", "right");
 		level.trainingdummyplay setText(&"Play: Hold ^3Use");
 	}
 	else
 	{
-		level.trainingdummywarn = addHUD(-35, 270, .9, (1,1,0), "right", "top", "right");
+		level.trainingdummywarn = addHUD(-35, 230, .9, (1,1,0), "right", "top", "right");
 		level.trainingdummywarn setText(&"Disable Punkbuster!");
 	}
+
+	level.clock = addHUD(-35, 280, 1.2, (.8,1,1), "right", "top", "right");
+	level.clock setText(&"Clock");
+	level.clocktimer = addHUD(-35, 295, 1, (.98, .98, .60), "right", "top", "right");
+	level.clocktimer SetTimerUp(0.1);
 }
 
 
@@ -1230,11 +1235,11 @@ Show_HUD_Player()
 	self endon("disconnect");
 
 	// Enabled / Disabled
-	self.nadelogo = addHUDClient(self, -35, 100, 1.2, (1,1,1), "right", "top", "right");
+	self.nadelogo = addHUDClient(self, -35, 80, 1.2, (1,1,1), "right", "top", "right");
 
 	// Disable: Hold Shift
 	// Enable: Hold Shift
-	self.pressad = addHUDClient(self, -35, 120, .9, (0.8,1,1), "right", "top", "right");
+	self.pressad = addHUDClient(self, -35, 100, .9, (0.8,1,1), "right", "top", "right");
 
 	for(;;)
 	{
@@ -1263,9 +1268,9 @@ HUD_Grenade_Releases_In()
 	self endon("end_hud_grenade_explode");
 
 	if (isdefined(self.c))
-		self.c removeHUD();
+		self.c destroy2();
 	if(isdefined(self.exin))
-		self.exin removeHUD();
+		self.exin destroy2();
 
 	self.exin = addHUDClient(self, -80, 310, 1.2, (.8,1,1), "right", "top", "right");
 	self.exin setText(game["STRING_GRENADE_EXPLODES_IN"]);
@@ -1275,8 +1280,8 @@ HUD_Grenade_Releases_In()
 
 	wait level.fps_multiplier * 3.5;
 
-	self.c removeHUD();
-	self.exin removeHUD();
+	self.c destroy2();
+	self.exin destroy2();
 }
 
 
@@ -1290,7 +1295,7 @@ add_bot()
 {
 	//iprintln(self.name + " is spawning bot.");
 
-	bot = maps\mp\gametypes\_bots::addBot();
+	bot = maps\mp\gametypes\_bots::addBot(true);
 
 	if (!isDefined(bot))
 		self iprintln("^1Bot adding failed");

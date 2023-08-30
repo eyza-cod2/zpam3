@@ -6,7 +6,7 @@ init()
 
 	registerCvar("scr_spectatefree", "BOOL", 0);
 	registerCvar("scr_spectateenemy", "BOOL", 0);
-	registerCvar("scr_spectatingsystem", "BOOL", 0);
+	registerCvar("scr_streamersystem", "BOOL", 0);
 
 	addEventListener("onJoinedTeam",    ::onJoinedTeam);
 	addEventListener("onSpawned",    ::onSpawned);
@@ -31,9 +31,9 @@ onCvarChanged(cvar, value, isRegisterTime)
 				level thread setSpectatePermissionsToAll();
 			return true;
 
-		case "scr_spectatingsystem":
+		case "scr_streamersystem":
 			if (isRegisterTime)
-				level.spectatingSystem = value;
+				level.streamerSystem = value;
 			else
 				iprintln("Map needs to be restarted to apply the changes.");
 			return true;

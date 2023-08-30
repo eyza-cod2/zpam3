@@ -63,7 +63,7 @@ handle(team, roundsplayed, value)
 {
 	if (level.gametype != "sd")
 	{
-		iprintln("^1Score changing is avaible only in S&D gametype.");
+		iprintln("^1Score changing is available only in S&D gametype.");
 		return false;
 	}
 	if (!game["readyup_first_run"])
@@ -86,9 +86,18 @@ handle(team, roundsplayed, value)
 
 
 	if ((roundsplayed >= level.halfround && level.halfround > 0) || (value >= level.halfscore && level.halfscore > 0))
+	{
 		game["is_halftime"] = true;
+
+		game["half_2_"+team+"_score"] = value;
+	}
+
 	else
+	{
 		game["is_halftime"] = false;
+
+		game["half_1_"+team+"_score"] = value;
+	}
 
 
 

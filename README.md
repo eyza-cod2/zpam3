@@ -1,31 +1,30 @@
 # Introduction
 
-Mod zPAM3.32 is a new version of PAM mode for COD2. <br>
+Mod zPAM3.33 is a new version of PAM mode for CoD2. <br>
 
-The code from the previous zPAM 2.07 version was completely rewritten and ported to a new code base, which helped in the implementation of new features and bug fixes.
+The code from the previous version zPAM 2.07 was completely rewritten and ported to a new code base, which helped in the implementation of new features and bug fixes.
 
-Work on this pam was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
+Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 3.32 PREVIEW.<br>
+*This page describe only actual version zPAM 3.33.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
-- #### Preview version:
-  - 2023/02/24 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.32/zpam332.zip">zPAM 3.32 PREVIEW - zpam332.zip</a></b>
-  - ❗ *Preview version demonstrates changes and new features and is not officially accepted by FPS Challange* ❗
-- #### Stable version:
-  - 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.22/zpam322.zip">zPAM 3.22 - zpam322.zip</a></b>
+- #### Actual version
+	- 2023/08/30 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.33/zpam333.zip">zPAM 3.33 - zpam333.zip</a></b>
 
-
+- #### Previous versions
+	- 2023/02/24 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.32/zpam332.zip">zPAM 3.32 PREVIEW - zpam332.zip</a></b>
+	- 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.22/zpam322.zip">zPAM 3.22 - zpam322.zip</a></b>
 
 
 
 ## Version list
-- 2023/02/24 - <b><a href="https://github.com/eyza-cod2/zpam3">zPAM 3.32 PREVIEW</a></b> - actual preview version
+- 2023/08/30 - <b>zPAM 3.33</b>
+- 2022/02/24 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c29866e22a6bcfd739515006e465062ec5a9e1f7">zPAM 3.32 PREVIEW</a></b>
 - 2022/10/13 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/3239562802398e9eb16aecb09c8d03e6f902d7ce">zPAM 3.31 PREVIEW</a></b>
 - 2022/10/07 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f254c512574269b4e37971f730087707417d3dce">zPAM 3.30 PREVIEW</a></b>
-- 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/53e1a8e7243596c763e623318668438d8320b257">zPAM 3.22</a></b> - stable version
 - 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/53e1a8e7243596c763e623318668438d8320b257">zPAM 3.22</a></b>
 - 2021/05/16 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f0bea94f83791c4a756909963101bfd9d340757f">zPAM 3.21</a></b>
 - 2021/05/05 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c7d5fa259e6e21a7fc510847421fab5338f19d0d">zPAM 3.20</a></b>
@@ -39,12 +38,75 @@ To see description of previous versions, click on the links in [Version list](#v
 
 ## Changelog
 
+<details><summary>zPAM 3.33 changes (click to open)</summary>
+<p>
+
+**News:**
+- [3.3.72] New streamer team for auto-spectator features
+    - Is completly rewrited, new method for mouse and key detection
+    - Hotkeys to toggle Auto-spectator, replay kill, toggle XRAY, toggle showing hit values, follow player
+    - Auto-killcams will be played at the end of the round even if auto-spectator is off
+    - If the killcam is too long, the round end timer will be extended
+    - Auto-spectator will predict player positions to improve switching to players in right situations
+    - XRAY will be turned off by default
+    - Player's left and right boxes are now not sorted by score, but now by client number (for easier hotkeys)
+    - Player's left and right boxes now contains info about weapons (similar to CSGO)
+    - Spectators are automatically set ready-up
+    - Score progress now indicate who called the timeout with via team color
+    - Player progress will be colored via team color to better indicate the players count situations
+    - Added kill count for individual players in current round
+    - Adjusted the font size of XRAY - now it will dynamically change the size based on distance
+    - Text who is planting / defusing the bomb
+    - 2 color modes - blue and red, cyan and purple
+- [3.3.73] Plant - added timer showing time left to explosion; when bomb is defused, it will show the remaining time till explosion
+- [3.3.74] In the strat-time period, a new "weapon drop" sound is played when you drop your secondary weapon (helps people easily detect where you drop your weapon)<br>
+- [3.3.75] Clearing the console after auto-recording started on each map (to avoid the need to scroll down the console)
+- [3.3.76] Aim-trainer on FIX maps available in readyup (https://youtu.be/XmURNWF3bHs)
+- [3.3.77] Updating of the scoreboard every round to have it available when replaying demos (scoreboard is by default updated only when is opened by player)
+- [3.3.78] Added empty name protection - if empty name is used for first time, player is warned and renamed. The second time player is kicked.
+- [3.3.79] LOD models - forcing tanks, cars, trucks, and artillery flak to be always rendered at high detail (this fixes holes in models at long distances)
+
+**Fixes / Improvements:**
+- Readyup: fixed "welcoming" text that were not showing when you joined team + added info about time to readyup (halftime 2min, timeout 2min, between maps 5min)
+- Scoreboard menu: possibility to set players color from menu also in readyup
+- Overtime: score is not reset in overtime now; when map ends up with 12/12 score, the end score limit is just increased by 4
+- Grenade "eater" bug fixed - when you pickup grenade from ground from enemy team, that grenade was not dropped when you die; now all grenades will be dropped
+- Fixed clan team names - sometimes the last character was cutted off
+- RCON kick player list was extended from 16 to 22 lines
+- Strat: removed bot's icon above head
+- Round report: hit to Body was renamed to Torso-lower and Torso-upper
+- List of players left: fixed empty names
+- Fixes for HQ and CTF server crashes
+- Restoring to original smoke rendering
+- Updated FIX maps, they will be named mp_toujane_fix mp_carentan_fix mp_dawnville_fix mp_matmata_fix mp_burgundy_fix
+- Improved "hand hitbox fix" (fix was not applied when head point is behind cover + double shots bug fix)
+- Improved "consistent shotgun" - distance between players is now more precisly counted between attacker's eye origin and enemy pelvis origin
+- Adding the distance between you and the enemy for shotguners into round report
+- Fixed team menu not opening when "russian" sub mode is used on russian maps (via rcon menu or via /rcon pam_mode comp_russian)
+- Added more info into /pam_damage_debug to have better understanding why some of the hits occured
+- Fixed swapped map score history in match info bar - score was sometimes swapped from player's view (Toujane 13:6 instead of Toujane 6:13)
+- Fixed missing smoke for shotgun in CTF, HTF, TDM
+- Improved team name generating
+- STRAT gametype: added clock timer
+- Fixed TDM halftime missing in time sub pam modes
+- Fixed "&&1 Wins!" string in DM scoreboard
+- Dawnville: fixed splash MG stuck bug when MG fix is applied
+- DM gametype: restored DM objects + MG
+- Weapon usage is now generated for each individual weapon, not by class
+- Scope and shogun auto-drop protection when you pickup weapon from the ground was improved by disabling scope / shogun pickup when there are other players near by; pickup is allowed only when the player who owns the weapon is near by the weapon.
+
+
+</p>
+</details>
+
+
+
 
 <details><summary>zPAM 3.32 changes (click to open)</summary>
 <p>
 
 - [3.3.70] Silent weapon switch when climbing - restoring the original behavior + disabling the weapon switch sound that is played only in 1st point of view
-- New hand hitbox fix - addressing the hit problems
+- [3.3.71] New hand hitbox fix - addressing the hit problems
 - Fixed pistol being dropped in rifle mode when player is killed
 - Fixed auto-recording in deathmatch
 - Fixed RCON menu - rifle and 2v2 mode had wrong order, (correct comp_rifle_2v2 instead of bad comp_2v2_rifle)
@@ -69,8 +131,6 @@ To see description of previous versions, click on the links in [Version list](#v
 - Disabled killing with grenade in readyup
 - Showing type of server and number of players slots in server info menu
 - Some other minor changes
-
-
 </p>
 </details>
 
@@ -78,7 +138,6 @@ To see description of previous versions, click on the links in [Version list](#v
 
 <details><summary>zPAM 3.31 changes (click to open)</summary>
 <p>
-
 
 - [3.3.68] Climbing sound fix
 	- If you climb ladder or wall, the "weapon switch" sound was made only for 1st person player, it was silent for other players
@@ -276,16 +335,22 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.32/zpam332.zip">zPAM 3.32 PREVIEW</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam332.iwd
-	- ./Call of Duty 2/main/zpam_maps_v2.iwd <i>(*required only for 1.3 game version)</i>
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.33/zpam333.zip">zPAM 3.33</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam333.iwd
+	- ./Call of Duty 2/main/zpam_maps_v3.iwd <i>(*required only for 1.3 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
 
-- Add ```+exec server.cfg``` into command line arguments and edit the ```server.cfg``` file to configure your server.
+- Add ```+exec server.cfg``` into command line arguments
+
+- Edit the ```server.cfg``` file to configure your server.
+
+- Make sure the server is runned without a mod (```set fs_game ""```).
+	- PAM uses default **main** folder because mods does not exec player's configs correctly and settings changed in game would not be persisted to next game session.
+
 
 - For game version 1.3:
-	- Mappack file <b>zpam_maps_v2.iwd</b> needs to be included in main folder. [What is zpam_maps_v1.iwd file?](#what-is-zpam_maps_v2iwd-file)
+	- Mappack file <b>zpam_maps_v3.iwd</b> needs to be included in main folder. [What is zpam_maps_v3.iwd file?](#what-is-zpam_maps_v3iwd-file)
 	- Fast download must be enabled via these settings (custom URL may be used):
 		- <b>sv_wwwDownload 1</b>
 		- <b>sv_wwwBaseURL "http://cod2x.me/zpam"</b>
@@ -294,8 +359,8 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 ❗ Error <b>"PAM is not installed correctly"</b> may show. ❗<br>
 To fix this error, follow instructions in [Troubleshooting](#troubleshooting) section
 
-Make sure the server is runned without a mod (```/fs_game```).
-PAM uses default main folder because mods does not exec player's configs correctly and settings changed in game would not be persisted to next game session.
+
+
 
 If you are running server manually, this is example of command line parameters:<br>
 ```+set dedicated 2 +set sv_punkbuster 0 +pb_sv_disable +exec server.cfg```
@@ -308,7 +373,7 @@ If you are running server manually, this is example of command line parameters:<
 
 ## Contact
 Write message on discord <b>TLS CoD2 Community</b> in <b>#zpam3-chat</b> channel. https://discord.gg/HDsC6u5k6y<br>
-Or add me on discord <b>eyza#7930</b><br>
+Or add me on discord <b>eyza_</b> (old name eyza#7930)<br>
 Or write me on email <b>kratas.tom@seznam.cz</b><br>
 <br>
 Please support this work on my Paypal -> https://paypal.me/kratasy
@@ -319,44 +384,95 @@ Please support this work on my Paypal -> https://paypal.me/kratasy
 **askeslav, tomik, lampy**<br>
 Big thanks for consulting and testing
 
-**YctN**   (discord: FGH - YctN#1140)<br>
+**YctN**   (discord: yctn, YctN#1140)<br>
 Big thanks for server support, hosting and fixed maps consulting
 
-**Stendby**   (discord: Stendby#3298)<br>
+**Stendby**   (discord: stendby, Stendby#3298)<br>
 Big thanks for fixed maps
 
-**Fjozek**   (discord: Fjozek#0625)<br>
+**Fjozek**   (discord: fjozek, Fjozek#0625)<br>
 Big thanks for HQ, HTF and RE gametypes integration and overal PAM testing
 
-**mtN**   (discord: mtN#8249)<br>
+**craven** (discord: cravenciak, craven#8572)<br>
+Big thanks for testing and feedback
+
+**mtN**   (discord: mtn_53, mtN#8249)<br>
 Big thanks for PAM promoting
 
 **Other supporters:**<br>
-cokY, Sk1lzZ, YctN, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / dutch, excel, shady, jza
+cokY, Sk1lzZ, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / dutch, excel, shady, jza, Saber, jansen
 
 
 <br><br>
 
 ## Questions & Answers
 
-### What is zpam_maps_v2.iwd file
+### What is zpam_maps_v3.iwd file
 - Its is a map pack of:
-	- [Toujane FIX v2](https://github.com/eyza-cod2/mp_toujane_fix)
-	- [Burgundy FIX v1](https://github.com/eyza-cod2/mp_burgundy_fix)
-	- [Dawnville FIX v2](https://github.com/eyza-cod2/mp_dawnville_fix)
-	- [Matmata FIX v2](https://github.com/eyza-cod2/mp_matmata_fix)
-	- [Carentan FIX v2](https://github.com/eyza-cod2/mp_carentan_fix)
+	- [Toujane FIX v3](https://github.com/eyza-cod2/mp_toujane_fix)
+	- [Burgundy FIX v2](https://github.com/eyza-cod2/mp_burgundy_fix)
+	- [Dawnville FIX v3](https://github.com/eyza-cod2/mp_dawnville_fix)
+	- [Matmata FIX v3](https://github.com/eyza-cod2/mp_matmata_fix)
+	- [Carentan FIX v3](https://github.com/eyza-cod2/mp_carentan_fix)
 	- [Breakout TLS](https://github.com/eyza-cod2/mp_breakout_tls)
-	- Chelm
+	- Chelm FIX (v2)
 	- Vallente
 	- wawa_3dAim
+
+
 - Credit:
-	- Toujane FIX, Burgundy FIX - by **eyza** and **stendby**
-	- Dawnville FIX, Matmata FIX, Carentan FIX, Chelm - by **Fjozek**
+	- Toujane FIX, Burgundy FIX - by **eyza**, **Stendby**, **Fjozek**
+	- Dawnville FIX, Matmata FIX, Carentan FIX - by **Fjozek**
 	- Breakout TLS - by **eyza** and **craven**
+	- Chelm - by **Julian Luo**; remake by **Fjozek** and **craven**
 	- Vallente - by/for Crossfire.nu [www.crossfire.nu]
 
+
+- Maps have these ingame names:
+	- `mp_toujane_fix`, `mp_burgundy_fix`, `mp_dawnville_fix`, `mp_matmata_fix`, `mp_carentan_fix`, `mp_breakout_tls`, `mp_chelm_fix`, `mp_vallente`, `wawa_3dAim`
+
 If you know bugs that are not fixed yet, please contact me!<br>
+
+
+
+<br>
+
+### How does the "Hand hitbox fix" works / what is it
+There are some weird situations when you shot player to the body, but the game process it as a hit only.
+These types of bugs are probably caused by badly implemented hit boxes within the game engine.
+In these situations the game process the hit location as hand / arm instead of body (when the arm is right behind the body)
+Hand hitbox fix tries to address this issue by the following check:
+<img src="/images/hand_hitbox_fix.png"/>
+ - if you fire from rifle or scope, and
+ - distance between you and enemy is more than 200, and
+ - hit location is inside a box created around head, and
+ - head is visible to player (is not behind wall), and
+ - damage is less then 100 (meaning it was hit only to hand)
+ - 	In that case, damage is changed to 100 (meaning enemy will be killed)
+
+The box is created in a way that its always aligned with your point of view and with deph wider towars you. The box is created in this way to cover hands of enemy inside the box when player is in ADS (zoomed). In that case, if you hit the hand from your point of view, it should be a kill, because body is behind the hand.
+
+To apply this fix, the hit location must be inside the box. If the hitbox is outside the box, original damage values are applied.
+
+You can debug hitbox fix in game via command **/rcon debug_handhitbox 1**<br>
+**Hand hitbox fix is enabled by default**
+
+
+
+
+<br>
+
+### How does the "Torso hitbox fix" works / what is it
+Hitbox area torso_lower is now slightly bigger to avoid weird hits to lower part of body.
+This will take effect only for rifles, because other weapons have the same damage values for torso_lower and left/right_leg_upper.
+
+<img src="/images/hitbox_torso.png"/>
+
+You can debug this in game via command **/rcon debug_torsohitbox 1**<br>
+**Torso hitbox fix is enabled by default**
+
+
+
 
 <br>
 
@@ -369,11 +485,7 @@ There were multiple versions of shotguns in a lifetime of new zPAM.
 The main goal of these shotgun versions is to avoid close range hits and long range kills.<br>
 An improvement was made with rebalanced shotgun, but it still was not perfect. Consistent shotgun is the latest version.<br>
 Shotgun problem analysis: https://youtu.be/7saFLaQoiwI
-
-
 <br>
-
-
 ### How does the "Consistent shotgun" works / what is it
 First of all, lets describe how the classic shotgun works:
 - When you fire from shotgun, 8 pellets are fired.
@@ -433,39 +545,91 @@ First of all, lets describe how the classic shotgun works:
 
 **Consistent shotgun is enabled by default**
 
+
+ <br>
+
+ ### How does the "Fast reload fix" works / what is it
+ Fast reload is when you fire from KAR98 for example, press R to reload and then you scroll down 2x, you are able to shoot faster.
+ PAM is blocking you from fast-switching weapon for short period of time after you fire from weapon.
+ This take effect to following weapons: kar98k, kar98k_sniper, enfield, enfield_scope, mosin_nagant, mosin_nagant_sniper, springfield, shotgun.<br>
+ You can debug fast-reload fix in game via command **/rcon debug_fastreload 1**.<br>
+ **Fast reload fix is enabled by default.**
+
+
+
+
 <br>
 
-### How does the "Torso hitbox fix" works / what is it
-Hitbox area torso_lower is now slightly bigger to avoid weird hits to lower part of body.
-This will take effect only for rifles, because other weapons have the same damage values for torso_lower and left/right_leg_upper.
+### How does the "Clip" and "Prone peek fix" works / what is it
+Lets describe a "clip" and "prone-peek" a bit
 
-<img src="/images/hitbox_torso.png"/>
+- ### Clip
+	- In zPAM2.07, when you go from prone position to crouch position, a "standing-up" animation was played on player's character
+	- If you go immediately back to prone position, the animation makes you invisible to enemy, because before your body and head gets to higher position, you are back in prone position
+	- This animation is well described on this image:
+	- <img src="/images/clip.gif" height="100"/>
+	- This animation bug is fixed in zPAM3, but there is still one problem described below
+- ### Prone-peek
+	- Prone peek is when you go from prone position to crouch position and then immediately back to prone position.
+	- If you also lean left/right while standing-up, your head is moving too fast from side to center position.
+	- For enemy its difficult to shoot, because character animation is moving too fast and it seems like bugged character animation
+	- The prone-peek fix just make sure you stay in crouch position 400ms longer.
+	- This delay is applied only if:
+	  - pronepeek-able wall / cover is detected (cover that block your view in prone position, but not in crouch position)
+	  - you are in ads (zoomed in)
+	- You can debug prone-peek fix in game via command **/rcon debug_pronepeek 1**
+- **Prone-peek fix is enabled by default**
 
-You can debug this in game via command **/rcon debug_torsohitbox 1**<br>
-**Torso hitbox fix is enabled by default**
+
 
 <br>
 
+### How does the "MG clip" fix works / what is it
+Clipping a MG is situation, when you grab a MG while you are behind cover and you immidietely drop it. This makes you almost impossible to kill you, while you can easily get opponent's positions.
+MG clip fix make sure you are spawned right behind the MG every time you drop the MG.<br>
+Note: your teammates that are spectating you may see you "lagging". Thats normal and is caused by the way I used to fix this bug.<br>
+**MG clip fix is enabled by default**
 
-### How does the "Hand hitbox fix" works / what is it
-There are some weird situations when you shot player to the body, but the game process it as a hit only.
-These types of bugs are probably caused by badly implemented hit boxes within the game engine.
-In these situations the game process the hit location as hand / arm instead of body (when the arm is right behind the body)
-Hand hitbox fix tries to address this issue by the following check:
-<img src="/images/hand_hitbox_fix.png"/>
- - if you fire from rifle or scope, and
- - distance between you and enemy is more than 200, and
- - hit location is inside a box created around head, and
- - head is visible to player (is not behind wall), and
- - damage is less then 100 (meaning it was hit only to hand)
- - 	In that case, damage is changed to 100 (meaning enemy will be killed)
 
-The box is created in a way that its always aligned with your point of view and with deph wider towars you. The box is created in this way to cover hands of enemy inside the box when player is in ADS (zoomed). In that case, if you hit the hand from your point of view, it should be a kill, because body is behind the hand.
 
-To apply this fix, the hit location must be inside the box. If the hitbox is outside the box, original damage values are applied.
+<br>
 
-You can debug hitbox fix in game via command **/rcon debug_handhitbox 1**<br>
-**Hand hitbox fix is enabled by default**
+### How does the "Enemy list" works
+Enemy list is feature that show names of alive player from opponent team. This feature can be enabled / disabled via menu.
+You can change color of opponent team via scoreboard menu. Button "Set" will toggle between red, blue and white color.<br>
+<img src="/images/enemylist_setcolor.png" /><br>
+If you change a color, its applied to team, so your teammates can also see the colors.
+
+
+
+<br>
+
+### How does the "Round report" works
+At the end of the round, report of hits and kills is printed. It include damage value, hit location and first hit location. For shotgun it prints number of pellets that hit the target and range. Read star indicates that "Hand hitbox fix" or "Torso hitbox fix" was applied.<br>
+<img src="/images/round_report.png" />
+
+
+
+<br>
+
+### How does the "Double kill" works
+- Lets describe a situation when you fire a bullet to players that are lined right behind each other. When you fire, a "bullet-trace" is computed - it will find a first player in front of you, and this trace continue until it encounter an obstacle (wall, dead body, etc..)
+
+- #### Old pam:
+	- "bullet-trace" will find first player, witch receive damage, that is processed into kill and player dead body is spawned; bullet trace now continues from position of this player, but because there is a dead body spawned, the bullet-trace stops here (because dead-body is an obstacle) and the second player did not receive damage at all; there was situation where dead-body were spawned at slightly different position/angle then player body (on rough terrain for example) and then the bullet trace was able to continue. That's why the double kills were very rare on old pam
+
+- #### New pam
+	- in new pam, the dead-body is spawned after the bullet-trace is completely processed - that means the bullet is never stopped by spawned dead-bodies of players killed by this bullet and you can get double kills more easily
+
+
+
+<br>
+
+### What is "Diagonal" bug
+Diagonal bug is when you walk forward + left/right + lean left/right + in ads. Doing this to the left side (walk forward + left + lean left + ads) makes our head and body rotated more to the right + down. This make you in an advantage position, because you can see enemy sooner then enemy sees you.
+Option witch disabled leaning left/right when walking forward + left/right, preventing you from doing diagonal was removed from PAM, since it was affecting the player movement quite much.
+So diagonal is not affected by PAM.
+
 
 
 <br>
@@ -502,122 +666,6 @@ If you climb ladder or wall, the "weapon switch" sound was made only for 1st per
 This sound is played only if you regularly and intentionally switch the weapon
 
 
- <br>
-
-
- ### How does the "Fast reload fix" works / what is it
- Fast reload is when you fire from KAR98 for example, press R to reload and then you scroll down 2x, you are able to shoot faster.
- PAM is blocking you from fast-switching weapon for short period of time after you fire from weapon.
- This take effect to following weapons: kar98k, kar98k_sniper, enfield, enfield_scope, mosin_nagant, mosin_nagant_sniper, springfield, shotgun.<br>
- You can debug fast-reload fix in game via command **/rcon debug_fastreload 1**.<br>
- **Fast reload fix is enabled by default.**
-
-<br>
-
-### How does the "Clip" and "Prone peek fix" works / what is it
-Lets describe a "clip" and "prone-peek" a bit
-
-- ### Clip
-	- In zPAM2.07, when you go from prone position to crouch position, a "standing-up" animation was played on player's character
-	- If you go immediately back to prone position, the animation makes you invisible to enemy, because before your body and head gets to higher position, you are back in prone position
-	- This animation is well described on this image:
-	- <img src="/images/clip.gif" height="100"/>
-	- This animation bug is fixed in zPAM3, but there is still one problem described below
-- ### Prone-peek
-	- Prone peek is when you go from prone position to crouch position and then immediately back to prone position.
-	- If you also lean left/right while standing-up, your head is moving too fast from side to center position.
-	- For enemy its difficult to shoot, because character animation is moving too fast and it seems like bugged character animation
-	- The prone-peek fix just make sure you stay in crouch position 400ms longer.
-	- This delay is applied only if:
-	  - pronepeek-able wall / cover is detected (cover that block your view in prone position, but not in crouch position)
-	  - you are in ads (zoomed in)
-	- You can debug prone-peek fix in game via command **/rcon debug_pronepeek 1**
-- **Prone-peek fix is enabled by default**
-
-<br>
-
-### How does the "MG clip" fix works / what is it
-Clipping a MG is situation, when you grab a MG while you are behind cover and you immidietely drop it. This makes you almost impossible to kill you, while you can easily get opponent's positions.
-MG clip fix make sure you are spawned right behind the MG every time you drop the MG.<br>
-Note: your teammates that are spectating you may see you "lagging". Thats normal and is caused by the way I used to fix this bug.<br>
-**MG clip fix is enabled by default**
-
-<br>
-
-### How does the "Enemy list" works
-Enemy list is feature that show names of alive player from opponent team. This feature can be enabled / disabled via menu.
-You can change color of opponent team via scoreboard menu. Button "Set" will toggle between red, blue and white color.<br>
-<img src="/images/enemylist_setcolor.png" /><br>
-If you change a color, its applied to team, so your teammates can also see the colors.
-
-<br>
-
-### How does the "Round report" works
-At the end of the round, report of hits and kills is printed. It include damage value, hit location and first hit location. For shotgun it prints number of pellets that hit the target and range. Read star indicates that "Hand hitbox fix" or "Torso hitbox fix" was applied.<br>
-<img src="/images/round_report.png" />
-
-<br>
-
-### How does the "Double kill" works
-- Lets describe a situation when you fire a bullet to players that are lined right behind each other. When you fire, a "bullet-trace" is computed - it will find a first player in front of you, and this trace continue until it encounter an obstacle (wall, dead body, etc..)
-
-- #### Old pam:
-	- "bullet-trace" will find first player, witch receive damage, that is processed into kill and player dead body is spawned; bullet trace now continues from position of this player, but because there is a dead body spawned, the bullet-trace stops here (because dead-body is an obstacle) and the second player did not receive damage at all; there was situation where dead-body were spawned at slightly different position/angle then player body (on rough terrain for example) and then the bullet trace was able to continue. That's why the double kills were very rare on old pam
-
-- #### New pam
-	- in new pam, the dead-body is spawned after the bullet-trace is completely processed - that means the bullet is never stopped by spawned dead-bodies of players killed by this bullet and you can get double kills more easily
-
-<br>
-
-### What is "Diagonal"
-Diagonal bug is when you walk forward + left/right + lean left/right + in ads. Doing this to the left side (walk forward + left + lean left + ads) makes our head and body rotated more to the right + down. This make you in an advantage position, because you can see enemy sooner then enemy sees you.
-Option witch disabled leaning left/right when walking forward + left/right, preventing you from doing diagonal was removed from PAM, since it was affecting the player movement quite much.
-So diagonal is not affected by PAM.
-
-<br>
-
-### How does the "Auto-spectator" works / what is it
-- Auto-spectator is the name for following functions:
- - Automatically controlelled switch between players according to game situation
- - Players health bars with score on left and right side of the screen
- - Automatically proposed killcams of interesting situations<br><br>
-- <img src="/images/spectator.png" /><br><br>
-- When you join spectator team and match is in progress, auto-spectator feature is enabled by default
-- Auto-spectator will automatically switch between players in these cases:
- - player have enemy in sight (head of enemy appears on screen)
- - player is last alive player in team
- - bomb is planted
- - no action of followed player
-- Auto-spectator will automatically replay a killcam in these cases:
- - two or more player were killed and this action was not watched
- - nozoom
-- Killcam is proposed only if there is no visible enemy for actually followed player
-- Damage info text is showed
-- <img src="/images/spectator_hitinfo.png" /><br><br>
-- Player names are showed thru walls
-- <img src="/images/spectator_esp.png" /><br><br>
-- At round start, automatically followed player is selected by these steps:
-  - Round 1: sniper of team allies
-  - Round 2: sniper of team axis
-  - Next rounds follows this pattern:
-    - Best player in team allies
-    - Best player in team axis
-    - Next player in row in team allies
-    - Next player in row in team axis
-    - Next player in row in team allies
-    - Next player in row in team axis
-- When there is a request for player switch, player is switched to player from the same team (if round starts spectating player from team allies, it switch to player from team allies)
-- If bomb is planted, team with lower alive players is preferred
-- When player is switched, next switch is possible after 6 seconds.
-
-<br>
-
-### How does the "Spectator killcam" works / what is it
-- In spectator team, you are able to replay actions (killcam)
-- Actions are kills by players. When multiple kills happends within period of 5 seconds between each kill, these kills are saved as action.
-- Actions are stored for 40 seconds (its game limitation)
-- <img src="/images/spectator_killcam.png" />
-
 <br>
 
 
@@ -647,8 +695,22 @@ Features:
 
 ### How damage debug cvar works
 At the end of each round, debug info about hits is saved into cvar **pam_damage_debug**.<br>
-Following format is used: time|miliseconds|attacker.origin|self.origin|distance|damage|self.health|weapon|hitLocation|point";
-This cvar can be readed from demo.
+
+Format:<br>
+{time}|{miliseconds}|dmg:{damage}|health:{enemy_health}|xyz_my:{my_origin}|xyz_enemy:{enemy_origin}|{weapon}|{hitLocation}|xyz_hit:{hit_origin}|head:{head_origin}|pelvis:{pelvis_origin}
+
+Example:<br>
+01:40|143292|dmg:90|health:100|xyz_my:(2370, 2408, 69)|xyz_enemy:(2401, 2319, 68.1639)|enfield_mp|right_leg_lower|xyz_hit:(2405.71, 2331.14,
+82.5798)|head:(2405.46, 2321.46, 126.384)|pelvis:(2404.3, 2319.23, 102.209)<br><br>
+01:34|148704|dmg:135|health:100|xyz_my:(1911, 2332, 31)|xyz_enemy:(2401.74, 2318.93, 68.1349)|enfield_mp|torso_lower|xyz_hit:(2400.64, 2316.08,
+110.394)|head:(2406.26, 2321.28, 126.205)|pelvis:(2405.14, 2319.08, 102.076)
+
+<img src="/images/pam_damage_debug.png" /><br>
+These cvars can be read from demo.
+
+
+
+
 
 <br>
 
@@ -656,6 +718,194 @@ This cvar can be readed from demo.
 zPAM uses cvar /server16 to save custom settings. This cvar is used because value of this cvar is saved into config when game is closed.<br>
 Format: "item_value|item2_value2|...". <br>
 Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
+
+
+<br>
+
+### How does the "Aim-Trainer" feature works / what is it
+- <img src="/images/aim_trainer.png" /><br><br>
+- In Ready-Up period, it is possible to spawn targets and practice your aim.
+- These targets are supported only on FIX versions of maps or maps that directly supports it.
+- Hold Shift to toggle between different modes of aim trainer:
+	- Mode 1: Static mode - targets are not moving and you have to shot the target within 500ms
+	- Mode 2: Moving targets - targets are moving
+	- Mode 3: Fast moving targets - targets are moving faster
+	- Mode 4: Reaction time - targets spawn with random delay and your reaction time is measured
+- Double press Shift to turn off aim trainer.
+
+
+<br>
+
+### How does the "LOD fix" feature works / what is it
+- Every model has multiple versions of itself with varying detail depending on distance between player and model.
+- PAM forces tanks, cars, trucks, and artillery flak to be always rendered at high detail
+- This fixes holes in low detailed models at long distances
+- It may slightly increase the load and therefore decrease the FPS
+<br><br>
+- <img src="/images/lod_tj_plant1.gif" /><br>
+- <img src="/images/lod_tj_plant2.gif" /><br>
+- <img src="/images/lod_tj_truck_long.gif" /><br>
+- <img src="/images/lod_tj_tank_cross.gif" /><br>
+- <img src="/images/lod_bg_tank_mid_cross.gif" /><br>
+- <img src="/images/lod_bg_tank_burn.gif" /><br>
+- <img src="/images/lod_dw_plant1.gif" /><br>
+- <img src="/images/lod_dw_plant2.gif" /><br>
+
+
+
+
+
+<br>
+
+### How does the "Streamer" and "Auto-spectator" feature works / what is it
+- <img src="/images/streamer.png" /><br><br>
+- There is a new team called "Streamer" that you can join when you connect the server
+- Streamer team supports following features:
+	- HUD overlay
+		- Match info
+		- Followed player info
+		- Players bars
+		- Score progress
+		- Player xvx progress
+		- Hit info
+		- Planter / defuser info
+	- Auto-spectator
+	- Replay (killcam)
+	- XRAY
+	- Free spectating - follow close by player
+
+#### HUD overlay
+- <img src="/images/streamer_menu.png" /><br><br>
+- When you join a streamer team, a new **streamer menu** overlay will open
+- Streamer menu is needed to detect mouse and keys detection
+- Binds are not working while this menu is open
+- To use the binds (eg. for chat), you have to close this menu first with Esc key
+- When the streamer menu is joined for the first time, you have to confirm this via Space key.
+- Once confirmed, you will automatically join streamer menu again when the map changes
+- You are automatically set as ready in Ready-up period.
+- Players are automatically renamed if their nickname contains double-colors (^^xx) when there is a streamer. (reason: avoid confusing team colors for viewers of stream)
+
+##### Match info
+- <img src="/images/streamer_menu_teams.png" /><br>
+- Teams are always on the same side
+- Only the color of team is changing according to side of the team (allies: blue, axis: red)
+
+##### Followed player info
+- Under the "following" text, there is a status of player switching
+- <img src="/images/streamer_following_status.png" /><br>
+- It tells the reason why the followed player was changed
+- Greenish background color means that spectated player can be changed by auto-spectator at any time
+- Grayish background color means that this player is locked for some time
+- No background color means auto-spectator is turned off and switching is controlled manually
+
+##### Players bars
+- <img src="/images/streamer_player_bars2.png" /><br>
+- Bars shows the following info about the players:
+	- Health - indicated by the changed width of colored bar
+	- Weapons (pistols are not showed)
+	- Number of greandes / smokes
+	- Kills and deaths
+	- Number of kills in this round (indicated with green color next to kills and deaths)
+- When the player is dead, bar is more transparent and dead icon is showed
+- Currently followed player is indicated with white rectangle with an arrow next to it
+- Players are sorted by their ID and not via score<br><br>
+- <img src="/images/streamer_player_bars.png" /><br>
+- You can use keys [1,2,3,4,5] to switch to player from team 1 and keys [6,7,8,9,0] from team 2
+- Number of individual player is showed when help is showed via Space key
+
+
+##### Score progress
+- <img src="/images/streamer_score_progress.png" /><br>
+- Score progress shows who win the round via team color
+- Halftime is indicated via "|" character
+- Timeout is indicated via "[T]" characters
+- Overtime is indicated via "[O]" characters
+
+
+##### Player xvx progress
+- <img src="/images/streamer_player_progress.png" /><br>
+- Player progress indicate which team killed a player and the number of players in that time
+
+##### Hit info
+- <img src="/images/streamer_hitinfo.png" /><br>
+- Text with HP damage value and hit location is showed when you inflict or receive damage
+- You can toggle it via H key
+
+
+##### Planter / defuser info
+- <img src="/images/streamer_plant_defuse.png" /><br>
+- When some player is planting or defusing a bomb, its indicated on the screen
+
+<br><br>
+
+#### Auto-spectator
+- Auto-spectator is the name for following functions:
+- It automatically switch between players according to game situation
+- The following situations are taken into account:
+	- Player has an enemy's head in sight
+	- Player will have an enemy's head in sight (predicted player movement)
+	- Player just planted the bomb
+	- Players are close to each other
+	- You are last player in team
+	- Its 1v1 and you are in the losing team<br><br>
+- At round start, automatically followed player is selected by these steps:
+  - Round 1: Sniper of team allies
+  - Round 2: Sniper of team axis
+  - Round 3: Sniper of team allies
+  - Round 4: Sniper of team axis
+  - Round 5: Shotgunner of team allies
+  - Round 6: Shotgunner of team axis
+  - Next rounds follow this pattern:
+	  - Round 7: Best player of team allies
+	  - Round 8: Best player of team axis
+	  - Round 9: sniper of team allies
+	  - Round 10: sniper of team axis
+	  - ...
+- When there is a request for player switch, player is switched to player from the same team (if round starts spectating player from team allies, it switch to player from team allies)
+- If bomb is planted, team with lower alive players is preferred
+- When player is switched, next switch is possible after 6 seconds.
+- You can toggle auto-spectator via Middle mouse key
+- Auto-spectator is enabled by default
+
+
+
+#### Replay (killcam)
+- <img src="/images/streamer_killcam_menu.png" /><br>
+- Actions are kills by players. When multiple kills happends within period of 5 seconds between each kill, these kills are saved as action.
+- You can replay an action via opening replay menu via R key and choosing the action via [1,2,3,4,5,6,7,8,9] keys
+- Actions are automatically replayed at the end of the round (if there are any)
+- Only 40 seconds of history can be saved - it means actions cannot be played after 40 seconds they happend (game limitation)
+- If some of the interesting actions happens (bash, nozoom or 2 and more kills) and there is no reason to switch the followed player via auto-spectator, a replay proposal is showed:
+- <img src="/images/streamer_killcam_proposal.png" /><br>
+- You have a few seconds to press a F key to replay the action
+
+
+#### XRAY
+- <img src="/images/streamer_xray.png" /><br><br>
+- Enemies behind wall are visualized via stance icons
+- If enemy is damaged, they have red color
+- Player nicknames are showed above the stance icon
+- The animation is not perfect - the game does not allow to show player contours via better way
+- XRAY can be toggled via X key
+- XRAY is toggled off each round
+
+
+#### Free spectating - follow close by player
+- <img src="/images/streamer_closeby.png" /><br><br>
+- When you are free spectating and you are looking at some player, this player will will be followed if you clock Left or Right mouse key
+- The player nickname must be indicated by text in upper part of the screen
+- XRAY needs to be enabled (wich is automatically enabled when entering free spectating)
+- You can enter free spectating by pressing Shift key
+
+
+<br>
+
+
+
+
+
+
+
 
 <br>
 <br>
@@ -669,12 +919,14 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 
 ## Troubleshooting
 ### Error "zPAM is not installed correctly"
-#### Iwd file zpam332.iwd must be installed in main folder. (fs_game)
- - From version 3.20, all iwd files have to be installed in main folder.
-This is because of bug that cvars / settings changed in game are not saved into the config when running a game with fs_game set.
-Make sure cvar /fs_game is empty and iwd files are placed in main folder.
+#### Cvar /fs_game is not empty!
+Make sure cvar /fs_game is empty (+set fs_game "") and iwd files are placed in main folder.
 
-#### Iwd file zpam_maps_v2.iwd must be installed in main folder
+#### Iwd file zpam333.iwd must be installed in main folder.
+ - From version 3.20, all iwd files have to be installed in main folder.
+This is because of bug that player's settings changed in game are not saved into the config when running a game with fs_game set.
+
+#### Iwd file zpam_maps_v3.iwd does not exists in ^9main^7 folder
 - From version 3.20, fixed versions of some maps are available. PAM is forcing to include these files to make sure maps are available on every server.
 
 #### Error while getting loaded iwd files. Make sure iwd files does not contains spaces.
@@ -685,7 +937,7 @@ Make sure cvar /fs_game is empty and iwd files are placed in main folder.
 - If you dont have any url, you can use /sv_wwwBaseURL "http://cod2x.me/zpam"
 - This is to make sure fixed maps are downloaded in fast way for players
 
-####  Old pam / maps detected in main folder. Delete iwd file you see above.
+####  Old zPAM or maps detected in main folder. Delete iwd file you see above.
 - Your main folder contains also a other versions of pam or maps. Delete all .iwd files that the game prints on screen.
 
 
@@ -986,7 +1238,7 @@ Added posibility to call bash mode from menu.<br>
 <img src="/images/team_hit.png" /><br>
 [3.3.44] Cvar system rewrited; any change to server settings is retained even when map changes; new cvar /pam_mode_custom is defined - it tells that changes made to server settings stays between map<br>
 [3.3.45] Warnings about wrong server settings (no password, cheats enabled, punkbuster disabled, cvars changes) is changed; its showed in left top corner under the score; if some of the server settings is changed, detailed list of changed cvars is showed; punkbuster warning is removed<br>
-[3.3.46] <del>Hand hit box fix - if hands are in front of body and game somehow badly interprets it as hit to the hand, PAM change it to hit to the body; its an extension to already existing fix in 3.22 for left hand - now its applies also for right hand</del> <b>replaced with [3.3.??]</b><br>
+[3.3.46] <del>Hand hit box fix - if hands are in front of body and game somehow badly interprets it as hit to the hand, PAM change it to hit to the body; its an extension to already existing fix in 3.22 for left hand - now its applies also for right hand</del> <strong>replaced with [3.3.71]</strong><br>
 [3.3.47] Torso hitbox fix; lower torso hitbox (pelvis area) is slightly enlarged as workaround for bad hitbox registration between torso_lower and right/left_leg_upper; this change effectively applies only for rifles, because other weapons has the same damage for torso_lower and right/left_leg_upper<br>
 [3.3.48] Consistent shotgun - this is the new name for new shotgun; this shotgun fixes close range hits; it replaces rebalanced shotgun <br>
 [3.3.49] <del>Ladder weapon bug fix - silent use of ladder is no more possible; its a situation when you double scroll your weapon, hold fire button and use a ladder</del> <strong>replaced via 3.3.68</strong><br>
@@ -1027,8 +1279,31 @@ Added posibility to call bash mode from menu.<br>
 [3.3.70] Climbing sound fix (replaces [3.3.68])<br>
   - restored original behavior that was affected by [3.3.68] and [3.3.49]<br>
   - disabling the weapon switch sound that is played only in 1st point of view<br>
-  - meaning that everybody hear the same
-
+  - meaning that everybody hear the same<br>
+[3.3.71] New hand hitbox fix (replaces [3.3.46])<br>
+[3.3.72] New streamer team for auto-spectator features<br>
+    - Is completly rewrited, new method for mouse and key detection<br>
+    - Hotkeys to toggle Auto-spectator, replay kill, toggle XRAY, toggle showing hit values, follow player<br>
+    - Auto-killcams will be played at the end of the round even if auto-spectator is off<br>
+    - If the killcam is too long, the round end timer will be extended<br>
+    - Auto-spectator will predict player positions to improve switching to players in right situations<br>
+    - XRAY will be turned off by default<br>
+    - Player's left and right boxes are now not sorted by score, but now by client number (for easier hotkeys)<br>
+    - Player's left and right boxes now contains info about weapons (similar to CSGO)<br>
+    - Spectators are automatically set ready-up<br>
+    - Score progress now indicate who called the timeout with via team color<br>
+    - Player progress will be colored via team color to better indicate the players count situations<br>
+    - Added kill count for individual players in current round<br>
+    - Adjusted the font size of XRAY - now it will dynamically change the size based on distance<br>
+    - Text who is planting / defusing the bomb<br>
+    - 2 color modes - blue and red, cyan and purple<br>
+[3.3.73] Plant - added timer showing time left to explosion; when bomb is defused, it will show the remaining time till explosion<br>
+[3.3.74] In the strat-time period, a new "weapon drop" sound is played when you drop your secondary weapon (helps people easily detect where you drop your weapon)<br>
+[3.3.75] Clearing the console after auto-recording started on each map (to avoid the need to scroll down the console)<br>
+[3.3.76] Aim-trainer on FIX maps available in readyup (https://youtu.be/XmURNWF3bHs)<br>
+[3.3.77] Updating of the scoreboard every round to have it available when replaying demos (scoreboard is by default updated only when is opened by player)<br>
+[3.3.78] Added empty name protection - if empty name is used for first time, player is warned and renamed. The second time player is kicked.<br>
+[3.3.79] LOD models - forcing tanks, cars, trucks, and artillery flak to be always rendered at high detail (this fixes holes in models at long distances)<br>
 
 
 </sub>
@@ -1057,7 +1332,7 @@ Added posibility to call bash mode from menu.<br>
 [3.4.14] <del>Current pam modes</del> <strong>replaced with [3.4.16]</strong><br>
 [3.4.15] PAM now has to be installed in main folder - this will fix problem with not saved cvar changes you made in game<br>
 [3.4.16] New pam mode names - cg was removed, now only pub and comp modes are available with sub modes.<br>
-[3.4.17] Added support of HQ, CTF, HTF and RE gametypes
+[3.4.17] Added support of HQ, CTF, HTF and RE gametypes<br>
 [3.4.18] Added rifle only mode
 
 </sub>

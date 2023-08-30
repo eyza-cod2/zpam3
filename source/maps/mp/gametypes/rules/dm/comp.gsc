@@ -71,7 +71,7 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_teambalance", 0);
 	arr = ruleCvarDefault(arr, "scr_spectatefree", 0);
 	arr = ruleCvarDefault(arr, "scr_spectateenemy", 0);
-	arr = ruleCvarDefault(arr, "scr_spectatingsystem", 1);				// Enable spectating system (menu overlay with auto-killcam, auto-spectator, xray, etc.. features)
+	arr = ruleCvarDefault(arr, "scr_streamersystem", 1);				// Enable streamer system (menu overlay with auto-killcam, auto-spectator, xray, etc.. features)
 
 	arr = ruleCvarDefault(arr, "g_allowVote", 0);
 	arr = ruleCvarDefault(arr, "g_maxDroppedWeapons", 10);

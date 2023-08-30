@@ -99,7 +99,7 @@ handleDrop(turret)
 
 	// Compute position of player behid the MG
 	forward = AnglesToForward( turret.angles ); // 1.0 scale
-	dist = -30; // how far behind MG should player spawn
+	dist = -40; // how far behind MG should player spawn
 	pos = turret.origin + (forward[0] * dist, forward[1] * dist, forward[2] * dist); // new pos
 
 	trace = bulletTrace(pos, (pos + (0, 0, -40)), false, undefined);

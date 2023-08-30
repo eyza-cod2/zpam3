@@ -112,30 +112,48 @@ splitString(string, delimiter)
 	return array;
 }
 
+
 // Remove ^1 colors from string
-// may be like: "ahoj^1kokos^^33pica^^^777neco__^nic^^kokos"
-// clean:      	"ahojkokospica^7neco__^nic^^kokos"
-removeColorsFromString(string)
+// may be like: "ahoj^1kokos^^25pica^^^123neco_^^^^1234_^nic^^kok^^1os^^1p2a"
+// clean:      	"ahoj^1kokos^5pica^3neco_^4_^nic^^kok^os^p2a"
+removeColorsFromString(string, keepSingleColors)
 {
 	clean = "";
 
-	ignoreNumber = 0;
+	if (!isDefined(string))
+		return clean;
+
+	maxLevel = -1;
+	if (isDefined(keepSingleColors))
+		maxLevel = 0;
+
+	deepLevel = 0;
+	charLast = "";
 	for (j = 0; j < string.size; j++)
 	{
-	    char = string[j];
+		char = string[j];
 
-	    if (ignoreNumber > 0 && (char == "0" || char == "1" || char == "2" || char == "3" || char == "4" || char == "5" || char == "6" || char == "7" || char == "8" || char == "9"))
-	    {
-		ignoreNumber--;
-
-	    } else if (char == "^" && ignoreNumber < 2)
-	    {
-		ignoreNumber++;
-	    }
-	    else
-	    {
-		clean += char;
-	    }
+		if (char == "^")
+		{
+			deepLevel++;
+		}
+		else if (isDigit(char))
+		{
+			if (deepLevel > 0)
+			{
+				deepLevel--;
+				if (deepLevel == maxLevel)
+					clean += "^" + char;
+			}
+			else
+				clean += char;
+		}
+		else
+		{
+			for (; deepLevel > 0; deepLevel--)
+				clean += "^";
+			clean += char;
+		}
 	}
 
 	return clean;

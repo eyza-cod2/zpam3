@@ -16,6 +16,9 @@
 			uiScript openMenuOnDvar ui_scoreboard_show "sd" ingame_scoreboard_sd;
 			open team_britishgerman_keys;
 
+			// Make sure cursor is enable (in case of spectator menu fails)
+			setDvar cl_bypassMouseInput "0" // enable cursor movement
+
 			RCON_UPDATE_STATUS
 		}
 		onClose

@@ -78,9 +78,10 @@ parseString(string)
 			else if (item == "playersleft_0")     self maps\mp\gametypes\_players_left::disable();
 			else if (item == "playersleft_1")     self maps\mp\gametypes\_players_left::enable();
 
-			else if (item == "joinspectator")       self maps\mp\gametypes\_spectating_system::join_spectator_toggle();
-			else if (item == "joinspectator_0")     self maps\mp\gametypes\_spectating_system::join_spectator_disable(true);  // true = move player into streamers
-			else if (item == "joinspectator_1")     self maps\mp\gametypes\_spectating_system::join_spectator_enable(true); // true = move player into streamers
+			else if (item == "streamer")       self maps\mp\gametypes\_streamer::join_streamer_toggle();
+			else if (item == "streamer_0")     self maps\mp\gametypes\_streamer::join_streamer_disable(true);  // true = loaded from quick settings
+			else if (item == "streamer_1")     self maps\mp\gametypes\_streamer::join_streamer_enable(true, 1); // true = loaded from quick settings, 1 = blue red
+			else if (item == "streamer_2")     self maps\mp\gametypes\_streamer::join_streamer_enable(true, 2); // true = loaded from quick settings, 2 = cyan purple
 
 			lastItemPos = i + 1;
 		}
@@ -100,7 +101,7 @@ updateClientSettings(reason)
 	matchinfo = self maps\mp\gametypes\_matchinfo::ingame_isEnabled();
 	score = self maps\mp\gametypes\_hud_teamscore::isEnabled();
 	playersleft = self maps\mp\gametypes\_players_left::isEnabled();
-	joinspectator = self maps\mp\gametypes\_spectating_system::join_spectator_isEnabled();
+	streamer = self maps\mp\gametypes\_streamer::join_streamer_quicksettings();
 
 	string = string + "autorecording_" + recording;
 	string = string + delimiter;
@@ -110,7 +111,7 @@ updateClientSettings(reason)
 	string = string + delimiter;
 	string = string + "playersleft_" + playersleft;
 	string = string + delimiter;
-	string = string + "joinspectator_" + joinspectator;
+	string = string + "streamer_" + streamer;
 
 	self setClientCvar2("server16", string);
 
@@ -119,7 +120,9 @@ updateClientSettings(reason)
 	self setClientCvar2("ui_quicksettings_matchinfo", matchinfo);
 	self setClientCvar2("ui_quicksettings_score", score);
 	self setClientCvar2("ui_quicksettings_playersleft", playersleft);
-	self setClientCvar2("ui_quicksettings_joinspectator", joinspectator);
+
+
+
 
 	self.pers["quicksettings_saved"] = true;
 }

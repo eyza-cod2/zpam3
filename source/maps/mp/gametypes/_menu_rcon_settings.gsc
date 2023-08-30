@@ -129,12 +129,12 @@ generateUUID()
 	if (!isDefined(self.pers["rcon_settings_uuid"]))
 	{
 		// Generate random hash
-		avaibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
+		availableChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
 		hash = "";
 		for (len = 0; len < 32; len++)
 		{
-			randIndex = randomintrange(0, avaibleChars.size);// Returns a random integer r, where min <= r < max
-			hash = hash + "" + avaibleChars[randIndex];
+			randIndex = randomintrange(0, availableChars.size);// Returns a random integer r, where min <= r < max
+			hash = hash + "" + availableChars[randIndex];
 		}
 		//println("uuid " + hash + " generated for player" +self.name);
 

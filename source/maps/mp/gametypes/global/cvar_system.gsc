@@ -129,7 +129,7 @@ registerCvarEx(method, cvar, type, defaultValue, minValue, maxValue)
 			// Change value
 			setCvar(cvar, defaultValue);
 
-			println("Cvar registration: Value of cvar " + cvar + " was set to default rule value " + defaultValue + ", because rule default value changes");
+			println("cvar: '" + cvar + "' = '" + defaultValue + "' (rule changed)");
 		}
 	}
 
@@ -153,19 +153,18 @@ registerCvarEx(method, cvar, type, defaultValue, minValue, maxValue)
 			if (level.pam_mode_custom && method != "C")
 				break;
 
+			println("cvar: set default value -> " + cvar + " = " + defaultValue + " (" + game["cvars"][cvar]["value"] + ")");
+
 			// Change value
 			setCvar(cvar, defaultValue);
-
 			game["cvars"][cvar]["value"] = defaultValue;
-
-			println("Cvar registration: Value of cvar " + cvar + " was set to default rule value " + defaultValue + ", because it was different from rules");
 
 			break;
 		}
 	}
 
-	if (isDefined(level.pam_mode) && game["cvars"][cvar]["value"] != defaultValue && !game["is_public_mode"])
-		println("Cvar registration: Cvar " + cvar + " was NOT set to default rule value " + defaultValue + "!");
+	if (isDefined(level.pam_mode) && game["cvars"][cvar]["value"] != defaultValue && !game["is_public_mode"] && game["cvars"][cvar]["method"] != "I")
+		println("cvar '" + cvar + "' is NOT equal to default rule value '" + defaultValue + "'!");
 
 
 	// Check if cvar value is in defined range and if cvar is defined - if not, set default value
@@ -305,7 +304,7 @@ setClientCvar2(cvar, value, aaa, bbb, ccc)
 {
 	/*
 	/#
-	if (!isDefined(self.pers["isTestClient"]) && !maps\mp\gametypes\global\_global::startsWith(cvar, "debug"))
+	if (!self.pers["isBot"] && !maps\mp\gametypes\global\_global::startsWith(cvar, "debug"))
 	{
 		if (cvar == "cg_objectiveText")
 	      		println("### " + getTime() + " ### " + level.frame_num + " ### " + self.name + " ### " + cvar + " = " + "...localized string...");
@@ -329,9 +328,9 @@ setClientCvar2(cvar, value, aaa, bbb, ccc)
 	        }
 	}
 	#/
-	*/
+*/
 
-        self setClientCvar(cvar, value);
+        self setClientCvar(cvar, value, aaa, bbb, ccc);
 }
 
 countCvarsInSingleFrame()
@@ -380,6 +379,18 @@ setClientCvarIfChanged(cvar, value)
 	#/
 
 	valueStr = value + "";	// Convert value to string (to avoid wierd unmatching variable types errors)
+
+	// Limit max size of cvar or server would crash "Attempted to overrun string in call to va"
+	// Max len of overall command: 1024
+	if (valueStr.size > 1000)
+	{
+		/#
+		assertmsg("setClientCvarIfChanged() value.size " + value.size + " > 1000");
+		#/
+		value = getsubstr(value, 0, 1000);
+	}
+
+
 	cvar = toLower(cvar);	// Convert to lower to match same cvars
 	lastValue = self.pers["cvar_" + cvar]; // Get last value, may be undefined for first time
 

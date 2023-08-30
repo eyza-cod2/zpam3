@@ -147,10 +147,8 @@ onStartGameType()
 	spawnpoints = getentarray(spawnpointname, "classname");
 	if(spawnpoints.size)
 	{
-		allowed[0] = "sd";
-		allowed[1] = "bombzone";
+		allowed[0] = "dm";
 		maps\mp\gametypes\_gameobjects::main(allowed);
-		thread bombzones();
 	}
 
 
@@ -566,6 +564,11 @@ spawnSpectator(origin, angles)
 
 	if(isdefined(origin) && isdefined(angles))
 		self spawn(origin, angles);
+
+	else if(self.pers["team"] == "streamer")
+	{
+		// Spawn is handled in streamer system
+	}
 	else
 	{
  		spawnpointname = "mp_global_intermission";
@@ -1024,7 +1027,7 @@ menuWeapon(response)
 		response = self maps\mp\gametypes\_weapons::getRandomWeapon();
 
 	// Weapon is not valid or is in use
-	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvaible(response))
+	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvailable(response))
 	{
 		// Open menu with weapons again
 		if(self.pers["team"] == "allies")
@@ -1082,89 +1085,6 @@ menuWeapon(response)
 
 
 
-
-
-
-// Called before round starts
-bombzones()
-{
-	maperrors = [];
-
-	wait level.fps_multiplier * .2;
-
-	// Find bombzones (has to be 2 bomzones, A and B)
-	bombzones = getentarray("bombzone", "targetname");
-	array = [];
-	for(i = 0; i < bombzones.size; i++)
-	{
-		bombzone = bombzones[i];
-
-		if(isdefined(bombzone.script_bombmode_original) && isdefined(bombzone.script_label))
-			array[array.size] = bombzone;
-	}
-
-	if(array.size == 2)
-	{
-		array[0] SetCursorHint("HINT_NONE");
-		array[1] SetCursorHint("HINT_NONE");
-	}
-
-	bombtrigger = getent("bombtrigger", "targetname");
-	bombtrigger maps\mp\_utility::triggerOff();
-
-	// Kill unused bombzones and associated script_exploders
-	accepted = [];
-	for(i = 0; i < array.size; i++)
-	{
-		if(isdefined(array[i].script_noteworthy))
-			accepted[accepted.size] = array[i].script_noteworthy;
-	}
-
-	remove = [];
-	bombzones = getentarray("bombzone", "targetname");
-	for(i = 0; i < bombzones.size; i++)
-	{
-		bombzone = bombzones[i];
-
-		if(isdefined(bombzone.script_noteworthy))
-		{
-			addtolist = true;
-			for(j = 0; j < accepted.size; j++)
-			{
-				if(bombzone.script_noteworthy == accepted[j])
-				{
-					addtolist = false;
-					break;
-				}
-			}
-
-			if(addtolist)
-				remove[remove.size] = bombzone.script_noteworthy;
-		}
-	}
-
-	ents = getentarray();
-	for(i = 0; i < ents.size; i++)
-	{
-		ent = ents[i];
-
-		if(isdefined(ent.script_exploder))
-		{
-			kill = false;
-			for(j = 0; j < remove.size; j++)
-			{
-				if(ent.script_exploder == int(remove[j]))
-				{
-					kill = true;
-					break;
-				}
-			}
-
-			if(kill)
-				ent delete();
-		}
-	}
-}
 
 
 serverInfo()

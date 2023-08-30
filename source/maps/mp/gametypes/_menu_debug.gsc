@@ -226,7 +226,6 @@ debugBasics()
 
 
 		self setClientCvar2("debug_row_2_line_15", "self.dropped_weapons   = " + 		 self.dropped_weapons);
-        self setClientCvar2("debug_row_2_line_16", "self.taked_weapons     = " + 		 self.taked_weapons);
 
 
 

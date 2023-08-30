@@ -1,8 +1,0 @@
-// Menu just to allow command /openScriptMenu to use spectatingsystem as menu name
-menuDef
-{
-  	name			spectatingsystem
-	rect			0 0 1 1
-	style			0
-	fullscreen		1
-}

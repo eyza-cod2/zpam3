@@ -310,195 +310,6 @@ WorldToScreen(camera_origin, camera_angles, position, fov_scale)
 }
 
 
-WorldToScreen2(camera_origin, camera_angles, position, fov_scale)
-{
-	width = 640;
-	height = 480;
-	fov_x = 80 * fov_scale;
-	fov_y = 63 * fov_scale;	// 63 - i dont know how its computed
-
-	right = anglestoright(camera_angles);
-	up = anglestoup(camera_angles);
-	forward = anglestoforward(camera_angles);
-
-	relativePos = position - camera_origin;
-	relativePosNorm = vectornormalize(relativePos);
-
-        forwardDot = VectorDot(relativePos, forward);
-        rightDot = VectorDot(relativePos, right);
-        upDot = VectorDot(relativePos, up);
-/*
-        // make sure it is in front of us
-        if (forwardDot < 0.1)
-	{
-		ret[0] = -1000;
-	        ret[1] = -1000;
-		return ret;
-	}
-*/
-    // Check if the point is behind the camera
-    if (forwardDot <= 0) {
-
-        farPoint = vectoradd(camera_origin, vectorscale(forward, 1000));
-
-        relativePosNorm = vectornormalize(farPoint - camera_origin);
-
-        forwardDot = VectorDot(forward, relativePosNorm);
-        rightDot = VectorDot(right, relativePosNorm);
-        upDot = VectorDot(up, relativePosNorm);
-    }
-
-	// Calculate screen position
-        x = (width * 0.5) * (1 - (rightDot / tan(fov_x/2) / forwardDot));
-        y = (height * 0.5) * (1 - (upDot / tan(fov_y/2) / forwardDot));
-
-	x = width - x; // flip x
-
-	// check if target point is outside viewable screen area
-	if (x < 0.0 || x > 640.0 || y < 0.0 || y > 480.0)
-	{
-		    halfFOVH = fov_x / 2;
-		    halfFOVV = fov_y / 2;
-		    tanHalfFOVH = tan(halfFOVH);
-		    tanHalfFOVV = tan(halfFOVV);
-		    aspectRatio = width / height;
-
-	        // Compute the edge of the screen that is closest to the 3D point
-	        edgePoint = position;
-	        edgeDist = distance(position, camera_origin);
-	        edgeX = width / 2 + (rightDot / tanHalfFOVH) * height / aspectRatio / 2;
-	        edgeY = height / 2 - (upDot / tanHalfFOVV) * height / 2;
-
-	        // Check the left edge
-	        leftX = 0;
-	        leftY = height / 2 - (upDot / tanHalfFOVV) * height / 2;
-	        leftPoint = vectoradd(camera_origin, vectorscale(forward, (leftX - width / 2) / (rightDot / tanHalfFOVH)));
-	        leftDist = distance(leftPoint, position);
-	        if (leftDist < edgeDist) {
-	            edgePoint = leftPoint;
-	            edgeDist = leftDist;
-	            edgeX = leftX;
-	            edgeY = leftY;
-	        }
-
-	        // Check the right edge
-	        rightX = width;
-	        rightY = height / 2 - (upDot / tanHalfFOVV) * height / 2;
-	        rightPoint = vectoradd(camera_origin, vectorscale(forward, (rightX - width / 2) / (rightDot / tanHalfFOVH)));
-		rightDist = distance(rightPoint, position);
-		if (rightDist < edgeDist) {
-			edgePoint = rightPoint;
-			edgeDist = rightDist;
-			edgeX = rightX;
-			edgeY = rightY;
-		}
-
-		// Check the top edge
-		topX = width / 2 + (rightDot / tanHalfFOVH) * height / aspectRatio / 2;
-		topY = 0;
-		topPoint = vectoradd(camera_origin, vectorscale(up, (topY - height / 2) / (upDot / tanHalfFOVV)));
-		topDist = distance(topPoint, position);
-		if (topDist < edgeDist) {
-			edgePoint = topPoint;
-			edgeDist = topDist;
-			edgeX = topX;
-			edgeY = topY;
-		}
-
-		// Check the bottom edge
-		bottomX = width / 2 + (rightDot / tanHalfFOVH) * height / aspectRatio / 2;
-		bottomY = height;
-		bottomPoint = vectoradd(camera_origin, vectorscale(up, (bottomY - height / 2) / (upDot / tanHalfFOVV)));
-		bottomDist = distance(bottomPoint, position);
-		if (bottomDist < edgeDist) {
-			edgePoint = bottomPoint;
-			edgeDist = bottomDist;
-			edgeX = bottomX;
-			edgeY = bottomY;
-		}
-
-
-		// Compute the screen coordinates of the edge point
-		edgeScreenX = edgeX;
-		edgeScreenY = edgeY;
-		if (edgeX < 0) {
-			edgeScreenY = height / 2 - (upDot / tanHalfFOVV) * edgeX / (rightDot / tanHalfFOVH) / aspectRatio;
-			edgeScreenX = 0;
-		} else if (edgeX > width) {
-			edgeScreenY = height / 2 + (upDot / tanHalfFOVV) * (edgeX - width) / (rightDot / tanHalfFOVH) / aspectRatio;
-			edgeScreenX = width;
-		}
-		if (edgeY < 0) {
-			edgeScreenX = width / 2 + (rightDot / tanHalfFOVH) * edgeY / (upDot / tanHalfFOVV);
-			edgeScreenY = 0;
-		} else if (edgeY > height) {
-			edgeScreenX = width / 2 + (rightDot / tanHalfFOVH) * (edgeY - height) / (upDot / tanHalfFOVV);
-			edgeScreenY = height;
-		}
-
-			ret[0] = edgeScreenX;
-			ret[1] = edgeScreenY;
-			return ret;
-	}
-/*
-   // Check if the waypoint is outside the screen bounds
-    if (x < 0) {
-        x = 0;
-    } else if (x > 640) {
-        x = 640;
-    }
-
-    if (y < 0) {
-        y = 0;
-    } else if (y > 480) {
-        y = 480;
-    }
-*/
-
-	//aspectRatio = width / height;
-/*
-    // Check if the waypoint is outside the screen bounds and adjust it if necessary
-    if (x < 0) {
-        newX = 0;
-        newZ = (newX - width / 2) * aspectRatio / height * tan(fov_x/2);
-        newPoint = vectoradd(camera_origin, vectorscale(forward, newZ / forwardDot));
-	return WorldToScreen(camera_origin, camera_angles, newPoint, fov_scale);
-    } else if (x > width) {
-        newX = width;
-        newZ = (newX - width / 2) * aspectRatio / height * tan(fov_x/2);
-        newPoint = vectoradd(camera_origin, vectorscale(forward, newZ / forwardDot));
-        return WorldToScreen(camera_origin, camera_angles, newPoint, fov_scale);
-    }
-
-   if (y < 0) {
-        newY = 0;
-        newZ = -1 * (newY - height / 2) * tan(fov_y/2);
-        newPoint = vectoradd(camera_origin, vectorscale(forward, newZ / forwardDot));
-        return WorldToScreen(camera_origin, camera_angles, newPoint, fov_scale);
-    } else if (y > height) {
-        newY = height;
-        newZ = -1 * (newY - height / 2) * tan(fov_y/2);
-        newPoint = vectoradd(camera_origin, vectorscale(forward, newZ / forwardDot));
-        return WorldToScreen(camera_origin, camera_angles, newPoint, fov_scale);
-}*/
-
-
-	ret[0] = x;
-	ret[1] = y;
-	return ret;
-}
-
-vectoradd(v1, v2)
-{
-	return v1 + v2;
-}
-
-
-vectorscale(v1, multiplier)
-{
-	return (v1[0] * multiplier, v1[1] * multiplier, v1[2] * multiplier);
-}
-
 watchArchived()
 {
 	waittillframeend; // wait untill .archoved attribute is set
@@ -559,13 +370,7 @@ checkCount()
 
 
 
-removeHUD()
-{
-    	self destroy2();
-}
-
-
-removeHUDSmooth(time)
+destroyHUDSmooth(time)
 {
     if (time > 0) self FadeOverTime(time);
     self.alpha = 0;
@@ -573,7 +378,7 @@ removeHUDSmooth(time)
     wait level.fps_multiplier * time;
 
     if (isDefined(self) && isDefined(self.alpha))
-	self removeHUD();
+	self destroy2();
 }
 
 showHUDSmooth(time, from, to)

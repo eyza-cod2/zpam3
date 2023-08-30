@@ -35,13 +35,13 @@
 
 
 		// MENU CHOICES
-		ITEM_WEAPON(ORIGIN_CHOICE1, "button_greasegun", 			"@MPUI_1_GREASEGUN", 			"ui_allow_greasegun", 			"weapon_greasegun", 			show weapon_greasegun;, 			scriptMenuResponse "greasegun_mp";, 			"us_grenade_C",	"smg")
-		ITEM_WEAPON(ORIGIN_CHOICE2, "button_m1carbine", 		"@MPUI_2_M1A1_CARBINE", 		"ui_allow_m1carbine", 		"weapon_m1carbine", 		show weapon_m1carbine;, 		scriptMenuResponse "m1carbine_mp";, 		"us_grenade_C",	"semiautomatic")
-		ITEM_WEAPON(ORIGIN_CHOICE3, "button_m1garand", 		"@MPUI_3_M1_GARAND", 		"ui_allow_m1garand", 		"weapon_m1garand", 		show weapon_m1garand;,		scriptMenuResponse "m1garand_mp";, 		"us_grenade_C",	"semiautomatic")
-		ITEM_WEAPON(ORIGIN_CHOICE4, "button_springfield", "@MPUI_4_SPRINGFIELD", "ui_allow_springfield", "weapon_springfield", 	show weapon_springfield;, scriptMenuResponse "springfield_mp";, "us_grenade_C",	"sniper")
-		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, "button_shotgun", "@MPUI_5_SHOTGUN", 			"ui_allow_shotgun", 		"weapon_shotgun", 		show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 		"us_grenade_C",	"shotgun")
-		ITEM_WEAPON(ORIGIN_CHOICE6, "button_thompson", 		"@MPUI_6_THOMPSON", 		"ui_allow_thompson", 		"weapon_thompson", 		show weapon_thompson;, 		scriptMenuResponse "thompson_mp";, 		"us_grenade_C",	"smg")
-		ITEM_WEAPON(ORIGIN_CHOICE7, "button_bar", 			"@MPUI_7_BAR", 		"ui_allow_bar", 			"weapon_bar",			show weapon_bar;, 			scriptMenuResponse "bar_mp";, 			"us_grenade_C",	"mg")
+		ITEM_WEAPON(ORIGIN_CHOICE1, 		"button_greasegun", 	"greasegun_mp",		"@MPUI_1_GREASEGUN", 		"ui_allow_greasegun", 		"weapon_greasegun", 	show weapon_greasegun;, 	scriptMenuResponse "greasegun_mp";, 	"us_grenade_C",	"smg")
+		ITEM_WEAPON(ORIGIN_CHOICE2, 		"button_m1carbine", 	"m1carbine_mp",		"@MPUI_2_M1A1_CARBINE", 	"ui_allow_m1carbine", 		"weapon_m1carbine", 	show weapon_m1carbine;, 	scriptMenuResponse "m1carbine_mp";, 	"us_grenade_C",	"semiautomatic")
+		ITEM_WEAPON(ORIGIN_CHOICE3, 		"button_m1garand", 	"m1garand_mp",		"@MPUI_3_M1_GARAND", 		"ui_allow_m1garand", 		"weapon_m1garand", 	show weapon_m1garand;,		scriptMenuResponse "m1garand_mp";, 	"us_grenade_C",	"semiautomatic")
+		ITEM_WEAPON(ORIGIN_CHOICE4, 		"button_springfield", 	"springfield_mp",	"@MPUI_4_SPRINGFIELD", 		"ui_allow_springfield", 	"weapon_springfield", 	show weapon_springfield;, 	scriptMenuResponse "springfield_mp";, 	"us_grenade_C",	"sniper")
+		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, 	"button_shotgun", 	"shotgun_mp",		"@MPUI_5_SHOTGUN", 		"ui_allow_shotgun", 		"weapon_shotgun", 	show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 	"us_grenade_C",	"shotgun")
+		ITEM_WEAPON(ORIGIN_CHOICE6, 		"button_thompson", 	"thompson_mp",		"@MPUI_6_THOMPSON", 		"ui_allow_thompson", 		"weapon_thompson", 	show weapon_thompson;, 		scriptMenuResponse "thompson_mp";, 	"us_grenade_C",	"smg")
+		ITEM_WEAPON(ORIGIN_CHOICE7, 		"button_bar", 		"bar_mp",		"@MPUI_7_BAR", 			"ui_allow_bar", 		"weapon_bar",		show weapon_bar;, 		scriptMenuResponse "bar_mp";, 		"us_grenade_C",	"mg")
 
 
 

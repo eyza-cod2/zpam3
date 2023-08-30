@@ -19,10 +19,25 @@ init()
 	//addEventListener("onConnected",     ::onConnected2);
 	//addEventListener("onConnected",     ::onConnected3);
 	//addEventListener("onConnected",     ::onConnected4);
+	//addEventListener("onConnected",     ::bash_trace_debug);
 
 	//level thread measuring_test();
 	//level thread measuring_test2();
 
+/*
+	if (!isDefined(game["developer_add_bots"]))
+	{
+		wait level.fps_multiplier * 3.5;
+		setCvar("scr_bots_add", 9);
+		setCvar("scr_sd_roundlength", 10);
+		setCvar("scr_sd_PlantTime", 1);
+		//setCvar("scr_sd_strat_time", 1);
+		wait level.fps_multiplier * 3.5;
+		thread skipReadyup();
+
+		game["developer_add_bots"] = true;
+	}
+*/
 
 /*
 
@@ -88,6 +103,116 @@ ERROR: File neco.iwd.iwd not found on server for auto-downloading.
 }
 
 
+bash_trace_debug()
+{
+	self endon("disconnect");
+
+	traceOffsets = [];
+	traceOffsets[0][0] = 0;
+	traceOffsets[0][1] = 0;
+	traceOffsets[1][0] = 1;
+	traceOffsets[1][1] = 1;
+	traceOffsets[2][0] = 1;
+	traceOffsets[2][1] = -1;
+	traceOffsets[3][0] = -1;
+	traceOffsets[3][1] = 1;
+	traceOffsets[4][0] = -1;
+	traceOffsets[4][1] = -1;
+
+	while(1)
+	{
+		wp = spawnstruct();
+
+		//wp.weapDef = BG_GetWeaponDef(ent->s.weapon);
+
+		//G_GetPlayerViewOrigin(ent, wp.muzzleTrace);
+		wp.muzzleTrace = self maps\mp\gametypes\global\player::getEyeOrigin();
+
+		//G_GetPlayerViewDirection(ent, wp.forward, wp.right, wp.up);
+		angles = self getPlayerAngles();
+		wp.forward = anglestoforward(angles);
+		wp.right = anglestoright(angles);
+		wp.up = anglestoup(angles);
+
+		/* Weapon_Melee(
+		    ent,
+		    &wp,
+		    player_meleeRange->current.decimal,
+		    player_meleeWidth->current.decimal,
+		    player_meleeHeight->current.decimal);*/
+
+		range = getcvarint("player_meleeRange");
+		width = getcvarint("player_meleeWidth");
+		height = getcvarint("player_meleeHeight");
+
+		if ( width > 0.0 || height > 0.0 )
+			numTraces = 5;
+		else
+			numTraces = 1;
+
+
+
+		for (i = 0; i < numTraces; i++)
+		{
+			end = undefined;
+
+			//VectorMA(wp->muzzleTrace, range, wp->forward, end);
+			end[0] = (wp.muzzleTrace)[0] + (wp.forward)[0] * (range);
+			end[1] = (wp.muzzleTrace)[1] + (wp.forward)[1] * (range);
+			end[2] = (wp.muzzleTrace)[2] + (wp.forward)[2] * (range);
+
+			widthScale = width * traceOffsets[i][0];
+
+			//VectorMA(end, widthScale, wp->right, end);
+			end[0] = (end)[0] + (wp.right)[0] * (widthScale);
+			end[1] = (end)[1] + (wp.right)[1] * (widthScale);
+			end[2] = (end)[2] + (wp.right)[2] * (widthScale);
+
+			heightScale = height * traceOffsets[i][1];
+
+			//VectorMA(end, heightScale, wp->up, end);
+			end[0] = (end)[0] + (wp.up)[0] * (heightScale);
+			end[1] = (end)[1] + (wp.up)[1] * (heightScale);
+			end[2] = (end)[2] + (wp.up)[2] * (heightScale);
+
+			end = (end[0], end[1], end[2]);
+
+			//G_LocationalTrace(traceResult, wp->muzzleTrace, end, ent->s.number, 41953329, bulletPriorityMap);
+			traceResult = Bullettrace(wp.muzzleTrace, end, true, self); // BulletTrace( <start>, <end>, <hit characters>, <ignore entity> )
+
+			//Vec3Lerp(wp->muzzleTrace, end, traceResult->fraction, hitOrigin);
+			hitOrigin = undefined;
+			hitOrigin[0] = (end[0] - wp.muzzleTrace[0]) * traceResult["fraction"] + wp.muzzleTrace[0];
+			hitOrigin[1] = (end[1] - wp.muzzleTrace[1]) * traceResult["fraction"] + wp.muzzleTrace[1];
+			hitOrigin[2] = (end[2] - wp.muzzleTrace[2]) * traceResult["fraction"] + wp.muzzleTrace[2];
+
+			hitOrigin = (hitOrigin[0], hitOrigin[1], hitOrigin[2]);
+
+			if (!isDefined(self.bashPoints)) self.bashPoints = [];
+			if (!isDefined(self.bashPoints[i]))
+			{
+				self.bashPoints[i] = spawn("script_origin",(0,0,0));
+				self.bashPoints[i] thread maps\mp\gametypes\global\developer::showWaypoint();
+			}
+			self.bashPoints[i].origin = hitOrigin;
+
+			if (traceResult["fraction"] != 1.0)
+				self.bashPoints[i].scale = 4; // hit
+			else
+				self.bashPoints[i].scale = 1;
+
+			//iprintln(i + ": " + traceOffsets[i][0] + "  " + traceOffsets[i][1]);
+		}
+
+		//iprintln("---------");
+
+		//wait level.fps_multiplier * 1;
+		wait level.frame;
+	}
+
+	return 0;
+}
+
 
 
 onConnected4()
@@ -97,18 +222,19 @@ onConnected4()
 	setcvar("client", -1);
 
 	wait level.fps_multiplier * 1;
+
 /*
 	for(;;)
 	{
 		self setClientCvarIfChanged("ui_serverinfo_hud",
 		"self.spectatorclient = " + self.spectatorclient + "\n" +
 		"self.sessionstate = " + self.sessionstate + "\n" +
-		"level.spectatingSystem_playerID = " + level.spectatingSystem_playerID + "\n" +
-		"self.spectatingSystem_turnedOn = " + self.spectatingSystem_turnedOn + "\n" +
-		"self.spectatingSystem_freeSpectating = " + self.spectatingSystem_freeSpectating + "\n" +
-		"self.spectatingSystem_inCinematic = " + self.spectatingSystem_inCinematic + "\n" +
-		"level.spectatingSystem_playerID = " + level.spectatingSystem_playerID + "\n" +
-		"level.spectatingSystem_auto_runThreads = " + level.spectatingSystem_auto_runThreads + "\n" +
+		"level.streamerSystem_playerID = " + level.streamerSystem_playerID + "\n" +
+		"self.streamerSystem_turnedOn = " + self.streamerSystem_turnedOn + "\n" +
+		"self.streamerSystem_freeSpectating = " + self.streamerSystem_freeSpectating + "\n" +
+		"self.streamerSystem_inCinematic = " + self.streamerSystem_inCinematic + "\n" +
+		"level.streamerSystem_playerID = " + level.streamerSystem_playerID + "\n" +
+		"level.streamerSystem_auto_runThreads = " + level.streamerSystem_auto_runThreads + "\n" +
 
 		"");
 
@@ -125,13 +251,10 @@ onConnected3()
 	{
 		if (self.isMoving)
 		{
-			origin1 = self.origin;
-			origin2 = self getOrigin();
+			self iprintln("sending...");
 
-			if (origin1 == origin2)
-				self iprintln("EQ");
-			else
-				self iprintln("origin1 != origin2   diff: " + distance(origin1, origin2) );
+			self ShowScoreBoard();
+			//self UpdateScores();
 		}
 		wait level.frame;
 	}
@@ -403,6 +526,7 @@ showWaypoint(player, size)
 	if (isDefined(self.waypoint_color)) self.waypoint.color = self.waypoint_color;
 	self.waypoint setShader("objpoint_default", size, size);
 	self.waypoint setwaypoint(true);
+	self.waypoint.scale = size;
 
 	for (;;)
 	{
@@ -425,6 +549,12 @@ showWaypoint(player, size)
 		self.waypoint.x = origin[0];
 		self.waypoint.y = origin[1];
 		self.waypoint.z = origin[2];
+
+		if (size != self.waypoint.scale)
+		{
+			size = self.waypoint.scale;
+			self.waypoint setShader("objpoint_default", size, size);
+		}
 	}
 
 	waypoint destroy2();
@@ -506,7 +636,7 @@ spect_menu()
 				player.sessionstate = "playing"; // enable quickmessage
 
 
-				player setClientCvar2("ui_quickmessage_spectatormode", "1");
+				player setClientCvar2("ui_quickmessage_streamer", "1");
 
 
 
@@ -1078,7 +1208,7 @@ onConnected()
     	self notify("menuresponse", game["menu_serverinfo"], "close");
     	wait level.frame;
 
-	i = 1;
+	i = 0;
 
 
 
@@ -1089,14 +1219,14 @@ onConnected()
 			self notify("menuresponse", game["menu_team"], "allies");
     			wait level.frame;
     			self notify("menuresponse", game["menu_weapon_allies"], "m1garand_mp");
-
-
-
-			wait level.fps_multiplier * 4;
-
-			//setCvar("scr_sd_roundlength", 10);
+		}
+		if (self.name == "client_1 ")
+		{
+			setCvar("scr_sd_roundlength", 10);
 			setCvar("scr_sd_PlantTime", 1);
-			setCvar("scr_sd_strat_time", 1);
+			setCvar("scr_sd_strat_time", 10);
+
+			wait level.fps_multiplier * 3.5;
 
 			thread skipReadyup();
 		}
@@ -1107,7 +1237,7 @@ onConnected()
 		{
 			self notify("menuresponse", game["menu_team"], "streamer");
 
-			setCvar("scr_bots_add", 0);
+			setCvar("scr_bots_add", 9);
 			setCvar("scr_sd_roundlength", 10);
 			setCvar("scr_sd_PlantTime", 1);
 			//setCvar("scr_sd_strat_time", 1);

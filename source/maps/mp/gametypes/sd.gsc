@@ -331,10 +331,6 @@ onStartGameType()
 
 
 
-	// Disable name changing to avoid spamming (is enabled in readyup)
-	setClientNameMode("manual_change"); // name is changed after map restart ()
-
-
 	thread serverInfo();
 
 
@@ -470,6 +466,10 @@ onConnected()
 	if(!isdefined(self.pers["deaths"]))
 		self.pers["deaths"] = 0;
 	self.deaths = self.pers["deaths"];
+
+	// for streamer bars
+	if(!isdefined(self.pers["round_kills"]))
+		self.pers["round_kills"] = 0;
 }
 
 // This function is called as last after all events are processed
@@ -505,14 +505,6 @@ onAfterConnected()
 
 	else
 		assertMsg("Unknown team");
-
-/*	TODO delayed
-	// Run thread on player to keep max ammo in strattime
-	if (level.in_strattime)
-	{
-		self thread strattime_keepMaxAmmo();
-	}
-*/
 }
 
 
@@ -885,11 +877,13 @@ onAfterPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir,
 			{
 				attacker.pers["score"]--;
 				attacker.score = attacker.pers["score"];
+				attacker.pers["round_kills"]--;
 			}
 			else
 			{
 				attacker.pers["score"]++;
 				attacker.score = attacker.pers["score"];
+				attacker.pers["round_kills"]++;
 			}
 		}
 	}
@@ -1101,9 +1095,8 @@ spawnSpectator(origin, angles)
 
 	else if(self.pers["team"] == "streamer")
 	{
-		// TODO
+		// Spawn is handled in streamer system
 	}
-
 	else
 	{
  		spawnpointname = "mp_global_intermission";
@@ -1212,6 +1205,8 @@ startRound()
 		maps\mp\gametypes\_weapons::deletePlacedEntity("misc_turret");
 		maps\mp\gametypes\_weapons::deletePlacedEntity("misc_mg42");
 
+		level streamer_reset_round_kills();
+
 		wait level.fps_multiplier * 1;
 
 		// Hide score if it may be hidden
@@ -1226,7 +1221,10 @@ startRound()
 
 	// Timeout was called from previous round, exit
 	if (level.in_timeout)
+	{
+		level streamer_reset_round_kills();
 		return;
+	}
 
 	// Show name of league + pam version
 	thread maps\mp\gametypes\_pam::PAM_Header();
@@ -1254,13 +1252,14 @@ startRound()
 
 		// Timeout was called in middle of strat time, exit
 		if (level.in_timeout)
+		{
+			level streamer_reset_round_kills();
 			return;
+		}
 	}
 
 	// Round started
 	level.roundstarted = true;
-
-	thread HUD_Clock(level.roundlength * 60);
 
 
 
@@ -1268,13 +1267,12 @@ startRound()
 	thread maps\mp\gametypes\_pam::PAM_Header_Delete();
 	// Hide score if it may be hidden
 	level maps\mp\gametypes\_hud_teamscore::hideScore(0.5);
+	// Show clock
+	level thread HUD_Clock(level.roundlength * 60);
+	// Say "Movin!" objective
+	level thread sayObjective();
 
-
-
-	thread sayObjective();
-
-
-
+	level streamer_reset_round_kills();
 
 
 
@@ -1298,6 +1296,10 @@ startRound()
 		}
 
 	}
+
+
+	// Disable name changing to avoid spamming
+	setClientNameMode("manual_change"); // name is changed after map restart
 
 
 	// Wait until round time expires (2 min default)
@@ -1334,104 +1336,18 @@ strattime_end_ontimeout()
 	level notify("strat_time_end");
 }
 
-/*
-TODO delayed
-strattime_keepMaxAmmo()
+streamer_reset_round_kills()
 {
-	self endon("disconnect");
-
-	last_weapon1 = "";
-	last_weapon2 = "";
-
-	last_weapon1_clipAmmo = 0;
-	last_weapon2_clipAmmo = 0;
-
-	weapon1_maxClipAmmo = 1;
-	weapon2_maxClipAmmo = 1;
-
-	weapon1_pauseGivingMaxAmmo = 0;
-	weapon2_pauseGivingMaxAmmo = 0;
-
-	for (;;)
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
 	{
-		wait level.frame;
+		player = players[i];
 
-		if (!level.in_strattime)
-			return;
-
-		if (weapon1_pauseGivingMaxAmmo > 0) weapon1_pauseGivingMaxAmmo--;
-		if (weapon2_pauseGivingMaxAmmo > 0) weapon2_pauseGivingMaxAmmo--;
-
-
-		if((self.pers["team"] != "allies" && self.pers["team"] != "axis") || self.sessionstate != "playing")
-		{
-			last_weapon1 = "";
-			last_weapon2 = "";
-			weapon1_maxClipAmmo = 1;
-			weapon2_maxClipAmmo = 1;
-			continue;
-		}
-
-		weapon1 = self getweaponslotweapon("primary");
-		weapon2 = self getweaponslotweapon("primaryb");
-
-		weapon1_clipAmmo = self getweaponslotclipammo("primary");
-		weapon2_clipAmmo = self getweaponslotclipammo("primaryb");
-
-
-		// If weapons changed in slots, save the maximum ammo in slot
-		if (weapon1 != last_weapon1)
-		{
-			weapon1_maxClipAmmo = weapon1_clipAmmo;
-			//self iprintln("Primary changed " + weapon1_maxClipAmmo);
-
-			last_weapon1_clipAmmo = weapon1_clipAmmo;
-		}
-		if (weapon2 != last_weapon2)
-		{
-			weapon2_maxClipAmmo = weapon2_clipAmmo;
-			//self iprintln("Secondary changed" + weapon2_maxClipAmmo);
-
-			last_weapon2_clipAmmo = weapon2_clipAmmo;
-		}
-
-		last_weapon1 = weapon1;
-		last_weapon2 = weapon2;
-
-		// Weapon fired - for 1 seconds give -1 less ammo to allow reload
-		if (weapon1_clipAmmo < last_weapon1_clipAmmo)
-			weapon1_pauseGivingMaxAmmo = int(level.sv_fps / 1); // how many frames to wait
-		if (weapon2_clipAmmo < last_weapon2_clipAmmo)
-			weapon2_pauseGivingMaxAmmo = int(level.sv_fps / 1); // how many frames to wait
-
-		last_weapon1_clipAmmo = weapon1_clipAmmo;
-		last_weapon2_clipAmmo = weapon2_clipAmmo;
-
-
-		current = self getcurrentweapon();
-
-		// For example player is on ladder
-		if(current == "none")
-			continue;
-
-		// Imidietly after firing give player -1 less ammo to allow reloading animation
-		new_weapon1_clipAmmo = weapon1_maxClipAmmo;
-		if (weapon1_pauseGivingMaxAmmo != 0 && new_weapon1_clipAmmo > 0)
-			new_weapon1_clipAmmo--;
-		new_weapon2_clipAmmo = weapon2_maxClipAmmo;
-		if (weapon2_pauseGivingMaxAmmo != 0 && new_weapon2_clipAmmo > 0)
-			new_weapon2_clipAmmo--;
-
-		// Give ammo
-		// Primary
-		if(current == weapon1)
-			self setweaponclipammo(current, new_weapon1_clipAmmo);
-		// Secondary
-		else if (current == weapon2)
-			self setweaponclipammo(current, new_weapon2_clipAmmo);
+		player.pers["round_kills"] = 0;
 	}
 }
-*/
+
+
 
 HUD_Clock(countDownTime)
 {
@@ -1582,7 +1498,7 @@ HUD_RoundInfo(time)
 		roundInfo moveovertime(3);
 		roundInfo.y = 428;
 		level waittill("strat_time_end");
-		roundInfo thread removeHUDSmooth(.5);
+		roundInfo thread destroyHUDSmooth(.5);
 	}
 	// Last round before half
 	else if (level.halfround > 0 && !game["is_halftime"] && game["round"] >= level.halfround)
@@ -1593,7 +1509,7 @@ HUD_RoundInfo(time)
 		roundInfo moveovertime(3);
 		roundInfo.y = 428;
 		level waittill("strat_time_end");
-		roundInfo thread removeHUDSmooth(.5);
+		roundInfo thread destroyHUDSmooth(.5);
 	}
 	// Last match round
 	else if (level.matchround > 0 && game["is_halftime"] && game["round"] >= level.matchround)
@@ -1604,7 +1520,7 @@ HUD_RoundInfo(time)
 		roundInfo moveovertime(3);
 		roundInfo.y = 428;
 		level waittill("strat_time_end");
-		roundInfo thread removeHUDSmooth(.5);
+		roundInfo thread destroyHUDSmooth(.5);
 	}
 	else
 	{
@@ -1616,8 +1532,8 @@ HUD_RoundInfo(time)
 
 		level waittill("strat_time_end");
 
-		roundInfo1 thread removeHUDSmooth(.5);
-		roundInfo2 thread removeHUDSmooth(.5);
+		roundInfo1 thread destroyHUDSmooth(.5);
+		roundInfo2 thread destroyHUDSmooth(.5);
 	}
 
 
@@ -1692,14 +1608,14 @@ HUD_ShowBombTimers()
 HUD_DeleteBombTimers()
 {
 	if (isDefined(level.bombtimerhud))
-		level.bombtimerhud removeHUD();
+		level.bombtimerhud destroy2();
 
 	// Set real remaining time
 	if (isDefined(level.clock))
 	{
 		if (level.bombexploded)
 		{
-			level.clock removeHUD();
+			level.clock destroy2();
 		}
 		else
 		{
@@ -1767,10 +1683,10 @@ HUD_NextRound()
 		wait level.frame;
 	}
 
-	round thread removeHUDSmooth(.5);
-	roundnum thread removeHUDSmooth(.5);
-	starting thread removeHUDSmooth(.5);
-	stopwatch thread removeHUDSmooth(.5);
+	round thread destroyHUDSmooth(.5);
+	roundnum thread destroyHUDSmooth(.5);
+	starting thread destroyHUDSmooth(.5);
+	stopwatch thread destroyHUDSmooth(.5);
 }
 
 
@@ -1797,7 +1713,7 @@ endRound(roundwinner)
 	if(level.roundended)
 		return;
  	level.roundended = true;
-
+	level.roundwinner = roundwinner;
 
 
 
@@ -1816,6 +1732,7 @@ endRound(roundwinner)
 		if(isdefined(player.progressbar))
 			player.progressbar destroy2();
 
+
 		player unlink();
 		player enableWeapon();
 	}
@@ -1826,6 +1743,9 @@ endRound(roundwinner)
 	// Say: Axis/Allies Win   after 2 sec
 	level thread announceWinner(roundwinner, 2);
 
+
+	// Disable name changing to avoid spamming
+	setClientNameMode("auto_change"); // name is changed after map restart
 
 
 	if (level.in_bash)
@@ -1881,7 +1801,7 @@ endRound(roundwinner)
 	setTeamScore("axis", game["axis_score"]);
 
 	// History score for spectators
-	level maps\mp\gametypes\_spectating_system_hud::ScoreProgress_AddWinner(roundwinner);
+	level maps\mp\gametypes\_streamer_hud::ScoreProgress_AddWinner(roundwinner);
 
 
 	// Update score
@@ -2022,15 +1942,15 @@ endRound(roundwinner)
 
 
 	// Wait for spectators in killcam
-	level maps\mp\gametypes\_spectating_system::waitForSpectatorsInKillcam();
+	level maps\mp\gametypes\_streamer::waitForSpectatorsInKillcam();
+
+
 
 	// Used for balance team at the end of the round
 	level notify("restarting");
 
 	if (!level.pam_mode_change)
 		map_restart(true);
-
-
 }
 
 
@@ -2205,7 +2125,7 @@ bombzones()
 
 	wait level.fps_multiplier * .2;
 
-	// Find bombzones (has to be 2 bomzones, A and B)
+	// Find bombzones (may be 1 bombzone or 2 bomzones A and B)
 	bombzones = getentarray("bombzone", "targetname");
 	array = [];
 	for(i = 0; i < bombzones.size; i++)
@@ -2246,10 +2166,21 @@ bombzones()
 		bombzoneA thread bombzone_think(bombzoneB);
 		bombzoneB thread bombzone_think(bombzoneA);
 	}
-	else if(array.size < 2)
-		maperrors[maperrors.size] = "^1Bombmode original: Less than 2 bombzones found with \"script_bombmode_original\" \"1\"";
+	else if (array.size == 1)
+	{
+		bombzoneA = array[0];
+
+		objective_add(0, "current", bombzoneA.origin, "objectiveA");
+		thread maps\mp\gametypes\_objpoints::addTeamObjpoint(bombzoneA.origin, "0", "allies", "objpoint_A");
+		thread maps\mp\gametypes\_objpoints::addTeamObjpoint(bombzoneA.origin, "0", "axis", "objpoint_A");
+
+		bombzoneA thread bombzone_think();
+	}
 	else if(array.size > 2)
 		maperrors[maperrors.size] = "^1Bombmode original: More than 2 bombzones found with \"script_bombmode_original\" \"1\"";
+	else
+		maperrors[maperrors.size] = "^1Bombmode original: 0 bombzones found with \"script_bombmode_original\" \"1\"";
+
 
 
 	bombtriggers = getentarray("bombtrigger", "targetname");
@@ -2371,11 +2302,13 @@ bombzone_think(bombzone_other)
 
 				// Hide "Hold F to plant explosives" for all
 				player clientclaimtrigger(self);
-				player clientclaimtrigger(bombzone_other);
+				if(isdefined(bombzone_other))
+					player clientclaimtrigger(bombzone_other);
 
 				// Triggers that needs to be released if player disconnect in middle of planting/defusing
 				player.triggerRelease1 = self;
-				player.triggerRelease2 = bombzone_other;
+				if(isdefined(bombzone_other))
+					player.triggerRelease2 = bombzone_other;
 
 				// Bar - black background
 				if(!isdefined(player.progressbackground))
@@ -2389,7 +2322,6 @@ bombzone_think(bombzone_other)
 				player.progressbar showHUDSmooth(0.2, 0, 1); // show from 0 to 1
 				player.progressbar setShader("white", 0, 8);
 				player.progressbar scaleOverTime(level.planttime, level.barsize, 8);
-
 
 				player playsound("MP_bomb_plant");
 				player linkTo(self);
@@ -2412,7 +2344,8 @@ bombzone_think(bombzone_other)
 
 				// Show "Hold F to plant explosives" again
 				player clientreleasetrigger(self);
-				player clientreleasetrigger(bombzone_other);
+				if(isdefined(bombzone_other))
+					player clientreleasetrigger(bombzone_other);
 
 				player.triggerRelease1 = undefined;
 				player.triggerRelease2 = undefined;
@@ -2488,7 +2421,7 @@ bombzone_think(bombzone_other)
 
 					// Remove clock if bomb is planted
 					if (isDefined(level.clock))
-						level.clock removeHUD();
+						level.clock destroy2();
 
 					bombtrigger thread bomb_think();
 					bombtrigger thread bomb_countdown();
@@ -2500,10 +2433,10 @@ bombzone_think(bombzone_other)
 				else
 				{
 					if(isdefined(player.progressbackground))
-						player.progressbackground removeHUD();
+						player.progressbackground destroy2();
 
 					if(isdefined(player.progressbar))
-						player.progressbar removeHUD();
+						player.progressbar destroy2();
 
 					player unlink();
 					player enableWeapon();
@@ -2613,7 +2546,6 @@ bomb_think()
 				player.progressbar showHUDSmooth(0.2, 0, 1); // show from 0 to 1
 				player.progressbar setShader("white", 0, 8);
 				player.progressbar scaleOverTime(level.defusetime, level.barsize, 8);
-
 
 				player playsound("MP_bomb_defuse");
 				player linkTo(self);
@@ -3002,7 +2934,7 @@ menuWeapon(response)
 		response = self maps\mp\gametypes\_weapons::getRandomWeapon();
 
 	// Weapon is not valid or is in use
-	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvaible(response))
+	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvailable(response))
 	{
 		// Open menu with weapons again
 		if(self.pers["team"] == "allies")
@@ -3101,7 +3033,7 @@ menuWeapon(response)
 			allowedInStrattime = true;
 		else
 		{
-			if (level.in_strattime && /*self.dropped_weapons == 0 && self.taked_weapons == 0 && */self.spawnsInStrattime < 2)
+			if (level.in_strattime && self.spawnsInStrattime < 2)
 			{
 				// If weapon I spawned with is still in slot, allow change
 				if (self.spawnedWeapon == primary)

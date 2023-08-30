@@ -64,7 +64,7 @@ setPlayerObjective()
 		    	else
 		    		text = &"MP_AXIS_WIN";
 
-			self setClientCvar2("cg_objectiveText", text);
+			self setClientCvar("cg_objectiveText", text);
 		}
 		else
 		{
@@ -95,28 +95,28 @@ setPlayerObjective()
 			}
 
 			if(tied == true)
-				self setClientCvar2("cg_objectiveText", &"MP_THE_GAME_IS_A_TIE");
+				self setClientCvar("cg_objectiveText", &"MP_THE_GAME_IS_A_TIE");
 			else if(isdefined(winner))
-				self setClientCvar2("cg_objectiveText", &"MP_WINS", winner.name);
+				self setClientCvar("cg_objectiveText", &"MP_WINS", winner);
 		}
 		return;
 	}
 
 	if (level.in_timeout)
 	{
-		self setClientCvar2("cg_objectiveText", game["STRING_READYUP_KEY_ACTIVATE_PRESS"]);
+		self setClientCvar("cg_objectiveText", game["STRING_READYUP_KEY_ACTIVATE_PRESS"]);
 		return;
 	}
 
 	if (level.in_readyup)
 	{
-		if (level.aimTargets.size == 0)	self setClientCvar2("cg_objectiveText", game["STRING_READYUP_KEY_ACTIVATE_PRESS"] + "\n" + game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS"]);
-		else				self setClientCvar2("cg_objectiveText", game["STRING_READYUP_KEY_ACTIVATE_PRESS"] + "\n" + game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS"] + "\n" + game["STRING_READYUP_KEY_MELEE_HOLD"]);
+		if (level.aimTargets.size == 0)	self setClientCvar("cg_objectiveText", game["STRING_READYUP_KEY_ACTIVATE_PRESS"] + "\n" + game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS"]);
+		else				self setClientCvar("cg_objectiveText", game["STRING_READYUP_KEY_ACTIVATE_PRESS"] + "\n" + game["STRING_READYUP_KEY_MELEE_DOUBLEPRESS_TRAINER"] + "\n" + game["STRING_READYUP_KEY_MELEE_HOLD"]);
 		return;
 	}
 
 	// Empty
-	self setClientCvar2("cg_objectiveText", "");
+	self setClientCvar("cg_objectiveText", "");
 	return;
 
 /*
@@ -124,58 +124,58 @@ setPlayerObjective()
 	{
 	case "ctf":
 		if(level.scorelimit > 0)
-			self setClientCvar2("cg_objectiveText", &"MP_CTF_OBJ_TEXT", level.scorelimit);
+			self setClientCvar("cg_objectiveText", &"MP_CTF_OBJ_TEXT", level.scorelimit);
 		else
-			self setClientCvar2("cg_objectiveText", &"MP_CTF_OBJ_TEXT_NOSCORE");
+			self setClientCvar("cg_objectiveText", &"MP_CTF_OBJ_TEXT_NOSCORE");
 		break;
 	case "dm":
 		if(level.scorelimit > 0)
-			self setClientCvar2("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING", level.scorelimit);
+			self setClientCvar("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING", level.scorelimit);
 		else
-			self setClientCvar2("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING_NOSCORE");
+			self setClientCvar("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING_NOSCORE");
 
 		break;
 	case "hq":
 		if(level.scorelimit > 0)
-			self setClientCvar2("cg_objectiveText", &"MP_OBJ_TEXT", level.scorelimit);
+			self setClientCvar("cg_objectiveText", &"MP_OBJ_TEXT", level.scorelimit);
 		else
-			self setClientCvar2("cg_objectiveText", &"MP_OBJ_TEXT_NOSCORE");
+			self setClientCvar("cg_objectiveText", &"MP_OBJ_TEXT_NOSCORE");
 
 		break;
 	case "tdm":
 		if(level.scorelimit > 0)
-			self setClientCvar2("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING1", level.scorelimit);
+			self setClientCvar("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING1", level.scorelimit);
 		else
-			self setClientCvar2("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING1_NOSCORE");
+			self setClientCvar("cg_objectiveText", &"MP_GAIN_POINTS_BY_ELIMINATING1_NOSCORE");
 
 		break;
 	case "sd":
 
 		if (level.in_bash)
 		{
-			self setClientCvar2("cg_objectiveText", "Eliminate your enemy, then choose side/map.");
+			self setClientCvar("cg_objectiveText", "Eliminate your enemy, then choose side/map.");
 		}
 		else
 		{
 			if(level.scorelimit > 0)
 			{
 				if(self.pers["team"] == game["attackers"])
-					self setClientCvar2("cg_objectiveText", &"MP_OBJ_ATTACKERS", level.scorelimit);
+					self setClientCvar("cg_objectiveText", &"MP_OBJ_ATTACKERS", level.scorelimit);
 				else if(self.pers["team"] == game["defenders"])
-					self setClientCvar2("cg_objectiveText", &"MP_OBJ_DEFENDERS", level.scorelimit);
+					self setClientCvar("cg_objectiveText", &"MP_OBJ_DEFENDERS", level.scorelimit);
 			}
 			else
 			{
 				if(self.pers["team"] == game["attackers"])
-					self setClientCvar2("cg_objectiveText", &"MP_OBJ_ATTACKERS_NOSCORE");
+					self setClientCvar("cg_objectiveText", &"MP_OBJ_ATTACKERS_NOSCORE");
 				else if(self.pers["team"] == game["defenders"])
-					self setClientCvar2("cg_objectiveText", &"MP_OBJ_DEFENDERS_NOSCORE");
+					self setClientCvar("cg_objectiveText", &"MP_OBJ_DEFENDERS_NOSCORE");
 			}
 		}
 		break;
 	case "start":
 
-		self setClientCvar2("cg_objectiveText", "Special mode used for practicing grenades or smoke, strategic plan making, jump learning and overall game testing.");
+		self setClientCvar("cg_objectiveText", "Special mode used for practicing grenades or smoke, strategic plan making, jump learning and overall game testing.");
 	}
 */
 

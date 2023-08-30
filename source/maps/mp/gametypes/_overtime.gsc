@@ -35,7 +35,7 @@ Do_Overtime()
 	wait level.fps_multiplier * 5;
 
 	// Wait for spectators in killcam
-	level maps\mp\gametypes\_spectating_system::waitForSpectatorsInKillcam();
+	level maps\mp\gametypes\_streamer::waitForSpectatorsInKillcam();
 
 	// Activate overtime
 	game["overtime_active"] = true;
@@ -65,7 +65,7 @@ Do_Overtime()
 
 
 	// History score for spectators
-	level maps\mp\gametypes\_spectating_system_hud::ScoreProgress_AddOvertime();
+	level maps\mp\gametypes\_streamer_hud::ScoreProgress_AddOvertime();
 
 
 	// Drop saved weapons

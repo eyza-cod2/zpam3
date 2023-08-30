@@ -18,8 +18,8 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_re_end_score", 13);	// Number of score when map ends. 0=ignored
 
 	// Round options
-	arr = ruleCvarDefault(arr, "scr_re_strat_time", 6);	// Time before round starts where players cannot move
-	arr = ruleCvarDefault(arr, "scr_re_roundlength", 4);	// Time length of each round (min)
+	arr = ruleCvarDefault(arr, "scr_re_strat_time", 5);	// Time before round starts where players cannot move
+	arr = ruleCvarDefault(arr, "scr_re_roundlength", 2);	// Time length of each round (min)
 	arr = ruleCvarDefault(arr, "scr_re_end_time", 6);		// Time et the end of the round (after last player is killed) when you can finding weapons for the next round
 	arr = ruleCvarDefault(arr, "scr_re_count_draws", 0);	// If players are killed at same time - count this round (1) or play new round (0)?
 	arr = ruleCvarDefault(arr, "scr_re_round_report", 0);		// Print kill and damage stats at the end of the round
@@ -104,7 +104,7 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_teambalance", 0);
 	arr = ruleCvarDefault(arr, "scr_spectatefree", 0);
 	arr = ruleCvarDefault(arr, "scr_spectateenemy", 0);
-	arr = ruleCvarDefault(arr, "scr_spectatingsystem", 1);				// Enable spectating system (menu overlay with auto-killcam, auto-spectator, xray, etc.. features)
+	arr = ruleCvarDefault(arr, "scr_streamersystem", 1);				// Enable streamer system (menu overlay with auto-killcam, auto-spectator, xray, etc.. features)
 
 
 

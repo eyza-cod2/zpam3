@@ -8,7 +8,7 @@ init()
 
 	addEventListener("onStartGameType", ::onStartGameType);
 
-	level.scr_smoke_fix = true; // TODO smoke
+	level.scr_smoke_fix = false;
 }
 
 // Called from start_gametype when registring cvars
@@ -366,7 +366,8 @@ precacheWeapons()
 		precacheItem("SVT40_mp");
 		precacheItem("mosin_nagant_sniper_mp");
 		//precacheItem("shotgun_mp");
-		precacheItem("ppsh_mp");
+		//precacheItem("ppsh_mp"); PPSH_CHANGE
+		precacheItem("vpo135_mp");
 
 		if (level.scr_smoke_fix) // new way
 		{
@@ -462,7 +463,8 @@ defineWeapons()
 		addWeapon("mosin_nagant_mp", 		"boltaction", 		"allies", 	"scr_allow_nagant", 		"ui_allow_nagant");
 		addWeapon("SVT40_mp", 			"semiautomatic", 	"allies", 	"scr_allow_svt40", 		"ui_allow_svt40");
 		addWeapon("mosin_nagant_sniper_mp", 	"sniper", 		"allies", 	"scr_allow_nagantsniper", 	"ui_allow_nagantsniper");
-		addWeapon("ppsh_mp", 			"smg", 			"allies", 	"scr_allow_ppsh", 		"ui_allow_ppsh");
+		//addWeapon("ppsh_mp", 			"smg", 			"allies", 	"scr_allow_ppsh", 		"ui_allow_ppsh"); PPSH_CHANGE
+		addWeapon("vpo135_mp", 			"smg", 			"allies", 	"scr_allow_ppsh", 		"ui_allow_ppsh");
 		break;
 	}
 
@@ -500,11 +502,19 @@ addWeapon(weaponName, className, teamName, serverCvar, clientCvar)
 
 	level.weaponnames[level.weaponnames.size] = weaponName;
 
+	if (isDefined(level.weapons[weaponName]))
+	{
+		assertMsg("Duplicite weapon name");
+	}
+
 	level.weapons[weaponName] = spawnstruct();
 	level.weapons[weaponName].server_allowcvar = serverCvar;
 	level.weapons[weaponName].client_allowcvar = clientCvar;
 	level.weapons[weaponName].classname = className;
 	level.weapons[weaponName].team = teamName;
+
+	level.weapons[weaponName].allies_usedby = "";
+	level.weapons[weaponName].axis_usedby = "";
 
 	level.weapons[weaponName].allow = getCvarInt(serverCvar);
 }
@@ -532,9 +542,6 @@ addClass(className, cvarLimit, cvarNades, cvarSmokes, cvarAllowDrop)
 
 	level.weaponclass[className].axis_limited = 0;
 	level.weaponclass[className].allies_limited = 0;
-
-	level.weaponclass[className].allies_usedby = "";
-	level.weaponclass[className].axis_usedby = "";
 
 
 
@@ -940,7 +947,7 @@ getRandomWeapon()
 			continue;
 
 		// Check if random selected weapon is free and allowed
-		if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvaible(weaponname))
+		if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvailable(weaponname))
 			continue;
 
 		return weaponname;
@@ -1014,6 +1021,11 @@ getWeaponName(weapon)
 
 	case "ppsh_mp":
 		weaponname = &"WEAPON_PPSH";
+		break;
+
+	// PPSH_CHANGE
+	case "vpo135_mp":
+		weaponname = "VPO-135";
 		break;
 
 	case "mosin_nagant_sniper_mp":
@@ -1116,6 +1128,11 @@ getWeaponName2(weapon)
 
 	case "ppsh_mp":
 		weaponname = "PPSh";
+		break;
+
+	// PPSH_CHANGE
+	case "vpo135_mp":
+		weaponname = "VPO-135";
 		break;
 
 	case "mosin_nagant_sniper_mp":
@@ -1236,4 +1253,105 @@ updateDrop(cvarName, cvarValue)
 			break;
 		}
 	}
+}
+
+
+keepMaxAmmo()
+{
+	self endon("disconnect");
+	self endon("keepMaxAmmo_end");
+
+	last_weapon1 = "";
+	last_weapon2 = "";
+
+	last_weapon1_clipAmmo = 0;
+	last_weapon2_clipAmmo = 0;
+
+	weapon1_maxClipAmmo = 1;
+	weapon2_maxClipAmmo = 1;
+
+	weapon1_pauseGivingMaxAmmo = 0;
+	weapon2_pauseGivingMaxAmmo = 0;
+
+	for (;;)
+	{
+		wait level.frame;
+
+
+		if (weapon1_pauseGivingMaxAmmo > 0) weapon1_pauseGivingMaxAmmo--;
+		if (weapon2_pauseGivingMaxAmmo > 0) weapon2_pauseGivingMaxAmmo--;
+
+
+		if((self.pers["team"] != "allies" && self.pers["team"] != "axis") || self.sessionstate != "playing")
+		{
+			last_weapon1 = "";
+			last_weapon2 = "";
+			weapon1_maxClipAmmo = 1;
+			weapon2_maxClipAmmo = 1;
+			continue;
+		}
+
+		weapon1 = self getweaponslotweapon("primary");
+		weapon2 = self getweaponslotweapon("primaryb");
+
+		weapon1_clipAmmo = self getweaponslotclipammo("primary");
+		weapon2_clipAmmo = self getweaponslotclipammo("primaryb");
+
+
+		// If weapons changed in slots, save the maximum ammo in slot
+		if (weapon1 != last_weapon1)
+		{
+			weapon1_maxClipAmmo = weapon1_clipAmmo;
+			//self iprintln("Primary changed " + weapon1_maxClipAmmo);
+
+			last_weapon1_clipAmmo = weapon1_clipAmmo;
+		}
+		if (weapon2 != last_weapon2)
+		{
+			weapon2_maxClipAmmo = weapon2_clipAmmo;
+			//self iprintln("Secondary changed " + weapon2_maxClipAmmo);
+
+			last_weapon2_clipAmmo = weapon2_clipAmmo;
+		}
+
+		last_weapon1 = weapon1;
+		last_weapon2 = weapon2;
+
+		// Weapon fired - for 1 seconds give -1 less ammo to allow reload
+		if (weapon1_clipAmmo < last_weapon1_clipAmmo)
+			weapon1_pauseGivingMaxAmmo = int(level.sv_fps / 1); // how many frames to wait
+		if (weapon2_clipAmmo < last_weapon2_clipAmmo)
+			weapon2_pauseGivingMaxAmmo = int(level.sv_fps / 1); // how many frames to wait
+
+		last_weapon1_clipAmmo = weapon1_clipAmmo;
+		last_weapon2_clipAmmo = weapon2_clipAmmo;
+
+
+		current = self getcurrentweapon();
+
+		// For example player is on ladder
+		if(current == "none")
+			continue;
+
+		// Imidietly after firing give player -1 less ammo to allow reloading animation
+		new_weapon1_clipAmmo = weapon1_maxClipAmmo;
+		if (weapon1_pauseGivingMaxAmmo != 0 && new_weapon1_clipAmmo > 0)
+			new_weapon1_clipAmmo--;
+		new_weapon2_clipAmmo = weapon2_maxClipAmmo;
+		if (weapon2_pauseGivingMaxAmmo != 0 && new_weapon2_clipAmmo > 0)
+			new_weapon2_clipAmmo--;
+
+		// Give ammo
+		// Primary
+		if(current == weapon1)
+			self setweaponclipammo(current, new_weapon1_clipAmmo);
+		// Secondary
+		else if (current == weapon2)
+			self setweaponclipammo(current, new_weapon2_clipAmmo);
+	}
+}
+
+keepMaxAmmoStop()
+{
+	self notify("keepMaxAmmo_end");
 }

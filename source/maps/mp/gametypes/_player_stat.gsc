@@ -49,8 +49,14 @@ removeOld()
 
     if (data["deleted"] || data["isConnected"]) continue;
 
-    // Delete data after 5 mins
-    if ((time - data["lastTime"]) > (5 * 60 * 1000))
+    timeout = 2; // wait 5min by default
+    if (game["is_public_mode"])
+    	timeout = 0.1; // 6sec in public mode
+    else if (isDefined(level.in_readyup) && level.in_readyup)
+    	timeout = 5;
+
+    // Delete data after x mins
+    if ((time - data["lastTime"]) > (timeout * 60 * 1000))
     {
       game["playerstats"][i]["deleted"] = true;
 

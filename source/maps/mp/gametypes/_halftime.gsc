@@ -6,8 +6,8 @@ init()
 	{
 		game["is_halftime"] = false;
 
-		precacheString2("STRING_HALFTIME", &"Halftime");
-		precacheString2("STRING_TEAM_AUTO_SWITCH", &"Team Auto-Switch");
+		precacheString2("STRING_HALFTIME", &"Half-time");
+		precacheString2("STRING_TEAM_AUTO_SWITCH", &"Team Auto-Switching");
 	}
 }
 
@@ -22,14 +22,14 @@ Do_Half_Time()
 	level maps\mp\gametypes\_timeout::Cancel();
 
 	// Switch score progress For spectators
-	level maps\mp\gametypes\_spectating_system_hud::ScoreProgress_AddHalftime();
+	level maps\mp\gametypes\_streamer_hud::ScoreProgress_AddHalftime();
 
 
 	wait level.fps_multiplier * 4;
 
 
 	// Wait for spectators in killcam
-	level maps\mp\gametypes\_spectating_system::waitForSpectatorsInKillcam();
+	level maps\mp\gametypes\_streamer::waitForSpectatorsInKillcam();
 
 	// Activate half-time
 	game["is_halftime"] = true;

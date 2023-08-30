@@ -4,8 +4,8 @@ init()
 {
 	if(game["firstInit"])
 	{
-		//precacheString2("STRING_VERSION_INFO", &"zPAM 3.33 ^3PREVIEW"); // ZPAM_RENAME
-		precacheString2("STRING_VERSION_INFO", &"zPAM 3.33 ^3LAN"); // ZPAM_RENAME
+		precacheString2("STRING_VERSION_INFO", &"zPAM 3.33"); // ZPAM_RENAME
+		//precacheString2("STRING_VERSION_INFO", &"^1zPAM 3.33 TEST 8"); // ZPAM_RENAME
 	}
 }
 
@@ -56,10 +56,10 @@ PAM_Header(fadein)
 
 
 
-	pammode thread removeHUDSmooth(0.5);
-	pammode2 thread removeHUDSmooth(0.5);
-	pammode3 thread removeHUDSmooth(0.5);
-	pam_version thread removeHUDSmooth(0.5);
+	pammode thread destroyHUDSmooth(0.5);
+	pammode2 thread destroyHUDSmooth(0.5);
+	pammode3 thread destroyHUDSmooth(0.5);
+	pam_version thread destroyHUDSmooth(0.5);
 
 	level.pam_header_visible = undefined;
 }

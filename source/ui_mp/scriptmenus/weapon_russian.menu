@@ -1,7 +1,7 @@
 #include "ui_mp/menudef.h"
 #include "ui_mp/macros.h"
 
-#define HIDE_ALL hide weapon_pps42; hide weapon_nagant; hide weapon_svt40; hide weapon_nagantscoped; hide weapon_shotgun; hide weapon_ppsh;
+#define HIDE_ALL hide weapon_pps42; hide weapon_nagant; hide weapon_svt40; hide weapon_nagantscoped; hide weapon_shotgun; hide weapon_vpo135;
 
 {
 	menuDef
@@ -35,13 +35,13 @@
 
 
 		// MENU CHOICES
-		ITEM_WEAPON(ORIGIN_CHOICE1, "button_pps42", 		"@MPUI_1_PPS42", 			"ui_allow_pps42", 			"weapon_pps42", 		show weapon_pps42;, 		scriptMenuResponse "PPS42_mp";, 		"russian_grenade_C",	"smg")
-		ITEM_WEAPON(ORIGIN_CHOICE2, "button_nagant", 		"@MPUI_2_MOSINNAGANT", 		"ui_allow_nagant", 			"weapon_nagant", 		show weapon_nagant;, 		scriptMenuResponse "mosin_nagant_mp";, 	"russian_grenade_C",	"boltaction")
-		ITEM_WEAPON(ORIGIN_CHOICE3, "button_svt40", 		"@MPUI_3_TOKAREV_SVT40", 	"ui_allow_svt40", 			"weapon_svt40", 		show weapon_svt40;,			scriptMenuResponse "SVT40_mp";, 		"russian_grenade_C",	"semiautomatic")
-		ITEM_WEAPON(ORIGIN_CHOICE4, "button_nagantsniper", "@MPUI_4_SCOPED_MOSINNAGANT","ui_allow_nagantsniper", 	"weapon_nagantscoped", 	show weapon_nagantscoped;, 	scriptMenuResponse "mosin_nagant_sniper_mp";, "russian_grenade_C",	"sniper")
-		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, "button_shotgun", "@MPUI_5_SHOTGUN", 			"ui_allow_shotgun", 		"weapon_shotgun", 		show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 		"russian_grenade_C",	"shotgun")
-		ITEM_WEAPON(ORIGIN_CHOICE6, "button_ppsh", 			"@MPUI_6_PPSH", 			"ui_allow_ppsh", 			"weapon_ppsh", 			show weapon_ppsh;, 			scriptMenuResponse "ppsh_mp";, 			"russian_grenade_C",	"smg")
-
+		ITEM_WEAPON(ORIGIN_CHOICE1, "button_pps42", 		"PPS42_mp", 			"@MPUI_1_PPS42", 		"ui_allow_pps42", 		"weapon_pps42", 		show weapon_pps42;, 		scriptMenuResponse "PPS42_mp";, 		"russian_grenade_C",	"smg")
+		ITEM_WEAPON(ORIGIN_CHOICE2, "button_nagant", 		"mosin_nagant_mp", 		"@MPUI_2_MOSINNAGANT", 		"ui_allow_nagant", 		"weapon_nagant", 		show weapon_nagant;, 		scriptMenuResponse "mosin_nagant_mp";, 		"russian_grenade_C",	"boltaction")
+		ITEM_WEAPON(ORIGIN_CHOICE3, "button_svt40", 		"SVT40_mp", 			"@MPUI_3_TOKAREV_SVT40", 	"ui_allow_svt40", 		"weapon_svt40", 		show weapon_svt40;,		scriptMenuResponse "SVT40_mp";, 		"russian_grenade_C",	"semiautomatic")
+		ITEM_WEAPON(ORIGIN_CHOICE4, "button_nagantsniper", 	"mosin_nagant_sniper_mp", 	"@MPUI_4_SCOPED_MOSINNAGANT",	"ui_allow_nagantsniper", 	"weapon_nagantscoped", 		show weapon_nagantscoped;, 	scriptMenuResponse "mosin_nagant_sniper_mp";, 	"russian_grenade_C",	"sniper")
+		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, "button_shotgun", 	"shotgun_mp", 			"@MPUI_5_SHOTGUN", 		"ui_allow_shotgun", 		"weapon_shotgun", 		show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 		"russian_grenade_C",	"shotgun")
+		ITEM_WEAPON(ORIGIN_CHOICE6, "button_vpo135", 		"vpo135_mp", 			"6. VPO-135", 			"ui_allow_ppsh", 		"weapon_vpo135", 		show weapon_vpo135;, 		scriptMenuResponse "vpo135_mp";, 		"russian_grenade_C",	"smg")
+		// PPSH_CHANGE
 
 
 		// Close
@@ -65,7 +65,7 @@
 		execKey "3" { play "mouse_click"; exec "openscriptmenu weapon_russian SVT40_mp"; }
 		execKey "4" { play "mouse_click"; exec "openscriptmenu weapon_russian mosin_nagant_sniper_mp"; }
 		execKey "5" { play "mouse_click"; exec "openscriptmenu weapon_russian shotgun_mp"; }
-		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_russian ppsh_mp"; }
+		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_russian vpo135_mp"; } // TODO ppsh
 
 		execKeyInt 32 { play "mouse_click"; close weapon_german; open main; } // space
 	}

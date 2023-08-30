@@ -135,13 +135,9 @@ addHUDClient(player, x, y, fontSize, color, alignX, alignY, horzAlign, vertAlign
 {
 	return maps\mp\gametypes\global\hud_system::addHUDClient(player, x, y, fontSize, color, alignX, alignY, horzAlign, vertAlign);
 }
-removeHUD()
+destroyHUDSmooth(time)
 {
-	return maps\mp\gametypes\global\hud_system::removeHUD();
-}
-removeHUDSmooth(time)
-{
-	return maps\mp\gametypes\global\hud_system::removeHUDSmooth(time);
+	return maps\mp\gametypes\global\hud_system::destroyHUDSmooth(time);
 }
 showHUDSmooth(time, from, to)
 {
@@ -180,9 +176,9 @@ splitString(string, delimiter)
 {
 	return maps\mp\gametypes\global\string::splitString(string, delimiter);
 }
-removeColorsFromString(string)
+removeColorsFromString(string, onlyDoubleColors)
 {
-	return maps\mp\gametypes\global\string::removeColorsFromString(string);
+	return maps\mp\gametypes\global\string::removeColorsFromString(string, onlyDoubleColors);
 }
 formatTime(timeSec, separator)
 {

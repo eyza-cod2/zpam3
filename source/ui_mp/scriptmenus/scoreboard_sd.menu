@@ -150,5 +150,6 @@
 			}
 		}
 		execKeyInt 13 { play "mouse_click"; exec "screenshotJpeg"; } // enter
+		execKeyInt 178 { play "mouse_click"; exec "screenshotJpeg"; } // F12
   	}
 }
