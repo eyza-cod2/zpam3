@@ -259,12 +259,12 @@ showDamageInfo(damage, sHitLoc, sMeansOfDeath, pellets, adjustedBy)
 	self.hud_damageinfo_loc.alpha = 1;
 
 	// Move up slowly
-	self.hud_damageinfo moveovertime(3);
+	self.hud_damageinfo moveovertime(5);
 	self.hud_damageinfo.y = 170;
-	self.hud_damageinfo_loc moveovertime(3);
+	self.hud_damageinfo_loc moveovertime(5);
 	self.hud_damageinfo_loc.y = 170;
 
-	wait level.fps_multiplier * 1;
+	wait level.fps_multiplier * 3;
 
 	self.hud_damageinfo FadeOverTime(2);
 	self.hud_damageinfo.alpha = 0;
@@ -478,12 +478,12 @@ showTakenDamageInfo(iDamage, sHitLoc, sMeansOfDeath)
 	self.hud_takendamageinfo_loc.alpha = 1;
 
 	// Move down slowly
-	self.hud_takendamageinfo moveovertime(3);
+	self.hud_takendamageinfo moveovertime(5);
 	self.hud_takendamageinfo.y = 195;
-	self.hud_takendamageinfo_loc moveovertime(3);
+	self.hud_takendamageinfo_loc moveovertime(5);
 	self.hud_takendamageinfo_loc.y = 195;
 
-	wait level.fps_multiplier * 1;
+	wait level.fps_multiplier * 3;
 
 	self.hud_takendamageinfo FadeOverTime(2);
 	self.hud_takendamageinfo.alpha = 0;
@@ -524,10 +524,10 @@ showKillInfo()
 	self.hud_damageinfo_kill.alpha = 1;
 
 	// Move up slowly
-	self.hud_damageinfo_kill moveovertime(3);
+	self.hud_damageinfo_kill moveovertime(5);
 	self.hud_damageinfo_kill.y = 170 - 2;
 
-	wait level.fps_multiplier * 1;
+	wait level.fps_multiplier * 3;
 
 	self.hud_damageinfo_kill FadeOverTime(2);
 	self.hud_damageinfo_kill.alpha = 0;

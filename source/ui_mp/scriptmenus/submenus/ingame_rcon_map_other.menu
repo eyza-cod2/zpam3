@@ -19,7 +19,7 @@ ITEM_SCORE_PICKER(112 16, 13 15, ">",  "ui_rcon_map_score_enabled", exec "opensc
 
 ITEM_MAP_OPTIONS_HEADING(3 48, 0.245, "Changed cvars:")
 ITEM_GAMETYPE_ONDVAR(86 50, 30 15, "Keep",				"ui_rcon_map_cvars", "keep", exec "openscriptmenu ingame rcon_map_cvars_keep")
-ITEM_GAMETYPE_ONDVAR(130 50, 110 15, "Restore default values",		"ui_rcon_map_cvars", "restore", exec "openscriptmenu ingame rcon_map_cvars_restore")
+ITEM_GAMETYPE_ONDVAR(130 50, 190 15, "Restore default values",		"ui_rcon_map_cvars", "restore", exec "openscriptmenu ingame rcon_map_cvars_restore")
 
 itemDef
 {

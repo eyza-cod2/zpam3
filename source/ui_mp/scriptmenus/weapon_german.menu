@@ -1,7 +1,7 @@
 #include "ui_mp/menudef.h"
 #include "ui_mp/macros.h"
 
-#define HIDE_ALL hide weapon_mp40; hide weapon_kar98; hide weapon_g43; hide weapon_kar98scoped; hide weapon_shotgun; hide weapon_mp44;
+#define HIDE_ALL hide weapon_mp40; hide weapon_kar98; hide weapon_g43; hide weapon_kar98scoped; hide weapon_shotgun; hide weapon_mp44; hide weapon_fg42;
 
 {
 	menuDef
@@ -16,12 +16,15 @@
 			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
 			open weapon_german_keys;
 		}
-		onEsc
+		onClose
 		{
 			HIDE_ALL
-			close weapon_german;
 			close matchinfo;
 			close weapon_german_keys;
+		}
+		onEsc
+		{
+			close weapon_german;
 		}
 
 		// Background
@@ -41,7 +44,10 @@
 		ITEM_WEAPON(ORIGIN_CHOICE4, "button_kar98k_sniper", 	"kar98k_sniper_mp", 	"@MPUI_4_SCOPED_KAR98K", 	"ui_allow_kar98ksniper", 	"weapon_kar98scoped", 	show weapon_kar98scoped;, 	scriptMenuResponse "kar98k_sniper_mp";, "steilhandgrenate_C",	"sniper")
 		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, "button_shotgun", 	"shotgun_mp", 		"@MPUI_5_SHOTGUN", 		"ui_allow_shotgun", 		"weapon_shotgun", 	show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 	"steilhandgrenate_C",	"shotgun")
 		ITEM_WEAPON(ORIGIN_CHOICE6, "button_mp44", 		"mp44_mp", 		"@MPUI_6_MP44", 		"ui_allow_mp44", 		"weapon_mp44", 		show weapon_mp44;, 		scriptMenuResponse "mp44_mp";, 		"steilhandgrenate_C",	"mg")
+		ITEM_WEAPON(ORIGIN_CHOICE7, "button_fg42", 		"fg42_mp", 		"7. FG42", 			"ui_allow_fg42", 		"weapon_fg42", 		show weapon_fg42;, 		scriptMenuResponse "fg42_mp";, 		"steilhandgrenate_C",	"mg")
 
+		ITEM_BUTTON_ONDVAR		(ORIGIN_CHOICE9, "9. Replace secondary with pistol", 		"ui_allow_pistol", showDvar{"1"}, ;, scriptMenuResponse "pistol")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE9, "9. Replace secondary with pistol", 		"ui_allow_pistol", showDvar{"2"}, ;)
 
 
 		// Close
@@ -66,6 +72,9 @@
 		execKey "4" { play "mouse_click"; exec "openscriptmenu weapon_german kar98k_sniper_mp"; }
 		execKey "5" { play "mouse_click"; exec "openscriptmenu weapon_german shotgun_mp"; }
 		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_german mp44_mp"; }
+		execKey "7" { play "mouse_click"; exec "openscriptmenu weapon_german fg42_mp"; }
+
+		execKey "9" { play "mouse_click"; exec "openscriptmenu weapon_german pistol"; }
 
 		execKeyInt 32 { play "mouse_click"; close weapon_german; open main; } // space
 	}

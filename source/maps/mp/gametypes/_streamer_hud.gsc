@@ -179,7 +179,7 @@ HUD_CloseMenuWarning_destroy()
 hide_all()
 {
 	self hide_player_boxes();
-	self hide_score_progress();
+	self hide_matchinfo();
 	self hide_player_progress();
 	self hide_messages();
 
@@ -210,9 +210,9 @@ hide_player_boxes()
 	}
 }
 
-hide_score_progress()
+hide_matchinfo()
 {
-	self setClientCvarIfChanged("ui_streamersystem_scoreProgress", "");
+	self setClientCvarIfChanged("ui_streamersystem_matchInfo", "");
 }
 
 hide_player_progress()
@@ -360,18 +360,6 @@ HUD_PlayerBoxes_Loop()
 
 	wait level.frame;
 
-	teamLeft = "allies";
-	teamRight = "axis";
-
-	// If match info is enabled, ensure teams are in correct sides
-	if (game["scr_matchinfo"] == 1 || game["scr_matchinfo"] == 2)
-	{
-		if (game["match_team1_side"] == "axis")
-		{
-			teamLeft = "axis";
-			teamRight = "allies";
-		}
-	}
 
 
 	round_kills_printed = false;
@@ -386,18 +374,108 @@ HUD_PlayerBoxes_Loop()
 			return;
 		}
 
+		// If match info is enabled, ensure teams are in correct sides
+		teamLeft = "allies";
+		teamRight = "axis";
+		if (game["scr_matchinfo"] == 1 || game["scr_matchinfo"] == 2)
+		{
+			if (game["match_team1_side"] == "axis" || game["match_team2_side"] == "allies")
+			{
+				teamLeft = "axis";
+				teamRight = "allies";
+			}
+		}
 
 		allies_color = "^4"; // blue
 		axis_color = "^1"; // red
 		if (self.pers["streamerSystem_colorMode"] == 2)
 		{
-			allies_color = "^5"; // cyan
-			axis_color = "^6"; // purple
+			allies_color = "^8"; // allies
+			axis_color = "^9"; // axis
+		}
+
+		//allies_color = "^8"; // allies color
+		//axis_color = "^9"; // axis color
+
+
+		// Up to 9 lines can be filled with data
+		matchInfo = "";
+		matchInfoLines = 0;
+
+
+		// Custom text from cvars
+		streamerSystem_file_lines = [];
+		for (i = 1; i <= 4; i++)
+		{
+			s = getCvar("scr_streamer_text" + i);
+			if (s != "")
+			{
+				streamerSystem_file_lines[streamerSystem_file_lines.size] = s;
+			}
+		}
+/*
+		streamerSystem_file_lines[0] = "NEWERA vs ARMIA";
+		streamerSystem_file_lines[1] = "0:0  Ready-Up  Toujane  (Burgundy 13:10)";
+		streamerSystem_file_lines[2] = "ENTROPIQ vs d O G z";
+		streamerSystem_file_lines[3] = "3:3  Round 7/24  Dawnville";
+*/
+/*
+		streamerSystem_file_lines[0] = "game[scr_matchinfo] = " + game["scr_matchinfo"];
+		streamerSystem_file_lines[1] = "game[match_team1_side] = " + game["match_team1_side"] + "  (game[match_team1_name] = "+game["match_team1_name"]+")";
+		streamerSystem_file_lines[2] = "game[match_team2_side] = " + game["match_team2_side"] + "  (game[match_team2_name] = "+game["match_team2_name"]+")";;
+		streamerSystem_file_lines[3] = "teamLeft = " + teamLeft;
+		streamerSystem_file_lines[4] = "teamRight = " + teamRight;
+*/
+
+
+		if (streamerSystem_file_lines.size > 0)
+		{
+			for (i = 0; i < streamerSystem_file_lines.size; i++)
+			{
+				matchInfo += streamerSystem_file_lines[i] + "\n";
+				matchInfoLines++;
+			}
+			matchInfo += "\n";
+			matchInfoLines++;
+		}
+
+		// Map history
+		mapsCount = 0;
+		for (j = 3; j >= 1; j--)
+		{
+			map = maps\mp\gametypes\_matchinfo::GetMapName(getCvar("sv_map" + j + "_name")); // set sv_map1_name
+			if (map != "")
+			{
+				mapsCount++;
+				score1 = getCvarInt("sv_map" + j + "_score1"); // set sv_map1_score1
+				score2 = getCvarInt("sv_map" + j + "_score2");
+
+				str = "Map " + mapsCount + ":  " + map + " ";
+
+				if (score1 > score2) {
+					if (teamLeft == "allies") str += allies_color; // blue
+					if (teamLeft == "axis") str += axis_color; // red
+				}
+				if (score2 > score1) {
+					if (teamRight == "allies") str += allies_color; // blue
+					if (teamRight == "axis") str += axis_color; // red
+				}
+				str += score1 + ":" + score2;
+
+				matchInfo += str + "^7\n";
+				matchInfoLines++;
+			}
+		}
+
+
+		if (game["match_totaltime_text"] != "")
+		{
+			matchInfo += "Match time:   " + game["match_totaltime_text"] + "\n";
+			matchInfoLines++;
 		}
 
 
 		// Score progress
-		scoreProgress = "";
 		if (game["streamerSystem_scoreProgress"].size > 0)
 		{
 			str = "";
@@ -437,9 +515,20 @@ HUD_PlayerBoxes_Loop()
 
 			}
 
-			scoreProgress = "Score progress:" + "\n" + str;
+			matchInfo += "Score progress:\n";
+			matchInfoLines++;
+			matchInfo += str + "\n";
+			matchInfoLines++;
 		}
-		self setClientCvarIfChanged("ui_streamersystem_scoreProgress", scoreProgress);
+
+		// Fill with new lines at top
+		for (i = matchInfoLines; i < 11; i++)
+		{
+			matchInfo = "\n" + matchInfo;
+		}
+
+
+		self setClientCvarIfChanged("ui_streamersystem_matchInfo", matchInfo);
 
 
 		// Hide player progress and boxes in readyup and intermission

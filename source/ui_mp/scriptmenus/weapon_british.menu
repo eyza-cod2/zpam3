@@ -16,12 +16,15 @@
 			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
 			open weapon_british_keys;
 		}
-		onEsc
+		onClose
 		{
 			HIDE_ALL
-			close weapon_british;
 			close matchinfo;
 			close weapon_british_keys;
+		}
+		onEsc
+		{
+			close weapon_british;
 		}
 
 		// Background
@@ -43,6 +46,8 @@
 		ITEM_WEAPON(ORIGIN_CHOICE6, "button_thompson", 		"thompson_mp",		"@MPUI_6_THOMPSON", 		"ui_allow_thompson", 		"weapon_thompson", 		show weapon_thompson;, 		scriptMenuResponse "thompson_mp";, 		"british_grenade_C",	"smg")
 		ITEM_WEAPON(ORIGIN_CHOICE7, "button_bren", 		"bren_mp",		"@MPUI_7_BREN_LMG", 		"ui_allow_bren", 		"weapon_bren",			show weapon_bren;, 		scriptMenuResponse "bren_mp";, 			"british_grenade_C",	"mg")
 
+		ITEM_BUTTON_ONDVAR		(ORIGIN_CHOICE9, "9. Replace secondary with pistol", 		"ui_allow_pistol", showDvar{"1"}, ;, scriptMenuResponse "pistol")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE9, "9. Replace secondary with pistol", 		"ui_allow_pistol", showDvar{"2"}, ;)
 
 
 		// Close
@@ -68,6 +73,8 @@
 		execKey "5" { play "mouse_click"; exec "openscriptmenu weapon_british shotgun_mp"; }
 		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_british thompson_mp"; }
 		execKey "7" { play "mouse_click"; exec "openscriptmenu weapon_british bren_mp"; }
+
+		execKey "9" { play "mouse_click"; exec "openscriptmenu weapon_british pistol"; }
 
 		execKeyInt 32 { play "mouse_click"; close weapon_british; open main; } // space
 	}

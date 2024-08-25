@@ -283,7 +283,8 @@ onStartGameType()
 	level.bombplanted = false;
 	level.bombexploded = false;
 	level.bombKill = false;
-
+	level.bombzoneA = undefined;
+	level.bombzoneB = undefined;
 
 
 	// Variables to determinate endRound()
@@ -2165,6 +2166,9 @@ bombzones()
 
 		bombzoneA thread bombzone_think(bombzoneB);
 		bombzoneB thread bombzone_think(bombzoneA);
+
+		level.bombzoneA = bombzoneA.origin;
+		level.bombzoneB = bombzoneB.origin;
 	}
 	else if (array.size == 1)
 	{
@@ -2175,6 +2179,8 @@ bombzones()
 		thread maps\mp\gametypes\_objpoints::addTeamObjpoint(bombzoneA.origin, "0", "axis", "objpoint_A");
 
 		bombzoneA thread bombzone_think();
+
+		level.bombzoneA = bombzoneA.origin;
 	}
 	else if(array.size > 2)
 		maperrors[maperrors.size] = "^1Bombmode original: More than 2 bombzones found with \"script_bombmode_original\" \"1\"";
@@ -2929,11 +2935,23 @@ menuWeapon(response)
 	if(self.pers["team"] != "allies" && self.pers["team"] != "axis")
 		return;
 
+	primary = self getWeaponSlotWeapon("primary");
+	primaryb = self getWeaponSlotWeapon("primaryb");
+
 	// Used by bots
 	if (response == "random")
 		response = self maps\mp\gametypes\_weapons::getRandomWeapon();
 
-	// Weapon is not valid or is in use
+	// Secondary replacement with pistol
+	else if (response == "pistol" && self maps\mp\gametypes\_weapon_limiter::isPistolSelectable())
+	{
+		self takeWeapon(primaryb); // Remove weapon
+		maps\mp\gametypes\_weapons::givePistol();
+		self switchToWeapon(self getWeaponSlotWeapon("primaryb"));
+		return;
+	}
+
+	// Weapon is not valid, or is in use, or is pistol
 	if(!self maps\mp\gametypes\_weapon_limiter::isWeaponAvailable(response))
 	{
 		// Open menu with weapons again
@@ -2946,16 +2964,13 @@ menuWeapon(response)
 
 	weapon = response;
 
-	primary = self getWeaponSlotWeapon("primary");
-	primaryb = self getWeaponSlotWeapon("primaryb");
-
 	// After selecting a weapon, show "ingame" menu when ESC is pressed
 	self setClientCvar2("g_scriptMainMenu", game["menu_ingame"]);
 
 	// If newly selected weapon is same as actualy selected weapon and is in player slot -> do nothing
 	if(isdefined(self.pers["weapon"]))
 	{
-		if (self.pers["weapon"] == weapon && primary == weapon && maps\mp\gametypes\_weapons::isPistol(primaryb))
+		if (self.pers["weapon"] == weapon && primary == weapon)
 			return;
 	}
 
@@ -3061,13 +3076,13 @@ menuWeapon(response)
 
 					maps\mp\gametypes\_weapons::givePistol();
 				}
-
+				/*
 				// If I select the same weapon that is already in slot, it means I want to remove secondary weapon to pistol
 				if (weapon == primary && maps\mp\gametypes\_weapons::isMainWeapon(primaryb))
 				{
 					self takeWeapon(primaryb); // Remove weapon
 					maps\mp\gametypes\_weapons::givePistol();
-				}
+				}*/
 
 				self.spawnedWeapon = weapon;
 

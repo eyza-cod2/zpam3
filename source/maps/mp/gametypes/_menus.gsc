@@ -346,9 +346,14 @@ onMenuResponse(menu, response)
 	}
 	else if(menu == game["menu_weapon_allies"] || menu == game["menu_weapon_axis"])
 	{
+		if (level.scr_bar_buffed && response == "bar_mp") {
+			response = "bar_buffed_mp";
+		}
+
 		self closeMenu();
 		self closeInGameMenu();
 		self [[level.weapon]](response);
+		self maps\mp\gametypes\_weapon_limiter::Update_Client_Pistol();
 		return true;
 	}
 	else if(menu == game["menu_quickcommands"])

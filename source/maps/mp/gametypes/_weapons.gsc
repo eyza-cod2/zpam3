@@ -59,6 +59,7 @@ registerCvars()
 	[[var]]("scr_allow_springfield", "BOOL", 1);
 	[[var]]("scr_allow_thompson", "BOOL", 1);
 	[[var]]("scr_allow_bar", "BOOL", 1);
+	[[var]]("scr_allow_bar_buffed", "BOOL", 0);
 	[[var]]("scr_allow_sten", "BOOL", 1);
 	[[var]]("scr_allow_enfield", "BOOL", 1);
 	[[var]]("scr_allow_enfieldsniper", "BOOL", 1);
@@ -73,6 +74,7 @@ registerCvars()
 	[[var]]("scr_allow_g43", "BOOL", 1);
 	[[var]]("scr_allow_kar98ksniper", "BOOL", 1);
 	[[var]]("scr_allow_mp44", "BOOL", 1);
+	[[var]]("scr_allow_fg42", "BOOL", 0);
 	[[var]]("scr_allow_shotgun", "BOOL", 1);
 
 
@@ -95,6 +97,8 @@ registerCvars()
 	[[var]]("scr_shotgun_consistent", "BOOL", 0);	// level.scr_shotgun_consistent
 	[[var]]("scr_hitbox_hand_fix", "BOOL", 0);	// level.scr_hitbox_hand_fix
 	[[var]]("scr_hitbox_torso_fix", "BOOL", 0);		// level.scr_hitbox_torso_fix
+
+	[[var]]("scr_bar_buffed", "BOOL", 0);		// level.scr_bar_buffed
 }
 
 
@@ -165,6 +169,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "scr_allow_springfield":
 		case "scr_allow_thompson":
 		case "scr_allow_bar":
+		case "scr_allow_bar_buffed":
 		case "scr_allow_sten":
 		case "scr_allow_enfield":
 		case "scr_allow_enfieldsniper":
@@ -179,6 +184,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "scr_allow_g43":
 		case "scr_allow_kar98ksniper":
 		case "scr_allow_mp44":
+		case "scr_allow_fg42":
 		case "scr_allow_shotgun":
 			if (!isRegisterTime) thread updateAllowed(cvar, value);
 		return true;
@@ -211,6 +217,10 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 		case "scr_hitbox_torso_fix":
 			level.scr_hitbox_torso_fix = value;
+			return true;
+
+		case "scr_bar_buffed":
+			level.scr_bar_buffed = value;
 			return true;
 
 	}
@@ -316,6 +326,7 @@ precacheWeapons()
 		//precacheItem("shotgun_mp");
 		precacheItem("thompson_mp");
 		precacheItem("bar_mp");
+		precacheItem("bar_buffed_mp");
 
 		if (level.scr_smoke_fix) // new way
 		{
@@ -367,7 +378,7 @@ precacheWeapons()
 		precacheItem("mosin_nagant_sniper_mp");
 		//precacheItem("shotgun_mp");
 		//precacheItem("ppsh_mp"); PPSH_CHANGE
-		precacheItem("vpo135_mp");
+		precacheItem("ppsh_stick30_mp");
 
 		if (level.scr_smoke_fix) // new way
 		{
@@ -393,6 +404,7 @@ precacheWeapons()
 	precacheItem("kar98k_sniper_mp");
 	//precacheItem("shotgun_mp");
 	precacheItem("mp44_mp");
+	precacheItem("fg42_mp");
 
 	if (level.scr_smoke_fix) // new way
 	{
@@ -402,7 +414,7 @@ precacheWeapons()
 
 	precacheItem("luger_mp");
 
-
+	
 
 	// Weapons for all
 	precacheItem("shotgun_mp");
@@ -447,6 +459,7 @@ defineWeapons()
 		addWeapon("springfield_mp", 		"sniper", 		"allies", 	"scr_allow_springfield", 	"ui_allow_springfield");
 		addWeapon("thompson_mp", 		"smg", 			"allies", 	"scr_allow_thompson", 		"ui_allow_thompson");
 		addWeapon("bar_mp", 			"mg", 			"allies", 	"scr_allow_bar", 		"ui_allow_bar");
+		addWeapon("bar_buffed_mp",  		"mg", 			"allies", 	"scr_allow_bar", 		"ui_allow_bar"); // bar overlap each other
 		break;
 
 	case "british":
@@ -464,7 +477,7 @@ defineWeapons()
 		addWeapon("SVT40_mp", 			"semiautomatic", 	"allies", 	"scr_allow_svt40", 		"ui_allow_svt40");
 		addWeapon("mosin_nagant_sniper_mp", 	"sniper", 		"allies", 	"scr_allow_nagantsniper", 	"ui_allow_nagantsniper");
 		//addWeapon("ppsh_mp", 			"smg", 			"allies", 	"scr_allow_ppsh", 		"ui_allow_ppsh"); PPSH_CHANGE
-		addWeapon("vpo135_mp", 			"smg", 			"allies", 	"scr_allow_ppsh", 		"ui_allow_ppsh");
+		addWeapon("ppsh_stick30_mp", 			"smg", 			"allies", 	"scr_allow_ppsh", 		"ui_allow_ppsh");
 		break;
 	}
 
@@ -474,7 +487,8 @@ defineWeapons()
 	addWeapon("g43_mp", 			"semiautomatic", 	"axis", 	"scr_allow_g43", 		"ui_allow_g43");
 	addWeapon("kar98k_sniper_mp", 		"sniper", 		"axis", 	"scr_allow_kar98ksniper", 	"ui_allow_kar98ksniper");
 	addWeapon("mp44_mp", 			"mg", 			"axis", 	"scr_allow_mp44", 		"ui_allow_mp44");
-
+	addWeapon("fg42_mp", 			"smg", 			"axis", 	"scr_allow_fg42", 		"ui_allow_fg42");
+    
 	// All teams
 	addWeapon("shotgun_mp", 		"shotgun", 		"both", 	"scr_allow_shotgun", 		"ui_allow_shotgun");
 
@@ -747,8 +761,7 @@ dropWeapon()
 
 	if(clipsize || reservesize) {
 		self dropItem(current);
-		waittillframeend; // wait before next "weapon_dropped" can be called
-		level notify("weapon_dropped", current, self);
+		level maps\mp\gametypes\_weapon_drop::handleWeaponDrop(current, self);
 	}
 
 }
@@ -816,26 +829,22 @@ dropNade()
 		if (self getammocount("frag_grenade_american_mp"))
 		{
 			self dropItem("frag_grenade_american_mp");
-			waittillframeend; // wait before next "weapon_dropped" can be called
-			level notify("weapon_dropped", "frag_grenade_american_mp", self);
+			level maps\mp\gametypes\_weapon_drop::handleWeaponDrop("frag_grenade_american_mp", self);
 		}
 		if (self getammocount("frag_grenade_british_mp"))
 		{
 			self dropItem("frag_grenade_british_mp");
-			waittillframeend; // wait before next "weapon_dropped" can be called
-			level notify("weapon_dropped", "frag_grenade_british_mp", self);
+			level maps\mp\gametypes\_weapon_drop::handleWeaponDrop("frag_grenade_british_mp", self);
 		}
 		if (self getammocount("frag_grenade_russian_mp"))
 		{
 			self dropItem("frag_grenade_russian_mp");
-			waittillframeend; // wait before next "weapon_dropped" can be called
-			level notify("weapon_dropped", "frag_grenade_russian_mp", self);
+			level maps\mp\gametypes\_weapon_drop::handleWeaponDrop("frag_grenade_russian_mp", self);
 		}
 		if (self getammocount("frag_grenade_german_mp"))
 		{
 			self dropItem("frag_grenade_german_mp");
-			waittillframeend; // wait before next "weapon_dropped" can be called
-			level notify("weapon_dropped", "frag_grenade_german_mp", self);
+			level maps\mp\gametypes\_weapon_drop::handleWeaponDrop("frag_grenade_german_mp", self);
 		}
 	}
 }
@@ -853,8 +862,7 @@ dropSmoke()
 
 		if(ammosize) {
 			self dropItem(grenadetype);
-			waittillframeend; // wait before next "weapon_dropped" can be called
-			level notify("weapon_dropped", grenadetype, self);
+			level maps\mp\gametypes\_weapon_drop::handleWeaponDrop(grenadetype, self);
 		}
 	}
 }
@@ -976,7 +984,11 @@ getWeaponName(weapon)
 	case "bar_mp":
 		weaponname = &"WEAPON_BAR";
 		break;
-
+        
+	case "bar_buffed_mp":
+		weaponname = "BAR (buffed)";
+		break;
+        
 	case "springfield_mp":
 		weaponname = &"WEAPON_SPRINGFIELD";
 		break;
@@ -1024,8 +1036,8 @@ getWeaponName(weapon)
 		break;
 
 	// PPSH_CHANGE
-	case "vpo135_mp":
-		weaponname = "VPO-135";
+	case "ppsh_stick30_mp":
+		weaponname = "PPSh-41 (Stick)";
 		break;
 
 	case "mosin_nagant_sniper_mp":
@@ -1047,6 +1059,10 @@ getWeaponName(weapon)
 
 	case "mp44_mp":
 		weaponname = &"WEAPON_MP44";
+		break;
+        
+	case "fg42_mp":
+		weaponname = "FG42";
 		break;
 
 	case "kar98k_sniper_mp":
@@ -1084,6 +1100,10 @@ getWeaponName2(weapon)
 		weaponname = "BAR";
 		break;
 
+	case "bar_buffed_mp":
+		weaponname = "BAR";
+		break;
+        
 	case "springfield_mp":
 		weaponname = "Scope";
 		break;
@@ -1131,8 +1151,8 @@ getWeaponName2(weapon)
 		break;
 
 	// PPSH_CHANGE
-	case "vpo135_mp":
-		weaponname = "VPO-135";
+	case "ppsh_stick30_mp":
+		weaponname = "PPSh-41 (Stick)";
 		break;
 
 	case "mosin_nagant_sniper_mp":
@@ -1154,6 +1174,10 @@ getWeaponName2(weapon)
 
 	case "mp44_mp":
 		weaponname = "MP44";
+		break;
+        
+	case "fg42_mp":
+		weaponname = "FG42";
 		break;
 
 	case "kar98k_sniper_mp":

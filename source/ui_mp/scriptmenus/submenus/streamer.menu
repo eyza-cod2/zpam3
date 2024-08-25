@@ -8,16 +8,13 @@ menuDef
 
 	onOpen
 	{
-		exec "setfromdvar g_TeamColor_Allies_Original g_TeamColor_Allies";
-		exec "setfromdvar g_TeamColor_Axis_Original g_TeamColor_Axis";
-		exec "setfromdvar con_gamemessagetime_original con_gamemessagetime";
-		exec "set con_gamemessagetime 99";	// killfeed seconds
+		open quickmessage_streamersystem_menu_exec
 
 		// Its in separated menu because of number of items game limitatin
 		uiScript openMenuOnDvar ui_streamer_color "1" quickmessage_streamersystem_menu_bars_blue_red;
 		uiScript openMenuOnDvar ui_streamer_color "1" quickmessage_streamersystem_menu_matchinfo_blue_red;
-		uiScript openMenuOnDvar ui_streamer_color "2" quickmessage_streamersystem_menu_bars_cyan_purple;
-		uiScript openMenuOnDvar ui_streamer_color "2" quickmessage_streamersystem_menu_matchinfo_cyan_purple;
+		uiScript openMenuOnDvar ui_streamer_color "2" quickmessage_streamersystem_menu_bars_custom_color;
+		uiScript openMenuOnDvar ui_streamer_color "2" quickmessage_streamersystem_menu_matchinfo_custom_color;
 		uiScript openMenuOnDvar ui_scoreboard_show "sd" quickmessage_streamersystem_menu_scoreboard_sd;
 		uiScript openMenuOnDvar ui_scoreboard_show "sd" quickmessage_streamersystem_menu_scoreboard_sd_lines;
 
@@ -31,13 +28,45 @@ menuDef
 		close "quickmessage_streamersystem_menu_scoreboard_sd_lines"
 		close "quickmessage_streamersystem_menu_bars_blue_red"
 		close "quickmessage_streamersystem_menu_matchinfo_blue_red"
-		close "quickmessage_streamersystem_menu_bars_cyan_purple"
-		close "quickmessage_streamersystem_menu_matchinfo_cyan_purple"
+		close "quickmessage_streamersystem_menu_bars_custom_color"
+		close "quickmessage_streamersystem_menu_matchinfo_custom_color"
 		close "quickmessage_streamersystem_menu_killcam"
+		close "quickmessage_streamersystem_menu_exec"
+	}
+}
 
+menuDef
+{
+  	name			quickmessage_streamersystem_menu_exec
+	rect			0 0 0 0
+	focuscolor		GLOBAL_FOCUSED_COLOR
+	style			WINDOW_STYLE_EMPTY
+	fullscreen		0
+
+	onOpen
+	{
+		exec "setfromdvar g_TeamColor_Allies_Original g_TeamColor_Allies";
+		exec "setfromdvar g_TeamColor_Axis_Original g_TeamColor_Axis";
+		exec "setfromdvar con_gamemessagetime_original con_gamemessagetime";
+		exec "setfromdvar cg_hudCompassSize_original cg_hudCompassSize";
+		exec "setfromdvar cg_hudChatPosition_original cg_hudChatPosition";
+		exec "setfromdvar cg_drawLagometer_original cg_drawLagometer";
+		exec "setfromdvar cg_drawFPS_original cg_drawFPS";
+		exec "set con_gamemessagetime 99";	// killfeed seconds
+		exec "set cg_hudCompassSize 1";
+		exec "set cg_hudChatPosition 5 135";
+		exec "set cg_drawLagometer 0";
+		exec "set cg_drawFPS 0";
+	}
+	onClose
+	{
 		exec "setfromdvar g_TeamColor_Allies g_TeamColor_Allies_Original";
 		exec "setfromdvar g_TeamColor_Axis g_TeamColor_Axis_Original";
 		exec "setfromdvar con_gamemessagetime con_gamemessagetime_original";
+		exec "setfromdvar cg_hudCompassSize cg_hudCompassSize_original";
+		exec "setfromdvar cg_hudChatPosition cg_hudChatPosition_original";
+		exec "setfromdvar cg_drawLagometer cg_drawLagometer_original";
+		exec "setfromdvar cg_drawFPS cg_drawFPS_original";
 	}
 }
 
@@ -109,8 +138,8 @@ menuDef
 	// Horizontal align right items have for some reason offset -128
 	//
 
-	// Score progress
-	ITEM_STREAMERSYSTEM_DVAR(240, 453, 0.2, "ui_streamersystem_scoreProgress", HORIZONTAL_ALIGN_LEFT, ITEM_ALIGN_LEFT)
+	// Match info (score progress, previous maps, ...)
+	ITEM_STREAMERSYSTEM_DVAR(240, 370, 0.2, "ui_streamersystem_matchInfo", HORIZONTAL_ALIGN_LEFT, ITEM_ALIGN_LEFT)
 
 	// 5v5  5v4  5v3  4v3
 	ITEM_STREAMERSYSTEM_DVAR(-160, 463, 0.2, "ui_streamersystem_playerProgress", HORIZONTAL_ALIGN_RIGHT, ITEM_ALIGN_LEFT)
@@ -163,7 +192,7 @@ menuDef
 		type			ITEM_TYPE_BUTTON
 		visible			0
 		rect			-2 -2 900 482 0 0
-		backcolor		0 0 0 0.1
+		backcolor		0 0 0 0.4
 	}
 
 
@@ -173,14 +202,14 @@ menuDef
 		style			WINDOW_STYLE_FILLED
 		type			ITEM_TYPE_BUTTON
 		visible			0
-		rect			0 430 256 20 HORIZONTAL_ALIGN_CENTER 0
+		rect			0 260 256 40 HORIZONTAL_ALIGN_CENTER 0
 		backcolor		.1 0 0 .9
 	}
 	itemDef
 	{
 		name			"cursor_text"
 		visible			0
-		rect			128 447 0 0 HORIZONTAL_ALIGN_CENTER 0
+		rect			128 287 0 0 HORIZONTAL_ALIGN_CENTER 0
 		origin			0 0
 		forecolor		1 1 1 1
 		textfont		UI_FONT_NORMAL
@@ -222,15 +251,17 @@ menuDef
 
 
 
+
+
 menuDef
 {
   	name 			"quickmessage_streamersystem_menu_matchinfo_blue_red"
-    	rect 			0 0 200 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+    	rect 			-128 0 896 480 0 0
 	focuscolor		GLOBAL_FOCUSED_COLOR
 	style			WINDOW_STYLE_EMPTY
 	blurWorld		0
 
-	MATCHINFO("ui_matchinfo_team1_team", "ui_matchinfo_team2_team", "ui_matchinfo_show", 0.3 0.3 0.9 .9, 0.7 0 0 .8)
+	MATCHINFO_STREAMER("ui_matchinfo_team1_team", "ui_matchinfo_team2_team", "ui_matchinfo_show", .16 .28 .74 1,   .5 .0 .0 1)
 }
 
 menuDef
@@ -260,44 +291,44 @@ menuDef
 }
 
 
-
-
+// Include color constants that could be customized in separate iwd file
+#include "ui_mp/streamer_custom_colors.menu"
 
 menuDef
 {
-  	name 			"quickmessage_streamersystem_menu_matchinfo_cyan_purple"
-    	rect 			0 0 200 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+  	name 			"quickmessage_streamersystem_menu_matchinfo_custom_color"
+    	rect 			-128 0 896 480 0 0
 	focuscolor		GLOBAL_FOCUSED_COLOR
 	style			WINDOW_STYLE_EMPTY
 	blurWorld		0
 
-	MATCHINFO("ui_matchinfo_team1_team", "ui_matchinfo_team2_team", "ui_matchinfo_show", .0 .55 .51 .9,   .43 .0 .54 .9)
+	MATCHINFO_STREAMER("ui_matchinfo_team1_team", "ui_matchinfo_team2_team", "ui_matchinfo_show", STREAMER_COLOR_TEAM_NAME_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS)
 }
 
 menuDef
 {
-	name			"quickmessage_streamersystem_menu_bars_cyan_purple"
+	name			"quickmessage_streamersystem_menu_bars_custom_color"
 	rect			-128 0 896 480
 	focuscolor		GLOBAL_FOCUSED_COLOR
 	style			WINDOW_STYLE_EMPTY
 	blurWorld		0
 	onOpen
 	{
-		exec "set g_TeamColor_Allies .0 .75 .71 .9";
-		exec "set g_TeamColor_Axis .75 .0 .88 .9";
+		exec "set g_TeamColor_Allies " STREAMER_COLOR_KILLFEED_ALLIES;
+		exec "set g_TeamColor_Axis " STREAMER_COLOR_KILLFEED_AXIS;
 	}
 
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player0", "1", 128, 154, HORIZONTAL_ALIGN_LEFT,   .0 .55 .51 .9,   .43 .0 .54 .9,    .0 .12 .11 1,    .1 .0 .12 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player1", "2", 128, 178, HORIZONTAL_ALIGN_LEFT,   .0 .55 .51 .9,   .43 .0 .54 .9,    .0 .12 .11 1,    .1 .0 .12 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player2", "3", 128, 202, HORIZONTAL_ALIGN_LEFT,   .0 .55 .51 .9,   .43 .0 .54 .9,    .0 .12 .11 1,    .1 .0 .12 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player3", "4", 128, 226, HORIZONTAL_ALIGN_LEFT,   .0 .55 .51 .9,   .43 .0 .54 .9,    .0 .12 .11 1,    .1 .0 .12 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player4", "5", 128, 250, HORIZONTAL_ALIGN_LEFT,   .0 .55 .51 .9,   .43 .0 .54 .9,    .0 .12 .11 1,    .1 .0 .12 1)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player0", "1", 128, 154, HORIZONTAL_ALIGN_LEFT,   STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player1", "2", 128, 178, HORIZONTAL_ALIGN_LEFT,   STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player2", "3", 128, 202, HORIZONTAL_ALIGN_LEFT,   STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player3", "4", 128, 226, HORIZONTAL_ALIGN_LEFT,   STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player4", "5", 128, 250, HORIZONTAL_ALIGN_LEFT,   STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
 
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player0", "6", 0, 154, HORIZONTAL_ALIGN_RIGHT,   .0 .55 .51 .9,   .43 .0 .54 .9,    .0 .12 .11 1,    .1 .0 .12 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player1", "7", 0, 178, HORIZONTAL_ALIGN_RIGHT,   .0 .55 .51 .9,   .43 .0 .54 .9,    .0 .12 .11 1,    .1 .0 .12 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player2", "8", 0, 202, HORIZONTAL_ALIGN_RIGHT,   .0 .55 .51 .9,   .43 .0 .54 .9,    .0 .12 .11 1,    .1 .0 .12 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player3", "9", 0, 226, HORIZONTAL_ALIGN_RIGHT,   .0 .55 .51 .9,   .43 .0 .54 .9,    .0 .12 .11 1,    .1 .0 .12 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player4", "0", 0, 250, HORIZONTAL_ALIGN_RIGHT,   .0 .55 .51 .9,   .43 .0 .54 .9,    .0 .12 .11 1,    .1 .0 .12 1)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player0", "6", 0, 154, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player1", "7", 0, 178, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player2", "8", 0, 202, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player3", "9", 0, 226, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player4", "0", 0, 250, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
 }
 
 

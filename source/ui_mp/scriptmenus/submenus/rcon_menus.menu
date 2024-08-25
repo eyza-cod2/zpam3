@@ -11,21 +11,21 @@ menuDef
 menuDef
 {
 	name			"rcon_map_maps"
-	rect			240 84 430 140
+	rect			240 84 430 156
 	focuscolor		GLOBAL_FOCUSED_COLOR
 	#include "ui_mp/scriptmenus/submenus/ingame_rcon_map_maps.menu"
 }
 menuDef
 {
 	name			"rcon_map_pams"
-	rect			240 234 430 60
+	rect			240 250 430 60
 	focuscolor		GLOBAL_FOCUSED_COLOR
 	#include "ui_mp/scriptmenus/submenus/ingame_rcon_map_pams.menu"
 }
 menuDef
 {
 	name			"rcon_map_other"
-	rect			240 294 430 70
+	rect			240 310 430 70
 	focuscolor		GLOBAL_FOCUSED_COLOR
 	#include "ui_mp/scriptmenus/submenus/ingame_rcon_map_other.menu"
 }

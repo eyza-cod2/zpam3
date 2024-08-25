@@ -284,9 +284,9 @@ generateDemoName()
 	mapname = level.mapname;
 	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix")				mapname = "tj";
 	else if (mapname == "mp_burgundy" || mapname == "mp_burgundy_fix")			mapname = "bg";
-	else if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix")			mapname = "dw";
+	else if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix" || mapname == "mp_dawnville_sun")			mapname = "dw";
 	else if (mapname == "mp_matmata" || mapname == "mp_matmata_fix")			mapname = "mat";
-	else if (mapname == "mp_carentan" || mapname == "mp_carentan_fix")			mapname = "car";
+	else if (mapname == "mp_carentan" || mapname == "mp_carentan_fix" || mapname == "mp_carentan_bal")			mapname = "car";
 	else if (mapname == "mp_breakout_tls")							mapname = "bre";
 	else if (mapname == "mp_chelm_fix")							mapname = "che";
 	else if (mapname == "mp_crossroads")							mapname = "crs";

@@ -756,7 +756,7 @@ menuWeapon(response)
 		maps\mp\gametypes\_weapons::givePistol();
 
 		// Switch to main weapon
-		self switchToWeapon(weapon);;
+		self switchToWeapon(weapon);
 	}
 	else
 	{

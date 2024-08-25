@@ -1,27 +1,27 @@
 # Introduction
 
-Mod zPAM3.33 is a new version of PAM mode for CoD2. <br>
+Mod zPAM3.34 is a new version of PAM mode for CoD2. <br>
 
 The code from the previous version zPAM 2.07 was completely rewritten and ported to a new code base, which helped in the implementation of new features and bug fixes.
 
 Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 3.33.<br>
+*This page describe only actual version zPAM 3.34.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
 - #### Actual version
-	- 2023/08/30 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.33/zpam333.zip">zPAM 3.33 - zpam333.zip</a></b>
+	- 2024/08/25 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.34/zpam334.zip">zPAM 3.34 - zpam334.zip</a></b>
 
-- #### Previous versions
-	- 2023/02/24 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.32/zpam332.zip">zPAM 3.32 PREVIEW - zpam332.zip</a></b>
-	- 2021/07/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.22/zpam322.zip">zPAM 3.22 - zpam322.zip</a></b>
+- #### Previous version
+	- 2023/08/30 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.33/zpam333.zip">zPAM 3.33 - zpam333.zip</a></b>
 
 
 
 ## Version list
-- 2023/08/30 - <b>zPAM 3.33</b>
+- 2024/08/25 - <b>zPAM 3.34</b>
+- 2023/08/30 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/abbc16d244a820aa08372d4238cb53062f90ced0">zPAM 3.33</a></b>
 - 2022/02/24 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c29866e22a6bcfd739515006e465062ec5a9e1f7">zPAM 3.32 PREVIEW</a></b>
 - 2022/10/13 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/3239562802398e9eb16aecb09c8d03e6f902d7ce">zPAM 3.31 PREVIEW</a></b>
 - 2022/10/07 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/f254c512574269b4e37971f730087707417d3dce">zPAM 3.30 PREVIEW</a></b>
@@ -37,6 +37,27 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+<details><summary>zPAM 3.34 changes (click to open)</summary>
+<p>
+
+**Changes / Fixes / Improvements:**
+- new mappack version 4 (new maps: mp_leningrad_tls, mp_trainstation_fix, mp_vallente_fix, mp_dawnville_sun, mp_crossroads, mp_carentan_bal)
+- bug fix - SCOPE / SHOTGUN not pickable in strattime when dropped
+- new button in weapon menu: "Replace secondary with pistol" - fixes an issue when you click again on the currently selected weapon and the secondary weapon is removed
+- weapon menu fix - when "[ESC] Close" button is clicked, menu does not close properly and only cursor stays visible
+- adjusted streamer layout (team scores and names moved next to player bars; match time and score from previous maps moved next to compass; round info moved next to time; made sure that compass has always the same size, lagometer is hidden, fps is hidden)
+- feature to save server data into file (match info, player positions, score, health), could be used as API
+- russians are enabled by default on winter maps
+- feature to show posters on walls (for lans)
+- new weapon FG42 (disabled by default)
+- balanced BAR - damage increased from 40 to 45 (disabled by default)
+- removed PCW mode, replaced with custom mode, which can be adjusted for specific needs (nightcups, lans, ...)
+- fixed false grenade hit indication when enemy is killed by other player in the same moment
+</p>
+</details>
+
+
 
 <details><summary>zPAM 3.33 changes (click to open)</summary>
 <p>
@@ -165,13 +186,13 @@ To see description of previous versions, click on the links in [Version list](#v
 #### News:
 - [3.4.16] New pam mode names - cg was removed, now only pub and comp modes are available with sub modes.
 	- modes: pub, comp, warmup
-	- sub-modes: 2v2, rifle, russian, lan, pcw
+	- sub-modes: 2v2, rifle, russian, lan, custom
 	- Examples:
 		- /rcon pam_mode pub  			- Public mode (custom settings)
 		- /rcon pam_mode comp  			- Competitive mode
 		- /rcon pam_mode comp_mr3  		- Competitive mode with max round 4
-		- /rcon pam_mode comp_pcw   		- Competitive mode for team mix
-		- /rcon pam_mode comp_pcw_russian 	- Competitive mode for team mix, russian side on russian maps
+		- /rcon pam_mode comp_custom   		- Competitive mode for team mix
+		- /rcon pam_mode comp_custom_russian 	- Competitive mode for team mix, russian side on russian maps
 		- /rcon pam_mode comp_2v2 		- Competitive mode, scope and shotgun disabled
 		- /rcon pam_mode comp_rifle 		- Competitive mode, bolt action and sniper only
 		- /rcon pam_mode comp_rifle_2v2		- Competitive mode, bolt action only, sniper disabled
@@ -245,14 +266,14 @@ To see description of previous versions, click on the links in [Version list](#v
 - [3.3.42] Players left - when last player in team is killed, text "Allies Eliminated" / "Axis Eliminated" is showed
   (this change was already in zPAM3.20 - i forgot to write it to the change list)
 - [3.3.43] When you hit your teammate, reddish hit mark is showed<br>
-  <img src="/images/team_hit.png" height="200" />
+  <img src="images/team_hit.png" height="200" />
 - Added text warning on screen to select a team when you ESC welcome (server info) menu
 
 #### Update of existing:
 - [3.3.32] New damage feedback for assists - text "assist" is showed instead of hit mark <br>
-  <img src="/images/assist.png" height="200" />
+  <img src="images/assist.png" height="200" />
 - [3.3.41] When 5min timer expires between maps / halfs, warning text is showed for better indication that one team ready will skip the readyup<br>
-  <img src="/images/auto_readyup.png" height="200" />
+  <img src="images/auto_readyup.png" height="200" />
 - [3.3.42] Players left - when some player were killed, "bouncy" animation was used for text. Its removed now because the number sometimes incomprehensibly moved all over the screen
 - [3.3.42] Players left - when last player in team is killed, text "Allies Eliminated" / "Axis Eliminated" is now showed in red color.
 - [3.3.10] Match info - improved detection of new match with different team
@@ -335,9 +356,9 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.33/zpam333.zip">zPAM 3.33</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam333.iwd
-	- ./Call of Duty 2/main/zpam_maps_v3.iwd <i>(*required only for 1.3 game version)</i>
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.34/zpam334.zip">zPAM 3.34</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam334.iwd
+	- ./Call of Duty 2/main/zpam_maps_v4.iwd <i>(*required only for 1.3 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
 
@@ -350,7 +371,7 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 
 - For game version 1.3:
-	- Mappack file <b>zpam_maps_v3.iwd</b> needs to be included in main folder. [What is zpam_maps_v3.iwd file?](#what-is-zpam_maps_v3iwd-file)
+	- Mappack file <b>zpam_maps_v4.iwd</b> needs to be included in main folder. [What is zpam_maps_v4.iwd file?](#what-is-zpam_maps_v4iwd-file)
 	- Fast download must be enabled via these settings (custom URL may be used):
 		- <b>sv_wwwDownload 1</b>
 		- <b>sv_wwwBaseURL "http://cod2x.me/zpam"</b>
@@ -407,29 +428,26 @@ cokY, Sk1lzZ, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / d
 
 ## Questions & Answers
 
-### What is zpam_maps_v3.iwd file
-- Its is a map pack of:
-	- [Toujane FIX v3](https://github.com/eyza-cod2/mp_toujane_fix)
-	- [Burgundy FIX v2](https://github.com/eyza-cod2/mp_burgundy_fix)
-	- [Dawnville FIX v3](https://github.com/eyza-cod2/mp_dawnville_fix)
-	- [Matmata FIX v3](https://github.com/eyza-cod2/mp_matmata_fix)
-	- [Carentan FIX v3](https://github.com/eyza-cod2/mp_carentan_fix)
-	- [Breakout TLS](https://github.com/eyza-cod2/mp_breakout_tls)
-	- Chelm FIX (v2)
-	- Vallente
-	- wawa_3dAim
+### What is zpam_maps_v4.iwd file
+
+| Name              | Game name           | Credit                                     | More info                                      |
+|-------------------|---------------------|--------------------------------------------|------------------------------------------------|
+| Toujane FIX v4    | `mp_toujane_fix`      | by eyza, Stendby, Fjozek                   | https://github.com/eyza-cod2/mp_toujane_fix    |
+| Burgundy FIX v3   | `mp_burgundy_fix`     | by eyza, Stendby, Fjozek                   | https://github.com/eyza-cod2/mp_burgundy_fix   |
+| Dawnville FIX v4  | `mp_dawnville_fix`    | by Fjozek                                  | https://github.com/eyza-cod2/mp_dawnville_fix  |
+| Matmata FIX v4    | `mp_matmata_fix`      | by Fjozek                                  | https://github.com/eyza-cod2/mp_matmata_fix    |
+| Carentan FIX v4   | `mp_carentan_fix`     | by Fjozek                                  | https://github.com/eyza-cod2/mp_carentan_fix   |
+| Breakout TLS      | `mp_breakout_tls`     | by eyza, craven, YctN                      | https://github.com/eyza-cod2/mp_breakout_tls   |
+| Chelm FIX (v3)    | `mp_chelm_fix`        | by Julian Luo; remake by Fjozek and craven |                                                |
+| wawa_3dAim        | `wawa_3dAim`          |                                            |                                                |
+| Trainstation FIX  | `mp_trainstation_fix` | by Fjozek, craven                          |                                                |
+| Vallente FIX      | `mp_vallente_fix`     | by Fjozek, craven                          |                                                |
+| Leningrad TLS     | `mp_leningrad_tls`    | by Fjozek, craven                          |                                                |
+| Dawnville SUN     | `mp_dawnville_sun`    | by Fjozek, craven                          |                                                |
+| Crossroads        | `mp_crossroads`       | by Fjozek, craven, eyza                    |                                                |
+| Carentan BAL | `mp_carentan_bal`     | by Fjozek, craven                          |                                                |
 
 
-- Credit:
-	- Toujane FIX, Burgundy FIX - by **eyza**, **Stendby**, **Fjozek**
-	- Dawnville FIX, Matmata FIX, Carentan FIX - by **Fjozek**
-	- Breakout TLS - by **eyza** and **craven**
-	- Chelm - by **Julian Luo**; remake by **Fjozek** and **craven**
-	- Vallente - by/for Crossfire.nu [www.crossfire.nu]
-
-
-- Maps have these ingame names:
-	- `mp_toujane_fix`, `mp_burgundy_fix`, `mp_dawnville_fix`, `mp_matmata_fix`, `mp_carentan_fix`, `mp_breakout_tls`, `mp_chelm_fix`, `mp_vallente`, `wawa_3dAim`
 
 If you know bugs that are not fixed yet, please contact me!<br>
 
@@ -442,7 +460,7 @@ There are some weird situations when you shot player to the body, but the game p
 These types of bugs are probably caused by badly implemented hit boxes within the game engine.
 In these situations the game process the hit location as hand / arm instead of body (when the arm is right behind the body)
 Hand hitbox fix tries to address this issue by the following check:
-<img src="/images/hand_hitbox_fix.png"/>
+<img src="images/hand_hitbox_fix.png"/>
  - if you fire from rifle or scope, and
  - distance between you and enemy is more than 200, and
  - hit location is inside a box created around head, and
@@ -466,7 +484,7 @@ You can debug hitbox fix in game via command **/rcon debug_handhitbox 1**<br>
 Hitbox area torso_lower is now slightly bigger to avoid weird hits to lower part of body.
 This will take effect only for rifles, because other weapons have the same damage values for torso_lower and left/right_leg_upper.
 
-<img src="/images/hitbox_torso.png"/>
+<img src="images/hitbox_torso.png"/>
 
 You can debug this in game via command **/rcon debug_torsohitbox 1**<br>
 **Torso hitbox fix is enabled by default**
@@ -491,10 +509,10 @@ First of all, lets describe how the classic shotgun works:
 - When you fire from shotgun, 8 pellets are fired.
 - Spread of pellets is unpredictable and completly random.
 - This ingame image demonstrates the ransomness of the pellets:
-- <img src="/images/shotgun_spread.png" height="60" />
+- <img src="images/shotgun_spread.png" height="60" />
 - Damage of each individual pellet is based on distance between you and the pellet hit location.
 - #### Shotguns chart
-- <a href="/images/shotgun.png"><img src="/images/shotgun.png" /> </a>
+- <a href="images/shotgun.png"><img src="images/shotgun.png" /> </a>
 - #### Original shotgun
 	- Damage is splited into 2 range parts according to distance between you and hit location of enemy player: (this is how it is when the game was released in 2005)
 	- Each one of 8 fired pellets follow this rules:
@@ -567,7 +585,7 @@ Lets describe a "clip" and "prone-peek" a bit
 	- In zPAM2.07, when you go from prone position to crouch position, a "standing-up" animation was played on player's character
 	- If you go immediately back to prone position, the animation makes you invisible to enemy, because before your body and head gets to higher position, you are back in prone position
 	- This animation is well described on this image:
-	- <img src="/images/clip.gif" height="100"/>
+	- <img src="images/clip.gif" height="100"/>
 	- This animation bug is fixed in zPAM3, but there is still one problem described below
 - ### Prone-peek
 	- Prone peek is when you go from prone position to crouch position and then immediately back to prone position.
@@ -597,7 +615,7 @@ Note: your teammates that are spectating you may see you "lagging". Thats normal
 ### How does the "Enemy list" works
 Enemy list is feature that show names of alive player from opponent team. This feature can be enabled / disabled via menu.
 You can change color of opponent team via scoreboard menu. Button "Set" will toggle between red, blue and white color.<br>
-<img src="/images/enemylist_setcolor.png" /><br>
+<img src="images/enemylist_setcolor.png" /><br>
 If you change a color, its applied to team, so your teammates can also see the colors.
 
 
@@ -606,7 +624,7 @@ If you change a color, its applied to team, so your teammates can also see the c
 
 ### How does the "Round report" works
 At the end of the round, report of hits and kills is printed. It include damage value, hit location and first hit location. For shotgun it prints number of pellets that hit the target and range. Read star indicates that "Hand hitbox fix" or "Torso hitbox fix" was applied.<br>
-<img src="/images/round_report.png" />
+<img src="images/round_report.png" />
 
 
 
@@ -637,7 +655,7 @@ So diagonal is not affected by PAM.
 ### How does the "Sniper shotgun info" works / what is it
 At the start of the round and at the end of the round, info about weapons of players with sniper and shotgun is showed next to compass. If player does not have a secondary weapon, text is gray. If player does have a secondary weapon, text is green.
 
-<img src="/images/sniper_shotgun_info.png"/>
+<img src="images/sniper_shotgun_info.png"/>
 
 
 
@@ -670,7 +688,7 @@ This sound is played only if you regularly and intentionally switch the weapon
 
 
 ### Scoreboard menu
-<img src="/images/scoreboard_columns.png" />
+<img src="images/scoreboard_columns.png" />
 <br><br>
 
 Features:
@@ -705,7 +723,7 @@ Example:<br>
 01:34|148704|dmg:135|health:100|xyz_my:(1911, 2332, 31)|xyz_enemy:(2401.74, 2318.93, 68.1349)|enfield_mp|torso_lower|xyz_hit:(2400.64, 2316.08,
 110.394)|head:(2406.26, 2321.28, 126.205)|pelvis:(2405.14, 2319.08, 102.076)
 
-<img src="/images/pam_damage_debug.png" /><br>
+<img src="images/pam_damage_debug.png" /><br>
 These cvars can be read from demo.
 
 
@@ -723,7 +741,7 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 <br>
 
 ### How does the "Aim-Trainer" feature works / what is it
-- <img src="/images/aim_trainer.png" /><br><br>
+- <img src="images/aim_trainer.png" /><br><br>
 - In Ready-Up period, it is possible to spawn targets and practice your aim.
 - These targets are supported only on FIX versions of maps or maps that directly supports it.
 - Hold Shift to toggle between different modes of aim trainer:
@@ -742,14 +760,14 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 - This fixes holes in low detailed models at long distances
 - It may slightly increase the load and therefore decrease the FPS
 <br><br>
-- <img src="/images/lod_tj_plant1.gif" /><br>
-- <img src="/images/lod_tj_plant2.gif" /><br>
-- <img src="/images/lod_tj_truck_long.gif" /><br>
-- <img src="/images/lod_tj_tank_cross.gif" /><br>
-- <img src="/images/lod_bg_tank_mid_cross.gif" /><br>
-- <img src="/images/lod_bg_tank_burn.gif" /><br>
-- <img src="/images/lod_dw_plant1.gif" /><br>
-- <img src="/images/lod_dw_plant2.gif" /><br>
+- <img src="images/lod_tj_plant1.gif" /><br>
+- <img src="images/lod_tj_plant2.gif" /><br>
+- <img src="images/lod_tj_truck_long.gif" /><br>
+- <img src="images/lod_tj_tank_cross.gif" /><br>
+- <img src="images/lod_bg_tank_mid_cross.gif" /><br>
+- <img src="images/lod_bg_tank_burn.gif" /><br>
+- <img src="images/lod_dw_plant1.gif" /><br>
+- <img src="images/lod_dw_plant2.gif" /><br>
 
 
 
@@ -758,7 +776,7 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 <br>
 
 ### How does the "Streamer" and "Auto-spectator" feature works / what is it
-- <img src="/images/streamer.png" /><br><br>
+- <img src="images/streamer.png" /><br><br>
 - There is a new team called "Streamer" that you can join when you connect the server
 - Streamer team supports following features:
 	- HUD overlay
@@ -775,7 +793,7 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 	- Free spectating - follow close by player
 
 #### HUD overlay
-- <img src="/images/streamer_menu.png" /><br><br>
+- <img src="images/streamer_menu.png" /><br><br>
 - When you join a streamer team, a new **streamer menu** overlay will open
 - Streamer menu is needed to detect mouse and keys detection
 - Binds are not working while this menu is open
@@ -786,20 +804,20 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 - Players are automatically renamed if their nickname contains double-colors (^^xx) when there is a streamer. (reason: avoid confusing team colors for viewers of stream)
 
 ##### Match info
-- <img src="/images/streamer_menu_teams.png" /><br>
+- <img src="images/streamer_menu_teams.png" /><br>
 - Teams are always on the same side
 - Only the color of team is changing according to side of the team (allies: blue, axis: red)
 
 ##### Followed player info
 - Under the "following" text, there is a status of player switching
-- <img src="/images/streamer_following_status.png" /><br>
+- <img src="images/streamer_following_status.png" /><br>
 - It tells the reason why the followed player was changed
 - Greenish background color means that spectated player can be changed by auto-spectator at any time
 - Grayish background color means that this player is locked for some time
 - No background color means auto-spectator is turned off and switching is controlled manually
 
 ##### Players bars
-- <img src="/images/streamer_player_bars2.png" /><br>
+- <img src="images/streamer_player_bars2.png" /><br>
 - Bars shows the following info about the players:
 	- Health - indicated by the changed width of colored bar
 	- Weapons (pistols are not showed)
@@ -809,13 +827,13 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 - When the player is dead, bar is more transparent and dead icon is showed
 - Currently followed player is indicated with white rectangle with an arrow next to it
 - Players are sorted by their ID and not via score<br><br>
-- <img src="/images/streamer_player_bars.png" /><br>
+- <img src="images/streamer_player_bars.png" /><br>
 - You can use keys [1,2,3,4,5] to switch to player from team 1 and keys [6,7,8,9,0] from team 2
 - Number of individual player is showed when help is showed via Space key
 
 
 ##### Score progress
-- <img src="/images/streamer_score_progress.png" /><br>
+- <img src="images/streamer_score_progress.png" /><br>
 - Score progress shows who win the round via team color
 - Halftime is indicated via "|" character
 - Timeout is indicated via "[T]" characters
@@ -823,17 +841,17 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 
 
 ##### Player xvx progress
-- <img src="/images/streamer_player_progress.png" /><br>
+- <img src="images/streamer_player_progress.png" /><br>
 - Player progress indicate which team killed a player and the number of players in that time
 
 ##### Hit info
-- <img src="/images/streamer_hitinfo.png" /><br>
+- <img src="images/streamer_hitinfo.png" /><br>
 - Text with HP damage value and hit location is showed when you inflict or receive damage
 - You can toggle it via H key
 
 
 ##### Planter / defuser info
-- <img src="/images/streamer_plant_defuse.png" /><br>
+- <img src="images/streamer_plant_defuse.png" /><br>
 - When some player is planting or defusing a bomb, its indicated on the screen
 
 <br><br>
@@ -870,18 +888,18 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 
 
 #### Replay (killcam)
-- <img src="/images/streamer_killcam_menu.png" /><br>
+- <img src="images/streamer_killcam_menu.png" /><br>
 - Actions are kills by players. When multiple kills happends within period of 5 seconds between each kill, these kills are saved as action.
 - You can replay an action via opening replay menu via R key and choosing the action via [1,2,3,4,5,6,7,8,9] keys
 - Actions are automatically replayed at the end of the round (if there are any)
 - Only 40 seconds of history can be saved - it means actions cannot be played after 40 seconds they happend (game limitation)
 - If some of the interesting actions happens (bash, nozoom or 2 and more kills) and there is no reason to switch the followed player via auto-spectator, a replay proposal is showed:
-- <img src="/images/streamer_killcam_proposal.png" /><br>
+- <img src="images/streamer_killcam_proposal.png" /><br>
 - You have a few seconds to press a F key to replay the action
 
 
 #### XRAY
-- <img src="/images/streamer_xray.png" /><br><br>
+- <img src="images/streamer_xray.png" /><br><br>
 - Enemies behind wall are visualized via stance icons
 - If enemy is damaged, they have red color
 - Player nicknames are showed above the stance icon
@@ -891,7 +909,7 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 
 
 #### Free spectating - follow close by player
-- <img src="/images/streamer_closeby.png" /><br><br>
+- <img src="images/streamer_closeby.png" /><br><br>
 - When you are free spectating and you are looking at some player, this player will will be followed if you clock Left or Right mouse key
 - The player nickname must be indicated by text in upper part of the screen
 - XRAY needs to be enabled (wich is automatically enabled when entering free spectating)
@@ -922,12 +940,12 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 #### Cvar /fs_game is not empty!
 Make sure cvar /fs_game is empty (+set fs_game "") and iwd files are placed in main folder.
 
-#### Iwd file zpam333.iwd must be installed in main folder.
- - From version 3.20, all iwd files have to be installed in main folder.
+#### Iwd file zpam334.iwd must be installed in main folder.
+ - Since version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that player's settings changed in game are not saved into the config when running a game with fs_game set.
 
-#### Iwd file zpam_maps_v3.iwd does not exists in ^9main^7 folder
-- From version 3.20, fixed versions of some maps are available. PAM is forcing to include these files to make sure maps are available on every server.
+#### Iwd file zpam_maps_v4.iwd does not exists in main folder
+- Since version 3.20, fixed versions of some maps are available. PAM is forcing to include these files to make sure maps are available on every server.
 
 #### Error while getting loaded iwd files. Make sure iwd files does not contains spaces.
 - PAM was not able to parse loaded iwd files. Some of the iwd files have probably name with spaces.
@@ -963,7 +981,7 @@ This is game bug - to workaround this error, remove unused iwd files / shorten t
 ### Error "Impure client detected. Invalid .IWD files referenced!"
 - This error means that .iwd files loaded from your local folders (main) are in conflict with .iwd files located at server - some files are not equal. This is protection agains your modified files that may be used for cheating.
 - There is a problem with zpam_maps_v1.iwd file - when you have this file downloaded in main folder and you try to connect older 3.22 server, error "Impure client detected" shows. (Toujane FIX and Brungundy FIX sun file problem) Please remove this file from main folder.
-- <img src="/images/error_impure_client_detected.png"/>
+- <img src="images/error_impure_client_detected.png"/>
 
 
 <br>
@@ -1039,7 +1057,7 @@ Attackers should take both objectives to the goal (blue box) to win. (or elimina
 | rifle | Bolt action and sniper only, no grenades, no weapon drop|
 | russian | Russian side is enabled on russian maps |
 | lan | Readyup warnings are disabled |
-| pcw | strat 3 seconds, no auto-recording, no team names, no deadchat, no bash |
+| custom | custom ruleset |
 
 <br><br>
 ##### Examples
@@ -1050,8 +1068,8 @@ PAM modes, score modes and options can be mixed together, for example:
 | /rcon pam_mode pub  		| Public mode (custom settings) |
 | /rcon pam_mode comp  		| Competitive mode |
 | /rcon pam_mode comp_mr3  	| Competitive mode with max round 4 |
-| /rcon pam_mode comp_pcw   	| Competitive mode for team mix |
-| /rcon pam_mode comp_pcw_russian | Competitive mode for team mix, russian side on russian maps |
+| /rcon pam_mode comp_custom   	| Competitive mode for team mix |
+| /rcon pam_mode comp_custom_russian | Competitive mode for team mix, russian side on russian maps |
 | /rcon pam_mode comp_2v2 	| Competitive mode, scope and shotgun disabled |
 | /rcon pam_mode comp_rifle 	| Competitive mode, bolt action and sniper only |
 | /rcon pam_mode comp_rifle_2v2	| Competitive mode, bolt action only, sniper disabled |
@@ -1080,29 +1098,29 @@ PAM modes, score modes and options can be mixed together, for example:
 ### 1. Fixed game bugs
 <sub>
 [1.1] Clip fix fix<br>
-<a href="/images/clip.gif"><img src="/images/clip.gif" height="130" /></a><br>
+<a href="images/clip.gif"><img src="images/clip.gif" height="130" /></a><br>
 [1.2] Texture fixes (adding xmodel)<br>
-<a href="/images/toujane_jump.jpg"><img src="/images/toujane_jump.jpg" height="130" /></a><br>
-<a href="/images/toujane_axis_roof.jpg"><img src="/images/toujane_axis_roof.jpg" height="130" /></a><br><br>
-<a href="/images/toujane_jump_2.jpg"><img src="/images/toujane_jump_2.jpg" height="130" /></a><br>
-<a href="/images/toujane_allies_window.jpg"><img src="/images/toujane_allies_window.jpg" height="130" /></a><br><br>
-<a href="/images/carentan_stairs_1.jpg"><img src="/images/carentan_stairs_1.jpg" height="130" /></a><br>
-<a href="/images/carentan_stairs_2.jpg"><img src="/images/carentan_stairs_2.jpg" height="130" /></a><br><br>
+<a href="images/toujane_jump.jpg"><img src="images/toujane_jump.jpg" height="130" /></a><br>
+<a href="images/toujane_axis_roof.jpg"><img src="images/toujane_axis_roof.jpg" height="130" /></a><br><br>
+<a href="images/toujane_jump_2.jpg"><img src="images/toujane_jump_2.jpg" height="130" /></a><br>
+<a href="images/toujane_allies_window.jpg"><img src="images/toujane_allies_window.jpg" height="130" /></a><br><br>
+<a href="images/carentan_stairs_1.jpg"><img src="images/carentan_stairs_1.jpg" height="130" /></a><br>
+<a href="images/carentan_stairs_2.jpg"><img src="images/carentan_stairs_2.jpg" height="130" /></a><br><br>
 [1.3] Collision box / killtrigger<br>
-<a href="/images/burgundy_jump.jpg"><img src="/images/burgundy_jump.jpg" height="130" /></a><br>
-<a href="/images/dawnville_jump.jpg"><img src="/images/dawnville_jump.jpg" height="130" /></a><br>
+<a href="images/burgundy_jump.jpg"><img src="images/burgundy_jump.jpg" height="130" /></a><br>
+<a href="images/dawnville_jump.jpg"><img src="images/dawnville_jump.jpg" height="130" /></a><br>
 [1.4] Fast reload bug (when you fire, press R to reload and then you scroll down 2x, you are able to shoot faster) -&gt; fixed<br>
 [1.5] Bind to stop actually playing sound -&gt; fixed<br>
 [1.6] Toujane bug inder A roof<br>
-<a href="/images/toujane_underAroof_bug.jpg"><img src="/images/toujane_underAroof_bug.jpg" height="800" /></a><br>
+<a href="images/toujane_underAroof_bug.jpg"><img src="images/toujane_underAroof_bug.jpg" height="800" /></a><br>
 [1.7] Toujane bucket is not visible from far distance -> fixed<br>
-<a href="/images/toujane_bucket_fixed.jpg"><img src="/images/toujane_bucket_fixed.jpg" height="108" /></a><br>
+<a href="images/toujane_bucket_fixed.jpg"><img src="images/toujane_bucket_fixed.jpg" height="108" /></a><br>
 [1.8] Toujane B tank model top grid is not visible from far distance -> fixed<br>
-<a href="/images/toujane_B_bomb.jpg"><img src="/images/toujane_B_bomb.jpg" height="172" /></a><br>
+<a href="images/toujane_B_bomb.jpg"><img src="images/toujane_B_bomb.jpg" height="172" /></a><br>
 [1.9] <del>Toujane sandbags holes</del> <strong>(canceled)</strong><br>
-<a href="/images/toujaneSandbags.jpg"><img src="/images/toujaneSandbags.jpg" height="172" /></a><br>
+<a href="images/toujaneSandbags.jpg"><img src="images/toujaneSandbags.jpg" height="172" /></a><br>
 [1.10] <del>Matmata sandbags holes</del> <strong>(canceled)</strong><br>
-<a href="/images/matmataSandbags.jpg"><img src="/images/matmataSandbags.jpg" height="172" /></a><br>
+<a href="images/matmataSandbags.jpg"><img src="images/matmataSandbags.jpg" height="172" /></a><br>
 [1.11] Carentan plant B 333fps plant - players are now not able to plant on B bomb tank.<br>
 [1.12] <del>Carentan roof jump - added collision to avoid jumping to building roof</del> <strong>(canceled)</strong><br>
 [1.13] BAR sound bug - when some player plays with BAR weapon, all other players can hearing sounds of changing weapon (happends when player with BAR is switching between BAR and pistol) -> fixed<br>
@@ -1163,7 +1181,7 @@ PAM modes, score modes and options can be mixed together, for example:
 [3.2.1] primary weapon can be dropped if you have 2 main weapons (except limited weapons, like scopes) <br>
 [3.2.2] recoded system for saving weapons at the end of the round - now its not exploitable<br>
 [3.2.3] improved weapon menu - selected weapon is highlighted, used weapons are grayed out correctly, number of grenades under weapon image shows correctly, + added text who is using limited weapon <br>
-    <a href="/images/gui_weapon.jpg"><img src="/images/gui_weapon.jpg" height="450" /></a>
+    <a href="images/gui_weapon.jpg"><img src="images/gui_weapon.jpg" height="450" /></a>
 </sub>
 
 #### 3.3 New stuff
@@ -1182,36 +1200,36 @@ PAM modes, score modes and options can be mixed together, for example:
 [3.3.8] <del>show weapon instead of headshot in killfeed in match pam mode</del> <strong>(removed)</strong><br>
 [3.3.9] <del>Shotgun rebalance 1</del> <strong>(removed)</strong><br>
 [3.3.10] Match info - menu with information about team names, score, scores in previous maps, total played time. <br>Showable also in game. <br>Visible always for spectators.<br>
-    <a href="/images/matchinfo.png"> <img src="/images/matchinfo.png" alt="" height="150" /> </a><br>
+    <a href="images/matchinfo.png"> <img src="images/matchinfo.png" alt="" height="150" /> </a><br>
 [3.3.11] Match info server cvars - basic information like team names, scores, round can be showed via HLSW for example<br>
-    <a href="/images/matchinfo_hlsw.jpg"> <img src="/images/matchinfo_hlsw.jpg" alt="" height="150" /> </a><br>
+    <a href="images/matchinfo_hlsw.jpg"> <img src="images/matchinfo_hlsw.jpg" alt="" height="150" /> </a><br>
 [3.3.12] Server settings (Rcon change map)<br>
-    <a href="/images/rcon_map.png"> <img src="/images/rcon_map.png" alt="" height="450" /> </a><br>
-    <a href="/images/rcon_settings.png"> <img src="/images/rcon_settings.png" alt="" height="450" /> </a><br>
+    <a href="images/rcon_map.png"> <img src="images/rcon_map.png" alt="" height="450" /> </a><br>
+    <a href="images/rcon_settings.png"> <img src="images/rcon_settings.png" alt="" height="450" /> </a><br>
 [3.3.13] Rcon kick menu<br>
-    <a href="/images/rcon_kick.png"> <img src="/images/rcon_kick.png" alt="" height="450" /> </a><br>
+    <a href="images/rcon_kick.png"> <img src="images/rcon_kick.png" alt="" height="450" /> </a><br>
 [3.3.14] Strat bot support with path recording<br>
-    <a href="/images/strat_bot.jpg"> <img src="/images/strat_bot.jpg" alt="" height="450" /> </a><br>
+    <a href="images/strat_bot.jpg"> <img src="images/strat_bot.jpg" alt="" height="450" /> </a><br>
     Path recording:<br>
-    <a href="/images/strat_bot_recording.jpg"> <img src="/images/strat_bot_recording.jpg" alt="" height="450" /> </a><br>
+    <a href="images/strat_bot_recording.jpg"> <img src="images/strat_bot_recording.jpg" alt="" height="450" /> </a><br>
 [3.3.15] <del>Match info ingame for ingames</del> <strong>(merged into 3.3.10)</strong><br>
 [3.3.16] <del>Shotgun rebalance 3 (new conditions to avoid long shots and close range hits)</del><br>
 [3.3.17] Scoreboard menu, player's stats. Visible in menu and at the end of the map.<br>
-    <a href="/images/scoreboard_ingame.jpg"> <img src="/images/scoreboard_ingame.jpg" alt="" height="600" /> </a><br><br>
-    <a href="/images/scoreboard.jpg"> <img src="/images/scoreboard.jpg" alt="" height="450" /> </a><br>
+    <a href="images/scoreboard_ingame.jpg"> <img src="images/scoreboard_ingame.jpg" alt="" height="600" /> </a><br><br>
+    <a href="images/scoreboard.jpg"> <img src="images/scoreboard.jpg" alt="" height="450" /> </a><br>
     <br>
 [3.3.18] Quick menu<br>
 Added settings - you can disable auto recording, show matchinfo, score, enemy list (these settings are saved to cvar "server16")<br>
 You can adjust mouse settings<br>
 Added posibility to call bash mode from menu.<br>
-    <a href="/images/quickmenu.png"> <img src="/images/quickmenu.png" alt="" height="300" /> </a><br><br>
+    <a href="images/quickmenu.png"> <img src="images/quickmenu.png" alt="" height="300" /> </a><br><br>
 [3.3.19] Bash mode - added posibility to call bash mode directly in first readyup. No need to set "pam_mode bash".<br>
 [3.3.20] Player's score is restored when he reconnect in middle of game. To purposely reset score, name must be changed.<br>
 [3.3.21] Secondary weapon replacement to pistol - if you click the same weapon in the menu you already have selected, your secondary weapon will be replaced by pistol (in start time). This could be useful for example if you have good spawn to rush, but you have two heavy weapons.<br>
 [3.3.22] Message "Server lag detected" will be printed to all players if server have performence lags. (it will not detect network lags, just performence lags)<br>
 [3.3.23] Auto-spectating mode - if you are in spectator team, you can toggle auto mode. It will automatically switch spectated player according to action in game. For example, if some player start looking at somebody, it will be automaticlly switched to this player.<br>
 [3.3.24] Fullscreen image of map with warning is showed when important cvars (like com_maxfps) are not in allowed range. (this is kind of replace of cvar checks when punkbuster is off)<br>
-<a href="/images/cvar_check.jpg"><img src="/images/cvar_check.jpg" height="100" /></a><br>
+<a href="images/cvar_check.jpg"><img src="images/cvar_check.jpg" height="100" /></a><br>
 [3.3.25] In readyup, sound "Time to go get movin" is played to last not-ready player (only if it is 3v3 or more).<br>
 [3.3.26] Prone peek fix - when you go from prone to crouch position, you are allowed to prone again after a small delay. This should avoid these situations: you are proned, leaned left/right and you peek behind the wall by going to crouch and back to prone as fast as possible. For enemy its difficult to shoot, because character animation is bugged and moving too fast.<br>
 [3.3.27] MG clip FIX - if you drop a MG, you will be spawned right behind the MG<br>
@@ -1220,22 +1238,22 @@ Added posibility to call bash mode from menu.<br>
 [3.3.30] New spectating system - new UI, auto-spectator is now better, score stats, player progress stats, etc..<br>
 [3.3.31] Round report - at the end of the round info about kills and hits you made are printed<br>
 [3.3.32] New damage feedback for assists - when player damaged by you is killed, "assist" text is showed on screen<br>
-<img src="/images/assist.png" /><br>
+<img src="images/assist.png" /><br>
 [3.3.33] Players left - new player names list of alive enemy players above players left counter (can be turned off via menu)<br>
 [3.3.34] In readyup, you can throw nades like in strat mode<br>
 [3.3.35] New custom settings for map mode in rcon menu - a few of the settings can be changed (for example shotgun rebalance, fast-reload fix) and this change stays applied in next maps<br>
 [3.3.36] New menu section in Main -> Options<br>
-<a href="/images/settings.png"> <img src="/images/settings.png" alt="" height="450" /> </a><br>
+<a href="images/settings.png"> <img src="images/settings.png" alt="" height="450" /> </a><br>
 [3.3.37] List of all changed server cvars is showed in "Server info" menu<br>
-<a href="/images/serverinfo.png"> <img src="/images/serverinfo.png" alt="" height="450" /> </a><br>
+<a href="images/serverinfo.png"> <img src="images/serverinfo.png" alt="" height="450" /> </a><br>
 [3.3.38] Score in left-top corner can by enabled via settings menu<br>
 [3.3.39] For future hit diagnostics, at the end of each round info about hits is saved to cvar pam_damage_debug<br>
 [3.3.40] <del>Hitbox rebalance - if you fire from rifle or scope to left arm at +-20* degress, it will be changed to kill to body</del> <strong>replaced with [3.3.46]</strong><br>
 [3.3.41] In halftime-readyup and between map readyup, when 5min timer expire, warning and red timer is showed. If all players from 1 team are ready, match automatically start even if opponent team is not ready.<br>
-<a href="/images/auto_readyup.png"> <img src="/images/auto_readyup.png" /> </a><br>
+<a href="images/auto_readyup.png"> <img src="images/auto_readyup.png" /> </a><br>
 [3.3.42] Players left - when last player in team is killed, text "Allies Eliminated" / "Axis Eliminated" is showed<br>
 [3.3.43] When you hit your teammate, reddish hit mark is showed<br>
-<img src="/images/team_hit.png" /><br>
+<img src="images/team_hit.png" /><br>
 [3.3.44] Cvar system rewrited; any change to server settings is retained even when map changes; new cvar /pam_mode_custom is defined - it tells that changes made to server settings stays between map<br>
 [3.3.45] Warnings about wrong server settings (no password, cheats enabled, punkbuster disabled, cvars changes) is changed; its showed in left top corner under the score; if some of the server settings is changed, detailed list of changed cvars is showed; punkbuster warning is removed<br>
 [3.3.46] <del>Hand hit box fix - if hands are in front of body and game somehow badly interprets it as hit to the hand, PAM change it to hit to the body; its an extension to already existing fix in 3.22 for left hand - now its applies also for right hand</del> <strong>replaced with [3.3.71]</strong><br>
@@ -1315,16 +1333,16 @@ Added posibility to call bash mode from menu.<br>
     <b>Canceled - this caused significant FPS drops on some spots</b><br>
     <b>Some models are forced to render in high detail by another method</b><br><br>
 [3.4.2] New bomb explosion radius + fixed explosion effect <br>
-  <img src="/images/bomb_damage.jpg" alt="" height="300" /><br>
+  <img src="images/bomb_damage.jpg" alt="" height="300" /><br>
 [3.4.3] when bomb explodes and kills someone, kill is assigned to planter<br>
 [3.4.4] fixed bug when grenade icon is not visible in scope zoom - it depends on "cg_hudGrenadeIconInScope" - so now pam force value of this cvar to "1"<br>
 [3.4.5] in overtime mode (for mr3, mr10, mr12, mr15 modes) - if match ends with draw, teams are automaticly switched over and over untill one team wins <br>
 [3.4.6] when team is changed, team is changed immediately (before - team was changed after weapon choose)<br>
 [3.4.7] all hud text are animated (small fadein and fadeout translations) and adapted to widescreen ratio<br>
 [3.4.8] when you connect to match in progress, there is image of map in background - so player can not see anything and also is spawned outside map, so he can not hear anything (inspiration from COD4)<br>
-    <a href="/images/blackout.jpg"><img src="/images/blackout.jpg" height="300" /></a><br>
+    <a href="images/blackout.jpg"><img src="images/blackout.jpg" height="300" /></a><br>
 [3.4.9] Added check if player has downloaded mod (mod needs to be downloaded or bug fixes described above will not work) <br>
-    <a href="/images/mod_download.jpg"><img src="/images/mod_download.jpg" height="300" /></a><br>
+    <a href="images/mod_download.jpg"><img src="images/mod_download.jpg" height="300" /></a><br>
 [3.4.10] <del>Added check to "fs_game" if pam is installed correctly (if all servers with new pam will be installed in same folder, players will not have to downloading mod again on other servers)</del>replaced with [3.4.15]<br>
 [3.4.11] Added new cvar system - all cvars (sv_, g_, scr_) are monitored against change (not all cvars was monitored in old pam) + added warning in readyup if cvars are not equal to league rules<br>
 [3.4.12] Removed anoying music at the and of the map<br>
@@ -1356,7 +1374,7 @@ Added posibility to call bash mode from menu.<br>
 ### 5. KNOWN BUGS
 <sub>
 [5.0] Diagonal bug<br>
-    <a href="/images/diagonal.jpg"> <img src="/images/diagonal.jpg" alt="" height="721" /> </a> <br>
+    <a href="images/diagonal.jpg"> <img src="images/diagonal.jpg" alt="" height="721" /> </a> <br>
 [5.1] Slide bug (when player hits the ground he can not stop moving. It looks like he is "sliding" on the ground) <br>
 [5.2] Defusing with F12 (player can defuse outside plant area when screenshot bind and F is pressed at one time) <br>
 [5.3] Smoke is not visible if player press F12 or game window is minimized <br>
@@ -1364,12 +1382,12 @@ Added posibility to call bash mode from menu.<br>
 [5.5] When player is defusing and he use binoculars - its seems like he is not defunsing and zooming with weapon (but weapon is not visible) <br>
 [5.6] bind MOUSE1 "+attack;+smoke" -&gt; this bind silences gun<br>
 [5.7] <del>toujane bug - you get stuck in "link" if you crouch next to the wall</del> <strong>fixed in mp_toujane_fix</strong> <br>
-    <a href="/images/toujane_cigan.jpg"> <img src="/images/toujane_cigan.jpg" alt="" height="150" /> </a><br>
+    <a href="images/toujane_cigan.jpg"> <img src="images/toujane_cigan.jpg" alt="" height="150" /> </a><br>
 [5.8] <del>Carentan MG house at doors. Prone push</del> <strong>fixed in mp_carentan_fix</strong> <br>
-    <a href="/images/carentan_mg_house_bug1.jpg"> <img src="/images/carentan_mg_house_bug1.jpg" alt="" height="150" /> </a> <br>
-    <a href="/images/carentan_mg_house_bug2.jpg"> <img src="/images/carentan_mg_house_bug2.jpg" alt="" height="150" /> </a><br>
+    <a href="images/carentan_mg_house_bug1.jpg"> <img src="images/carentan_mg_house_bug1.jpg" alt="" height="150" /> </a> <br>
+    <a href="images/carentan_mg_house_bug2.jpg"> <img src="images/carentan_mg_house_bug2.jpg" alt="" height="150" /> </a><br>
 [5.9] <del>Dawnville: Bug in last apartment </del> <strong>fixed in mp_dawnville_fix</strong><br>
-    <a href="/images/dawnville_apartment_bug.jpg"> <img src="/images/dawnville_apartment_bug.jpg" alt="" height="150" /> </a><br>
+    <a href="images/dawnville_apartment_bug.jpg"> <img src="images/dawnville_apartment_bug.jpg" alt="" height="150" /> </a><br>
 [5.10] too hight mg sensitivity <br>
 [5.11] switching from scope to other player while dead, you keep hearing the "scopeshot" <br>
 [5.12] r_picmip can be abused, find a way to make sure picmip 3 cant be used <br>
@@ -1380,8 +1398,8 @@ Added posibility to call bash mode from menu.<br>
 [5.17] Bash bug - you cannot bust while reload animation (untill weapon chamber is not fully refilled -> bash is blocked)<br>
 [5.18] <del>Burgundy low sky box - grenades are removed from game if you throw them above you with jump</del><strong>fixed in mp_burgundy_fix</strong><br>
 [5.19] <del>Matmata jungle texture bug</del> <strong>fixed in mp_matmata_fix</strong> <br>
-    <a href="/images/matmata_bug_1.jpg"><img src="/images/matmata_bug_1.jpg" alt="" height="150" /> </a>
-    <a href="/images/matmata_bug_2.jpg"><img src="/images/matmata_bug_2.jpg" alt="" height="150" /> </a><br>
+    <a href="images/matmata_bug_1.jpg"><img src="images/matmata_bug_1.jpg" alt="" height="150" /> </a>
+    <a href="images/matmata_bug_2.jpg"><img src="images/matmata_bug_2.jpg" alt="" height="150" /> </a><br>
 [5.20] Tanks - some tanks dont have solid tank wheels - shots go throught them<br>
 [5.21] <del>Toujane bug under A roof</del><br>
 <b>Fixed, viz [1.6]</b><br>

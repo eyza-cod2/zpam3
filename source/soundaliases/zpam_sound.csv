@@ -22,6 +22,8 @@ zpam_weap_raise,,misc/wpnarm_2.wav,0.45,0.5,wpnplyr,0.9,1.2,7,500,auto,,,,,,,wea
 # Weapon drop sound
 zpam_weap_drop,,misc/gun_drop01.wav,0.7,0.7,wpnplyr,0.9,0.9,7,700,auto,,,,,,,,,
 
+# FG42 Player
+#weap_fg42_fire_plr,,weapons/fg42/fg42_01_temp.wav,0.85,0.89,wpnplyr,0.95,1.05,500000,,local,,,0.85,,,,,,,,,0.2
 
 
 # Aim trainer missed shot

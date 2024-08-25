@@ -103,6 +103,8 @@ Register_Shared_Cvars()
 	[[sVar]]("scr_remove_killtriggers", "BOOL", 0); 	        // level.scr_remove_killtriggers - remove some of the killtriggers created by infinityward where kill is not needed (like toujane jump on middle building,...)
 	[[sVar]]("scr_replace_russian", "BOOL", 0);              // level.scr_replace_russian  (can be changed only at start of the game, in progress it will mess up britsh/russians scripts...)
 	[[sVar]]("scr_friendlyfire", "INT", 0, 0, 3); 	// level.scr_friendlyfire on, off, reflect, shared
+
+	[[sVar]]("scr_posters", "BOOL", 0);              // level.scr_posters
 }
 
 
@@ -183,10 +185,30 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "scr_allow_ambient_weather": 	level.scr_allow_ambient_weather = value; return true;
 		case "scr_allow_ambient_fog": 		level.scr_allow_ambient_fog = value; return true;
 		case "scr_remove_killtriggers":		level.scr_remove_killtriggers = value; return true;
-		case "scr_replace_russian": 		level.scr_replace_russian = value; return true;
 		case "scr_friendlyfire": 		level.scr_friendlyfire = value; return true;
+		case "scr_replace_russian": 		
+			level.scr_replace_russian = value; 
+			if (!isRegisterTime) {
+				level thread restartMap();
+			}
+			return true;
+
+		case "scr_posters":
+			level.scr_posters = value;
+			if (!isRegisterTime) {
+				level thread restartMap();
+			}
+			return true;
 	}
 	return false;
+}
+
+
+restartMap()
+{
+	iprintln("Restarting map...");
+	wait level.fps_multiplier * 2;
+	map(level.mapname, false);
 }
 
 

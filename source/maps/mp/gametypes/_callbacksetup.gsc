@@ -322,6 +322,10 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	if(!isdefined(vDir))
 		iDFlags |= level.iDFLAGS_NO_KNOCKBACK;
 
+	// Ignore grenade hit to dead player (happends when player is hitted by multiple players)
+	if (sMeansOfDeath == "MOD_GRENADE_SPLASH" && !isAlive(self))
+		return;
+
 	damageFeedback = 1;
 
 

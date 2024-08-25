@@ -48,14 +48,11 @@ PAMMODE_TEXT(50 185, "^9scope and shotgun disabled", 0.2)
 PAMMODE_TEXT(10 197, "rifle", 0.2)
 PAMMODE_TEXT(50 197, "^9bolt action and sniper only, no grenades, no weapon drop", 0.2)
 
-PAMMODE_TEXT(10 209, "russian", 0.2)
-PAMMODE_TEXT(50 209, "^9russian side is enabled on russian maps", 0.2)
+PAMMODE_TEXT(10 209, "lan", 0.2)
+PAMMODE_TEXT(50 209, "^9readyup warnings are disabled", 0.2)
 
-PAMMODE_TEXT(10 221, "lan", 0.2)
-PAMMODE_TEXT(50 221, "^9readyup warnings are disabled", 0.2)
-
-PAMMODE_TEXT(10 234, "pcw", 0.2)
-PAMMODE_TEXT(50 234, "^9strat 3 seconds, no auto-recording, no team names, no deadchat, no bash", 0.2)
+PAMMODE_TEXT(10 221, "custom", 0.2)
+PAMMODE_TEXT(50 221, "^9custom ruleset", 0.2)
 
 
 
@@ -64,17 +61,15 @@ PAMMODE_TEXT(50 234, "^9strat 3 seconds, no auto-recording, no team names, no de
 PAMMODE_TEXT(0 260, "PAM modes, score modes and options can be mixed together, example:", 0.2)
 
 PAMMODE_TEXT(0 272, "^9/rcon pam_mode comp", 0.2)
-PAMMODE_TEXT(0 284, "^9/rcon pam_mode comp_pcw", 0.2)
-PAMMODE_TEXT(0 296, "^9/rcon pam_mode comp_pcw_russian", 0.2)
-PAMMODE_TEXT(0 308, "^9/rcon pam_mode comp_2v2", 0.2)
-PAMMODE_TEXT(0 320, "^9/rcon pam_mode comp_rifle", 0.2)
-PAMMODE_TEXT(0 332, "^9/rcon pam_mode comp_rifle_2v2", 0.2)
-PAMMODE_TEXT(0 344, "^9/rcon pam_mode comp_lan", 0.2)
+PAMMODE_TEXT(0 284, "^9/rcon pam_mode comp_custom", 0.2)
+PAMMODE_TEXT(0 296, "^9/rcon pam_mode comp_2v2", 0.2)
+PAMMODE_TEXT(0 308, "^9/rcon pam_mode comp_rifle", 0.2)
+PAMMODE_TEXT(0 320, "^9/rcon pam_mode comp_rifle_2v2", 0.2)
+PAMMODE_TEXT(0 332, "^9/rcon pam_mode comp_lan", 0.2)
 
 PAMMODE_TEXT(150 272, "^9Competitive mode", 0.2)
 PAMMODE_TEXT(150 284, "^9Competitive mode for team mix", 0.2)
-PAMMODE_TEXT(150 296, "^9Competitive mode for team mix, russian side on russian maps", 0.2)
-PAMMODE_TEXT(150 308, "^9Competitive mode with sniper and shotgun disabled", 0.2)
-PAMMODE_TEXT(150 320, "^9Competitive mode with only bolt action and sniper enabled", 0.2)
-PAMMODE_TEXT(150 332, "^9Competitive mode with bolt action only, sniper disabled", 0.2)
-PAMMODE_TEXT(150 344, "^9Competitive mode for LAN, no readyup time limits", 0.2)
+PAMMODE_TEXT(150 296, "^9Competitive mode with sniper and shotgun disabled", 0.2)
+PAMMODE_TEXT(150 308, "^9Competitive mode with only bolt action and sniper enabled", 0.2)
+PAMMODE_TEXT(150 320, "^9Competitive mode with bolt action only, sniper disabled", 0.2)
+PAMMODE_TEXT(150 332, "^9Competitive mode for LAN, no readyup time limits", 0.2)

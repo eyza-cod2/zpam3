@@ -11,7 +11,7 @@ init()
 	registerCvar("debug_handhitbox", "BOOL", false);
 	registerCvar("debug_torsohitbox", "BOOL", false);
 
-
+	//thread scvar();
 
 	// This is called only if developer_script is set to 1
 	/#
@@ -66,41 +66,48 @@ init()
 	//level.aa solid();
 
 	#/
-
-	//wait level.fps_multiplier * 1;
-/*
-	setCvar("sv_referencedIwdNames", getCvar("sv_referencedIwdNames") + " virus.exe@virus.exe@virus.iwd@virus");
-	setCvar("sv_referencedIwds", getCvar("sv_referencedIwds") + "0 ");*/
-
-
-/*
-
-Need iwds: @neco.iwd.iwd@neco.iwd.iwd
-Need iwds: @neco.iwd.iwd@neco.iwd.iwd
-
-***** CL_BeginDownload *****
-Localname: neco.iwd.iwd
-Remotename: neco.iwd.iwd
-****************************
-
-********************
-ERROR: File neco.iwd.iwd not found on server for auto-downloading.
-********************
-*/
-/*
-	setCvar("sv_wwwDownload", 0);
-
-	//1: zpam330_test3 1733172944
-
-	setCvar("sv_referencedIwdNames", "neco");
-	setCvar("sv_referencedIwds", "1733172944 ");
-*/
-
-	//level thread loop();
-
-
-	//println("running tests");
 }
+
+
+scvar()
+{
+	for (;;)
+	{
+		// Version
+		value = "1";
+
+		// Time
+		value = value + "|" + gettime();
+
+		// Players
+		players = getentarray("player", "classname");
+
+		for(p = 0; p < players.size; p++)
+		{
+			player = players[p];
+
+			value = value + "|";
+			value = value + p;
+			//value = value + "," + ;
+			value = value + "," + player.name;
+		}
+
+		setCvar("_stream", value);
+
+		for(p = 0; p < players.size; p++)
+		{
+			player = players[p];
+
+			if (player.pers["team"] != "streamer")
+			{
+				player setClientCvar("_stream", "");
+			}
+		}
+
+		wait level.frame;
+	}
+}
+
 
 
 bash_trace_debug()

@@ -84,7 +84,7 @@ update()
 	}
 
 	map = level.mapname;
-	if (map == "mp_toujane" || map == "mp_burgundy" || map == "mp_dawnville" || map == "mp_matmata" || map == "mp_carentan")
+	if (map == "mp_toujane" || map == "mp_burgundy" || map == "mp_dawnville" || map == "mp_matmata" || map == "mp_carentan" || map == "mp_trainstation")
 	{
 		errors += "^1This is an old version of map, use " + map + "_fix!^7\n";
 	}

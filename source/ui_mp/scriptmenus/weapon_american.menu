@@ -1,7 +1,7 @@
 #include "ui_mp/menudef.h"
 #include "ui_mp/macros.h"
 
-#define HIDE_ALL hide weapon_greasegun; hide weapon_m1carbine; hide weapon_m1garand; hide weapon_springfield; hide weapon_shotgun; hide weapon_thompson; hide weapon_bar;
+#define HIDE_ALL hide weapon_greasegun; hide weapon_m1carbine; hide weapon_m1garand; hide weapon_springfield; hide weapon_shotgun; hide weapon_thompson; hide weapon_bar; hide bar_buffed;
 
 {
 	menuDef
@@ -16,12 +16,15 @@
 			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
 			open weapon_american_keys;
 		}
-		onEsc
+		onClose
 		{
 			HIDE_ALL
-			close weapon_american;
 			close matchinfo;
 			close weapon_american_keys;
+		}
+		onEsc
+		{
+			close weapon_american;
 		}
 
 		// Background
@@ -43,6 +46,8 @@
 		ITEM_WEAPON(ORIGIN_CHOICE6, 		"button_thompson", 	"thompson_mp",		"@MPUI_6_THOMPSON", 		"ui_allow_thompson", 		"weapon_thompson", 	show weapon_thompson;, 		scriptMenuResponse "thompson_mp";, 	"us_grenade_C",	"smg")
 		ITEM_WEAPON(ORIGIN_CHOICE7, 		"button_bar", 		"bar_mp",		"@MPUI_7_BAR", 			"ui_allow_bar", 		"weapon_bar",		show weapon_bar;, 		scriptMenuResponse "bar_mp";, 		"us_grenade_C",	"mg")
 
+		ITEM_BUTTON_ONDVAR		(ORIGIN_CHOICE9, "9. Replace secondary with pistol", 		"ui_allow_pistol", showDvar{"1"}, ;, scriptMenuResponse "pistol")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE9, "9. Replace secondary with pistol", 		"ui_allow_pistol", showDvar{"2"}, ;)
 
 
 		// Close
@@ -68,6 +73,8 @@
 		execKey "5" { play "mouse_click"; exec "openscriptmenu weapon_american shotgun_mp" }
 		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_american thompson_mp" }
 		execKey "7" { play "mouse_click"; exec "openscriptmenu weapon_american bar_mp" }
+
+		execKey "9" { play "mouse_click"; exec "openscriptmenu weapon_american pistol"; }
 
 		execKeyInt 32 { play "mouse_click"; close weapon_american; open main; } // space
 	}

@@ -112,7 +112,7 @@ InitModules()
 	thread maps\mp\gametypes\_sniper_shotgun_info::init();
 	thread maps\mp\gametypes\_warnings::init();
 	thread maps\mp\gametypes\_aim_trainer::init();		// depends on readyup
-
+	thread maps\mp\gametypes\_file::init(); // depends on _streamer_auto
 
 	thread maps\mp\gametypes\_objective::init(); // depends on readyup, timeout
 

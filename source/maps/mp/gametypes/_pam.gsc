@@ -4,8 +4,9 @@ init()
 {
 	if(game["firstInit"])
 	{
-		precacheString2("STRING_VERSION_INFO", &"zPAM 3.33"); // ZPAM_RENAME
-		//precacheString2("STRING_VERSION_INFO", &"^1zPAM 3.33 TEST 8"); // ZPAM_RENAME
+		precacheString2("STRING_VERSION_INFO", &"zPAM 3.34"); // ZPAM_RENAME
+		//precacheString2("STRING_VERSION_INFO", &"^1zPAM 3.34"); // ZPAM_RENAME
+		//precacheString2("STRING_VERSION_INFO", &"zPAM 3.34 ^3BETA 1"); // ZPAM_RENAME
 	}
 }
 
@@ -36,7 +37,7 @@ PAM_Header(fadein)
 	if (fadein) pammode2 showHUDSmooth(.5);
 	pammode2 setText(game["rules_formatString"]);
 
-	// russian, LAN, 2v2
+	// LAN, 2v2, custom
 	pammode3 = addHUD(50, 17, 0.8, game["rules_stringColor"], "left", "top", "left");
 	if (fadein) pammode3 showHUDSmooth(.5);
 	pammode3 setText(game["leagueOptionsString"]);

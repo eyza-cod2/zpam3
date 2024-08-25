@@ -1,0 +1,13 @@
+// This file is intended to be changed via custom IWD files
+// The default colors are Cyan and Purple
+
+#define STREAMER_COLOR_TEAM_NAME_ALLIES         .0 .55 .51 .9
+#define STREAMER_COLOR_TEAM_NAME_AXIS           .43 .0 .54 .9
+
+#define STREAMER_COLOR_PLAYER_BAR_ALLIES        .0 .55 .51 .9
+#define STREAMER_COLOR_PLAYER_BAR_AXIS          .43 .0 .54 .9
+#define STREAMER_COLOR_PLAYER_BAR_ALLIES_BG     .0 .12 .11 1
+#define STREAMER_COLOR_PLAYER_BAR_AXIS_BG       .1 .0 .12 1
+
+#define STREAMER_COLOR_KILLFEED_ALLIES          ".0 .75 .71 .9"
+#define STREAMER_COLOR_KILLFEED_AXIS            ".75 .0 .88 .9"

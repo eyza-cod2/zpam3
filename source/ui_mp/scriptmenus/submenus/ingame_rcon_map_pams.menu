@@ -1,8 +1,8 @@
 
 
 ITEM_MAP_OPTIONS_HEADING(3 0, 0.245, "PAM Mode:")
-ITEM_MAP_OPTIONS_HEADING(3 16, 0.20, "score mode:")
-ITEM_MAP_OPTIONS_HEADING(3 32, 0.20, "options:")
+ITEM_MAP_OPTIONS_HEADING(3 14, 0.20, "score mode:")
+ITEM_MAP_OPTIONS_HEADING(3 30, 0.20, "options:")
 
 
 // SD
@@ -85,6 +85,5 @@ ITEM_GAMETYPE_ONDVAR(86 0, 0 15, "- ignored -",	"ui_rcon_map_pam_strat", "start"
 // Toggles for every gametype
 ITEM_GAMETYPE_ONDVAR( 86 32, 45 15, "1v1 / 2v2",	"ui_rcon_map_pam_2v2", "1", 		exec "openscriptmenu ingame rcon_map_pam_2v2")
 ITEM_GAMETYPE_ONDVAR(134 32, 26 15, "rifle",		"ui_rcon_map_pam_rifle", "1", 		exec "openscriptmenu ingame rcon_map_pam_rifle")
-ITEM_GAMETYPE_ONDVAR(164 32, 37 15, "russian",		"ui_rcon_map_pam_russian", "1", 	exec "openscriptmenu ingame rcon_map_pam_russian")
-ITEM_GAMETYPE_ONDVAR(205 32, 19 15, "lan",		"ui_rcon_map_pam_lan", "1", 		exec "openscriptmenu ingame rcon_map_pam_lan")
-ITEM_GAMETYPE_ONDVAR(230 32, 21 15, "pcw",		"ui_rcon_map_pam_pcw", "1", 		exec "openscriptmenu ingame rcon_map_pam_pcw")
+ITEM_GAMETYPE_ONDVAR(164 32, 19 15, "lan",		"ui_rcon_map_pam_lan", "1", 		exec "openscriptmenu ingame rcon_map_pam_lan")
+ITEM_GAMETYPE_ONDVAR(189 32, 39 15, "custom",		"ui_rcon_map_pam_custom", "1", 		exec "openscriptmenu ingame rcon_map_pam_custom")

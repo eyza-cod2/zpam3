@@ -476,8 +476,11 @@ GetMapName(mapname)
 	if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix")		return "Dawnville";
 	if (mapname == "mp_matmata" || mapname == "mp_matmata_fix")		return "Matmata";
 	if (mapname == "mp_carentan" || mapname == "mp_carentan_fix")		return "Carentan";
+	if (mapname == "mp_trainstation" || mapname == "mp_trainstation_fix")		return "Trainstation";
 	if (mapname == "mp_breakout_tls")					return "Breakout TLS";
 	if (mapname == "mp_chelm_fix")						return "Chelm";
+	if (mapname == "mp_leningrad_tls")					return "Leningrad TLS";
+	if (mapname == "mp_carentan_bal")					return "Carentan";
 
 	if (mapname == "" || mapname.size < 3)
 		return mapname;
@@ -527,15 +530,15 @@ UpdatePlayerCvars()
 
 		side_left_team = "";
 		side_right_team = "";
-		if (side_left == "allies")
-		{
-			side_left_team = game["allies"]; // american british russian
-			side_right_team = game["axis"];	 // german
-		}
-		else
+		if (side_left == "axis" || side_right == "allies")
 		{
 			side_left_team = game["axis"]; 	  // german
 			side_right_team = game["allies"]; // american british russian
+		}
+		else // also if sides not set
+		{
+			side_left_team = game["allies"]; // american british russian
+			side_right_team = game["axis"];	 // german
 		}
 
 

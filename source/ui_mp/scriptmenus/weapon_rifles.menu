@@ -16,12 +16,15 @@
 			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
 			open weapon_rifles_keys;
 		}
-		onEsc
+		onClose
 		{
 			HIDE_ALL
-			close weapon_rifles;
 			close matchinfo;
 			close weapon_rifles_keys;
+		}
+		onEsc
+		{
+			close weapon_rifles;
 		}
 
 		// Background

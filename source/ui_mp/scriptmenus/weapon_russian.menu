@@ -1,7 +1,7 @@
 #include "ui_mp/menudef.h"
 #include "ui_mp/macros.h"
 
-#define HIDE_ALL hide weapon_pps42; hide weapon_nagant; hide weapon_svt40; hide weapon_nagantscoped; hide weapon_shotgun; hide weapon_vpo135;
+#define HIDE_ALL hide weapon_pps42; hide weapon_nagant; hide weapon_svt40; hide weapon_nagantscoped; hide weapon_shotgun; hide weapon_ppsh_stick30;
 
 {
 	menuDef
@@ -16,12 +16,15 @@
 			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
 			open weapon_russian_keys;
 		}
-		onEsc
+		onClose
 		{
 			HIDE_ALL
-			close weapon_russian;
 			close matchinfo;
 			close weapon_russian_keys;
+		}
+		onEsc
+		{
+			close weapon_russian;
 		}
 
 		// Background
@@ -40,8 +43,11 @@
 		ITEM_WEAPON(ORIGIN_CHOICE3, "button_svt40", 		"SVT40_mp", 			"@MPUI_3_TOKAREV_SVT40", 	"ui_allow_svt40", 		"weapon_svt40", 		show weapon_svt40;,		scriptMenuResponse "SVT40_mp";, 		"russian_grenade_C",	"semiautomatic")
 		ITEM_WEAPON(ORIGIN_CHOICE4, "button_nagantsniper", 	"mosin_nagant_sniper_mp", 	"@MPUI_4_SCOPED_MOSINNAGANT",	"ui_allow_nagantsniper", 	"weapon_nagantscoped", 		show weapon_nagantscoped;, 	scriptMenuResponse "mosin_nagant_sniper_mp";, 	"russian_grenade_C",	"sniper")
 		ITEM_WEAPON_SMOKE(ORIGIN_CHOICE5, "button_shotgun", 	"shotgun_mp", 			"@MPUI_5_SHOTGUN", 		"ui_allow_shotgun", 		"weapon_shotgun", 		show weapon_shotgun;, 		scriptMenuResponse "shotgun_mp";, 		"russian_grenade_C",	"shotgun")
-		ITEM_WEAPON(ORIGIN_CHOICE6, "button_vpo135", 		"vpo135_mp", 			"6. VPO-135", 			"ui_allow_ppsh", 		"weapon_vpo135", 		show weapon_vpo135;, 		scriptMenuResponse "vpo135_mp";, 		"russian_grenade_C",	"smg")
+		ITEM_WEAPON(ORIGIN_CHOICE6, "button_ppsh_stick30", 		"ppsh_stick30_mp", 			"6. PPSh-41 (Stick)", 			"ui_allow_ppsh", 		"weapon_ppsh_stick30", 		show weapon_ppsh_stick30;, 		scriptMenuResponse "ppsh_stick30_mp";, 		"russian_grenade_C",	"smg")
 		// PPSH_CHANGE
+
+		ITEM_BUTTON_ONDVAR		(ORIGIN_CHOICE9, "9. Replace secondary with pistol", 		"ui_allow_pistol", showDvar{"1"}, ;, scriptMenuResponse "pistol")
+		ITEM_BUTTON_ONDVAR_DISABLED	(ORIGIN_CHOICE9, "9. Replace secondary with pistol", 		"ui_allow_pistol", showDvar{"2"}, ;)
 
 
 		// Close
@@ -65,7 +71,10 @@
 		execKey "3" { play "mouse_click"; exec "openscriptmenu weapon_russian SVT40_mp"; }
 		execKey "4" { play "mouse_click"; exec "openscriptmenu weapon_russian mosin_nagant_sniper_mp"; }
 		execKey "5" { play "mouse_click"; exec "openscriptmenu weapon_russian shotgun_mp"; }
-		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_russian vpo135_mp"; } // TODO ppsh
+		execKey "6" { play "mouse_click"; exec "openscriptmenu weapon_russian ppsh_stick30_mp"; } // PPSH_CHANGE
+
+
+		execKey "9" { play "mouse_click"; exec "openscriptmenu weapon_russian pistol"; }
 
 		execKeyInt 32 { play "mouse_click"; close weapon_german; open main; } // space
 	}

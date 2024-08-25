@@ -1,5 +1,5 @@
 .gitignore
-.atom
+.vscode
 source_compiled
 /*.iwd
 /*.txt

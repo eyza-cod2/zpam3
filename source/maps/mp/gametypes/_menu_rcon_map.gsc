@@ -23,10 +23,16 @@ init()
 	map["mp_dawnville_fix"] = true;
 	map["mp_matmata_fix"] = true;
 	map["mp_carentan_fix"] = true;
-	map["mp_vallente"] = true;
 	map["mp_breakout_tls"] = true;
 	map["mp_chelm_fix"] = true;
 	map["wawa_3daim"] = true;
+	map["mp_crossroads"] = true;
+	map["mp_dawnville_sun"] = true;
+	map["mp_leningrad_tls"] = true;
+	map["mp_trainstation_fix"] = true;
+	map["mp_vallente_fix"] = true;
+	map["mp_carentan_bal"] = true;
+
 	map["fast_restart"] = true;
 
 
@@ -338,12 +344,10 @@ saveSubPamMode(str)
 	}
 	else if (str == "1v1" || str == "2v2")
 		self.pers["rcon_map_pam_2v2"] = !self.pers["rcon_map_pam_2v2"];
-	else if (str == "russian")
-		self.pers["rcon_map_pam_russian"] = !self.pers["rcon_map_pam_russian"];
 	else if (str == "lan")
 		self.pers["rcon_map_pam_lan"] = !self.pers["rcon_map_pam_lan"];
-	else if (str == "pcw")
-		self.pers["rcon_map_pam_pcw"] = !self.pers["rcon_map_pam_pcw"];
+	else if (str == "custom")
+		self.pers["rcon_map_pam_custom"] = !self.pers["rcon_map_pam_custom"];
 	else if (str == "rifle")
 		self.pers["rcon_map_pam_rifle"] = !self.pers["rcon_map_pam_rifle"];
 }
@@ -354,9 +358,8 @@ loadSubPamModes()
 	self.pers["rcon_map_pam_league"] = "";
 	self.pers["rcon_map_pam_gamesettings"] = "";
 	self.pers["rcon_map_pam_2v2"] = false;
-	self.pers["rcon_map_pam_russian"] = false;
 	self.pers["rcon_map_pam_lan"] = false;
-	self.pers["rcon_map_pam_pcw"] = false;
+	self.pers["rcon_map_pam_custom"] = false;
 	self.pers["rcon_map_pam_rifle"] = false;
 
 	array = splitString(self.pers["rcon_map_pam"], "_");
@@ -374,9 +377,8 @@ joinSubPamModes()
 	if (self.pers["rcon_map_pam_gamesettings"] != "") 	str += "_" + self.pers["rcon_map_pam_gamesettings"];
 	if (self.pers["rcon_map_pam_rifle"]) 		str += "_rifle";
 	if (self.pers["rcon_map_pam_2v2"]) 		str += "_2v2";
-	if (self.pers["rcon_map_pam_russian"]) 		str += "_russian";
 	if (self.pers["rcon_map_pam_lan"]) 		str += "_lan";
-	if (self.pers["rcon_map_pam_pcw"]) 		str += "_pcw";
+	if (self.pers["rcon_map_pam_custom"]) 		str += "_custom";
 	return str;
 }
 
@@ -434,8 +436,6 @@ mapOptions_updateRconCommand()
 	gametypeChanged = self.pers["rcon_map_gametype"] != level.gametype;
 	mapChanged = self.pers["rcon_map_map"] != level.mapname;
 	pamChanged = self.pers["rcon_map_pam"] != pam_mode && !stratSelected;
-
-	russianSubModeChanged = contains(self.pers["rcon_map_pam"], "russian") != contains(pam_mode, "russian");
 
 	scoreAlliesChanged = self.pers["rcon_map_scoreAllies"] != -1;
 	scoreAxisChanged = self.pers["rcon_map_scoreAxis"] != -1;
@@ -495,7 +495,7 @@ mapOptions_updateRconCommand()
 			}
 
 			// If map of gametype is changed, map needs to be reseted
-			if (mapChanged || gametypeChanged || russianSubModeChanged)
+			if (mapChanged || gametypeChanged)
 			{
 				rconString += "/rcon map " + self.pers["rcon_map_map"] + "; ";
 				self.pers["rcon_map_apply_action"] = self.pers["rcon_map_map"];
@@ -530,9 +530,8 @@ mapOptions_updateRconCommand()
 	re_gamesettings = "-1";
 
 	pam_2v2 = "0";
-	pam_russian = "0";
 	pam_lan = "0";
-	pam_pcw = "0";
+	pam_custom = "0";
 	pam_rifle = "0";
 
 	keepChangedCvars = "-2";
@@ -540,12 +539,10 @@ mapOptions_updateRconCommand()
 
 	if (self.pers["rcon_map_pam_2v2"])
 		pam_2v2 = "1";
-    if (self.pers["rcon_map_pam_russian"])
-		pam_russian = "1";
-    if (self.pers["rcon_map_pam_lan"])
+	if (self.pers["rcon_map_pam_lan"])
 		pam_lan = "1";
-	if (self.pers["rcon_map_pam_pcw"])
-		pam_pcw = "1";
+	if (self.pers["rcon_map_pam_custom"])
+		pam_custom = "1";
 	if (self.pers["rcon_map_pam_rifle"])
 		pam_rifle = "1";
 
@@ -596,9 +593,8 @@ mapOptions_updateRconCommand()
 		gametype = "-2";
 
 		pam_2v2 = "-2";
-		pam_russian = "-2";
 		pam_lan = "-2";
-		pam_pcw = "-2";
+		pam_custom = "-2";
 		pam_rifle = "-2";
 	}
 	// Highlight correct pam mode
@@ -644,9 +640,8 @@ mapOptions_updateRconCommand()
 	if (gametype == "strat")
 	{
 		pam_2v2 = "-1";
-		pam_russian = "-1";
 		pam_lan = "-1";
-		pam_pcw = "-1";
+		pam_custom = "-1";
 		pam_rifle = "-1";
 	}
 
@@ -684,9 +679,8 @@ mapOptions_updateRconCommand()
 	self setClientCvar2("ui_rcon_map_pam_re_gamesettings", re_gamesettings);
 
 	self setClientCvar2("ui_rcon_map_pam_2v2", pam_2v2);
-	self setClientCvar2("ui_rcon_map_pam_russian", pam_russian);
 	self setClientCvar2("ui_rcon_map_pam_lan", pam_lan);
-	self setClientCvar2("ui_rcon_map_pam_pcw", pam_pcw);
+	self setClientCvar2("ui_rcon_map_pam_custom", pam_custom);
 	self setClientCvar2("ui_rcon_map_pam_rifle", pam_rifle);
 
 
