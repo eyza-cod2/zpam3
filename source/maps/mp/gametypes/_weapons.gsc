@@ -8,7 +8,7 @@ init()
 
 	addEventListener("onStartGameType", ::onStartGameType);
 
-	level.scr_smoke_fix = false;
+	level.scr_smoke_fix = true;
 }
 
 // Called from start_gametype when registring cvars
