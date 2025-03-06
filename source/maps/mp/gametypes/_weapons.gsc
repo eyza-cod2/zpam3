@@ -95,6 +95,7 @@ registerCvars()
 
 
 	[[var]]("scr_shotgun_consistent", "BOOL", 0);	// level.scr_shotgun_consistent
+	[[var]]("scr_smoke_fix", "BOOL", 1);			// level.scr_smoke_fix
 	[[var]]("scr_hitbox_hand_fix", "BOOL", 0);	// level.scr_hitbox_hand_fix
 	[[var]]("scr_hitbox_torso_fix", "BOOL", 0);		// level.scr_hitbox_torso_fix
 
@@ -209,6 +210,9 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 		case "scr_shotgun_consistent":
 			level.scr_shotgun_consistent = value;
+			return true;
+
+		case "scr_smoke_fix":
 			return true;
 
 		case "scr_hitbox_hand_fix":

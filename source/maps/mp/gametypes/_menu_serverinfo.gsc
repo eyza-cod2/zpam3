@@ -119,6 +119,11 @@ generateGlobalServerInfo()
 	if (level.scr_shotgun_consistent) 	value += changed+"Enabled ^9Disabled^7" + "\n";
 	else					value += "^9Enabled "+changed+"Disabled^7" + "\n";
 
+	title += "Smoke fix:\n";
+	changed = "^7";
+	if (maps\mp\gametypes\global\cvar_system::isCvarChangedFromRuleValue("scr_smoke_fix") && !game["is_public_mode"]) changed = "^3";
+	else					value += "^9Enabled "+changed+"Disabled^7" + "\n";
+
 	title +="Hand hitbox fix:\n";
 	changed = "^7"; if (maps\mp\gametypes\global\cvar_system::isCvarChangedFromRuleValue("scr_hitbox_hand_fix") && !game["is_public_mode"]) changed = "^3";
 	if (level.scr_hitbox_hand_fix) 		value += changed+"Enabled ^9Disabled^7" + "\n";
@@ -161,6 +166,7 @@ generateGlobalServerInfo()
 				{
 					case "scr_fast_reload_fix":
 					case "scr_shotgun_consistent":
+					case "scr_smoke_fix":
 					case "scr_hitbox_hand_fix":
 					case "scr_hitbox_torso_fix":
 					case "scr_prone_peek_fix":
