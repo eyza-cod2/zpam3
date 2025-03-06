@@ -126,7 +126,7 @@
 			forecolor		1 1 1 0.8
 			text			"^1 Unreleased version"
 			textfont		UI_FONT_NORMAL
-			textscale		0.
+			textscale		0.2
 			textstyle		ITEM_TEXTSTYLE_SHADOWED
 			textalign		ITEM_ALIGN_CENTER
 			decoration
