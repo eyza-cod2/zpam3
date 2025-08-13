@@ -124,10 +124,12 @@ callbash()
 		// Increase number of calls
 		game[self.pers["team"] + "_called_bashes"]++;
 
-		iprintln(self.name + " ^7called a pistol bash");
+		//iprintln(self.name + " ^7called a pistol bash");
+		iprintln("Pistol bash called by " + self.name);
 		iprintln("Going to pistol bash after the Ready-Up");
 
-		iprintlnbold("^3" + self.name + " ^7called a pistol bash");
+		//iprintlnbold("^3" + self.name + " ^7called a pistol bash");
+		iprintlnbold("Pistol bash called by " + self.name);
 
 		logPrint("BASH_CALL;" + self.pers["team"] + ";" + self.name + "\n");
 
