@@ -10,7 +10,7 @@ init()
 	if (!isDefined(level.warnings_visible))	// may be already defined if update() is called from another file
 		level.warnings_visible = false;
 	if (!isDefined(level.warnings_text))
-		level.warnings_text = false;
+		level.warnings_text = "";
 
 	thread sv_cheats_update();
 
@@ -22,7 +22,12 @@ init()
 
 onConnected()
 {
-	self setClientCvarIfChanged("ui_serverinfo_hud", level.warnings_text);
+	str = level.warnings_text;
+	// If player is streamer, hide warnings
+	if (self.pers["team"] == "streamer")
+		str = "";
+
+	self setClientCvarIfChanged("ui_serverinfo_hud", str);
 }
 
 sv_cheats_update()
@@ -82,6 +87,10 @@ update()
 	{
 		errors += "^3Server password is not set!^7\n";
 	}
+	if (getCvar("shortversion") == "1.3" || getCvar("shortversion") == "1.2" || getCvar("shortversion") == "1.1" || getCvar("shortversion") == "1.0")
+	{
+		errors += "^3Server is running old version of game.\nVersion " + getCvar("shortversion") + " is not fully supported.^7\n";
+	}
 
 	map = level.mapname;
 	if (map == "mp_toujane" || map == "mp_burgundy" || map == "mp_dawnville" || map == "mp_matmata" || map == "mp_carentan" || map == "mp_trainstation")
@@ -113,6 +122,10 @@ update()
 	players = getentarray("player", "classname");
 	for(i = 0; i < players.size; i++)
 	{
+		// If player is streamer, hide warnings
+		if (players[i].pers["team"] == "streamer")
+			str = "";
+
 		players[i] setClientCvarIfChanged("ui_serverinfo_hud", str);
 	}
 }

@@ -44,6 +44,7 @@ Init()
 		game["match_totaltime_text"] = "";
 
 		game["match_round"] = "";
+		game["match_state"] = "";
 	}
 
 	// Natchinfo not possible, exit here
@@ -258,12 +259,27 @@ processPreviousMapToHistory()
 		setCvar("sv_map2_score1", 	getCvar("sv_map1_score1"));
 		setCvar("sv_map2_score2", 	getCvar("sv_map1_score2"));
 
+		map_score1 = getCvar("sv_map_score1");
+		map_score2 = getCvar("sv_map_score2");
+
+		// TODO: overtime a radsi prdeleat na novy cvar -> last_winning_team
+		// For SD, if the map is switched before last round is finished, increase the score to the map score limit
+		if (level.gametype == "sd") {
+			scorelimit = getCvarInt("scr_sd_end_score");
+			if (scorelimit > 0 && int(map_score1) != scorelimit && int(map_score2) != scorelimit){
+				if (int(map_score1) == scorelimit - 1)
+					map_score1 = scorelimit;
+				if (int(map_score2) == scorelimit - 1)
+					map_score2 = scorelimit;
+			}
+		}
+
 		// Save previous map to history at first location
 		setCvar("sv_map1_name", prevMap_map);
 		setCvar("sv_map1_team1", getCvar("sv_map_team1"));
 		setCvar("sv_map1_team2", getCvar("sv_map_team2"));
-		setCvar("sv_map1_score1", getCvar("sv_map_score1"));
-		setCvar("sv_map1_score2", getCvar("sv_map_score2"));
+		setCvar("sv_map1_score1", map_score1);
+		setCvar("sv_map1_score2", map_score2);
 
 		// remove prev map info
 		setCvar("sv_map_name", "");
@@ -471,6 +487,9 @@ ToUpper(char)
 
 GetMapName(mapname)
 {
+	if (mapname == "" || mapname.size < 3)
+		return mapname;
+
 	if (mapname == "mp_toujane" || mapname == "mp_toujane_fix")		return "Toujane";
 	if (mapname == "mp_burgundy" || mapname == "mp_burgundy_fix")		return "Burgundy";
 	if (mapname == "mp_dawnville" || mapname == "mp_dawnville_fix")		return "Dawnville";
@@ -481,9 +500,10 @@ GetMapName(mapname)
 	if (mapname == "mp_chelm_fix")						return "Chelm";
 	if (mapname == "mp_leningrad_tls")					return "Leningrad TLS";
 	if (mapname == "mp_carentan_bal")					return "Carentan";
+	if (mapname == "mp_dawnville_sun")					return "Dawnville Sun";
 
-	if (mapname == "" || mapname.size < 3)
-		return mapname;
+	if (startsWith(mapname, "mp_railyard_mjr"))			return "Railyard MJR";
+	if (startsWith(mapname, "mp_leningrad_mjr"))		return "Leningrad MJR";
 
 	if (ToLower(mapname[0]) == "m" && ToLower(mapname[1]) == "p" && ToLower(mapname[2]) == "_")
 		mapname = ToUpper(mapname[3]) + getsubstr(mapname, 4, mapname.size);
@@ -518,9 +538,11 @@ UpdatePlayerCvars()
 		if (name_left == "")  name_left = "?";
 		if (name_right == "") name_right = "?";
 
+		ui_score_left  = game["match_"+teamNum_left+"_score"];
+		ui_score_right = game["match_"+teamNum_right+"_score"];
 
-		ui_name_left = game["match_"+teamNum_left+"_score"] + "    " + name_left;
-		ui_name_right = game["match_"+teamNum_right+"_score"] + "    " + name_right;
+		ui_name_left = name_left;
+		ui_name_right = name_right;
 
 
 
@@ -547,7 +569,11 @@ UpdatePlayerCvars()
 		self setClientCvarIfChanged("ui_matchinfo_team1_name", ui_name_left);
 		self setClientCvarIfChanged("ui_matchinfo_team2_name", ui_name_right);
 
-		// Team
+		// Score
+		self setClientCvarIfChanged("ui_matchinfo_team1_score", ui_score_left);
+		self setClientCvarIfChanged("ui_matchinfo_team2_score", ui_score_right);
+
+		// Team (american, british, german, russian)
 		self setClientCvarIfChanged("ui_matchinfo_team1_team", 	side_left_team);
 		self setClientCvarIfChanged("ui_matchinfo_team2_team", 	side_right_team);
 
@@ -588,6 +614,7 @@ UpdatePlayerCvars()
 
 		// Round
 		self setClientCvarIfChanged("ui_matchinfo_round", game["match_round"]);
+		self setClientCvarIfChanged("ui_matchinfo_state", game["match_state"]);
 		// Half
 		self setClientCvarIfChanged("ui_matchinfo_halfInfo", halfInfo);
 		// Play time
@@ -619,6 +646,10 @@ UpdatePlayerCvars()
 		self setClientCvarIfChanged("ui_matchinfo_team1_name", "");
 		self setClientCvarIfChanged("ui_matchinfo_team2_name", "");
 
+		// Score
+		self setClientCvarIfChanged("ui_matchinfo_team1_score", "");
+		self setClientCvarIfChanged("ui_matchinfo_team2_score", "");
+
 		self setClientCvarIfChanged("ui_matchinfo_team1_team", "");
 		self setClientCvarIfChanged("ui_matchinfo_team2_team", "");
 		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_team", "");
@@ -626,6 +657,7 @@ UpdatePlayerCvars()
 
 		// Round
 		self setClientCvarIfChanged("ui_matchinfo_round", "");
+		self setClientCvarIfChanged("ui_matchinfo_state", "");
 		// Half
 		self setClientCvarIfChanged("ui_matchinfo_halfInfo", "");
 		// Map history
@@ -653,6 +685,31 @@ UpdateCvarsForPlayers()
 	}
 }
 
+
+getTimeString()
+{
+	if (level.gametype == "sd")
+	{
+		if (level.matchstarted) {
+			if (level.in_strattime) {
+				return "STRAT " + formatTime(int(level.strat_time - 1 - int((gettime() - level.starttime)/1000)));
+			} else if (level.roundended) {
+				if (level.roundwinner == "allies")
+					return "Allies Win";
+				else if (level.roundwinner == "axis")
+					return "Axis Win";
+				else if (level.roundwinner == "draw")
+					return "Draw";
+			} else if (level.roundstarted) {
+				if (level.bombplanted)
+					return "BOMB " + formatTime(int(level.bombtimer - 1 - int((gettime() - level.bombtimerstart)/1000)));
+				else
+					return formatTime(level.strat_time + int((level.roundlength * 60) - int((gettime() - level.starttime)/1000)));
+			}
+		}
+	}
+	return "";
+}
 
 
 refresh()
@@ -820,30 +877,55 @@ refresh()
 		}
 
 
-		// Round
-		if (level.in_timeout)
-			game["match_round"] = "Timeout";
-		else if (level.in_readyup)
-			game["match_round"] = "Ready-up";
-		else if (level.in_bash)
-			game["match_round"] = "Bash";
-		else
-		{
-			if (level.gametype == "sd")
-			{
-				game["match_round"] = "Round " + game["round"];
 
-				if (level.matchround > 0)
-					game["match_round"] += " / " + level.matchround;
-			}
-			else
-				game["match_round"] = "";
+
+		// Round info
+		if (level.gametype == "sd")
+		{
+			game["match_round"] = "Round " + game["round"];
+
+			if (level.matchround > 0)
+				game["match_round"] += " / MR" + (level.matchround / 2);
+
+			if (game["overtime_active"])
+				game["match_round"] += " OT"; // overtime
+		}
+		else
+			game["match_round"] = "";
+
+
+		// State of match
+		if (level.in_timeout)
+			game["match_state"] = "Timeout";
+		else if (level.in_readyup)
+			game["match_state"] = "Ready-up";
+		else if (level.in_bash)
+			game["match_state"] = "Bash";
+		else {
+			game["match_state"] = getTimeString();
 		}
 
-		if (game["overtime_active"])
-			game["match_round"] += " (OT)"; // overtime
 
+		// Public info
+		match_info = ""; 
+		// Toujane 0:0  Ready-up
+		// Toujane 3:3  Round 7 / 24
+		// Toujane 13:7  >  Burgundy 0:0  Round 0 / 24  Ready-up
+		// Toujane 13:7  >  Burgundy 6:0  Round 7 / 24
 
+		if (level.gametype == "sd")
+		{
+			match_info = game["match_round"] + " ";
+		}
+		if (level.in_timeout)
+			match_info += "Timeout";
+		else if (level.in_readyup)
+			match_info += "Ready-up";
+		else if (level.in_bash)
+			match_info += "Bash";
+		else {
+			// TODO
+		}
 
 
 		// Global server cvars visible via HLSW
@@ -855,15 +937,17 @@ refresh()
 		if (getcvar("sv_map_score1") != "") 	setCvarIfChanged("_match_score", getcvar("sv_map_score1") + ":" + getcvar("sv_map_score2"));
 		else					setCvarIfChanged("_match_score", "-");
 
-		if (game["match_round"] != "") 		setCvarIfChanged("_match_round", game["match_round"]);
-		else					setCvarIfChanged("_match_round", "-");
+		if (match_info != "") 		setCvarIfChanged("_match_info", match_info);
+		else					setCvarIfChanged("_match_info", "-");
 
 
 		thread UpdateCvarsForPlayers();
 
 
-
-		wait level.fps_multiplier * 1;
+		if (level.in_readyup)
+			wait level.fps_multiplier * 1;
+		else 
+			wait level.fps_multiplier * 0.5; // update every 0.5 seconds due to timer
 	}
 
 

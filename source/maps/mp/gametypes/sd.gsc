@@ -1059,6 +1059,9 @@ spawnPlayer()
 	if (level.roundstarted)
 		self maps\mp\gametypes\_hud_teamscore::hideScore(0.5);
 
+	// Show bombtimer if bomb is planted and player just connected
+	self HUD_Player_ShowBombTimer();
+
 	// Count how many times player changed team in strattime (used to limit it in menu_weapon)
 	if (level.in_strattime && (self.pers["team"] == "allies" || self.pers["team"] == "axis"))
 		self.spawnsInStrattime++;
@@ -1096,6 +1099,7 @@ spawnSpectator(origin, angles)
 
 	else if(self.pers["team"] == "streamer")
 	{
+		self HUD_Player_DeleteBombTimer();
 		// Spawn is handled in streamer system
 	}
 	else
@@ -1111,6 +1115,9 @@ spawnSpectator(origin, angles)
 			self spawn((0,0,0), (0,0,0));
 			maps\mp\_utility::error("NO " + spawnpointname + " SPAWNPOINTS IN MAP");
 		}
+
+		// Show bombtimer if bomb is planted and player just connected
+		self HUD_Player_ShowBombTimer();
 	}
 
 
@@ -1381,7 +1388,7 @@ HUD_Clock(countDownTime)
 	timeForRed = 15;
 
 
-	waitTime = countDownTime - timeForOrange - 0.3;
+	waitTime = countDownTime - timeForOrange;
 	if (waitTime <= 0)
 		return;
 
@@ -1541,6 +1548,37 @@ HUD_RoundInfo(time)
 }
 
 
+HUD_Player_ShowBombTimer(time_left)
+{
+	// Show only to players, ignore streamer
+	if (self.pers["team"] == "streamer")
+		return;
+
+	// If bomb is not planted or exploded, do not show timer
+	if (!level.bombplanted || level.bombexploded)
+		return;
+
+	// Get remaining time left
+	if (!isDefined(time_left) || time_left <= 0)
+		time_left = level.bombtimer - (getTime() - level.bombtimerstart) / 1000; // decimal seconds
+
+	if (!isDefined(self.bombtimerhud))
+	{
+		self.bombtimerhud = addHUDClient(self, 6, 76, undefined, undefined, "left", "top", "left", "top");
+		self.bombtimerhud showHUDSmooth(0.1);
+		self.bombtimerhud.archived = false;
+	}
+	self.bombtimerhud setClock(time_left, 60, "hudStopwatch", 48, 48);
+}
+
+HUD_Player_DeleteBombTimer()
+{
+	// Remove bomb timer for all players
+	if (isDefined(self.bombtimerhud))
+		self.bombtimerhud destroy2();
+}
+
+
 
 // self is bomb trigger
 HUD_ShowBombTimers()
@@ -1550,10 +1588,13 @@ HUD_ShowBombTimers()
 
 	countDownTime = level.bombtimer; // seconds
 
-	level.bombtimerhud = addHUD(6, 76, undefined, undefined, "left", "top", "left", "top");
-	level.bombtimerhud showHUDSmooth(0.1);
-	//level.bombtimerhud.foreground = true;  // visible if menu opened
-	level.bombtimerhud setClock(countDownTime, 60, "hudStopwatch", 48, 48);
+	// Show bomb timer for all players
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		player = players[i];
+		player HUD_Player_ShowBombTimer(countDownTime);
+	}
 
 
 	level.clock = newHudElem2();
@@ -1601,15 +1642,20 @@ HUD_ShowBombTimers()
 			value_old = value;
 		}
 
-		wait level.fps_multiplier * 0.1;
+		wait level.fps_multiplier * 0.01;
 	}
 }
 
 // Called when bomb exploded or bomb is defused
 HUD_DeleteBombTimers()
 {
-	if (isDefined(level.bombtimerhud))
-		level.bombtimerhud destroy2();
+	// Remove bomb timer hud
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		player = players[i];
+		player HUD_Player_DeleteBombTimer();
+	}
 
 	// Set real remaining time
 	if (isDefined(level.clock))
@@ -1620,12 +1666,12 @@ HUD_DeleteBombTimers()
 		}
 		else
 		{
-			remaining = level.bombtimer - (level.bombtimerend - level.bombtimerstart) / 1000; // decimal seconds
+			level.bomb_remainingTime = level.bombtimer - (level.bombtimerend - level.bombtimerstart) / 1000; // decimal seconds
 
 			// Update time to more precision if time was less than 0.5 second
-			if (remaining < 0.5)
+			if (level.bomb_remainingTime < 0.5)
 			{
-				value = int(remaining * 100) / 100;
+				value = int(level.bomb_remainingTime * 100) / 100;
 				if (value < 0) value = 0;
 				level.clock setValue(value);
 			}
@@ -2795,6 +2841,8 @@ menuAutoAssign()
 	self.pers["weapon2"] = undefined;
 	self.pers["savedmodel"] = undefined;
 
+	self HUD_Player_ShowBombTimer();
+
 	self notify("joined", assignment);
 	self notify("joined_allies_axis");
 
@@ -2827,6 +2875,7 @@ menuAllies()
 	self.pers["weapon2"] = undefined;
 	self.pers["savedmodel"] = undefined;
 
+	self HUD_Player_ShowBombTimer();
 
 	self notify("joined", "allies");
 	self notify("joined_allies_axis");
@@ -2860,6 +2909,7 @@ menuAxis()
 	self.pers["weapon2"] = undefined;
 	self.pers["savedmodel"] = undefined;
 
+	self HUD_Player_ShowBombTimer();
 
 	self notify("joined", "axis");
 	self notify("joined_allies_axis");
