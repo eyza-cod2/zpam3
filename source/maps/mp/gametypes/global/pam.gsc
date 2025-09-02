@@ -26,12 +26,13 @@ init()
 		// Errors
 		precacheString2("STRING_PAM_DONT_STEAL", &"This version of pam is only for testing! Dont steal!");
 		precacheString2("STRING_PAM_FS_GAME", &"Cvar /fs_game is not empty!)");
-		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam334.iwd^7 must be installed in ^9main^7 folder."); // ZPAM_RENAME
+		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam335.iwd^7 must be installed in ^9main^7 folder."); // ZPAM_RENAME
 		precacheString2("STRING_PAM_GETTING_IWD_FILES_ERROR", &"Error while getting loaded iwd files. Make sure iwd files does not contains spaces.");
-		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v4.iwd^7 does not exists in ^9main^7 folder"); // ZPAM_RENAME
+		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v5.iwd^7 does not exists in ^9main^7 folder"); // ZPAM_RENAME
 		precacheString2("STRING_PAM_MAPS_LOAD_ERROR", &"Error while checking if fixed maps exists. Map printed above was not found on server.");
 		precacheString2("STRING_PAM_WWW_DOWNLOADING", &"WWW downloading must be enabled. Set ^9sv_wwwDownload^7 and ^9sv_wwwBaseURL");
 		precacheString2("STRING_PAM_BLACKLIST", &"Old zPAM or maps detected in ^9main^7 folder. Delete iwd file you see printed above.");
+		precacheString2("STRING_PAM_IWD_CUSTOM", &"Rename iwd file ^9zzz_zpam_custom.iwd^7 to something unique (e.g. ^9zzz_zpam_custom_fpschallange_v1.iwd^7)."); // ZPAM_RENAME
 
 
 		// Help url
@@ -40,8 +41,8 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam334"; // ZPAM_RENAME
-	level.pam_map_iwd = "zpam_maps_v4";
+	level.pam_folder = "main/zpam335"; // ZPAM_RENAME
+	level.pam_map_iwd = "zpam_maps_v5";
 
 	level.pam_mode_change = false;
 
@@ -238,6 +239,8 @@ CheckInstallation()
 		maps[maps.size] = "mp_vallente_fix";
 		maps[maps.size] = "mp_trainstation_fix";
 		maps[maps.size] = "mp_carentan_bal";
+		maps[maps.size] = "mp_railyard_mjr";
+		maps[maps.size] = "mp_leningrad_mjr";
 		maps[maps.size] = "wawa_3daim";
 
 
@@ -252,6 +255,15 @@ CheckInstallation()
 				return;
 			}
 		}
+	}
+
+
+	// Zpam custom iwd file
+	if (arrayContains(nameArray, "zzz_zpam_custom"))
+	{
+		setError(game["STRING_PAM_IWD_CUSTOM"]);
+
+		return;
 	}
 
 
@@ -292,6 +304,7 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam334_test2";
 	blackList[blackList.size] = "zpam334_beta1";
 	blackList[blackList.size] = "zpam334_beta2";
+	blackList[blackList.size] = "zpam334";
 
 	blackList[blackList.size] = "mp_chelm_fix";
 	blackList[blackList.size] = "mp_breakout_tls";
@@ -301,6 +314,10 @@ CheckInstallation()
 	blackList[blackList.size] = "wawa_3dAim";
 	blackList[blackList.size] = "e_vallente";
 	blackList[blackList.size] = "mp_vallente";
+	blackList[blackList.size] = "mp_railyard_mjr_test1";
+	blackList[blackList.size] = "mp_railyard_mjr_test2";
+	blackList[blackList.size] = "mp_leningrad_mjr_test1";
+	blackList[blackList.size] = "mp_leningrad_mjr_test2";
 
 	// ZPAM_RENAME - add old pam
 
@@ -308,9 +325,11 @@ CheckInstallation()
 	{
 		if (arrayContains(nameArray, blackList[i]))
 		{
-			setError(game["STRING_PAM_BLACKLIST"]);
+			file = "main/" + blackList[i] + ".iwd";
 
-			level thread printTextInLoop("main/" + blackList[i] + ".iwd");
+			setError(game["STRING_PAM_BLACKLIST"], file);
+
+			level thread printTextInLoop(file);
 
 			return;
 		}
@@ -371,7 +390,7 @@ ChangeTo(mode)
 
 
 
-setError(error)
+setError(error, console_error)
 {
 	level.pam_installation_error = true;
 
@@ -379,6 +398,9 @@ setError(error)
 	println("^1------------ zPAM Errors -----------");
 	println(game["STRING_NOT_INSTALLED_CORRECTLY_1"]);
 	println(error);
+	if (isDefined(console_error)) {
+		println(console_error);
+	}
 	println("^1------------------------------------");
 
 
@@ -397,7 +419,7 @@ setError(error)
 	text1.aligny = "top";
 	text1.x = 320;
 	text1.y = 200;
-	text1.fontscale = 1.9;
+	text1.fontscale = 1.7;
 	text1.alpha = 1;
 	text1.sort = -2;
 	text1.foreground = true;
@@ -409,7 +431,7 @@ setError(error)
 	text2.aligny = "top";
 	text2.x = 320;
 	text2.y = 225;
-	text2.fontscale = 1.4;
+	text2.fontscale = 1.2;
 	text2.alpha = 1;
 	text2.sort = -1;
 	text2.foreground = true;
@@ -420,8 +442,8 @@ setError(error)
 	text3.alignx = "center";
 	text3.aligny = "top";
 	text3.x = 320;
-	text3.y = 255;
-	text3.fontscale = 1.2;
+	text3.y = 295;
+	text3.fontscale = 0.8;
 	text3.alpha = 1;
 	text3.sort = -1;
 	text3.foreground = true;

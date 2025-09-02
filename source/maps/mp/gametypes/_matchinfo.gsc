@@ -481,6 +481,8 @@ GetMapName(mapname)
 	if (mapname == "mp_chelm_fix")						return "Chelm";
 	if (mapname == "mp_leningrad_tls")					return "Leningrad TLS";
 	if (mapname == "mp_carentan_bal")					return "Carentan";
+	if (mapname == "mp_railyard_mjr")					return "Railyard MJR";
+	if (mapname == "mp_leningrad_mjr")					return "Leningrad MJR";
 
 	if (mapname == "" || mapname.size < 3)
 		return mapname;

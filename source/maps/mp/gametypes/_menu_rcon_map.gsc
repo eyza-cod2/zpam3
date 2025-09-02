@@ -32,6 +32,8 @@ init()
 	map["mp_trainstation_fix"] = true;
 	map["mp_vallente_fix"] = true;
 	map["mp_carentan_bal"] = true;
+	map["mp_railyard_mjr"] = true;
+	map["mp_leningrad_mjr"] = true;
 
 	map["fast_restart"] = true;
 

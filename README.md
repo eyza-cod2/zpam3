@@ -1,26 +1,27 @@
 # Introduction
 
-Mod zPAM3.34 is a new version of PAM mode for CoD2. <br>
+Mod zPAM3.35 is a new version of PAM mode for CoD2. <br>
 
 The code from the previous version zPAM 2.07 was completely rewritten and ported to a new code base, which helped in the implementation of new features and bug fixes.
 
 Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 3.34.<br>
+*This page describe only actual version zPAM 3.35.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
 - #### Actual version
-	- 2024/08/25 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.34/zpam334.zip">zPAM 3.34 - zpam334.zip</a></b>
+	- 2025/09/02 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.35/zpam335.zip">zPAM 3.35 - zpam335.zip</a></b>
 
 - #### Previous version
-	- 2023/08/30 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.33/zpam333.zip">zPAM 3.33 - zpam333.zip</a></b>
+	- 2024/08/25 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.34/zpam334.zip">zPAM 3.34 - zpam334.zip</a></b>
 
 
 
 ## Version list
-- 2024/08/25 - <b>zPAM 3.34</b>
+- 2025/09/02 - <b>zPAM 3.35</b>
+- 2024/08/25 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/e73c0fd786781238b6ee5f3e1b81580da84cbf76">zPAM 3.34</a></b>
 - 2023/08/30 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/abbc16d244a820aa08372d4238cb53062f90ced0">zPAM 3.33</a></b>
 - 2022/02/24 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c29866e22a6bcfd739515006e465062ec5a9e1f7">zPAM 3.32 PREVIEW</a></b>
 - 2022/10/13 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/3239562802398e9eb16aecb09c8d03e6f902d7ce">zPAM 3.31 PREVIEW</a></b>
@@ -37,6 +38,20 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+<details><summary>zPAM 3.35 changes (click to open)</summary>
+<p>
+
+**Changes / Fixes / Improvements:**
+- new mappack version 5
+  - new maps: mp_railyard_mjr, mp_leningrad_mjr
+  - removed killtriggers on mp_trainstation_fix (Caen)
+- requirement to rename zzz_zpam_custom.iwd to something unique (e.g. zzz_zpam_custom_fpschallange_v1.iwd).
+- adjusted text of zPAM installation error message
+</p>
+</details>
+
+
 
 <details><summary>zPAM 3.34 changes (click to open)</summary>
 <p>
@@ -356,9 +371,9 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.34/zpam334.zip">zPAM 3.34</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam334.iwd
-	- ./Call of Duty 2/main/zpam_maps_v4.iwd <i>(*required only for 1.3 game version)</i>
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.35/zpam335.zip">zPAM 3.35</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam335.iwd
+	- ./Call of Duty 2/main/zpam_maps_v5.iwd <i>(*required only for 1.3 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
 
@@ -371,7 +386,7 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 
 - For game version 1.3:
-	- Mappack file <b>zpam_maps_v4.iwd</b> needs to be included in main folder. [What is zpam_maps_v4.iwd file?](#what-is-zpam_maps_v4iwd-file)
+	- Mappack file <b>zpam_maps_v5.iwd</b> needs to be included in main folder. [What is zpam_maps_v5.iwd file?](#what-is-zpam_maps_v5iwd-file)
 	- Fast download must be enabled via these settings (custom URL may be used):
 		- <b>sv_wwwDownload 1</b>
 		- <b>sv_wwwBaseURL "http://cod2x.me/zpam"</b>
@@ -428,7 +443,7 @@ cokY, Sk1lzZ, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / d
 
 ## Questions & Answers
 
-### What is zpam_maps_v4.iwd file
+### What is zpam_maps_v5.iwd file
 
 | Name              | Game name           | Credit                                     | More info                                      |
 |-------------------|---------------------|--------------------------------------------|------------------------------------------------|
@@ -445,7 +460,10 @@ cokY, Sk1lzZ, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / d
 | Leningrad TLS     | `mp_leningrad_tls`    | by Fjozek, craven                          |                                                |
 | Dawnville SUN     | `mp_dawnville_sun`    | by Fjozek, craven                          |                                                |
 | Crossroads        | `mp_crossroads`       | by Fjozek, craven, eyza                    |                                                |
-| Carentan BAL | `mp_carentan_bal`     | by Fjozek, craven                          |                                                |
+| Carentan BAL      | `mp_carentan_bal`     | by Fjozek, craven                          |                                                |
+| Railyard MJR      | `mp_railyard_mjr`     | by UnaRkW, eyza, craven                    |                                                |
+| Leningrad MJR     | `mp_leningrad_mjr`    | by everestt, eyza, craven                  |                                                |
+
 
 
 
@@ -944,7 +962,7 @@ Make sure cvar /fs_game is empty (+set fs_game "") and iwd files are placed in m
  - Since version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that player's settings changed in game are not saved into the config when running a game with fs_game set.
 
-#### Iwd file zpam_maps_v4.iwd does not exists in main folder
+#### Iwd file zpam_maps_v5.iwd does not exists in main folder
 - Since version 3.20, fixed versions of some maps are available. PAM is forcing to include these files to make sure maps are available on every server.
 
 #### Error while getting loaded iwd files. Make sure iwd files does not contains spaces.
