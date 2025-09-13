@@ -66,7 +66,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 }
 
 
-onConnecting()
+onConnecting(firstTime)
 {
 	if (!isDefined(self.pers["isBot"]))
 		self.pers["isBot"] = false;

@@ -15,7 +15,7 @@ init()
     addEventListener("onConnectedAll",    ::onConnectedAll);
     addEventListener("onJoinedTeam",    ::onJoinedTeam);
 
-    //thread printThread();
+    thread printThread();
 }
 
 resetConnectedStatus()
@@ -66,8 +66,9 @@ removeOld()
   }
 }
 
-findData(name, entityId)
+findData(name, entityId, hwid)
 {
+  potencialId = -1;
   for (i = 0; i < game["playerstats"].size; i++)
   {
     data = game["playerstats"][i];
@@ -75,7 +76,15 @@ findData(name, entityId)
 
     if (isDefined(entityId))
     {
-      if (data["name"] == name && data["entityId"] == entityId)
+      if (isDefined(hwid) && hwid != "" && data["hwid"] == hwid) {
+        if (data["entityId"] == entityId)
+          return i;
+        else {
+          potencialId = i; // in case there is a duplicate HWID (primarly when testing locally) trust only HWID after we pair also agains entityId
+          continue;
+        }
+      } 
+      else if (data["name"] == name && data["entityId"] == entityId)
         return i;
     }
     else
@@ -84,6 +93,8 @@ findData(name, entityId)
         return i;
     }
   }
+  if (potencialId >= 0)
+    return potencialId;
   return -1;
 }
 
@@ -95,7 +106,7 @@ handleRename()
     {
       //println("PLayer renamed");
 
-      dataId = findData(self.pers["lastName"], self getEntityNumber());
+      dataId = findData(self.pers["lastName"], self getEntityNumber(), self getHWID());
       if (dataId >= 0)
       {
         // if we rename to name that is already in stat unconnected, we need to delete them
@@ -122,7 +133,7 @@ getStatId()
 {
   handleRename();
 
-  return findData(self.name, self getEntityNumber());
+  return findData(self.name, self getEntityNumber(), self getHWID());
 }
 
 getStats()
@@ -147,6 +158,7 @@ print()
     {
       println("game[playerstats]["+i+"][entityId]    = " + data["entityId"]);
       println("game[playerstats]["+i+"][name]        = " + data["name"]);
+      println("game[playerstats]["+i+"][hwid]        = " + data["hwid"]);
       println("game[playerstats]["+i+"][isConnected] = " + data["isConnected"]);
       println("game[playerstats]["+i+"][lastTime]    = " + data["lastTime"]);
       println("game[playerstats]["+i+"][kills]       = " + data["kills"]);
@@ -190,7 +202,7 @@ onConnected()
 
 	id = self getEntityNumber();
 
-	dataId = findData(self.name, id);
+	dataId = findData(self.name, id, self getHWID());
 	if (dataId >= 0 && game["playerstats"][dataId]["isConnected"] == false) // note: isConnected is reseted every map_restart
 	{
 		game["playerstats"][dataId]["player"] = self;
@@ -226,6 +238,7 @@ onConnected()
 			game["playerstats"][newIndex]["deleted"] = false;
 			game["playerstats"][newIndex]["entityId"] = id;
 			game["playerstats"][newIndex]["name"] = self.name;
+			game["playerstats"][newIndex]["hwid"] = self getHWID();
 			game["playerstats"][newIndex]["team"] = self.sessionteam;
 			game["playerstats"][newIndex]["isConnected"] = true;
 			game["playerstats"][newIndex]["lastTime"] = getTime();
@@ -244,7 +257,7 @@ onConnected()
 
 onJoinedTeam(team)
 {
-	dataId = findData(self.name, self getEntityNumber());
+	dataId = findData(self.name, self getEntityNumber(), self getHWID());
 	if (dataId >= 0)
 	{
 		game["playerstats"][dataId]["team"] = team;
@@ -254,7 +267,7 @@ onJoinedTeam(team)
 
 onDisconnect()
 {
-  dataId = findData(self.name, self getEntityNumber());
+  dataId = findData(self.name, self getEntityNumber(), self getHWID());
   if (dataId >= 0)
   {
     game["playerstats"][dataId]["isConnected"] = false;

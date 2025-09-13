@@ -207,7 +207,7 @@ RunMapVote()
 			break;
 
 		level.mapcandidate[j]["map"] = maps[i]["map"];
-		level.mapcandidate[j]["mapname"] = getMapName(maps[i]["map"]);
+		level.mapcandidate[j]["mapname"] = maps\mp\gametypes\_matchinfo::GetMapName(maps[i]["map"]);
 		level.mapcandidate[j]["gametype"] = maps[i]["gametype"];
 		level.mapcandidate[j]["votes"] = 0;
 
@@ -603,78 +603,6 @@ isGametype(gt)
 		default:
 			return false;
 	}
-}
-
-getMapName(map)
-{
-	switch(map)
-	{
-		case "mp_farmhouse":
-			mapname = "Beltot";
-			break;
-
-		case "mp_brecourt":
-			mapname = "Brecourt";
-			break;
-
-		case "mp_burgundy":
-			mapname = "Burgundy";
-			break;
-
-		case "mp_trainstation":
-			mapname = "Caen";
-			break;
-
-		case "mp_carentan":
-			mapname = "Carentan";
-			break;
-
-		case "mp_decoy":
-			mapname = "El Alamein";
-			break;
-
-		case "mp_leningrad":
-			mapname = "Leningrad";
-			break;
-
-		case "mp_matmata":
-			mapname = "Matmata";
-			break;
-
-		case "mp_downtown":
-			mapname = "Moscow";
-			break;
-
-		case "mp_harbor":
-			mapname = "Rostov";
-			break;
-
-		case "mp_dawnville":
-			mapname = "St. Mere Eglise";
-			break;
-
-		case "mp_railyard":
-			mapname = "Stalingrad";
-			break;
-
-		case "mp_toujane":
-			mapname = "Toujane";
-			break;
-
-		case "mp_breakout":
-			mapname = "Villers-Bocage";
-			break;
-
-		case "mp_rhine":
-			mapname = "Wallendar";
-			break;
-
-		default:
-			mapname = map;
-			break;
-	}
-
-	return mapname;
 }
 
 getGametypeName(gt)

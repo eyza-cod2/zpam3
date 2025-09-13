@@ -45,10 +45,10 @@ Do_Map_End()
 		player [[level.spawnIntermission]]();
 	}
 
-	wait level.fps_multiplier * 12;
+	wait level.fps_multiplier * 6;
 
 
-	if (game["is_public_mode"])
+	if (game["is_public_mode"] || matchIsActivated())
 	{
 		logPrint("MapEnd;\n");
 		if (!level.pam_mode_change)

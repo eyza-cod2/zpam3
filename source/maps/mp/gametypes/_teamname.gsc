@@ -161,8 +161,15 @@ getTeamName(team)
 		// If team is not set, generate team name from all players
 		if (isDefined(player.pers["team"]) && (player.pers["team"] == team || team == ""))
 		{
-			name_clean = removeColorsFromString(player.name);
-			names[names.size] = name_clean;
+			if (matchIsActivated()) {
+				teamName = player matchPlayerGetData("team_name");
+				if (teamName == "") {
+					teamName = player.name;
+				}
+				names[names.size] = removeColorsFromString(teamName);
+			} else {
+				names[names.size] = removeColorsFromString(player.name);
+			}
 		}
 	}
 
@@ -358,6 +365,15 @@ getBestNameFromArray(names)
 	final_word = removeEndSymbols(final_word);
 
     return final_word;
+}
+
+getCleanName(name)
+{
+	name_secure = removeColorsFromString(name); // Remove ^1 colors
+	name_secure = getSecureString(name_secure); // Remove chars that cannot be used in team name
+	name_secure = removeEndSymbols(name_secure); // Remove last non-alfanumeric char
+
+	return name_secure;
 }
 
 getSecureString(string)
