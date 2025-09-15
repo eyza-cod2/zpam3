@@ -82,6 +82,10 @@ update()
 	{
 		errors += "^3Server password is not set!^7\n";
 	}
+	if (getcvarint("sv_cracked"))
+	{
+		errors += "^3Server is cracked!^7\n";
+	}
 
 	map = level.mapname;
 	if (map == "mp_toujane" || map == "mp_burgundy" || map == "mp_dawnville" || map == "mp_matmata" || map == "mp_carentan" || map == "mp_trainstation")
