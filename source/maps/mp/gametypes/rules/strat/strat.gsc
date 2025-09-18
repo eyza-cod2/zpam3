@@ -55,7 +55,7 @@ GetCvars(arr)
 
 	arr = ruleCvarDefault(arr, "g_allowVote", 0);
 	arr = ruleCvarDefault(arr, "g_maxDroppedWeapons", 32);
-	arr = ruleCvarDefault(arr, "sv_fps", 30);
+	arr = ruleCvarDefault(arr, "sv_fps", 30/*40*/); // CoD2x since version 1.4.3.1 allows 40 snaps
 	arr = ruleCvarDefault(arr, "sv_maxRate", 25000);
 	arr = ruleCvarDefault(arr, "sv_timeout", 60);					// Time after 999 player is kicked
 	arr = ruleCvarDefault(arr, "g_antilag", 0);					// Antilag 1 means that players ping is considered when calculating hit location - what you see on your monitor is also what the server will see

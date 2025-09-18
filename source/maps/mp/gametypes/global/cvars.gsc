@@ -117,7 +117,12 @@ onCvarChanged(cvar, value, isRegisterTime)
 	{
 		case "sv_fps":
 
-			if (value == 30)
+			if (value == 40)
+			{
+				level.fps_multiplier = 2.0;
+				level.frame = .025;
+			}
+			else if (value == 30)
 			{
 				level.fps_multiplier = 1.51382;
 				level.frame = .033;
