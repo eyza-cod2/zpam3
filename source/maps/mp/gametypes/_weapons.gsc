@@ -497,9 +497,9 @@ defineWeapons()
 	// If you want to add new classes, you have to create new cvars in start_gametype.gsc
 	//		(className, 		cvarLimit, 					cvarNades, 						cvarSmokes,				cvarAllowDrop)
 	addClass("boltaction", 		"scr_boltaction_limit",		"scr_boltaction_nades", 	"scr_boltaction_smokes",	"scr_boltaction_allow_drop");
-	addClass("sniper", 			"scr_sniper_limit",			"scr_semiautomatic_nades", 	"scr_semiautomatic_smokes", "scr_sniper_allow_drop");
-	addClass("semiautomatic", 	"scr_semiautomatic_limit",	"scr_smg_nades", 			"scr_smg_smokes",			"scr_semiautomatic_allow_drop");
-	addClass("smg", 			"scr_smg_limit",			"scr_sniper_nades", 		"scr_sniper_smokes",		"scr_smg_allow_drop");
+	addClass("sniper", 			"scr_sniper_limit",			"scr_sniper_nades", 		"scr_sniper_smokes", 		"scr_sniper_allow_drop");
+	addClass("semiautomatic", 	"scr_semiautomatic_limit",	"scr_semiautomatic_nades", 	"scr_semiautomatic_smokes",	"scr_semiautomatic_allow_drop");
+	addClass("smg", 			"scr_smg_limit",			"scr_smg_nades", 			"scr_smg_smokes",			"scr_smg_allow_drop");
 	addClass("mg", 				"scr_mg_limit",				"scr_mg_nades", 			"scr_mg_smokes",			"scr_mg_allow_drop");
 	addClass("shotgun", 		"scr_shotgun_limit",		"scr_shotgun_nades", 		"scr_shotgun_smokes",		"scr_shotgun_allow_drop");
 
