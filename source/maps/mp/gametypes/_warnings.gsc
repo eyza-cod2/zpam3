@@ -76,8 +76,8 @@ update()
 	errors = "";
 
 	// ZPAM_RENAME
-	//errors += "^3This is testing version of PAM, server may crash!^7\n";
-	//errors += "^3Report feedback to eyza#7930^7\n";
+	errors += "^3This is testing version of PAM, server may crash!^7\n";
+	errors += "^3Report feedback to eyza#7930^7\n";
 
 	if (getcvarint("sv_cheats"))
 	{
@@ -90,6 +90,13 @@ update()
 	if (getcvarint("sv_cracked"))
 	{
 		errors += "^3Server is cracked!^7\n";
+	}
+	if (getCvar("shortversion") == "1.3" || getCvar("shortversion") == "1.2" || getCvar("shortversion") == "1.1" || getCvar("shortversion") == "1.0")
+	{
+		errors += "^3Server is running old version of game.\nVersion " + getCvar("shortversion") + " is not fully supported.^7\n";
+	}
+	else if (getCvarInt("g_cod2x") < 5) {
+		errors += "^3Server is running old version of CoD2x!\nVersion 1.4." + getCvarInt("g_cod2x") + ".x is not fully supported (CoD2x >=1.4.5.x is expected).^7\n";
 	}
 
 	map = level.mapname;
