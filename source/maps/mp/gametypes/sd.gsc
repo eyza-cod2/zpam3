@@ -2167,7 +2167,7 @@ bombzones()
 	level.barsize = 192;
 
 
-	wait level.fps_multiplier * .2;
+	wait level.frame;
 
 	// Find bombzones (may be 1 bombzone or 2 bomzones A and B)
 	bombzones = getentarray("bombzone", "targetname");
