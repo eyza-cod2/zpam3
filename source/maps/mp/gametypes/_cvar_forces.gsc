@@ -7,17 +7,14 @@ init()
     setCvar("rate", "25000");
     setCvar("sv_maxRate", "25000");
     setCvar("sv_pure", "1");
+
+	// CoD2x - set competitive settings (like com_maxfps etc)
+	// This will be forced to all players
+    setCvar("g_competitive", "1");
 }
 
 onConnected()
 {
-    if (!isDefined(self.pers["pbForcedCvarsLoaded"]))
-        self.pers["pbForcedCvarsLoaded"] = false;
-
-    // Set cvars that are forced by PunkBuster do correct value to prevent PUNKBUSTER WARNINGS
-    if (!self.pers["pbForcedCvarsLoaded"])
-        self thread setForcedCvarsByPB();
-
     // Set some cvars to value that increase competitive quality
     self thread competitiveQuality();
 }
@@ -43,34 +40,13 @@ competitiveQuality()
 	self setClientCvar2("cg_tracerLength", "1000");
 	self setClientCvar2("cg_tracerSpeed", "20000");
 
-	// Show icons in scipe while zoomed
+	// Show icons in scope while zoomed
 	self setClientCvar2("cg_hudDamageIconInScope", "1");
 	self setClientCvar2("cg_hudGrenadeIconInScope", "1");
 
 	// disable sun
 	self setClientCvar2("r_drawSun", 0);
-}
 
-
-setForcedCvarsByPB()
-{
-	self endon("disconnect");
-
-	// Wait till player join team to save sent cvars to client
-	while (!isDefined(self.pers["firstTeamSelected"]))
-		wait level.frame;
-
-	wait level.fps_multiplier * 0.2;
-
-	// Wait more if player joined spectator (usefull especially for streamers - lot of cvars is beeing sent)
-	if (self.sessionstate == "spectator")
-		wait level.fps_multiplier * 8;
-
-	self setClientCvar2("snaps", 30);
-	self setClientCvar2("sc_enable", "0");
-	self setClientCvar2("fx_sort", "1");
-	self setClientCvar2("rate", "25000");
-	self setClientCvar2("cl_maxpackets", "100");
 
 	wait level.fps_multiplier * 0.2;
 
@@ -118,7 +94,5 @@ setForcedCvarsByPB()
 	self setClientCvar2("cg_hudObjectiveMaxRange", "2048");
 	self setClientCvar2("cg_hudObjectiveMinAlpha", "1");
 	self setClientCvar2("cg_hudObjectiveMinHeight", "-70");
-
-	self.pers["pbForcedCvarsLoaded"] = true;
 
 }
