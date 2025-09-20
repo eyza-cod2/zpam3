@@ -11,6 +11,8 @@ init()
 	registerCvar("debug_handhitbox", "BOOL", false);
 	registerCvar("debug_torsohitbox", "BOOL", false);
 
+	//thread waypoint_xyz(1);
+
 	//thread scvar();
 
 	// This is called only if developer_script is set to 1
@@ -592,7 +594,7 @@ moving_obj(id)
 		newobjpoint.y = origin[1];
 		newobjpoint.z = origin[2];
 
-		if (getCvar("id") == id)
+		if (getCvar("id") == id || getCvar("id") == "")
 		{
 			if (getCvar("x") != "")
 				self.origin += (getCvarInt("x"), 0, 0);
@@ -625,6 +627,34 @@ moving_obj(id)
 
 	}
 }
+
+
+waypoint_xyz(size)
+{
+	if (!isDefined(size))
+		size = 2;
+
+	waypoint = newHudElem2();
+	waypoint.name = "A";
+	waypoint.x = 0;
+	waypoint.y = 0;
+	waypoint.z = 0;
+	waypoint.alpha = 1;
+	waypoint.archived = false;
+	waypoint setShader("objpoint_default", size, size);
+	waypoint setwaypoint(true);
+	waypoint.scale = size;
+
+	for (;;)
+	{
+		wait 0.0000001; // wait a frame
+
+		waypoint.x = getCvarFloat("x");
+		waypoint.y = getCvarFloat("y");
+		waypoint.z = getCvarFloat("z");
+	}
+}
+
 
 spect_menu()
 {
@@ -1215,7 +1245,7 @@ onConnected()
     	self notify("menuresponse", game["menu_serverinfo"], "close");
     	wait level.frame;
 
-	i = 0;
+	i = 1;
 
 
 
@@ -1227,7 +1257,7 @@ onConnected()
     			wait level.frame;
     			self notify("menuresponse", game["menu_weapon_allies"], "m1garand_mp");
 		}
-		if (self.name == "client_1 ")
+		/*if (self.name == "client_1 ")
 		{
 			setCvar("scr_sd_roundlength", 10);
 			setCvar("scr_sd_PlantTime", 1);
@@ -1235,8 +1265,8 @@ onConnected()
 
 			wait level.fps_multiplier * 3.5;
 
-			thread skipReadyup();
-		}
+			//thread skipReadyup();
+		}*/
 	}
 	else if (i==1)
 	{
