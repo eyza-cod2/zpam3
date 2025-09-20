@@ -109,6 +109,25 @@ CodeCallback_StartGameType()
 	}
 }
 
+/*================
+Called by code before map change, map restart, or server shutdown.
+  fromScript: true if map change was triggered from a script, false if from a command.
+  bComplete: true if map change or restart is complete, false if it's a round restart so persistent variables are kept.
+  shutdown: true if the server is shutting down, false otherwise.
+  source: "map", "fast_restart", "map_restart", "map_rotate", "shutdown"
+================*/
+CodeCallback_StopGameType(fromScript, bComplete, shutdown, source) 
+{
+	/#
+	println("##### " + gettime() + " " + level.frame_num + " ##### Call: maps/mp/gametypes/_callback.gsc::CodeCallback_StopGameType(" + fromScript + ", " + bComplete + ", " + shutdown + ")");
+	#/
+
+	// Process onStopGameType events
+	for (i = 0; i < level.events.onStopGameType.size; i++)
+	{
+		self thread [[level.events.onStopGameType[i]]](fromScript, bComplete, shutdown);
+	}
+}
 
 
 /*================

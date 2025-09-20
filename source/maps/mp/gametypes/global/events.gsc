@@ -11,6 +11,7 @@ Init()
 {
 	level.events = spawnstruct();
 	level.events.onStartGameType = [];
+	level.events.onStopGameType = [];
 	level.events.onConnecting = [];
 	level.events.onConnected = [];
 	level.events.onConnectedAll = [];
@@ -35,6 +36,7 @@ Init()
 	// Print events only in developer mode
 	/#
 	addListener("onStartGameType",    	::onStartGameType);
+	addListener("onStopGameType",    	::onStopGameType);
 
 	addListener("onConnecting",    		::onConnecting);
 	addListener("onConnected",     		::onConnected);
@@ -67,6 +69,8 @@ addListener(eventName, funcPointer)
 {
 	if (eventName == "onStartGameType")
 		level.events.onStartGameType[level.events.onStartGameType.size] = funcPointer;
+	else if (eventName == "onStopGameType")
+		level.events.onStopGameType[level.events.onStopGameType.size] = funcPointer;
 
 	else if (eventName == "onConnecting")
 		level.events.onConnecting[level.events.onConnecting.size] = funcPointer;
@@ -451,6 +455,11 @@ notifyCvarChange(cvar, value, isRegisterTime)
 onStartGameType()
 {
     if (getCvar("debug") == "1") iprintln(GetTime() + ": ^6CATCHED: onStartGameType");
+}
+
+onStopGameType(fromScript, bComplete, shutdown)
+{
+    if (getCvar("debug") == "1") iprintln(GetTime() + ": ^6CATCHED: onStopGameType, fromScript:" + fromScript + ", bComplete:" + bComplete + ", shutdown:" + shutdown);
 }
 
 onConnecting()
