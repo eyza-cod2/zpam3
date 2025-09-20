@@ -145,35 +145,6 @@
 		visible MENU_TRUE
 		rect 0 0 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
 
-/*
-/////////////////
-		// weapon name back
-		itemDef
-		{
-			name "weaponnameback"
-			rect 0 11 320 23
-			textscale WEAPON_TEXTSCALE
-			forecolor 1.0 1.0 1.0 1.0
-			background "gfx/hud/hud@weaponnameback.tga"
-			ownerdraw CG_PLAYER_WEAPON_NAME_BACK
-			visible MENU_TRUE
-			decoration
-		}
-//////////////////
-*/
-/*
-
-		// weapon mode
-		itemDef
-		{
-			name "weaponfiremode"
-			rect -115 -35 20 20
-			forecolor 1.0 1.0 1.0 1.0
-			ownerdraw CG_PLAYER_WEAPON_MODE_ICON
-			visible MENU_TRUE
-			decoration
-		}
-*/
 		// weapon ammo counter background
 		itemDef
 		{
@@ -183,12 +154,14 @@
 			background "gfx/hud/hud@ammocounterback.tga"
 			ownerdraw CG_PLAYER_AMMO_BACKDROP
 			visible MENU_TRUE
+			dvartest "ui_quickmessage_streamer"
+			showdvar { ""; "0" }
 			decoration
 		}
 
 
 		// weapon name original
-		itemDef
+		/*itemDef
 		{
 			name "weapname"
 			rect -380 -15 290 40
@@ -201,7 +174,7 @@
 			dvartest    	"ui_playersleft_list"
 			showdvar   		{ "" }
 			decoration
-		}
+		}*/
 		// weapon name small
 		itemDef
 		{
@@ -213,8 +186,8 @@
 			forecolor 1.0 1.0 1.0 1.0
 			ownerdraw CG_PLAYER_WEAPON_NAME
 			visible MENU_TRUE
-			dvartest    	"ui_playersleft_list"
-			hidedvar   		{ "" }
+			dvartest "ui_quickmessage_streamer"
+			showdvar { ""; "0" }
 			decoration
 		}
 
@@ -228,8 +201,42 @@
 			forecolor 1.0 1.0 1.0 1.0
 			ownerdraw CG_PLAYER_AMMO_VALUE
 			visible MENU_TRUE
+			dvartest "ui_quickmessage_streamer"
+			showdvar { ""; "0" }
 			decoration
 		}
+
+
+		// STREAMER
+		// weapon ammo counter background
+		itemDef
+		{
+			name "ammocounterback2"
+			rect -216 -38 78 37
+			forecolor 1.0 1.0 1.0 1.0
+			background "gfx/hud/hud@ammocounterback.tga"
+			ownerdraw CG_PLAYER_AMMO_BACKDROP
+			visible MENU_TRUE
+			dvartest "ui_quickmessage_streamer"
+			hidedvar { ""; "0" }
+			decoration
+		}
+		// STREAMER
+		// ammo text
+		itemDef
+		{
+ 			name "ammotex2"
+			rect -202 -12 52 30
+			textstyle ITEM_TEXTSTYLE_SHADOWED
+			textscale .35
+			forecolor 1.0 1.0 1.0 1.0
+			ownerdraw CG_PLAYER_AMMO_VALUE
+			visible MENU_TRUE
+			dvartest "ui_quickmessage_streamer"
+			hidedvar { ""; "0" }
+			decoration
+		}
+
 	}
 
 	// HEALTH BAR
@@ -366,6 +373,8 @@
 			ownerdraw CG_OFFHAND_WEAPON_ICON_FRAG
 			visible MENU_TRUE
 			background "gfx/icons/hud@russian_grenade.tga" // default texture
+			dvartest "ui_quickmessage_streamer"
+			showdvar { ""; "0" }
 			decoration
 		}
 
@@ -380,6 +389,8 @@
 			forecolor 1.0 1.0 1.0 1.0
 			ownerdraw CG_OFFHAND_WEAPON_AMMO_FRAG
 			visible MENU_TRUE
+			dvartest "ui_quickmessage_streamer"
+			showdvar { ""; "0" }
 			decoration
 		}
 
@@ -394,6 +405,8 @@
 			ownerdraw CG_OFFHAND_WEAPON_ICON_SMOKE
 			background "hud_us_smokegrenade" // default texture
 			visible MENU_TRUE
+			dvartest "ui_quickmessage_streamer"
+			showdvar { ""; "0" }
 			decoration
 		}
 
@@ -408,10 +421,73 @@
 			forecolor 1.0 1.0 1.0 1.0
 			ownerdraw CG_OFFHAND_WEAPON_AMMO_SMOKE
 			visible MENU_TRUE
+			dvartest "ui_quickmessage_streamer"
+			showdvar { ""; "0" }
 			decoration
 		}
 
 
+
+		// STREAMER
+		// Grenade icon
+		itemDef
+		{
+			name "offhandfragicon2"
+			rect -160 -51 13 13
+			forecolor 1.0 1.0 1.0 1.0
+			ownerdraw CG_OFFHAND_WEAPON_ICON_FRAG
+			visible MENU_TRUE
+			background "gfx/icons/hud@russian_grenade.tga" // default texture
+			dvartest "ui_quickmessage_streamer"
+			hidedvar { ""; "0" }
+			decoration
+		}
+		// STREAMER
+		// Grenade ammo
+		itemDef
+		{
+			name "offhandfragammo2"
+			rect -170 -37 18 18
+			textscale .33
+			textstyle ITEM_TEXTSTYLE_SHADOWED
+			textfont UI_FONT_DEFAULT
+			forecolor 1.0 1.0 1.0 1.0
+			ownerdraw CG_OFFHAND_WEAPON_AMMO_FRAG
+			visible MENU_TRUE
+			dvartest "ui_quickmessage_streamer"
+			hidedvar { ""; "0" }
+			decoration
+		}
+		// STREAMER
+		// Smoke icon
+		itemDef
+		{
+			name "offhandsmokeicon2"
+			rect -195 -51 13 13
+			forecolor 1.0 1.0 1.0 1.0
+			ownerdraw CG_OFFHAND_WEAPON_ICON_SMOKE
+			background "hud_us_smokegrenade" // default texture
+			visible MENU_TRUE
+			dvartest "ui_quickmessage_streamer"
+			hidedvar { ""; "0" }
+			decoration
+		}
+		// STREAMER
+		// Smoke ammo
+		itemDef
+		{
+			name "offhandsmokeammo2"
+			rect -205 -37 18 18
+			textscale .33
+			textstyle ITEM_TEXTSTYLE_SHADOWED
+			textfont UI_FONT_DEFAULT
+			forecolor 1.0 1.0 1.0 1.0
+			ownerdraw CG_OFFHAND_WEAPON_AMMO_SMOKE
+			visible MENU_TRUE
+			dvartest "ui_quickmessage_streamer"
+			hidedvar { ""; "0" }
+			decoration
+		}
 
 	}
 

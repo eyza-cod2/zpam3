@@ -79,6 +79,7 @@ onMenuResponse(menu, response)
 		{
 			level notify("round_ended");
 			level.roundended = true;
+			level.roundwinner = "allies";
 
 			game["state"] = "intermission";
 			level notify("intermission");

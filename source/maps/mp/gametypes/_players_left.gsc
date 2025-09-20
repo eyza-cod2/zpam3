@@ -76,6 +76,7 @@ onSpawned()
 
 onJoinedTeam(teamName)
 {
+	level thread updatePlayersCount(true); // force update, especially for streamer mode
 	self updateEnemyList();
 }
 
@@ -102,13 +103,16 @@ createHUD()
 }
 
 
-updatePlayersCount()
+updatePlayersCount(force)
 {
 	// This will make sure this function is called only once in single frame
 	level notify("playersleft_update");
 	level endon("playersleft_update");
 
-	wait level.frame; // wait a frame to process a player disconnection
+	if (!isDefined(force)) force = false;
+
+	if (!force)
+		wait level.frame; // wait a frame to process a player disconnection
 
 	allies_alive = 0;
 	axis_alive = 0;
@@ -173,7 +177,7 @@ updatePlayersCount()
 	level.allies_names = allies_names;
 	level.axis_names = axis_names;
 
-	if (alliesChanged || axisChanged)
+	if (alliesChanged || axisChanged || force)
 	{
 		// Update HUD to all players
 		for(i = 0; i < players.size; i++)
@@ -214,6 +218,10 @@ updateHUD(alliesChanged, axisChanged)
 	}
 
 
+	self.playersLeft_myTeam.alpha = 1;
+	self.playersLeft_myTeam_num.alpha = 1;
+	self.playersLeft_enemy.alpha = 1;
+	self.playersLeft_enemy_num.alpha = 1;
 
 	if (teamLeft == "axis")
 	{
@@ -284,6 +292,15 @@ updateHUD(alliesChanged, axisChanged)
 		self.playersLeft_myTeam_num.color = (1,1,1);
 		self.playersLeft_enemy.color = (1,1,1);
 		self.playersLeft_enemy_num.color = (1,1,1);
+
+		// If is streamer
+		if (self.pers["team"] == "streamer")
+		{
+			self.playersLeft_myTeam.alpha = 0;
+			self.playersLeft_myTeam_num.alpha = 0;
+			self.playersLeft_enemy.alpha = 0;
+			self.playersLeft_enemy_num.alpha = 0;
+		}
 	}
 	else
 	{
@@ -375,7 +392,6 @@ updateEnemyList()
 		self setClientCvarIfChanged("ui_playersleft_list", "");
 		return;
 	}
-
 
 	str = "";
 

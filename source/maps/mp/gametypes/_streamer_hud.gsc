@@ -184,6 +184,10 @@ hide_all()
 	self hide_messages();
 
 	self setClientCvarIfChanged("ui_streamersystem_settings", "");
+
+	self setClientCvarIfChanged("ui_streamersystem_heading", "");
+	self setClientCvarIfChanged("ui_streamersystem_mapHistory", "");
+	self setClientCvarIfChanged("ui_streamersystem_scoreProgress", "");
 }
 
 hide_player_boxes()
@@ -386,16 +390,111 @@ HUD_PlayerBoxes_Loop()
 			}
 		}
 
-		allies_color = "^4"; // blue
-		axis_color = "^1"; // red
-		if (self.pers["streamerSystem_colorMode"] == 2)
-		{
-			allies_color = "^8"; // allies
-			axis_color = "^9"; // axis
-		}
+		allies_color = "^8"; // allies
+		axis_color = "^9"; // axis
 
-		//allies_color = "^8"; // allies color
-		//axis_color = "^9"; // axis color
+
+		// Tell compass to switch teams if allies are on the right side
+		if (teamLeft == "axis" || teamRight == "allies")
+			self setClientCvarIfChanged("cg_hudRadarPlayersNumberSwitch", "1"); // CoD2x cvar to switch player numbers on radar
+		else
+			self setClientCvarIfChanged("cg_hudRadarPlayersNumberSwitch", "0"); // CoD2x cvar to switch player numbers on radar
+
+
+
+		// Map history, e.g. "Burgundy 13:7  >  Dawnville 7:13  >  Toujane"
+		text_map_history = "";
+		mapsCount = 0;
+		for (j = 3; j >= 1; j--)
+		{
+			map = maps\mp\gametypes\_matchinfo::GetMapName(getCvar("sv_map" + j + "_name")); // set sv_map1_name
+			if (map != "")
+			{
+				mapsCount++;
+				score1 = getCvarInt("sv_map" + j + "_score1"); // set sv_map1_score1
+				score2 = getCvarInt("sv_map" + j + "_score2");
+
+				str = "";
+				if (mapsCount >= 2) {
+					str = "  >  ";
+				}
+				str += map + " ";
+
+				if (score1 > score2) {
+					if (teamLeft == "allies") str += allies_color; // blue
+					if (teamLeft == "axis") str += axis_color; // red
+				}
+				if (score2 > score1) {
+					if (teamRight == "allies") str += allies_color; // blue
+					if (teamRight == "axis") str += axis_color; // red
+				}
+				str += score1 + ":" + score2 + "^7";
+
+				text_map_history += str;
+			}
+		}
+		if (mapsCount >= 1) {
+			text_map_history += "  >  ";
+		}
+		text_map_history += maps\mp\gametypes\_matchinfo::GetMapName(level.mapname);
+
+		self setClientCvarIfChanged("ui_streamersystem_mapHistory", text_map_history);
+		
+
+
+
+		// Score progress
+		text_score_progress = "";
+		if (game["streamerSystem_scoreProgress"].size > 0)
+		{
+			str = "";
+			for (i = 0; i < game["streamerSystem_scoreProgress"].size; i++)
+			{
+				code = game["streamerSystem_scoreProgress"][i];
+				if (code == 0) // Draw
+					str += "^7-";
+				else if (code == 1) // team left winner
+				{
+					if (teamLeft == "allies") str += "" + allies_color + "#"; // blue
+					if (teamLeft == "axis") str += "" + axis_color + "#"; // red
+				}
+				else if (code == 2) // team right winner
+				{
+					if (teamRight == "allies") str += "" + allies_color + "#"; // blue
+					if (teamRight == "axis") str += "" + axis_color + "#"; // red
+				}
+				else if (code == 3) // halftime
+				{
+					str += "^7|";
+				}
+				else if (code == 4) // overtime
+				{
+					str += "^7 [O] ";
+				}
+				else if (code == 5) // timeout team left
+				{
+					if (teamLeft == "allies") str += "^7[" + allies_color + "T^7]"; // blue
+					if (teamLeft == "axis") str += "^7[" + axis_color + "T^7]"; // red
+				}
+				else if (code == 6) // timeout team right
+				{
+					if (teamRight == "allies") str += "^7[" + allies_color + "T^7]"; // blue
+					if (teamRight == "axis") str += "^7[" + axis_color + "T^7]"; // red
+				}
+
+			}
+
+			text_score_progress = str;
+		}
+		//text_score_progress = "^1##^4####################^7[T]";
+		self setClientCvarIfChanged("ui_streamersystem_scoreProgress", text_score_progress);
+
+
+		// Server name
+		self setClientCvarIfChanged("ui_streamersystem_heading", getCvar("sv_hostname")); // server name
+
+
+
 
 
 		// Up to 9 lines can be filled with data
@@ -439,34 +538,6 @@ HUD_PlayerBoxes_Loop()
 			matchInfoLines++;
 		}
 
-		// Map history
-		mapsCount = 0;
-		for (j = 3; j >= 1; j--)
-		{
-			map = maps\mp\gametypes\_matchinfo::GetMapName(getCvar("sv_map" + j + "_name")); // set sv_map1_name
-			if (map != "")
-			{
-				mapsCount++;
-				score1 = getCvarInt("sv_map" + j + "_score1"); // set sv_map1_score1
-				score2 = getCvarInt("sv_map" + j + "_score2");
-
-				str = "Map " + mapsCount + ":  " + map + " ";
-
-				if (score1 > score2) {
-					if (teamLeft == "allies") str += allies_color; // blue
-					if (teamLeft == "axis") str += axis_color; // red
-				}
-				if (score2 > score1) {
-					if (teamRight == "allies") str += allies_color; // blue
-					if (teamRight == "axis") str += axis_color; // red
-				}
-				str += score1 + ":" + score2;
-
-				matchInfo += str + "^7\n";
-				matchInfoLines++;
-			}
-		}
-
 
 		if (game["match_totaltime_text"] != "")
 		{
@@ -474,52 +545,6 @@ HUD_PlayerBoxes_Loop()
 			matchInfoLines++;
 		}
 
-
-		// Score progress
-		if (game["streamerSystem_scoreProgress"].size > 0)
-		{
-			str = "";
-			for (i = 0; i < game["streamerSystem_scoreProgress"].size; i++)
-			{
-				code = game["streamerSystem_scoreProgress"][i];
-				if (code == 0) // Draw
-					str += "^7-";
-				else if (code == 1) // team left winner
-				{
-					if (teamLeft == "allies") str += "" + allies_color + "#"; // blue
-					if (teamLeft == "axis") str += "" + axis_color + "#"; // red
-				}
-				else if (code == 2) // team right winner
-				{
-					if (teamRight == "allies") str += "" + allies_color + "#"; // blue
-					if (teamRight == "axis") str += "" + axis_color + "#"; // red
-				}
-				else if (code == 3) // halftime
-				{
-					str += "^7|";
-				}
-				else if (code == 4) // overtime
-				{
-					str += "^7 [O] ";
-				}
-				else if (code == 5) // timeout team left
-				{
-					if (teamLeft == "allies") str += "^7[" + allies_color + "T^7]"; // blue
-					if (teamLeft == "axis") str += "^7[" + axis_color + "T^7]"; // red
-				}
-				else if (code == 6) // timeout team right
-				{
-					if (teamRight == "allies") str += "^7[" + allies_color + "T^7]"; // blue
-					if (teamRight == "axis") str += "^7[" + axis_color + "T^7]"; // red
-				}
-
-			}
-
-			matchInfo += "Score progress:\n";
-			matchInfoLines++;
-			matchInfo += str + "\n";
-			matchInfoLines++;
-		}
 
 		// Fill with new lines at top
 		for (i = matchInfoLines; i < 11; i++)
@@ -541,8 +566,8 @@ HUD_PlayerBoxes_Loop()
 		}
 
 
-		// Hide while in killcam, but not in the final killcam
-		if (isDefined(self.killcam) && !(level.gametype == "sd" && level.roundended))
+		// Hide while in killcam
+		if (isDefined(self.killcam))
 		{
 			self thread hide_player_boxes();
 			self thread hide_messages();
@@ -579,7 +604,7 @@ HUD_PlayerBoxes_Loop()
 
 		// Player progress
 		playerProgress = "";
-		for (i = 0; i < game["streamerSystem_playerProgress"].size; i++)
+		/*for (i = 0; i < game["streamerSystem_playerProgress"].size; i++)
 		{
 			data = game["streamerSystem_playerProgress"][i];
 
@@ -593,6 +618,14 @@ HUD_PlayerBoxes_Loop()
 			else if (data.winner == "axis") color = axis_color;
 
 			playerProgress += color + alive_text + "  ";
+		}*/
+
+		playerProgress = "";
+		if (game["streamerSystem_playerProgress"].size > 0) {
+			data = game["streamerSystem_playerProgress"][game["streamerSystem_playerProgress"].size - 1];
+				
+			if (teamLeft == "allies") playerProgress = "^8" + data.allies_alive + "^7 vs " + "^9" + data.axis_alive; // blue
+			if (teamLeft == "axis")   playerProgress = "^9" + data.axis_alive + "^7 vs " + "^8" + data.allies_alive; // red
 		}
 		self setClientCvarIfChanged("ui_streamersystem_playerProgress", playerProgress);
 
@@ -677,8 +710,8 @@ followPlayerByNum(num)
 			level maps\mp\gametypes\_streamer_auto::lockFor(30000); // Lock selected player for 30 secods
 			//self iprintln("Follow player " + num/* + ": " + player.name*/);
 		}
-		else
-			self iprintln("^3Player " + num + " is not alive");
+		//else
+		//	self iprintln("^3Player " + num + " is not alive");
 	}
 	else
 		self iprintln("^3Player " + num + " does not exists");
@@ -771,7 +804,7 @@ fill_box(index, barSide, teamname, player)
 		if (weapon2 == "none" || weapon2 == "Pistol")
 			weapon_text = weapon1;
 		else
-			weapon_text = weapon1 + " / " + weapon2;
+			weapon_text = weapon1 + " | " + weapon2;
 	}
 
 
@@ -817,12 +850,12 @@ fill_box(index, barSide, teamname, player)
 
 	// Player name
 	name = "";
-	if (self.pers["streamerSystem_keysVisible"])
+	/*if (self.pers["streamerSystem_keysVisible"])
 	{
 		if (barSide == "left")	name += "" + (index + 1) + ":  ";
 		else if (index == 4)	name += "0:  "; // 10
 		else			name += "" + (index + 6) + ":  ";
-	}
+	}*/
 	if (level.in_readyup)
 	{
 		if (player.isReady) 	name += "^2o^7  ";

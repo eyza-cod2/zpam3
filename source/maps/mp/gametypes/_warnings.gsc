@@ -10,7 +10,7 @@ init()
 	if (!isDefined(level.warnings_visible))	// may be already defined if update() is called from another file
 		level.warnings_visible = false;
 	if (!isDefined(level.warnings_text))
-		level.warnings_text = false;
+		level.warnings_text = "";
 
 	thread sv_cheats_update();
 
@@ -22,7 +22,12 @@ init()
 
 onConnected()
 {
-	self setClientCvarIfChanged("ui_serverinfo_hud", level.warnings_text);
+	str = level.warnings_text;
+	// If player is streamer, hide warnings
+	if (self.pers["team"] == "streamer")
+		str = "";
+
+	self setClientCvarIfChanged("ui_serverinfo_hud", str);
 }
 
 sv_cheats_update()
@@ -117,6 +122,10 @@ update()
 	players = getentarray("player", "classname");
 	for(i = 0; i < players.size; i++)
 	{
+		// If player is streamer, hide warnings
+		if (players[i].pers["team"] == "streamer")
+			str = "";
+
 		players[i] setClientCvarIfChanged("ui_serverinfo_hud", str);
 	}
 }

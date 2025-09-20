@@ -50,7 +50,7 @@ onJoinedTeam(teamName)
 }
 
 // On player or spectator is spawned
-onSpawned(teamName)
+onSpawned()
 {
 	// If new team is selected, update permisions
 	self thread setSpectatePermissions();

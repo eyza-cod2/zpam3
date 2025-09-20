@@ -89,7 +89,7 @@ HUD_loop()
 {
 	self endon("disconnect");
 
-	if(!isdefined(self.streamerSystem_HUD_autoSpectator_BG))
+	/*if(!isdefined(self.streamerSystem_HUD_autoSpectator_BG))
 	{
 		self.streamerSystem_HUD_autoSpectator_BG = newClientHudElem2(self);
 		self.streamerSystem_HUD_autoSpectator_BG.archived = false;
@@ -117,16 +117,47 @@ HUD_loop()
 		self.streamerSystem_HUD_autoSpectator.alpha = 0;
 		self.streamerSystem_HUD_autoSpectator.sort = 2;
 		self.streamerSystem_HUD_autoSpectator.fontscale = 0.6;
+	}*/
+
+	if (!isDefined(self.streamerSystem_HUD_spectatedPlayerName))
+	{
+		self.streamerSystem_HUD_spectatedPlayerName = addHUDClient(self, 0, 50, 1, (1,1,1), "center", "top", "center", "top");
+		self.streamerSystem_HUD_spectatedPlayerName.alpha = 0;
+		self.streamerSystem_HUD_spectatedPlayerName.archived = false;
 	}
 
-	hud_text_last = "";
+	//hud_text_last = "";
+	last_followed_playerId = -1;
 
 	for (;;)
 	{
 		if (self.pers["team"] != "streamer")
 			break;
 
-		if (!self.streamerSystem_turnedOn || self.streamerSystem_freeSpectating)
+		if (self.streamerSystem_freeSpectating || isDefined(self.killcam))
+		{
+			// Hide
+			if (self.streamerSystem_HUD_spectatedPlayerName.alpha != 0) 	self.streamerSystem_HUD_spectatedPlayerName.alpha = 0;
+		} else 
+		{
+			// Show
+			if (self.streamerSystem_HUD_spectatedPlayerName.alpha != 1) 	self.streamerSystem_HUD_spectatedPlayerName.alpha = 1;
+
+			// The spectated player has changed
+			if (last_followed_playerId != level.streamerSystem_playerID) {
+				last_followed_playerId = level.streamerSystem_playerID;
+
+				if (isPlayer(level.streamerSystem_player)) {
+					self.streamerSystem_HUD_spectatedPlayerName SetPlayerNameString(level.streamerSystem_player);
+				} else {
+					self.streamerSystem_HUD_spectatedPlayerName setText(&"");
+				}
+			}
+		}
+
+		
+
+		/*if (!self.streamerSystem_turnedOn || self.streamerSystem_freeSpectating)
 		{
 			// Hide
 			if (self.streamerSystem_HUD_autoSpectator_BG.alpha != 0) 	self.streamerSystem_HUD_autoSpectator_BG.alpha = 0;
@@ -157,14 +188,14 @@ HUD_loop()
 		{
 			self.streamerSystem_HUD_autoSpectator setText(game[level.streamerSystem_auto_statusText]);
 		}
-		hud_text_last = level.streamerSystem_auto_statusText;
+		hud_text_last = level.streamerSystem_auto_statusText;*/
 
 		wait level.fps_multiplier * 0.1;
 	}
 
 
 	// Destroy
-	if(isdefined(self.streamerSystem_HUD_autoSpectator_BG))
+	/*if(isdefined(self.streamerSystem_HUD_autoSpectator_BG))
 	{
 		self.streamerSystem_HUD_autoSpectator_BG destroy2();
 		self.streamerSystem_HUD_autoSpectator_BG = undefined;
@@ -173,6 +204,11 @@ HUD_loop()
 	{
 		self.streamerSystem_HUD_autoSpectator destroy2();
 		self.streamerSystem_HUD_autoSpectator = undefined;
+	}*/
+	if(isdefined(self.streamerSystem_HUD_spectatedPlayerName))
+	{
+		self.streamerSystem_HUD_spectatedPlayerName destroy2();
+		self.streamerSystem_HUD_spectatedPlayerName = undefined;
 	}
 }
 

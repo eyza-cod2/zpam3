@@ -526,7 +526,7 @@ itemDef \
 	autowrapped \
 	text			objectivetext \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.3 \
+	textscale		0.25 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textaligny		16 \
 	decoration \
@@ -537,11 +537,11 @@ itemDef \
 { \
 	visible			1 \
 	rect			0 0 180 110 0 0 \
-	origin			170 180 \
+	origin			160 180 \
 	forecolor		GLOBAL_UNFOCUSED_COLOR \
 	dvar			"ui_serverinfo_left1" \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.3 \
+	textscale		0.25 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textalign		ITEM_ALIGN_RIGHT \
 	autowrapped \
@@ -551,11 +551,11 @@ itemDef  \
 { \
 	visible			1 \
 	rect			0 0 128 110 0 0 \
-	origin			185 180 \
+	origin			175 180 \
 	forecolor		GLOBAL_UNFOCUSED_COLOR \
 	dvar			"ui_serverinfo_left2" \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.3 \
+	textscale		0.25 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textalign		ITEM_ALIGN_LEFT \
 	autowrapped \
@@ -569,7 +569,7 @@ itemDef \
 	forecolor		GLOBAL_UNFOCUSED_COLOR \
 	dvar			"ui_serverinfo_right1" \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.3 \
+	textscale		0.25 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textalign		ITEM_ALIGN_RIGHT \
 	autowrapped \
@@ -583,7 +583,7 @@ itemDef  \
 	forecolor		GLOBAL_UNFOCUSED_COLOR \
 	dvar			"ui_serverinfo_right2" \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.3 \
+	textscale		0.25 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textalign		ITEM_ALIGN_LEFT \
 	autowrapped \
@@ -598,10 +598,9 @@ itemDef \
 	rect			0 0 480 130 0 0 \
 	origin			60 305 \
 	forecolor		1 1 1 1 \
-	autowrapped \
 	dvar			"ui_motd" \
 	textfont		UI_FONT_NORMAL \
-	textscale		0.3 \
+	textscale		0.25 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
 	textaligny		16 \
 	decoration \
@@ -784,134 +783,174 @@ itemDef \
   decoration \
 }
 
-#define MATCHINFO_STREAMER_ICON(xy, horizontal_align, bg, cvartest, showhidedvar) \
+#define MATCHINFO_STREAMER_IMAGE(xywh, horizontal_align, bg, color, cvartest, showhidedvar) \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
-	rect		xy 12 12 horizontal_align 0 \
-	backcolor	1 1 1 1 \
+	rect		xywh horizontal_align 0 \
+	backcolor	color \
 	visible		1 \
 	background	bg \
 	dvartest	cvartest \
-        showhidedvar \
+    showhidedvar \
 	decoration \
 }
 
-#define MATCHINFO_STREAMER_TEXT(xy, horizontal_align, cvar, fontsize, txtalign, fontcolor, dvartotest, dvarshowhide) \
+#define MATCHINFO_STREAMER_TEXT(xy, horizontal_align, cvar, fontsize, txtalign, txtstyle, txtfont, fontcolor, dvartotest, dvarshowhide) \
 itemDef \
 { \
 	rect			xy 0 0 horizontal_align 0 \
 	type			ITEM_TYPE_TEXT \
 	visible			1 \
 	forecolor		fontcolor \
-	textfont		UI_FONT_NORMAL \
+	textfont		txtfont \
 	textscale		fontsize \
 	textalign		txtalign \
-	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textstyle		txtstyle \
 	dvar			cvar \
 	dvartest		dvartotest \
 	dvarshowhide \
 	decoration \
 }
 
-#define MATCHINFO_STREAMER(cvar_team1_team, cvar_team2_team, cvar_show, color_allies, color_axis) \
+#define MATCHINFO_STREAMER(cvar_team1_team, cvar_team2_team, cvar_show, color_heading, color_allies, color_axis, color_allies2, color_axis2, color_text) \
 \
-	MATCHINFO_STREAMER_BGCOLOR(128 137 128 15, HORIZONTAL_ALIGN_LEFT, color_allies, 	cvar_team1_team, showDvar { "american"; "british"; "russian"; })  \
-	MATCHINFO_STREAMER_BGCOLOR(128 137 128 15, HORIZONTAL_ALIGN_LEFT, color_axis, 		cvar_team1_team, showDvar { "german" })  \
-	MATCHINFO_STREAMER_BGCOLOR(128 151 128 1, HORIZONTAL_ALIGN_LEFT, .1 .1 .1 .55, 	cvar_team1_team, showDvar { "american"; "british"; "russian"; "german" }) \
+	MATCHINFO_STREAMER_IMAGE(5 0 200 12, HORIZONTAL_ALIGN_LEFT, "streamer_mapbar", color_heading, "ui_streamersystem_mapHistory", hideDvar { "" } ) \
+	MATCHINFO_STREAMER_TEXT(9 10,   HORIZONTAL_ALIGN_LEFT, "ui_streamersystem_mapHistory", 	.18, ITEM_ALIGN_LEFT, ITEM_TEXTSTYLE_NORMAL, UI_FONT_NORMAL, 1 1 1 1, cvar_show, showDvar { "1" }) \
 \
-	MATCHINFO_STREAMER_ICON(131 138, HORIZONTAL_ALIGN_LEFT, "hudicon_american", 		cvar_team1_team, showDvar { "american" } ) \
-	MATCHINFO_STREAMER_ICON(131 138, HORIZONTAL_ALIGN_LEFT, "hudicon_british", 		cvar_team1_team, showDvar { "british" } ) \
-	MATCHINFO_STREAMER_ICON(131 138, HORIZONTAL_ALIGN_LEFT, "hudicon_russian", 		cvar_team1_team, showDvar { "russian" } ) \
-	MATCHINFO_STREAMER_ICON(131 138, HORIZONTAL_ALIGN_LEFT, "hudicon_german", 		cvar_team1_team, showDvar { "german" } ) \
+	MATCHINFO_STREAMER_IMAGE(-188 0 375 11, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_topbar", color_heading, cvar_show, showDvar { "1" } ) \
 \
-	MATCHINFO_STREAMER_TEXT(144 149, HORIZONTAL_ALIGN_LEFT, "ui_matchinfo_team1_name", 	.2, ITEM_ALIGN_LEFT, 1 1 1 1, cvar_show, showDvar { "1" }) \
+	/* Background - Team 1*/ \
+	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1", 				color_allies2, cvar_team1_team, showDvar { "american"; "british"; "russian"; } ) \
+	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1", 				color_axis2,   cvar_team1_team, showDvar { "german" } ) \
+	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1_gradient", 	color_allies, cvar_team1_team, showDvar { "american"; "british"; "russian"; } ) \
+	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1_gradient", 	color_axis,   cvar_team1_team, showDvar { "german" } ) \
+	/* Icon - Team 1 */ \
+	MATCHINFO_STREAMER_IMAGE(-186 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_american", 	1 1 1 1, cvar_team1_team, showDvar { "american" } ) \
+	MATCHINFO_STREAMER_IMAGE(-186 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_british", 	1 1 1 1, cvar_team1_team, showDvar { "british" } ) \
+	MATCHINFO_STREAMER_IMAGE(-186 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_russian", 	1 1 1 1, cvar_team1_team, showDvar { "russian" } ) \
+	MATCHINFO_STREAMER_IMAGE(-186 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_german", 	1 1 1 1, cvar_team1_team, showDvar { "german" } ) \
+	/* Text - Team 1 name */ \
+	MATCHINFO_STREAMER_TEXT(-119 24, HORIZONTAL_ALIGN_SUBLEFT, "ui_matchinfo_team1_name", 	.22, ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_NORMAL, UI_FONT_NORMAL, color_text, cvar_show, showDvar { "1" }) \
 \
+	/* Background - Team 2*/ \
+	MATCHINFO_STREAMER_IMAGE(54 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team2", 			color_allies2, cvar_team2_team, showDvar { "american"; "british"; "russian"; } ) \
+	MATCHINFO_STREAMER_IMAGE(54 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team2", 			color_axis2,   cvar_team2_team, showDvar { "german" } ) \
+	MATCHINFO_STREAMER_IMAGE(54 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team2_gradient", 	color_allies, cvar_team2_team, showDvar { "american"; "british"; "russian"; } ) \
+	MATCHINFO_STREAMER_IMAGE(54 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team2_gradient", 	color_axis,   cvar_team2_team, showDvar { "german" } ) \
+	/* Icon - Team 2 */ \
+	MATCHINFO_STREAMER_IMAGE(172 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_american", 	1 1 1 1, cvar_team2_team, showDvar { "american" } ) \
+	MATCHINFO_STREAMER_IMAGE(172 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_british", 	1 1 1 1, cvar_team2_team, showDvar { "british" } ) \
+	MATCHINFO_STREAMER_IMAGE(172 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_russian", 	1 1 1 1, cvar_team2_team, showDvar { "russian" } ) \
+	MATCHINFO_STREAMER_IMAGE(172 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_german", 		1 1 1 1, cvar_team2_team, showDvar { "german" } ) \
+	/* Text - Team 2 name */ \
+	MATCHINFO_STREAMER_TEXT(113 24,  HORIZONTAL_ALIGN_SUBLEFT, "ui_matchinfo_team2_name", 	.22, ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_NORMAL, UI_FONT_NORMAL, color_text, cvar_show, showDvar { "1" }) \
 \
-	MATCHINFO_STREAMER_BGCOLOR(0 137 128 15, HORIZONTAL_ALIGN_RIGHT, color_allies, 		cvar_team2_team, showDvar { "american"; "british"; "russian"; }) \
-	MATCHINFO_STREAMER_BGCOLOR(0 137 128 15, HORIZONTAL_ALIGN_RIGHT, color_axis, 		cvar_team2_team, showDvar { "german" }) \
-	MATCHINFO_STREAMER_BGCOLOR(0 151 128 1, HORIZONTAL_ALIGN_RIGHT, .1 .1 .1 .55, 		cvar_team2_team, showDvar { "american"; "british"; "russian"; "german" }) \
+	\
+	/* Match bar */ \
+	MATCHINFO_STREAMER_IMAGE(-55 11 109 22, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_middlebar", 		color_heading, cvar_show, showDvar { "1" } ) \
+	/* Text - Team 1 score */ \
+	MATCHINFO_STREAMER_IMAGE(-55 11 25 22, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_score", 		1 1 1 0.1, cvar_show, showDvar { "1" } ) \
+	MATCHINFO_STREAMER_TEXT(-42 28,  HORIZONTAL_ALIGN_SUBLEFT, "ui_matchinfo_team1_score", 	.3, ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_NORMAL, UI_FONT_BOLD, 1 1 1 1, cvar_show, showDvar { "1" }) \
+	/* Text - Team 2 score */ \
+	MATCHINFO_STREAMER_IMAGE(29 11 25 22, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_score", 		1 1 1 0.1, cvar_show, showDvar { "1" } ) \
+	MATCHINFO_STREAMER_TEXT(41 28,  HORIZONTAL_ALIGN_SUBLEFT, "ui_matchinfo_team2_score", 	.3, ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_NORMAL, UI_FONT_BOLD, 1 1 1 1, cvar_show, showDvar { "1" }) \
 \
-	MATCHINFO_STREAMER_ICON(2 138, HORIZONTAL_ALIGN_RIGHT, "hudicon_american", 		cvar_team2_team, showDvar { "american" } ) \
-	MATCHINFO_STREAMER_ICON(2 138, HORIZONTAL_ALIGN_RIGHT, "hudicon_british", 		cvar_team2_team, showDvar { "british" } ) \
-	MATCHINFO_STREAMER_ICON(2 138, HORIZONTAL_ALIGN_RIGHT, "hudicon_russian", 		cvar_team2_team, showDvar { "russian" } ) \
-	MATCHINFO_STREAMER_ICON(2 138, HORIZONTAL_ALIGN_RIGHT, "hudicon_german", 		cvar_team2_team, showDvar { "german" } ) \
+	MATCHINFO_STREAMER_TEXT(0 10,    HORIZONTAL_ALIGN_CENTER, "ui_streamersystem_heading", 	        .15, ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_NORMAL, UI_FONT_NORMAL, 1 1 1 1, cvar_show, showDvar { "1" }) \
+	MATCHINFO_STREAMER_TEXT(0 21,    HORIZONTAL_ALIGN_CENTER, "ui_matchinfo_round", 	            .15, ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_NORMAL, UI_FONT_NORMAL, 1 1 1 1, cvar_show, showDvar { "1" }) \
+	MATCHINFO_STREAMER_TEXT(0 30,   HORIZONTAL_ALIGN_CENTER, "ui_matchinfo_state", 	                .19,  ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_NORMAL, UI_FONT_NORMAL, 1 1 1 1, cvar_show, showDvar { "1" }) \
+	MATCHINFO_STREAMER_TEXT(0 42,   HORIZONTAL_ALIGN_CENTER, "ui_streamersystem_scoreProgress", 	.2,  ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_SHADOWED, UI_FONT_NORMAL, 1 1 1 1, cvar_show, showDvar { "1" }) \
 \
-	MATCHINFO_STREAMER_TEXT(16 149,  HORIZONTAL_ALIGN_RIGHT, "ui_matchinfo_team2_name", 	.2, ITEM_ALIGN_LEFT, 1 1 1 1, cvar_show, showDvar { "1" }) \
+	/* 5v5  5v4  5v3  4v3 */ \
+	/*MATCHINFO_STREAMER_BGCOLOR(-258 449 40 18, HORIZONTAL_ALIGN_RIGHT, color_heading, 	"ui_streamersystem_playerProgress", hideDvar { "" })*/ \
+	/*MATCHINFO_STREAMER_TEXT(-239 463,           HORIZONTAL_ALIGN_RIGHT, "ui_streamersystem_playerProgress", 	.3, ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_NORMAL, UI_FONT_NORMAL, 1 1 1 1, cvar_show, showDvar { "1" })*/ \
 \
-\
-	MATCHINFO_STREAMER_TEXT(128 478,   HORIZONTAL_ALIGN_CENTER, "ui_matchinfo_round", 	.2, ITEM_ALIGN_CENTER, 1 1 1 1, cvar_show, showDvar { "1" })
-
 
 
 
 
 
 #define STREAMERSYSTEM_COLOR_HIGHLIGHT .9 .9 .9 1
-#define STREAMERSYSTEM_COLOR_BG_ALIVE_DEAD_BG .0 .0 .0 .6
-#define STREAMERSYSTEM_COLOR_BG_ALIVE_DEAD_FG .0 .0 .0 .3
+#define STREAMERSYSTEM_COLOR_BG .5 .5 .5 .9
+#define STREAMERSYSTEM_COLOR_BG_DEAD .0 .0 .0 .4
 
-#define ITEM_STREAMERSYSTEM_LINE(cvarprefix, num, x_offset, y_offset, horizontal_align, color_allies, color_axis, color_background_allies_alive, color_background_axis_alive) \
+#define ITEM_STREAMERSYSTEM_LINE(cvarprefix, num, img_num, x_offset, y_offset, horizontal_align, color_allies, color_axis, color_allies_BG, color_axis_BG, color_allies_damage, color_axis_damage, color_text, color_text2) \
+/* Highlight*/ \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 130 25 horizontal_align 0 \
 	origin		-1 -1 \
+	visible		1 \
 	backcolor	STREAMERSYSTEM_COLOR_HIGHLIGHT \
-	visible		1 \
+	background	"streamer_playerbar_bg" \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "0_";  "10_allies_";"10_axis_";  "50_allies_";"50_axis_";  "80_allies_"; "80_axis_";  "100_allies_";"100_axis_" } \
-	decoration \
-} \
-itemDef \
-{ \
-	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 128 23 horizontal_align 0 \
-	backcolor	color_background_allies_alive \
-	visible		1 \
-	dvartest	cvarprefix "_health" \
-	showDvar	{ "10_allies"; "50_allies"; "80_allies"; "100_allies";    "10_allies_"; "50_allies_"; "80_allies_"; "100_allies_" } \
-	decoration \
-} \
-itemDef \
-{ \
-	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 128 23 horizontal_align 0 \
-	backcolor	color_background_axis_alive \
-	visible		1 \
-	dvartest	cvarprefix "_health" \
-	showDvar	{ "10_axis"; "50_axis"; "80_axis"; "100_axis";    "10_axis_"; "50_axis_"; "80_axis_"; "100_axis_" } \
+	showDvar	{ "10_allies_";"10_axis_";  "50_allies_";"50_axis_";  "80_allies_"; "80_axis_";  "100_allies_";"100_axis_" } \
 	decoration \
 } \
 \
+\
+\
+\
+/* Background - Allies color when alive */ \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 128 12 horizontal_align 0 \
-	backcolor	color_allies \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
 	visible		1 \
+	backcolor	color_allies_BG \
+	background	"streamer_playerbar_bg" \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "100_allies"; "100_allies_" } \
+	showDvar	{ "10_allies_";"10_allies";  "50_allies_";"50_allies";  "80_allies_";"80_allies";  "100_allies_";"100_allies" } \
+	decoration \
+} \
+/* Background - Axis color when alive */ \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
+	visible		1 \
+	backcolor	color_axis_BG \
+	background	"streamer_playerbar_bg" \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "10_axis_";"10_axis";  "50_axis_";"50_axis";  "80_axis_";"80_axis";  "100_axis_";"100_axis" } \
+	decoration \
+} \
+\
+/* Gradient */ \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
+	visible		1 \
+	backcolor	color_allies \
+	background	"streamer_playerbar_gradient" \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "10_allies_";"10_allies";  "50_allies_";"50_allies";  "80_allies_";"80_allies";  "100_allies_";"100_allies" } \
 	decoration \
 } \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 128 12 horizontal_align 0 \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
+	visible		1 \
 	backcolor	color_axis \
-	visible		1 \
+	background	"streamer_playerbar_gradient" \
 	dvartest	cvarprefix "_health" \
-	showDvar	{ "100_axis"; "100_axis_" } \
+	showDvar	{ "10_axis_";"10_axis";  "50_axis_";"50_axis";  "80_axis_";"80_axis";  "100_axis_";"100_axis" } \
 	decoration \
 } \
 \
 \
+\
+/* Background - Health */ \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 104 12 horizontal_align 0 \
-	backcolor	color_allies \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
 	visible		1 \
+	backcolor	color_allies_damage \
+	background	"streamer_playerbar_damage_20" \
 	dvartest	cvarprefix "_health" \
 	showDvar	{ "80_allies"; "80_allies_" } \
 	decoration \
@@ -919,9 +958,10 @@ itemDef \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 104 12 horizontal_align 0 \
-	backcolor	color_axis \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
 	visible		1 \
+	backcolor	color_axis_damage \
+	background	"streamer_playerbar_damage_20" \
 	dvartest	cvarprefix "_health" \
 	showDvar	{ "80_axis"; "80_axis_" } \
 	decoration \
@@ -931,9 +971,10 @@ itemDef \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 65 12 horizontal_align 0 \
-	backcolor	color_allies \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
 	visible		1 \
+	backcolor	color_allies_damage \
+	background	"streamer_playerbar_damage_50" \
 	dvartest	cvarprefix "_health" \
 	showDvar	{ "50_allies"; "50_allies_" } \
 	decoration \
@@ -941,9 +982,10 @@ itemDef \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 65 12 horizontal_align 0 \
-	backcolor	color_axis \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
 	visible		1 \
+	backcolor	color_axis_damage \
+	background	"streamer_playerbar_damage_50" \
 	dvartest	cvarprefix "_health" \
 	showDvar	{ "50_axis"; "50_axis_" } \
 	decoration \
@@ -953,9 +995,10 @@ itemDef \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 10 12 horizontal_align 0 \
-	backcolor	color_allies \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
 	visible		1 \
+	backcolor	color_allies_damage \
+	background	"streamer_playerbar_damage_90" \
 	dvartest	cvarprefix "_health" \
 	showDvar	{ "10_allies"; "10_allies_" } \
 	decoration \
@@ -963,13 +1006,63 @@ itemDef \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 10 12 horizontal_align 0 \
-	backcolor	color_axis \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
 	visible		1 \
+	backcolor	color_axis_damage \
+	background	"streamer_playerbar_damage_90" \
 	dvartest	cvarprefix "_health" \
 	showDvar	{ "10_axis"; "10_axis_" } \
 	decoration \
 } \
+\
+\
+\
+/* Player number circle */ \
+itemDef \
+{ \
+	/* Background - Allies stripe when alive */ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 9 9 horizontal_align 0 \
+	origin		123 2 \
+	backcolor	color_allies_BG \
+	visible		1 \
+	background  "streamer_playerbar_circle" \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "10_allies_";"10_allies";  "50_allies_";"50_allies";  "80_allies_";"80_allies";  "100_allies_";"100_allies" } \
+	decoration \
+} \
+itemDef \
+{ \
+	/* Background - Axis stripe when alive */ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 9 9 horizontal_align 0 \
+	origin		123 2 \
+	backcolor	color_axis_BG \
+	background  "streamer_playerbar_circle" \
+	visible		1 \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "10_axis_";"10_axis";  "50_axis_";"50_axis";  "80_axis_";"80_axis";  "100_axis_";"100_axis" } \
+	decoration \
+} \
+itemDef \
+{ \
+	/* Text - number of player (visible when alive) */ \
+	rect			x_offset y_offset 0 0 horizontal_align 0 \
+	origin			127 -1 \
+	type			ITEM_TYPE_TEXT \
+	visible			1 \
+	forecolor		color_text \
+	textfont		UI_FONT_NORMAL \
+	textscale		.15 \
+	textalign		ITEM_ALIGN_CENTER \
+	textaligny		11 \
+	textstyle		ITEM_TEXTSTYLE_NORMAL \
+	text			num \
+	dvartest		cvarprefix "_health" \
+	hideDvar		{ ""; "0"; "0_" } \
+	decoration \
+} \
+\
 \
 \
 itemDef \
@@ -977,7 +1070,7 @@ itemDef \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 10 9 horizontal_align 0 \
 	backcolor	1 1 1 .5 \
-	origin		116 13 \
+	origin		116 12 \
 	visible		1 \
 	background	"gfx/icons/hud@us_grenade.tga" \
 	dvartest	cvarprefix "_icons" \
@@ -989,7 +1082,7 @@ itemDef \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 10 9 horizontal_align 0 \
 	backcolor	1 1 1 .5 \
-	origin		113 13 \
+	origin		113 12 \
 	visible		1 \
 	background	"gfx/icons/hud@us_grenade.tga" \
 	dvartest	cvarprefix "_icons" \
@@ -1001,7 +1094,7 @@ itemDef \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 10 9 horizontal_align 0 \
 	backcolor	1 1 1 .5 \
-	origin		107 13 \
+	origin		107 12 \
 	visible		1 \
 	background	"hud_us_smokegrenade" \
 	dvartest	cvarprefix "_icons" \
@@ -1009,82 +1102,18 @@ itemDef \
 	decoration \
 } \
 \
-\
-itemDef \
-{ \
-	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 128 23 horizontal_align 0 \
-	backcolor	STREAMERSYSTEM_COLOR_BG_ALIVE_DEAD_BG \
-	visible		1 \
-	dvartest	cvarprefix "_health" \
-	showDvar	{ "0"; "0_" } \
-	decoration \
-} \
-itemDef \
-{ \
-	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 15 15 horizontal_align 0 \
-	backcolor	1 1 1 .5 \
-	origin		112 4 \
-	visible		1 \
-	background	"gfx/hud/death_suicide.tga" \
-	dvartest	cvarprefix "_health" \
-	showDvar	{ "0"; "0_";  } \
-	decoration \
-} \
-itemDef \
-{ \
-	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 12 10 horizontal_align 0 \
-	origin		132 3 \
-	backcolor	1 1 1 .9 \
-	visible		1 \
-	background	"ui/assets/scrollbar_arrow_left.tga" \
-	dvartest	cvarprefix "_health" \
-	showDvar	{ "0_";  "10_allies_";"10_axis_";  "50_allies_";"50_axis_";  "80_allies_"; "80_axis_";  "100_allies_";"100_axis_" } \
-	decoration \
-} \
-itemDef \
-{ \
-	style		WINDOW_STYLE_FILLED \
-	rect		x_offset y_offset 12 10 horizontal_align 0 \
-	origin		-14 3 \
-	backcolor	1 1 1 .9 \
-	visible		1 \
-	background	"ui/assets/scrollbar_arrow_right.tga" \
-	dvartest	cvarprefix "_health" \
-	showDvar	{ "0_";  "10_allies_";"10_axis_";  "50_allies_";"50_axis_";  "80_allies_"; "80_axis_";  "100_allies_";"100_axis_" } \
-	decoration \
-} \
-itemDef \
-{ \
-	rect			x_offset y_offset 0 0 horizontal_align 0 \
-	origin			123 -1 \
-	type			ITEM_TYPE_TEXT \
-	visible			1 \
-	forecolor		1 1 1 0.2 \
-	textfont		UI_FONT_NORMAL \
-	textscale		.15 \
-	textalign		ITEM_ALIGN_RIGHT \
-	textaligny		11 \
-	textstyle		ITEM_TEXTSTYLE_SHADOWED \
-	text			num \
-	dvartest		cvarprefix "_health" \
-	hideDvar		{ ""; "0"; "0_" } \
-	decoration \
-} \
 itemDef \
 { \
 	rect			x_offset y_offset 0 0 horizontal_align 0 \
 	origin			5 0 \
 	type			ITEM_TYPE_TEXT \
 	visible			1 \
-	forecolor		1 1 1 1 \
+	forecolor		color_text \
 	textfont		UI_FONT_NORMAL \
 	textscale		.18 \
 	textalign		ITEM_ALIGN_LEFT \
 	textaligny		11 \
-	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textstyle		ITEM_TEXTSTYLE_NORMAL \
 	dvar			cvarprefix "_name" \
 	dvartest		cvarprefix "_health" \
 	hideDvar		{ ""; } \
@@ -1096,12 +1125,12 @@ itemDef \
 	origin			5 9 \
 	type			ITEM_TYPE_TEXT \
 	visible			1 \
-	forecolor		1 1 1 .7 \
+	forecolor		color_text2 \
 	textfont		UI_FONT_NORMAL \
 	textscale		.16 \
 	textalign		ITEM_ALIGN_LEFT \
 	textaligny		12 \
-	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textstyle		ITEM_TEXTSTYLE_NORMAL \
 	dvar			cvarprefix "_score" \
 	dvartest		cvarprefix "_health" \
 	hideDvar		{ "" } \
@@ -1110,15 +1139,15 @@ itemDef \
 itemDef \
 { \
 	rect			x_offset y_offset 0 0 horizontal_align 0 \
-	origin			30 9 \
+	origin			29 9 \
 	type			ITEM_TYPE_TEXT \
 	visible			1 \
-	forecolor		1 1 1 .7 \
+	forecolor		color_text2 \
 	textfont		UI_FONT_NORMAL \
 	textscale		.15 \
 	textalign		ITEM_ALIGN_LEFT \
 	textaligny		12 \
-	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textstyle		ITEM_TEXTSTYLE_NORMAL \
 	dvar			cvarprefix "_weapon" \
 	dvartest		cvarprefix "_health" \
 	hideDvar		{ "" } \
@@ -1141,16 +1170,32 @@ itemDef \
 	hideDvar		{ "" } \
 	decoration \
 } \
+\
+/* If dead, overlay whole bar to dim the texts*/ \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 128 23 horizontal_align 0 \
-	backcolor	STREAMERSYSTEM_COLOR_BG_ALIVE_DEAD_FG \
 	visible		1 \
+	backcolor	STREAMERSYSTEM_COLOR_BG_DEAD \
+	background	"streamer_playerbar_bg" \
 	dvartest	cvarprefix "_health" \
 	showDvar	{ "0"; "0_" } \
 	decoration \
-}
+} \
+\
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 15 15 horizontal_align 0 \
+	backcolor	1 1 1 .5 \
+	origin		112 4 \
+	visible		1 \
+	background	"gfx/hud/death_suicide.tga" \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "0"; "0_";  } \
+	decoration \
+} \
 
 
 
@@ -1464,9 +1509,55 @@ itemDef \
 
 
 
-
-
-
+#define ITEM_SLIDER(x, y, cvarname, minval, maxval) \
+itemDef \
+{ \
+	/*name 		slidebar_desc*/ \
+	rect 		x y 65 12 0 0 \
+	origin 		0 0 \
+	type 		ITEM_TYPE_BUTTON \
+	text 		cvarname \
+	textstyle	OPTIONS_ITEM_TEXT_STYLE \
+	textalignx	0 \
+	textaligny	13 \
+	textscale	.25 \
+	style		WINDOW_STYLE_FILLED \
+	backcolor	OPTIONS_CONTROL_BACKCOLOR \
+	forecolor	OPTIONS_CONTROL_FORECOLOR \
+	visible 1 \
+	decoration \
+} \
+itemDef \
+{ \
+	/*name 		slidebar_bar*/ \
+	rect		x y 320 13 0 0 \
+	origin 		40 0 \
+	type 		ITEM_TYPE_SLIDER \
+	text 		" " \
+	dvarfloat 	cvarname 0 minval maxval \
+	style		WINDOW_STYLE_FILLED \
+	textalignx	0 \
+	textaligny	11 \
+	visible		1 \
+} \
+itemDef \
+{ \
+	/*name 		slidebar_value \*/ \
+	rect 		x y 65 12 0 0 \
+	origin 		130 0 \
+	type 		ITEM_TYPE_DECIMALFIELD \
+	text 		"" \
+	dvarfloat 	cvarname 0 minval maxval \
+	textstyle	OPTIONS_ITEM_TEXT_STYLE \
+	textalignx	0 \
+	textaligny	11 \
+	textscale	.25 \
+	style		WINDOW_STYLE_FILLED \
+	backcolor	OPTIONS_CONTROL_BACKCOLOR \
+	forecolor	OPTIONS_CONTROL_FORECOLOR \
+	visible 1 \
+	decoration \
+}
 
 // All sub-menus that can be possibly opened at the same time
 #define CLOSE_SUBMENUS close ingame_keys; close team_britishgerman_keys; close team_americangerman_keys; close team_russiangerman_keys; close ingame_scoreboard_sd; close rcon_map; close rcon_map_maps; close rcon_map_pams; close rcon_map_other; close rcon_map_apply; close rcon_settings; close rcon_settings_shared; close rcon_settings_gametypes; close rcon_settings_focus; close rcon_kick; close aboutpam; close pammodes;

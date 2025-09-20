@@ -158,7 +158,7 @@ join_streamer_enable(loaded_from_settings, color_mode)
 		if (loaded_from_settings && !isDefined(self.pers["firstTeamSelected"]))
 		{
 			// Set color mode
-			self.pers["streamerSystem_colorMode"] = color_mode;
+			self.pers["streamerSystem_colorMode"] = 1; //color_mode;
 
 			self thread move_to_streamers();
 		}
@@ -192,7 +192,7 @@ join_streamer_toggle()
 
 // 1 = blue red (default)
 // 2 = cyan purple
-toggle_color_mode()
+/*toggle_color_mode()
 {
 	self endon("disconnect");
 
@@ -204,7 +204,7 @@ toggle_color_mode()
 		self.pers["streamerSystem_colorMode"] = 1;
 
 	self maps\mp\gametypes\_quicksettings::updateClientSettings("streamer_color");
-}
+}*/
 
 
 
@@ -416,7 +416,7 @@ onMenuResponse(menu, response)
 		}
 
 		// C
-		else if (response == "color")
+		/*else if (response == "color")
 		{
 			// Ignore in killcam or if menu is closed
 			if (isDefined(self.killcam) || self.pers["streamerSystem_menu_opened"] == false)
@@ -430,7 +430,7 @@ onMenuResponse(menu, response)
 			self thread openStreamerMenu();
 
 			return true;
-		}
+		}*/
 
 		// Space button
 		else if (response == "help")
@@ -818,6 +818,8 @@ player_loop()
 			{
 				self setClientCvar2("cl_bypassMouseInput", cl_bypassMouseInput);
 				self.pers["streamerSystem_bypassMouseInput"] = cl_bypassMouseInput;
+
+				self setClientCvar2("m_enable", cl_bypassMouseInput); // CoD2x cvar to disable cursor movement, but keep system cursor ingame
 			}
 
 		}

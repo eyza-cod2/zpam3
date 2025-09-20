@@ -11,10 +11,8 @@ menuDef
 		open quickmessage_streamersystem_menu_exec
 
 		// Its in separated menu because of number of items game limitatin
-		uiScript openMenuOnDvar ui_streamer_color "1" quickmessage_streamersystem_menu_bars_blue_red;
-		uiScript openMenuOnDvar ui_streamer_color "1" quickmessage_streamersystem_menu_matchinfo_blue_red;
-		uiScript openMenuOnDvar ui_streamer_color "2" quickmessage_streamersystem_menu_bars_custom_color;
-		uiScript openMenuOnDvar ui_streamer_color "2" quickmessage_streamersystem_menu_matchinfo_custom_color;
+		uiScript openMenuOnDvar ui_streamer_color "1" quickmessage_streamersystem_menu_bars;
+		uiScript openMenuOnDvar ui_streamer_color "1" quickmessage_streamersystem_menu_matchinfo;
 		uiScript openMenuOnDvar ui_scoreboard_show "sd" quickmessage_streamersystem_menu_scoreboard_sd;
 		uiScript openMenuOnDvar ui_scoreboard_show "sd" quickmessage_streamersystem_menu_scoreboard_sd_lines;
 
@@ -26,10 +24,8 @@ menuDef
 		close "quickmessage_streamersystem_menu_overlay"
 		close "quickmessage_streamersystem_menu_scoreboard_sd"
 		close "quickmessage_streamersystem_menu_scoreboard_sd_lines"
-		close "quickmessage_streamersystem_menu_bars_blue_red"
-		close "quickmessage_streamersystem_menu_matchinfo_blue_red"
-		close "quickmessage_streamersystem_menu_bars_custom_color"
-		close "quickmessage_streamersystem_menu_matchinfo_custom_color"
+		close "quickmessage_streamersystem_menu_bars"
+		close "quickmessage_streamersystem_menu_matchinfo"
 		close "quickmessage_streamersystem_menu_killcam"
 		close "quickmessage_streamersystem_menu_exec"
 	}
@@ -53,10 +49,14 @@ menuDef
 		exec "setfromdvar cg_drawLagometer_original cg_drawLagometer";
 		exec "setfromdvar cg_drawFPS_original cg_drawFPS";
 		exec "set con_gamemessagetime 99";	// killfeed seconds
-		exec "set cg_hudCompassSize 1";
-		exec "set cg_hudChatPosition 5 135";
+		exec "set cg_hudCompassSize 1.05";
+		exec "set cg_hudChatPosition 5 260";
 		exec "set cg_drawLagometer 0";
 		exec "set cg_drawFPS 0";
+
+		exec "set cg_drawRadar 1"; // CoD2x
+		exec "set cg_drawCompass 0"; // CoD2x
+		exec "set cg_drawSpectatedPlayerName 0"; // CoD2x
 	}
 	onClose
 	{
@@ -67,6 +67,11 @@ menuDef
 		exec "setfromdvar cg_hudChatPosition cg_hudChatPosition_original";
 		exec "setfromdvar cg_drawLagometer cg_drawLagometer_original";
 		exec "setfromdvar cg_drawFPS cg_drawFPS_original";
+
+		exec "set cg_drawRadar 0"; // CoD2x
+		exec "set cg_drawCompass 1"; // CoD2x
+		exec "set cg_drawSpectatedPlayerName 1"; // CoD2x
+		exec "set m_enable 1"; // CoD2x enable mouse movement
 	}
 }
 
@@ -94,36 +99,37 @@ menuDef
 
 
 
-	execKeyInt 200 { play "mouse_click"; exec "openscriptmenu streamersystem mouse1" } // left mouse
-	execKeyInt 201 { play "mouse_click"; exec "openscriptmenu streamersystem mouse2" } // right mouse
+	execKeyInt 200 { exec "openscriptmenu streamersystem mouse1" } // left mouse
+	execKeyInt 201 { exec "openscriptmenu streamersystem mouse2" } // right mouse
 	execKeyInt 202 { play "mouse_click"; exec "openscriptmenu streamersystem mouse3" } // middle
 
 	// shift
 	execKeyInt 160 {
-		play "mouse_click";
+		//play "mouse_click";
 		exec "openscriptmenu streamersystem shift;";
 		setDvar cl_bypassMouseInput "1"; // disable cursor movement, enable ingame movement
+		setDvar m_enable "1"; // enable mouse movement
 		close quickmessage_streamersystem_menu;
 	}
 
 
-	execKey "1" { play "mouse_click"; exec "openscriptmenu streamersystem follow_1" }
-	execKey "2" { play "mouse_click"; exec "openscriptmenu streamersystem follow_2" }
-	execKey "3" { play "mouse_click"; exec "openscriptmenu streamersystem follow_3" }
-	execKey "4" { play "mouse_click"; exec "openscriptmenu streamersystem follow_4" }
-	execKey "5" { play "mouse_click"; exec "openscriptmenu streamersystem follow_5" }
-	execKey "6" { play "mouse_click"; exec "openscriptmenu streamersystem follow_6" }
-	execKey "7" { play "mouse_click"; exec "openscriptmenu streamersystem follow_7" }
-	execKey "8" { play "mouse_click"; exec "openscriptmenu streamersystem follow_8" }
-	execKey "9" { play "mouse_click"; exec "openscriptmenu streamersystem follow_9" }
-	execKey "0" { play "mouse_click"; exec "openscriptmenu streamersystem follow_10" }
+	execKey "1" { exec "openscriptmenu streamersystem follow_1" }
+	execKey "2" { exec "openscriptmenu streamersystem follow_2" }
+	execKey "3" { exec "openscriptmenu streamersystem follow_3" }
+	execKey "4" { exec "openscriptmenu streamersystem follow_4" }
+	execKey "5" { exec "openscriptmenu streamersystem follow_5" }
+	execKey "6" { exec "openscriptmenu streamersystem follow_6" }
+	execKey "7" { exec "openscriptmenu streamersystem follow_7" }
+	execKey "8" { exec "openscriptmenu streamersystem follow_8" }
+	execKey "9" { exec "openscriptmenu streamersystem follow_9" }
+	execKey "0" { exec "openscriptmenu streamersystem follow_10" }
 
 
-	execKey "r" { play "mouse_click"; open quickmessage_streamersystem_menu_killcam; }
-	execKey "x"  { play "mouse_click"; exec "openscriptmenu streamersystem xray" }
-	execKey "h"  { play "mouse_click"; exec "openscriptmenu streamersystem hit" }
-	execKey "c"  { play "mouse_click"; exec "openscriptmenu streamersystem color"; close quickmessage_streamersystem_menu; }
-	execKey "f"  { play "mouse_click"; exec "+activate; -activate" } // simulate F bind press
+	execKey "r"   { play "mouse_click"; open quickmessage_streamersystem_menu_killcam; }
+	execKey "x"   { play "mouse_click"; exec "openscriptmenu streamersystem xray" }
+	execKey "h"   { play "mouse_click"; exec "openscriptmenu streamersystem hit" }
+	//execKey "c"   { play "mouse_click"; exec "openscriptmenu streamersystem color"; close quickmessage_streamersystem_menu; }
+	execKey "f"   { play "mouse_click"; exec "+activate; -activate" } // simulate F bind press
 	execKeyInt 32 { play "mouse_click"; exec "openscriptmenu streamersystem help" } // space
 
 
@@ -139,10 +145,7 @@ menuDef
 	//
 
 	// Match info (score progress, previous maps, ...)
-	ITEM_STREAMERSYSTEM_DVAR(240, 370, 0.2, "ui_streamersystem_matchInfo", HORIZONTAL_ALIGN_LEFT, ITEM_ALIGN_LEFT)
-
-	// 5v5  5v4  5v3  4v3
-	ITEM_STREAMERSYSTEM_DVAR(-160, 463, 0.2, "ui_streamersystem_playerProgress", HORIZONTAL_ALIGN_RIGHT, ITEM_ALIGN_LEFT)
+	ITEM_STREAMERSYSTEM_DVAR(270, 378, 0.2, "ui_streamersystem_matchInfo", HORIZONTAL_ALIGN_LEFT, ITEM_ALIGN_LEFT)
 
 
 	// Planting / defusing
@@ -176,10 +179,9 @@ menuDef
 	ITEM_STREAMERSYSTEM_KEY("Press ^3[ESC]^7 to close streamer menu", 		-48, 135, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
 	ITEM_STREAMERSYSTEM_KEY("Press ^3[Space]^7 to toggle help", 			-48, 145, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
 
-	ITEM_STREAMERSYSTEM_BG(-52 278 175 25 HORIZONTAL_ALIGN_RIGHT 0, 0 0 0 0.9, "ui_spectatorsystem_keys", showDvar { "1" })
-	ITEM_STREAMERSYSTEM_KEY("Your binds are not working in streamer mode.", 	-48, 290, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
-	ITEM_STREAMERSYSTEM_KEY("To use binds, close streamer menu via ^3[ESC]^7 key.", -48, 300, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
-
+	ITEM_STREAMERSYSTEM_BG(-52 148 175 25 HORIZONTAL_ALIGN_RIGHT 0, 0 0 0 0.9, "ui_spectatorsystem_keys", showDvar { "1" })
+	ITEM_STREAMERSYSTEM_KEY("Your binds are not working in streamer mode.", 	-48, 160, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
+	ITEM_STREAMERSYSTEM_KEY("To use binds, close streamer menu via ^3[ESC]^7 key.", -48, 170, 0.18, HORIZONTAL_ALIGN_RIGHT, "ui_spectatorsystem_keys")
 
 
 
@@ -187,28 +189,19 @@ menuDef
 
 	itemDef
 	{
-		name			"cursor_bg"
+		name			"warning_textbg"
 		style			WINDOW_STYLE_FILLED
 		type			ITEM_TYPE_BUTTON
-		visible			0
-		rect			-2 -2 900 482 0 0
-		backcolor		0 0 0 0.4
-	}
-
-
-	itemDef
-	{
-		name			"cursor_textbg"
-		style			WINDOW_STYLE_FILLED
-		type			ITEM_TYPE_BUTTON
-		visible			0
-		rect			0 260 256 40 HORIZONTAL_ALIGN_CENTER 0
+		visible			1
+		rect			-22 260 300 40 HORIZONTAL_ALIGN_CENTER 0
 		backcolor		.1 0 0 .9
+		dvartest		"r_aspectRatio"
+		hideDvar 		{ "wide 16:9"; "auto" }
 	}
 	itemDef
 	{
-		name			"cursor_text"
-		visible			0
+		name			"warning_text"
+		visible			1
 		rect			128 287 0 0 HORIZONTAL_ALIGN_CENTER 0
 		origin			0 0
 		forecolor		1 1 1 1
@@ -216,119 +209,54 @@ menuDef
 		textscale		0.28
 		textstyle 		ITEM_TEXTSTYLE_BLINK
 		textalign		ITEM_ALIGN_CENTER
-		text			"Move the cursor to the right bottom corner!"
+		text			"Set Aspect Ratio to 16:9 in your video settings."
+		dvartest		"r_aspectRatio"
+		hideDvar 		{ "wide 16:9"; "auto" }
 		decoration
 	}
 
-	itemDef
-	{
-		name			"cursor_ok"
-		style			WINDOW_STYLE_FILLED
-		type			ITEM_TYPE_BUTTON
-		visible			1
-		rect			40 -14 90 16 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
-		backcolor		0 0 0 0
-		mouseEnter
-		{
-			play "mouse_over";
-
-			setitemcolor "cursor_ok" backcolor 0 0 0 0;
-			hide "cursor_bg";
-			hide "cursor_textbg";
-			hide "cursor_text";
-		}
-		mouseExit
-		{
-			play "mouse_over";
-
-			setitemcolor "cursor_ok" backcolor 0 1 0 .5;
-			show "cursor_bg";
-			show "cursor_textbg";
-			show "cursor_text";
-		}
-	}
 }
 
-
-
-
-
-menuDef
-{
-  	name 			"quickmessage_streamersystem_menu_matchinfo_blue_red"
-    	rect 			-128 0 896 480 0 0
-	focuscolor		GLOBAL_FOCUSED_COLOR
-	style			WINDOW_STYLE_EMPTY
-	blurWorld		0
-
-	MATCHINFO_STREAMER("ui_matchinfo_team1_team", "ui_matchinfo_team2_team", "ui_matchinfo_show", .16 .28 .74 1,   .5 .0 .0 1)
-}
-
-menuDef
-{
-	name			"quickmessage_streamersystem_menu_bars_blue_red"
-	rect			-128 0 896 480
-	focuscolor		GLOBAL_FOCUSED_COLOR
-	style			WINDOW_STYLE_EMPTY
-	blurWorld		0
-	onOpen
-	{
-		exec "set g_TeamColor_Allies .36 .48 .94 .9";
-		exec "set g_TeamColor_Axis .7 .0 .0 .9";
-	}
-
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player0", "1", 128, 154, HORIZONTAL_ALIGN_LEFT,   .16 .28 .74 .9,   .5 .0 .0 .9,    .02 .04 .11 1,    .07 .0 .0 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player1", "2", 128, 178, HORIZONTAL_ALIGN_LEFT,   .16 .28 .74 .9,   .5 .0 .0 .9,    .02 .04 .11 1,    .07 .0 .0 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player2", "3", 128, 202, HORIZONTAL_ALIGN_LEFT,   .16 .28 .74 .9,   .5 .0 .0 .9,    .02 .04 .11 1,    .07 .0 .0 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player3", "4", 128, 226, HORIZONTAL_ALIGN_LEFT,   .16 .28 .74 .9,   .5 .0 .0 .9,    .02 .04 .11 1,    .07 .0 .0 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player4", "5", 128, 250, HORIZONTAL_ALIGN_LEFT,   .16 .28 .74 .9,   .5 .0 .0 .9,    .02 .04 .11 1,    .07 .0 .0 1)
-
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player0", "6", 0, 154, HORIZONTAL_ALIGN_RIGHT,   .16 .28 .74 .9,   .5 .0 .0 .9,    .02 .04 .11 1,    .07 .0 .0 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player1", "7", 0, 178, HORIZONTAL_ALIGN_RIGHT,   .16 .28 .74 .9,   .5 .0 .0 .9,    .02 .04 .11 1,    .07 .0 .0 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player2", "8", 0, 202, HORIZONTAL_ALIGN_RIGHT,   .16 .28 .74 .9,   .5 .0 .0 .9,    .02 .04 .11 1,    .07 .0 .0 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player3", "9", 0, 226, HORIZONTAL_ALIGN_RIGHT,   .16 .28 .74 .9,   .5 .0 .0 .9,    .02 .04 .11 1,    .07 .0 .0 1)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player4", "0", 0, 250, HORIZONTAL_ALIGN_RIGHT,   .16 .28 .74 .9,   .5 .0 .0 .9,    .02 .04 .11 1,    .07 .0 .0 1)
-}
 
 
 // Include color constants that could be customized in separate iwd file
-#include "ui_mp/streamer_custom_colors.menu"
+#include "ui_mp/streamer_custom_colors_v2.menu"
 
 menuDef
 {
-  	name 			"quickmessage_streamersystem_menu_matchinfo_custom_color"
-    	rect 			-128 0 896 480 0 0
+  	name 			"quickmessage_streamersystem_menu_matchinfo"
+    rect 			0 5 200 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
 	focuscolor		GLOBAL_FOCUSED_COLOR
 	style			WINDOW_STYLE_EMPTY
 	blurWorld		0
 
-	MATCHINFO_STREAMER("ui_matchinfo_team1_team", "ui_matchinfo_team2_team", "ui_matchinfo_show", STREAMER_COLOR_TEAM_NAME_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS)
+	MATCHINFO_STREAMER("ui_matchinfo_team1_team", "ui_matchinfo_team2_team", "ui_matchinfo_show", STREAMER_COLOR_HEADING, STREAMER_COLOR_ALLIES_GR, STREAMER_COLOR_AXIS_GR, STREAMER_COLOR_ALLIES_BG, STREAMER_COLOR_AXIS_BG, STREAMER_COLOR_TEXT)
 }
 
 menuDef
 {
-	name			"quickmessage_streamersystem_menu_bars_custom_color"
+	name			"quickmessage_streamersystem_menu_bars"
 	rect			-128 0 896 480
 	focuscolor		GLOBAL_FOCUSED_COLOR
 	style			WINDOW_STYLE_EMPTY
 	blurWorld		0
 	onOpen
 	{
-		exec "set g_TeamColor_Allies " STREAMER_COLOR_KILLFEED_ALLIES;
-		exec "set g_TeamColor_Axis " STREAMER_COLOR_KILLFEED_AXIS;
+		exec "set g_TeamColor_Allies 0.039 0.808 1.000 1.000";
+		exec "set g_TeamColor_Axis 1.000 0.784 0.000 1.000";
 	}
 
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player0", "1", 128, 154, HORIZONTAL_ALIGN_LEFT,   STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player1", "2", 128, 178, HORIZONTAL_ALIGN_LEFT,   STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player2", "3", 128, 202, HORIZONTAL_ALIGN_LEFT,   STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player3", "4", 128, 226, HORIZONTAL_ALIGN_LEFT,   STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player4", "5", 128, 250, HORIZONTAL_ALIGN_LEFT,   STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player0", "1", "1", 136, 355, HORIZONTAL_ALIGN_LEFT,    STREAMER_COLOR_ALLIES_GR,   STREAMER_COLOR_AXIS_GR,    STREAMER_COLOR_ALLIES_BG,   STREAMER_COLOR_AXIS_BG,   STREAMER_COLOR_ALLIES_DAMAGE,  STREAMER_COLOR_AXIS_DAMAGE,  STREAMER_COLOR_TEXT,  STREAMER_COLOR_TEXT_2)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player1", "2", "2", 136, 379, HORIZONTAL_ALIGN_LEFT,    STREAMER_COLOR_ALLIES_GR,   STREAMER_COLOR_AXIS_GR,    STREAMER_COLOR_ALLIES_BG,   STREAMER_COLOR_AXIS_BG,   STREAMER_COLOR_ALLIES_DAMAGE,  STREAMER_COLOR_AXIS_DAMAGE,  STREAMER_COLOR_TEXT,  STREAMER_COLOR_TEXT_2)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player2", "3", "3", 136, 403, HORIZONTAL_ALIGN_LEFT,    STREAMER_COLOR_ALLIES_GR,   STREAMER_COLOR_AXIS_GR,    STREAMER_COLOR_ALLIES_BG,   STREAMER_COLOR_AXIS_BG,   STREAMER_COLOR_ALLIES_DAMAGE,  STREAMER_COLOR_AXIS_DAMAGE,  STREAMER_COLOR_TEXT,  STREAMER_COLOR_TEXT_2)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player3", "4", "4", 136, 427, HORIZONTAL_ALIGN_LEFT,    STREAMER_COLOR_ALLIES_GR,   STREAMER_COLOR_AXIS_GR,    STREAMER_COLOR_ALLIES_BG,   STREAMER_COLOR_AXIS_BG,   STREAMER_COLOR_ALLIES_DAMAGE,  STREAMER_COLOR_AXIS_DAMAGE,  STREAMER_COLOR_TEXT,  STREAMER_COLOR_TEXT_2)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team1_player4", "5", "5", 136, 451, HORIZONTAL_ALIGN_LEFT,    STREAMER_COLOR_ALLIES_GR,   STREAMER_COLOR_AXIS_GR,    STREAMER_COLOR_ALLIES_BG,   STREAMER_COLOR_AXIS_BG,   STREAMER_COLOR_ALLIES_DAMAGE,  STREAMER_COLOR_AXIS_DAMAGE,  STREAMER_COLOR_TEXT,  STREAMER_COLOR_TEXT_2)
 
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player0", "6", 0, 154, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player1", "7", 0, 178, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player2", "8", 0, 202, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player3", "9", 0, 226, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
-	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player4", "0", 0, 250, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_PLAYER_BAR_ALLIES,   STREAMER_COLOR_TEAM_NAME_AXIS,    STREAMER_COLOR_PLAYER_BAR_ALLIES_BG,    STREAMER_COLOR_PLAYER_BAR_AXIS_BG)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player0", "6", "1", -8, 355, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_ALLIES_GR,   STREAMER_COLOR_AXIS_GR,    STREAMER_COLOR_ALLIES_BG,   STREAMER_COLOR_AXIS_BG,   STREAMER_COLOR_ALLIES_DAMAGE,  STREAMER_COLOR_AXIS_DAMAGE,  STREAMER_COLOR_TEXT,  STREAMER_COLOR_TEXT_2)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player1", "7", "2", -8, 379, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_ALLIES_GR,   STREAMER_COLOR_AXIS_GR,    STREAMER_COLOR_ALLIES_BG,   STREAMER_COLOR_AXIS_BG,   STREAMER_COLOR_ALLIES_DAMAGE,  STREAMER_COLOR_AXIS_DAMAGE,  STREAMER_COLOR_TEXT,  STREAMER_COLOR_TEXT_2)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player2", "8", "3", -8, 403, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_ALLIES_GR,   STREAMER_COLOR_AXIS_GR,    STREAMER_COLOR_ALLIES_BG,   STREAMER_COLOR_AXIS_BG,   STREAMER_COLOR_ALLIES_DAMAGE,  STREAMER_COLOR_AXIS_DAMAGE,  STREAMER_COLOR_TEXT,  STREAMER_COLOR_TEXT_2)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player3", "9", "4", -8, 427, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_ALLIES_GR,   STREAMER_COLOR_AXIS_GR,    STREAMER_COLOR_ALLIES_BG,   STREAMER_COLOR_AXIS_BG,   STREAMER_COLOR_ALLIES_DAMAGE,  STREAMER_COLOR_AXIS_DAMAGE,  STREAMER_COLOR_TEXT,  STREAMER_COLOR_TEXT_2)
+	ITEM_STREAMERSYSTEM_LINE("ui_streamersystem_team2_player4", "0", "5", -8, 451, HORIZONTAL_ALIGN_RIGHT,    STREAMER_COLOR_ALLIES_GR,   STREAMER_COLOR_AXIS_GR,    STREAMER_COLOR_ALLIES_BG,   STREAMER_COLOR_AXIS_BG,   STREAMER_COLOR_ALLIES_DAMAGE,  STREAMER_COLOR_AXIS_DAMAGE,  STREAMER_COLOR_TEXT,  STREAMER_COLOR_TEXT_2)
 }
 
 
@@ -337,7 +265,7 @@ menuDef
 menuDef
 {
   	name			quickmessage_streamersystem_menu_killcam
-	rect			-430 0 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
+	rect			-365 -70 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
 	style			0
 	fullscreen		0
 
