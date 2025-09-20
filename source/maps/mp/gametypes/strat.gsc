@@ -838,6 +838,15 @@ Run_Strat()
 		self.recordSlots[i].angles = [];
 	}
 
+	self.clock = newClientHudElem2(self);
+	self.clock.font = "default";
+	self.clock.fontscale = 2;
+	self.clock.horzAlign = "center_safearea";
+	self.clock.vertAlign = "top";
+	self.clock.color = (1, 1, 1);
+	self.clock.x = -25;
+	self.clock.y = 445;
+	self.clock setTimer(0.001);
 
 	// Ignore bots
 	if (self.pers["isBot"])
@@ -1622,17 +1631,7 @@ playRecords()
 	self iprintlnbold(" ");
 	self iprintlnbold(" ");
 
-	if (isDefined(self.clock))
-		self.clock destroy2();
 
-	self.clock = newClientHudElem2(self);
-	self.clock.font = "default";
-	self.clock.fontscale = 2;
-	self.clock.horzAlign = "center_safearea";
-	self.clock.vertAlign = "top";
-	self.clock.color = (1, 1, 1);
-	self.clock.x = -25;
-	self.clock.y = 445;
 	self.clock setTimer(2 * 60);
 
 
@@ -1652,7 +1651,7 @@ playRecords()
 	while (self.replayedRecords != records)
 		wait level.fps_multiplier * .1;
 
-	self.clock destroy2();
+	self.clock setTimer(0.001);
 
 	self iprintln("Playing finished");
 }
