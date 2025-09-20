@@ -107,6 +107,7 @@ Register_Shared_Cvars()
 
 	[[sVarEx]]("I", "scr_posters", "BOOL", 0);              // level.scr_posters, ignore change
 
+	[[sVar]]("sv_cracked", "BOOL", 0);		// CoD2x
 	[[sVar]]("g_competitive", "BOOL", 1);   // CoD2x
 }
 
@@ -207,7 +208,8 @@ onCvarChanged(cvar, value, isRegisterTime)
 				level thread restartMap();
 			}
 			return true;
-			
+
+		case "sv_cracked": return true;
 		case "g_competitive": return true;
 	}
 	return false;
