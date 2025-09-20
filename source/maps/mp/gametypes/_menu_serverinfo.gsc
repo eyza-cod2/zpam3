@@ -4,8 +4,10 @@ init()
 {
 	addEventListener("onStartGameType", ::onStartGameType);
 	addEventListener("onCvarChanged",   ::onCvarChanged);
+	addEventListener("onConnected",     ::onConnected);
+	addEventListener("onDisconnect",    ::onDisconnect);
 
-	registerCvarEx("I", "scr_motd", "STRING", "Welcome. This server is running zPAM3.36");	// ZPAM_RENAME
+	registerCvarEx("I", "scr_motd", "STRING", "Welcome. This server is running zPAM4.00");	// ZPAM_RENAME
 
 	level.motd = "";
 	level.serverversion = "";
@@ -13,6 +15,7 @@ init()
 	level.serverinfo_left2 = "";
 	level.serverinfo_right1 = "";
 	level.serverinfo_right2 = "";
+	level.match_description = "";
 }
 
 // Called after the <gametype>.gsc::main() and <map>.gsc::main() scripts are called
@@ -20,7 +23,40 @@ init()
 // Called again for every round in round-based gameplay
 onStartGameType()
 {
+	waittillframeend; // wait till game variables are set
 	generateGlobalServerInfo();
+}
+
+onConnected()
+{
+	self endon("disconnect");
+
+	if (matchIsActivated()) {
+
+		// Prevent calling multiple times in one frame
+		level notify("menu_serverinfo_onConnected");
+		level endon("menu_serverinfo_onConnected");
+		waittillframeend;
+
+		generateMatchDescription(); // regenerate match description
+
+		updateCvarsForAllPlayers();
+	}
+}
+
+onDisconnect() 
+{
+	if (matchIsActivated()) {
+
+		// Prevent calling multiple times in one frame
+		level notify("menu_serverinfo_onDisconnect");
+		level endon("menu_serverinfo_onDisconnect");
+		waittillframeend; // wait untill player is removed
+
+		generateMatchDescription(); // regenerate match description
+
+		updateCvarsForAllPlayers();
+	}
 }
 
 // This function is called when cvar changes value.
@@ -31,7 +67,9 @@ onCvarChanged(cvar, value, isRegisterTime)
 	// Server info update
 	if (!isRegisterTime && !game["firstInit"] && !isDefined(game["cvars"][cvar]["inQuiet"]) && cvar != "pam_mode_custom")
 	{
-		thread generateGlobalServerInfo();
+		generateGlobalServerInfo(); // regenerate server info
+
+		updateCvarsForAllPlayers();
 	}
 
 	switch(cvar)
@@ -45,7 +83,17 @@ onCvarChanged(cvar, value, isRegisterTime)
 // Called from menu wen serverinfo menu is opened
 updateServerInfo()
 {
-	self setClientCvarIfChanged("ui_motd", level.motd);
+	self updateCvarsForPlayer();
+}
+
+updateCvarsForPlayer()
+{
+	motd = level.motd;
+
+	if (level.match_description != "")
+		motd = level.match_description + "\n\n" + motd;
+
+	self setClientCvarIfChanged("ui_motd", motd);
 	self setClientCvarIfChanged("ui_serverversion", level.serverversion);
 
 	// These are set from gametype
@@ -57,10 +105,17 @@ updateServerInfo()
 	self setClientCvarIfChanged("ui_serverinfo_right2", level.serverinfo_right2);
 }
 
+updateCvarsForAllPlayers()
+{
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++) {
+		players[i] updateCvarsForPlayer();
+	}
+}
+
+
 generateGlobalServerInfo()
 {
-	waittillframeend; // wait untill all other server change functions are processed
-
 	// Generate motd
 	motd = level.scr_motd;
 	motd_final = "";
@@ -81,8 +136,34 @@ generateGlobalServerInfo()
 		else
 			motd_final += "" + motd[i];
 	}
-	level.motd = motd_final;
+	motd = motd_final;
 
+	// Replace zPAMx.xx pattern with zPAM4.00
+	motd_final = "";
+	i = 0;
+	while (i < motd.size)
+	{
+		// Look for "zPAM" followed by a digit, dot, digit, digit
+		if (
+			i + 6 < motd.size &&
+			motd[i] == "z" &&
+			motd[i+1] == "P" &&
+			motd[i+2] == "A" &&
+			motd[i+3] == "M" &&
+			isDigit(motd[i+4]) &&
+			motd[i+5] == "." &&
+			isDigit(motd[i+6]) &&
+			isDigit(motd[i+7])
+		)
+		{
+			motd_final += "zPAM4.00"; // ZPAM_RENAME
+			i += 8;
+			continue;
+		}
+		motd_final += motd[i];
+		i++;
+	}
+	level.motd = motd_final;
 
 
 
@@ -181,4 +262,100 @@ generateGlobalServerInfo()
 
 	level.serverinfo_right1 = title;
 	level.serverinfo_right2 = value;
+}
+
+
+generateMatchDescription()
+{
+	level.match_description = "";
+
+	if (!matchIsActivated())
+		return;
+
+	match_team1_name = matchGetData("team1_name");
+	match_team2_name = matchGetData("team2_name");
+	match_players1_uuid_arr = matchGetData("team1_player_uuids");
+	match_players2_uuid_arr = matchGetData("team2_player_uuids");
+	match_players1_name_arr = matchGetData("team1_player_names");
+	match_players2_name_arr = matchGetData("team2_player_names");
+	match_players1_arr_found = [];
+	match_players2_arr_found = [];
+	match_maps_arr = matchGetData("maps");
+
+	players1 = "";
+	players2 = "";
+	playersUnknown = "";
+
+	// Find player from connected players
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++) {
+		player = players[i];
+
+		player_uuid = player matchPlayerGetData("uuid");
+
+		//printLn("Player: " + player.name + " UUID: " + player_uuid);
+		
+		found = false;
+		if (player_uuid != "") {
+			for (j = 0; j < match_players1_uuid_arr.size; j++) {
+				if (match_players1_uuid_arr[j] == player_uuid && !isDefined(match_players1_arr_found[j])) {
+					if (players1 != "")
+						players1 += ", ";
+					players1 += "^2" + removeColorsFromString(match_players1_name_arr[j]) + "^7";
+					match_players1_arr_found[j] = true;
+					found = true;
+					break;
+				}
+			}
+			for (j = 0; !found && j < match_players2_uuid_arr.size; j++) {
+				if (match_players2_uuid_arr[j] == player_uuid && !isDefined(match_players2_arr_found[j])) {
+					if (players2 != "")
+						players2 += ", ";
+					players2 += "^2" + removeColorsFromString(match_players2_name_arr[j]) + "^7";
+					match_players2_arr_found[j] = true;
+					found = true;
+					break;
+				}
+			}
+		}
+
+		if (!found) {
+			if (playersUnknown != "")
+				playersUnknown += ", ";
+			playersUnknown += player.name;
+		}
+	}
+
+	// Loop match players and find not connected players
+	for (j = 0; j < match_players1_name_arr.size; j++) {
+		if (!isDefined(match_players1_arr_found[j])) {
+			if (players1 != "")
+				players1 += ", ";
+			players1 += "^7" + match_players1_name_arr[j] + "^7";
+		}
+	}
+	for (j = 0; j < match_players2_name_arr.size; j++) {
+		if (!isDefined(match_players2_arr_found[j])) {
+			if (players2 != "")
+				players2 += ", ";
+			players2 += "^7" + match_players2_name_arr[j] + "^7";
+		}
+	}
+
+
+	level.match_description = 
+		"Match | " + getCvar("sv_hostname") + "^7\n" +
+		"Team 1:  [^8" + removeColorsFromString(matchGetData("team1_name")) + "^7]:  " + players1 + "^7\n" +
+		"Team 2:  [^9" + removeColorsFromString(matchGetData("team2_name")) + "^7]:  " + players2 + "^7\n";
+
+	if (playersUnknown != "")
+		level.match_description += "^3Unknown players: " + playersUnknown + "^7\n";
+
+	level.match_description += "Maps:  ";
+	for (j = 0; j < match_maps_arr.size; j++) {
+		if (j != 0)
+			level.match_description += ", ";
+		level.match_description += match_maps_arr[j];
+	}
+
 }
