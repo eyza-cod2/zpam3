@@ -26,7 +26,7 @@ init()
 		// Errors
 		precacheString2("STRING_PAM_DONT_STEAL", &"This version of pam is only for testing! Dont steal!");
 		precacheString2("STRING_PAM_FS_GAME", &"Cvar /fs_game is not empty!)");
-		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam336.iwd^7 must be installed in ^9main^7 folder."); // ZPAM_RENAME
+		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam400.iwd^7 must be installed in ^9main^7 folder."); // ZPAM_RENAME
 		precacheString2("STRING_PAM_GETTING_IWD_FILES_ERROR", &"Error while getting loaded iwd files. Make sure iwd files does not contains spaces.");
 		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v6.iwd^7 does not exists in ^9main^7 folder"); // ZPAM_RENAME
 		precacheString2("STRING_PAM_MAPS_LOAD_ERROR", &"Error while checking if fixed maps exists. Map printed above was not found on server.");
@@ -41,7 +41,7 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam336"; // ZPAM_RENAME
+	level.pam_folder = "main/zpam400_test1"; // ZPAM_RENAME
 	level.pam_map_iwd = "zpam_maps_v6";
 
 	level.pam_mode_change = false;
@@ -141,14 +141,14 @@ CheckInstallation()
 	//"sv_iwdNames" is: "zpam320_alpha mp_burgundy_fix iw_15 iw_14 iw_13 iw_12 iw_11 iw_10 iw_09 iw_08 iw_07 iw_06 iw_05 iw_04 iw_03 iw_02 iw_01 iw_00" default: ""
 	//"sv_iwds" is: "530543226 960396763 181429573 -1449716526 780394069 -1333623355 -1980843666 1334775335 -621896007 1101180720 1046874969 1053665859 1842349204 -1652414412 1659111092 -1085686032 -2025394354 178615151 " default: ""
 
-/*
+
 	// eyza safe
-	if (getCvar("eyza") != "") // ZPAM_RENAME
+	/*if (getCvar("eyza") != "1337") // ZPAM_RENAME
 	{
 		setError(game["STRING_PAM_DONT_STEAL"]);
 		return;
-	}
-*/
+	}*/
+
 	// If fs_mode is set
 	if (tolower(level.fs_game) != "")
 	{
@@ -259,7 +259,6 @@ CheckInstallation()
 		}
 	}
 
-
 	// Zpam custom iwd file
 	if (arrayContains(nameArray, "zzz_zpam_custom"))
 	{
@@ -267,7 +266,6 @@ CheckInstallation()
 
 		return;
 	}
-
 
 	blackList = [];
 	blackList[blackList.size] = "zPAM207";
@@ -310,6 +308,9 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam334";
 	blackList[blackList.size] = "zpam_maps_v5";
 	blackList[blackList.size] = "zpam335";
+	blackList[blackList.size] = "zpam335_test1";
+	blackList[blackList.size] = "zpam335_test2";
+	blackList[blackList.size] = "zpam336";
 
 	blackList[blackList.size] = "mp_chelm_fix";
 	blackList[blackList.size] = "mp_breakout_tls";

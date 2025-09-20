@@ -1,21 +1,25 @@
 # Introduction
 
-Mod zPAM3.36 is a new version of PAM mode for CoD2. <br>
+Mod zPAM4.00 is a competitive mod for CoD2. <br>
 
 The code from the previous version zPAM 2.07 was completely rewritten and ported to a new code base, which helped in the implementation of new features and bug fixes.
 
 Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 3.36.<br>
+*This page describe only actual version zPAM 4.00.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
-- #### Actual version
-	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b>
+- #### Actual testing version
+	- 2025/09/20 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.00-test1/zpam400_test1.zip">zPAM 4.00 - zpam400_test1.zip</a></b> - compatible with **CoD2x >=1.4.5.x** only
+
+- #### Actual stable version
+	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
 
 ## Version list
-- 2025/09/15 - <b>zPAM 3.36</b>
+- 2025/09/20 - <b>zPAM 4.00 TEST 1 • CoD2x</b>
+- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/0ed8a460cddaffb7de0c1b54ce115c4c8dcdcbe6">zPAM 3.36</a></b>
 - 2025/09/02 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/2f22c5afbe6ba1a471e9a2cbbd98eee2025cd1de">zPAM 3.35</a></b>
 - 2024/08/25 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/e73c0fd786781238b6ee5f3e1b81580da84cbf76">zPAM 3.34</a></b>
 - 2023/08/30 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/abbc16d244a820aa08372d4238cb53062f90ced0">zPAM 3.33</a></b>
@@ -34,6 +38,31 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+<details><summary>zPAM 4.00 TEST 1 changes (click to open)</summary>
+<p>
+
+**Changes / Fixes / Improvements:**
+- Faster loading of objectives on round start on compass
+- New functions for developer
+- Clock in strat always visible (0:00)
+- Added objective icons (plant labels) in strat
+- Fixed double-hit sound via nade, added double-cross hit icon when 2 or more player are hit
+- Added warning about unsupported game version (1.0, 1.2, 1.3 and old CoD2x versions)
+- Added sv_cracked to be monitor for changes
+- Added scr_posters into ignored cvars + prevent restart when match system is activated
+- New streamer layout (CoD2x)
+- Match system support (CoD2x)
+- Competitive settings (limits of max fps, wait command,etc) (CoD2x)
+- Flag for first time player connects
+- Added CodeCallback_StopGameType (CoD2x)
+- Added support for sv_fps 40 (introduced in CoD2x)
+- Improved text when player call pistol bash
+- Fixed weapon count cvars for nades and smokes, used in custom settings for public servers
+</p>
+</details>
+
+
 
 
 <details><summary>zPAM 3.36 changes (click to open)</summary>
