@@ -27,7 +27,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 	return false;
 }
 
-updateDamageFeedback(enemy, count)
+updateDamageFeedback(enemy, soundCount, enemyCount)
 {
 	self endon("disconnect");
 
@@ -41,8 +41,10 @@ updateDamageFeedback(enemy, count)
 	{
 		if(isPlayer(self))
 		{
+			//self iprintln("^6DMG, soundCount: " + soundCount + ", enemyCount: " + enemyCount);
+
 			// Play hit sound
-			for (i = 1; i <= count; i++)
+			for (i = 1; i <= soundCount; i++)
 			{
 				self playlocalsound("MP_hit_alert");
 			}
@@ -59,6 +61,18 @@ updateDamageFeedback(enemy, count)
 				self.hud_damagefeedback.archived = true;
 				self.hud_damagefeedback setShader("damage_feedback", 24, 24);
 			}
+
+			if (enemyCount >= 2 && !isDefined(self.hud_damagefeedback2)) {
+				self.hud_damagefeedback2 = newClientHudElem2(self);
+				self.hud_damagefeedback2.horzAlign = "center";
+				self.hud_damagefeedback2.vertAlign = "middle";
+				self.hud_damagefeedback2.x = -13;
+				self.hud_damagefeedback2.y = -10;
+				self.hud_damagefeedback2.alpha = 0;
+				self.hud_damagefeedback2.archived = true;
+				self.hud_damagefeedback2 setShader("damage_feedback", 26, 20);
+			}
+
 
 			alpha = 1;
 			time = 1.2;
@@ -81,18 +95,24 @@ updateDamageFeedback(enemy, count)
 
 
 			self.hud_damagefeedback.color = color;
-
 			self.hud_damagefeedback fadeOverTime(0.00001);	// cancel fade time
-
-
 			self.hud_damagefeedback.alpha = alpha;
 
-
+			if (enemyCount >= 2) {
+				self.hud_damagefeedback2.color = color;
+				self.hud_damagefeedback2 fadeOverTime(0.00001);	// cancel fade time
+				self.hud_damagefeedback2.alpha = alpha;
+			}
 
 			wait delay * level.fps_multiplier;
 
 			self.hud_damagefeedback fadeOverTime(time);
 			self.hud_damagefeedback.alpha = 0;
+
+			if (enemyCount >= 2) {
+				self.hud_damagefeedback2 fadeOverTime(time);
+				self.hud_damagefeedback2.alpha = 0;
+			}
 
 
 
