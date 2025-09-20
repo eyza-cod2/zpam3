@@ -47,6 +47,9 @@ main()
 precache()
 {
 	precacheStatusIcon("compassping_enemyfiring"); // for streamers
+	precacheShader("objective");
+	precacheShader("objectiveA");
+	precacheShader("objectiveB");
 
 	precacheString2("STRING_FLY_ENABLED", &"Enabled");
 	precacheString2("STRING_FLY_DISABLED", &"Disabled");
@@ -113,6 +116,48 @@ onStartGameType()
 	allowed[0] = "sd";
 	allowed[1] = "bombzone";
 	maps\mp\gametypes\_gameobjects::main(allowed);
+
+
+
+	// Find bombzones (may be 1 bombzone or 2 bomzones A and B)
+	bombzones = getentarray("bombzone", "targetname");
+	array = [];
+	for(i = 0; i < bombzones.size; i++)
+	{
+		bombzone = bombzones[i];
+
+		if(isdefined(bombzone.script_bombmode_original) && isdefined(bombzone.script_label))
+			array[array.size] = bombzone;
+	}
+
+	if(array.size == 2)
+	{
+		bombzone0 = array[0];
+		bombzone1 = array[1];
+		bombzoneA = undefined;
+		bombzoneB = undefined;
+
+		if(bombzone0.script_label == "A" || bombzone0.script_label == "a")
+		{
+			bombzoneA = bombzone0;
+			bombzoneB = bombzone1;
+		}
+		else if(bombzone0.script_label == "B" || bombzone0.script_label == "b")
+		{
+			bombzoneA = bombzone1;
+			bombzoneB = bombzone0;
+		}
+
+		objective_add(0, "current", bombzoneA.origin, "objectiveA");
+		objective_add(1, "current", bombzoneB.origin, "objectiveB");
+	}
+	else if (array.size == 1)
+	{
+		bombzoneA = array[0];
+
+		objective_add(0, "current", bombzoneA.origin, "objectiveA");
+	}
+
 
 
 
