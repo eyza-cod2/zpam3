@@ -134,16 +134,6 @@ CodeCallback_StopGameType(fromScript, bComplete, shutdown, source)
 Called when a player begins connecting to the server.
 Called again for every map change or tournement restart.
 
-Return undefined if the client should be allowed, otherwise return
-a string with the reason for denial.
-
-Otherwise, the client will be sent the current gamestate
-and will eventually get to ClientBegin.
-
-firstTime will be qtrue the very first time a client connects
-to the server machine, but qfalse on map changes and tournement
-restarts.
-
 Default values of self (defined in game engine)
 self.psoffsettime 		= 0
 self.archivetime 		= 0
@@ -168,12 +158,18 @@ CodeCallback_PlayerConnect()
 	println("##### " + gettime() + " " + level.frame_num + " ##### Connecting: " + self.name);
 	#/
 
+	// Determine if this is first time player is connecting - useful to termine new player connection between rounds (map_restart(true) always calls PlayerConnect even if player was connected before)
+	if (!isDefined(self.pers["callbacksetup_firstTime"]))
+		self.pers["callbacksetup_firstTime"] = true;
+	else
+		self.pers["callbacksetup_firstTime"] = false;
+
 	self.sessionteam = "none"; // show player in "none" team in scoreboard while connecting
 
 	if (!isDefined(self.pers["antilagTimeOffset"]))
 		self.pers["antilagTimeOffset"] = 0;
 
-	self thread maps\mp\gametypes\global\events::notifyConnecting();
+	self thread maps\mp\gametypes\global\events::notifyConnecting(self.pers["callbacksetup_firstTime"]);
 
 	// Wait here until player is fully connected
 	self waittill("begin");
@@ -184,7 +180,7 @@ CodeCallback_PlayerConnect()
 
 	self thread emptyName();
 
-	self thread maps\mp\gametypes\global\events::notifyConnected();
+	self thread maps\mp\gametypes\global\events::notifyConnected(self.pers["callbacksetup_firstTime"]);
 
 	// If pam is not installed correctly, spawn outside
 	if (level.pam_installation_error)

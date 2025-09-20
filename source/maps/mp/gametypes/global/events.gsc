@@ -123,13 +123,13 @@ addListener(eventName, funcPointer)
 }
 
 
-notifyConnecting()
+notifyConnecting(firstTime)
 {
 	for (i = 0; i < level.events.onConnecting.size; i++)
-		self thread [[level.events.onConnecting[i]]]();
+		self thread [[level.events.onConnecting[i]]](firstTime);
 }
 
-notifyConnected()
+notifyConnected(firstTime)
 {
 	self endon("disconnect");
 
@@ -155,7 +155,7 @@ notifyConnected()
 	// Process onConnected events
 	for (i = 0; i < level.events.onConnected.size; i++)
 	{
-		self thread [[level.events.onConnected[i]]]();
+		self thread [[level.events.onConnected[i]]](/*firstTime*/);
 	}
 
 	// Wait for other players to connect
@@ -462,9 +462,9 @@ onStopGameType(fromScript, bComplete, shutdown)
     if (getCvar("debug") == "1") iprintln(GetTime() + ": ^6CATCHED: onStopGameType, fromScript:" + fromScript + ", bComplete:" + bComplete + ", shutdown:" + shutdown);
 }
 
-onConnecting()
+onConnecting(firstTime)
 {
-    if (getCvar("debug") == "1") iprintln(GetTime() + ": ^6CATCHED: connecting, "+self.name + "  entNum:" + self GetEntityNumber());
+    if (getCvar("debug") == "1") iprintln(GetTime() + ": ^6CATCHED: connecting, "+self.name + "  entNum:" + self GetEntityNumber() + ", firstTime:" + firstTime);
 }
 
 onConnected()

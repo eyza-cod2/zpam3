@@ -804,17 +804,11 @@ onStartGameType()
 Called when a player begins connecting to the server.
 Called again for every map change or tournement restart.
 
-Return undefined if the client should be allowed, otherwise return
-a string with the reason for denial.
-
-Otherwise, the client will be sent the current gamestate
-and will eventually get to ClientBegin.
-
 firstTime will be qtrue the very first time a client connects
 to the server machine, but qfalse on map changes and tournement
 restarts.
 ================*/
-onConnecting()
+onConnecting(firstTime)
 {
 	self.statusicon = "hud_status_connecting";
 }
