@@ -156,10 +156,11 @@ checkingRconCvarThread()
 			// Apply action
 			if (player.pers["rcon_map_apply_action"] != "")
 			{
-				if (matchIsActivated()) {
+				// TODO
+				/*if (matchIsActivated()) {
 					iprintln("^3Match is activated, map change/restart is disabled.");
 				}
-				else if (player.pers["rcon_map_apply_action"] == "fast_restart")
+				else*/ if (player.pers["rcon_map_apply_action"] == "fast_restart")
 					map_restart(false);
 				else
 					map(player.pers["rcon_map_apply_action"], false);

@@ -218,9 +218,10 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 restartMap()
 {
-	if (matchIsActivated()) {
+	// TODO
+	/*if (matchIsActivated()) {
 		return;
-	}
+	}*/
 	iprintln("Restarting map...");
 	wait level.fps_multiplier * 2;
 	map(level.mapname, false);
