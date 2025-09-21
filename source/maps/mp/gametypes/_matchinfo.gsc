@@ -928,13 +928,18 @@ uploadMatchData(printStatus) {
 	if (game["match_team1_side"] != "") 	team1_score = game[game["match_team1_side"] + "_score"];
 	if (game["match_team2_side"] != "") 	team2_score = game[game["match_team2_side"] + "_score"];
 
+	state = "playing";
+	if (game["state"] == "intermission") {
+		state = "finished";
+	}
+
 	// Set global data
 	matchSetData(
 		"team1_score", team1_score,
 		"team2_score", team2_score,
 		"map", level.mapname,
-		"round", game["match_round"]/*,
-		"state", game["match_state"]*/
+		"round", game["match_round"],
+		"state", state
 	);
 
 	// Set player data
@@ -946,11 +951,11 @@ uploadMatchData(printStatus) {
 		if (!isDefined(stats)) continue;
 
 		player matchPlayerSetData(
+			"score", 	format_fractional(stats["score"], 1, 1),
 			"kills", 	stats["kills"],
 			"assists", 	stats["assists"],
 			"damage", 	format_fractional(stats["damage"] / 100, 1, 1),
 			"deaths", 	stats["deaths"],
-			"score", 	stats["score"],
 			"grenades", stats["grenades"],
 			"plants", 	stats["plants"],
 			"defuses", 	stats["defuses"]
