@@ -102,6 +102,8 @@ updateDamageFeedback(enemy, soundCount, enemyCount)
 				self.hud_damagefeedback2.color = color;
 				self.hud_damagefeedback2 fadeOverTime(0.00001);	// cancel fade time
 				self.hud_damagefeedback2.alpha = alpha;
+			} else if (isDefined(self.hud_damagefeedback2)) {
+				self.hud_damagefeedback2.alpha = 0;
 			}
 
 			wait delay * level.fps_multiplier;
