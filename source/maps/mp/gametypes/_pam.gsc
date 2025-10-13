@@ -5,7 +5,7 @@ init()
 	if(game["firstInit"])
 	{
 		//precacheString2("STRING_VERSION_INFO", &"zPAM 4.00"); // ZPAM_RENAME
-		precacheString2("STRING_VERSION_INFO", &"^1zPAM 4.00 TEST 2"); // ZPAM_RENAME
+		precacheString2("STRING_VERSION_INFO", &"^1zPAM 4.00 TEST 3"); // ZPAM_RENAME
 		//precacheString2("STRING_VERSION_INFO", &"zPAM 3.34 ^3BETA 1"); // ZPAM_RENAME
 	}
 }

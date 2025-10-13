@@ -12,7 +12,7 @@ To see description of previous versions, click on the links in [Version list](#v
 
 ## Download
 - #### Actual testing version
-	- 2025/09/21 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.00-test1/zpam400_test2.zip">zPAM 4.00 - zpam400_test2.zip</a></b> - compatible with **CoD2x >=1.4.5.x** only
+	- 2025/10/13 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.00-test3/zpam400_test3.zip">zPAM 4.00 - zpam400_test3.zip</a></b> - compatible with **CoD2x >=1.4.5.1-test8** only
 
 - #### Actual stable version
 	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
@@ -39,6 +39,32 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+<details><summary>zPAM 4.00 TEST 3 changes (click to open)</summary>
+<p>
+
+**Changes / Fixes / Improvements:**
+- Radar images for TJ, BG, DW, MAT, CAR, RAIL
+- Streamer improvements, red-blue layout
+- New matchinfo menu + bar, support for DM (1v1, stats), readyup waiting (missing, unjoined or mixed players), preventing map change after first round, nick warning
+- Fixed not dissapearing hit icon when 2 players are hited in same time
+</p>
+</details>
+
+
+
+
+<details><summary>zPAM 4.00 TEST 2 changes (click to open)</summary>
+<p>
+
+**Changes / Fixes / Improvements:**
+- Match system: added "state" key to signalize finished map
+- Match system: allow map change until map order is known
+</p>
+</details>
+
+
+
 
 <details><summary>zPAM 4.00 TEST 1 changes (click to open)</summary>
 <p>
