@@ -356,11 +356,11 @@ uploadMatchData(debug, printSuccess, printError) {
 
 matchUploadDoneVoid() {}
 matchUploadDone() {
-	iprintln("^2Match data uploaded successfully.");
+	iprint_to_team_players("^2Match data uploaded successfully.");
 }
 matchUploadErrorVoid() {}
 matchUploadError(error) {
-	iprintln("^1Error uploading match data: " + error);
+	iprint_to_team_players("^1Error uploading match data: " + error);
 }
 
 

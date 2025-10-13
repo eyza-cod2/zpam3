@@ -2,7 +2,7 @@
 
 init()
 {
-	addEventListener("onConnected",  	::onConnected);
+	addEventListener("onSpawned",  		::onSpawned);
 	addEventListener("onCvarChanged", 	::onCvarChanged);
 
 
@@ -20,7 +20,7 @@ init()
 		hide();
 }
 
-onConnected()
+onSpawned()
 {
 	str = level.warnings_text;
 	// If player is streamer, hide warnings

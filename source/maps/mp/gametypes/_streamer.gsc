@@ -38,7 +38,6 @@ onConnected()
 		self.pers["streamerSystem_menu_opened"] = false;
 		self.pers["streamerSystem_menu_open_confirmed"] = false;
 		self.pers["streamerSystem_keysConfirmed"] = false;
-		self.pers["streamerSystem_streamerTime"] = 0;
 		self.pers["streamerSystem_autoJoinSpectatorTeam"] = false;
 		self.pers["streamerSystem_scoreboardOpenedAutomatically"] = false;
 		self.pers["streamerSystem_colorMode"] = 1;
@@ -61,7 +60,6 @@ onConnected()
 onConnectedAll()
 {
 	level thread spectating_loop();
-	level thread player_names();
 }
 
 // Called even if streamer system is disabled
@@ -1516,65 +1514,4 @@ waitForSpectatorsInKillcam()
 	}
 
 	return true;
-}
-
-
-player_names()
-{
-	wait level.fps_multiplier * 0.123456;
-
-	for (;;)
-	{
-		wait level.fps_multiplier * 1;
-
-		maxTime = 0;
-		players = getentarray("player", "classname");
-		for(i = 0; i < players.size; i++)
-		{
-			player = players[i];
-
-			if (player.pers["team"] == "streamer")
-			{
-				player.pers["streamerSystem_streamerTime"]++;
-
-				// Save player with biggest time
-				if (player.pers["streamerSystem_streamerTime"] > maxTime)
-					maxTime = player.pers["streamerSystem_streamerTime"];
-			}
-			else
-				player.pers["streamerSystem_streamerTime"] = 0;
-		}
-
-		// There is player in streamer menu for atleast x seconds
-		if (maxTime > 15 && ((level.in_readyup && level.playersready) || (!level.in_readyup && level.in_strattime)))
-		{
-			wait level.fps_multiplier * 1;
-			players = getentarray("player", "classname");
-			for(i = 0; i < players.size; i++)
-			{
-				player = players[i];
-
-				// Player may disconnect due to wait
-				if (!isDefined(player)) continue;
-
-				if (player.pers["team"] == "allies" || player.pers["team"] == "axis")
-				{
-					// Empty name detection
-					name = removeColorsFromString(player.name, true); // true = remove only double colors
-
-					if (name != player.name)
-					{
-						player iprintlnbold(" ");
-						player iprintlnbold("^3Double colors were removed from your nickname for stream purposes.");
-						player iprintlnbold(" ");
-						player setClientCvar("name", name);
-
-						wait level.fps_multiplier * 0.1;
-					}
-				}
-			}
-		}
-	}
-
-
 }

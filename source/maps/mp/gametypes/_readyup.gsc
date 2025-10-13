@@ -526,7 +526,7 @@ playerReadyUpThread()
 		{
 			unsetReady();
 		}
-		if (teamLast != self.pers["team"])
+		if (teamLast != self.pers["team"] && self.pers["team"] != "streamer")
 		{
 			level thread Check_All_Ready();
 		}		

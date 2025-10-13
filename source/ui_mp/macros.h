@@ -872,10 +872,9 @@ itemDef \
 
 
 #define STREAMERSYSTEM_COLOR_HIGHLIGHT .9 .9 .9 1
-#define STREAMERSYSTEM_COLOR_BG .5 .5 .5 .9
-#define STREAMERSYSTEM_COLOR_BG_DEAD .0 .0 .0 .4
 
-#define ITEM_STREAMERSYSTEM_LINE(cvarprefix, num, img_num, x_offset, y_offset, horizontal_align, color_allies, color_axis, color_allies_BG, color_axis_BG, color_allies_damage, color_axis_damage, color_text, color_text2) \
+
+#define ITEM_STREAMERSYSTEM_LINE(cvarprefix, num, img_num, x_offset, y_offset, horizontal_align, color_allies, color_axis, color_allies_BG, color_axis_BG, color_allies_damage, color_axis_damage, color_text, color_text2, bg_dead) \
 /* Highlight*/ \
 itemDef \
 { \
@@ -1103,6 +1102,19 @@ itemDef \
 	decoration \
 } \
 \
+/* Dead BG */ \
+itemDef \
+{ \
+	style		WINDOW_STYLE_FILLED \
+	rect		x_offset y_offset 128 23 horizontal_align 0 \
+	visible		1 \
+	backcolor	bg_dead \
+	background	"streamer_playerbar_bg" \
+	dvartest	cvarprefix "_health" \
+	showDvar	{ "0"; "0_" } \
+	decoration \
+} \
+\
 itemDef \
 { \
 	rect			x_offset y_offset 0 0 horizontal_align 0 \
@@ -1172,13 +1184,13 @@ itemDef \
 	decoration \
 } \
 \
-/* If dead, overlay whole bar to dim the texts*/ \
+/* Dead BG overlay to dim text */ \
 itemDef \
 { \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 128 23 horizontal_align 0 \
 	visible		1 \
-	backcolor	STREAMERSYSTEM_COLOR_BG_DEAD \
+	backcolor	.5 .5 .5 0.5 \
 	background	"streamer_playerbar_bg" \
 	dvartest	cvarprefix "_health" \
 	showDvar	{ "0"; "0_" } \

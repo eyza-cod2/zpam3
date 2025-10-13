@@ -88,6 +88,12 @@ onConnected()
 
 onSpawned()
 {
+	// Hide score for streamer
+	if (self.pers["team"] == "streamer") {
+		hideScore(0);
+		return;
+	}
+
 	// Show score
 	if (self isEnabled())
 		self showScore();
