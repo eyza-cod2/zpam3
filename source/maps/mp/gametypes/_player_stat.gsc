@@ -15,7 +15,7 @@ init()
     addEventListener("onConnectedAll",    ::onConnectedAll);
     addEventListener("onJoinedTeam",    ::onJoinedTeam);
 
-    thread printThread();
+    //thread printThread();
 }
 
 resetConnectedStatus()

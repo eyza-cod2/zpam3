@@ -17,6 +17,9 @@ init()
 		// Ready-up
 		precacheString2("STRING_READYUP_WAITING_ON", &"Waiting on");
 		precacheString2("STRING_READYUP_PLAYERS", &"Players");
+		precacheString2("STRING_READYUP_MISSING_PLAYERS", &"Missing Players");
+		precacheString2("STRING_READYUP_MIXED_PLAYERS", &"Mixed Players");
+		precacheString2("STRING_READYUP_UNJOINED_PLAYERS", &"Unjoined Players");
 		precacheString2("STRING_READYUP_YOUR_STATUS", &"Your Status");
 		precacheString2("STRING_READYUP_READY", &"Ready");
 		precacheString2("STRING_READYUP_NOT_READY", &"Not Ready");
@@ -68,7 +71,6 @@ init()
 	level.readyup_runned = false;
 	level.hud_readyup_offsetX = -50;
 	level.hud_readyup_offsetY = 20;
-
 
 	// Define default variables
 	if (!isDefined(game["Do_Ready_up"]))
@@ -459,7 +461,7 @@ playerReadyUpThread()
 	hudKillingStatusVisible = false;
 	hudAimTrainerStatusVisible = false;
 	aimTrainerStatusLast = -1;
-	teamLast = self.pers["team"];
+	teamLast = "";
 
 	while(!level.playersready)
 	{
@@ -519,13 +521,15 @@ playerReadyUpThread()
 		if (teamLast != self.pers["team"] && (self.pers["team"] == "streamer" || self.pers["team"] == "spectator") && self.isReady == false)
 		{
 			setReady();
-			level thread Check_All_Ready();
 		}
 		if (teamLast != self.pers["team"] && (teamLast == "streamer" || teamLast == "spectator") && self.pers["team"] != "streamer" && self.pers["team"] != "spectator" && self.isReady)
 		{
 			unsetReady();
-			level thread Check_All_Ready();
 		}
+		if (teamLast != self.pers["team"])
+		{
+			level thread Check_All_Ready();
+		}		
 		teamLast = self.pers["team"];
 
 
@@ -742,6 +746,13 @@ areAllPlayersReady()
 	if (players.size == 0)
         return false;
 
+	if (matchIsActivated() && game["scr_matchinfo"] != 0) {
+		maps\mp\gametypes\_matchinfo::generateMatchDescription();
+
+		if (level.match_mixedPlayers > 0 || level.match_missingPlayers > 0 || level.match_unjoinedPlayers > 0)
+			return false;
+	}
+
 	for(i = 0; i < players.size; i++)
 	{
 		player = players[i];
@@ -934,31 +945,56 @@ Update_Players_Count()
 	while(!level.playersready)
 	{
 		// Count player not ready up
-		notready = 0;
-		notReadyPlayer = undefined;
 		players = getentarray("player", "classname");
-		for(i = 0; i < players.size; i++)
+ 
+		if (level.match_missingPlayers > 0)
 		{
-			player = players[i];
-			if (!player.isReady)
+			level.notreadyhud setValue(level.match_missingPlayers);
+			level.playerstext setText(game["STRING_READYUP_MISSING_PLAYERS"]);
+			level.playerstext.color = (1, .66, .66); // red
+		} 
+		else if (level.match_mixedPlayers > 0)
+		{
+			level.notreadyhud setValue(level.match_mixedPlayers);
+			level.playerstext setText(game["STRING_READYUP_MIXED_PLAYERS"]);
+			level.playerstext.color = (1, .66, .66); // red
+		}
+		else if (level.match_unjoinedPlayers > 0)
+		{
+			level.notreadyhud setValue(level.match_unjoinedPlayers);
+			level.playerstext setText(game["STRING_READYUP_UNJOINED_PLAYERS"]);
+			level.playerstext.color = (1, .66, .66); // red
+		}
+		else {
+			notready = 0;
+			notReadyPlayer = undefined;
+			for(i = 0; i < players.size; i++)
 			{
-				notready++;
+				player = players[i];
+				if (!player.isReady)
+				{
+					notready++;
 
-				notReadyPlayer = player;
+					notReadyPlayer = player;
+				}
 			}
+
+			// Last man
+			if (players.size > 4)	// If its 3v3 or more
+			{
+				if (notready == 1 && notReadyPlayer.lastMan == false)
+				{
+					notReadyPlayer.lastMan = true;
+					notReadyPlayer thread playLastManSound();
+				}
+			}
+
+			level.notreadyhud setValue(notready);
+			level.playerstext setText(game["STRING_READYUP_PLAYERS"]);
+			level.playerstext.color = (.8, 1, 1); // blue
 		}
 
-		// Last man
-		if (players.size > 4)	// If its 3v3 or more
-		{
-			if (notready == 1 && notReadyPlayer.lastMan == false)
-			{
-				notReadyPlayer.lastMan = true;
-				notReadyPlayer thread playLastManSound();
-			}
-		}
 
-		level.notreadyhud setValue(notready);
 
 		wait level.fps_multiplier * .1;
 	}
@@ -1220,7 +1256,7 @@ HUD_WaitingOn_X_Players()
 	level.notreadyhud.alignY = "middle";
 	level.notreadyhud.fontScale = 1.2;
 	level.notreadyhud.font = "default";
-	level.notreadyhud.color = (.98, .98, .60);
+	level.notreadyhud.color = (.98, .98, .60); // yellow
 
 	// Players
 	level.playerstext = newHudElem2();
@@ -1231,7 +1267,7 @@ HUD_WaitingOn_X_Players()
 	level.playerstext.alignY = "middle";
 	level.playerstext.fontScale = 1.2;
 	level.playerstext.font = "default";
-	level.playerstext.color = (.8, 1, 1);
+	level.playerstext.color = (.8, 1, 1); // blue
 	level.playerstext setText(game["STRING_READYUP_PLAYERS"]);
 
     level waittill("rupover");

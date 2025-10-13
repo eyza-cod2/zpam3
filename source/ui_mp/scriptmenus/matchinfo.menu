@@ -1,0 +1,143 @@
+#include "ui_mp/menudef.h"
+#include "ui_mp/macros.h"
+
+{
+	menuDef
+	{
+		name			"matchinfo"
+		rect			0 0 640 480
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		5.0
+		onOpen
+		{
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo_bar;
+			open menu_matchinfo_keys;
+		}
+		onClose
+		{
+			close menu_matchinfo_keys;
+		}
+
+		// Background
+		DRAW_MAP_BACKGROUND_IF_BLACKOUT
+		DRAW_BLUISH_BACKGROUND
+		DRAW_GRADIENT_LEFT_TO_RIGHT
+		DRAW_BARS
+
+		// Header: Teams
+		ITEM_TEXT_HEADING("Match info")
+
+		// Clickable quit button all over the screen
+		SERVERINFO_DRAW_QUIT
+
+
+		ITEM_SCOREBOARD_COLUMN(50, 50, "ui_matchinfo_description", 		0,   40, .2, ITEM_ALIGN_LEFT)
+
+		#define ITEM_MATCHINFO_PLAYER_LINE(x, y, y_offset) \
+		itemDef  \
+		{ \
+			style			WINDOW_STYLE_FILLED \
+			rect			0 y_offset 490 10 0 0 \
+			origin			x y \
+			backcolor		.0 .0 .0 .2 \
+			visible			1 \
+			decoration \
+		}
+
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_1_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_3_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_5_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_7_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_9_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_11_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_13_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_15_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_17_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_19_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_21_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_23_Y)
+		ITEM_MATCHINFO_PLAYER_LINE(45, 110, SCOREBOARD_LINE_25_Y)
+
+
+		ITEM_SCOREBOARD_COLUMN(50, 110, "ui_matchinfo_players_names", 		0,   40, .2, ITEM_ALIGN_LEFT)
+		ITEM_SCOREBOARD_COLUMN(50, 110, "ui_matchinfo_players_nicknames", 	100,  40, .2, ITEM_ALIGN_LEFT)
+		ITEM_SCOREBOARD_COLUMN(50, 110, "ui_matchinfo_players_side", 		250,  40, .2, ITEM_ALIGN_LEFT)
+		ITEM_SCOREBOARD_COLUMN(50, 110, "ui_matchinfo_players_status", 		300,  40, .2, ITEM_ALIGN_LEFT)
+
+
+
+		itemDef // TOP
+		{
+			visible			1
+			rect			46 139 490 1
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef // TOP2
+		{
+			visible			1
+			rect			46 150 490 1
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef // LEFT
+		{
+			visible			1
+			rect			45 138 1 246
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef // RIGHT
+		{
+			visible			1
+			rect			535 138 1 246
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+		itemDef // BOTTOM
+		{
+			visible			1
+			rect			46 383 490 1
+			style			WINDOW_STYLE_FILLED
+			backcolor		1 1 1 .125
+			decoration
+		}
+
+
+
+
+
+
+
+
+
+
+		// Close menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[ESC]^7 Close",	40, 70, scriptMenuResponse "close")
+		// Main menu
+		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu", 135, 120, close matchinfo; open main)
+
+	}
+
+
+	// Key choices has to be in different menu if we are using submenus
+	// This keys is opened as last and will be in focus - so keys from this submenu will be accepted
+	menuDef
+	{
+		name			"menu_matchinfo_keys"
+		rect			0 0 1 1
+		focuscolor		GLOBAL_FOCUSED_COLOR
+		style			WINDOW_STYLE_EMPTY
+		onEsc
+		{
+			exec "openscriptmenu matchinfo close";
+		}
+
+		execKeyInt 32 { play "mouse_click"; close ingame; open main; } // space
+	}
+}

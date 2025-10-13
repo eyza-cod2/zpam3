@@ -380,6 +380,9 @@ arrayContains(array, content)
 
 ChangeTo(mode)
 {
+	if (!maps\mp\gametypes\_matchinfo::canMapBeChanged())
+		return;
+			
 	// Will disable all comming map-restrat (so pam_mode can be changed correctly)
 	level.pam_mode_change = true;
 

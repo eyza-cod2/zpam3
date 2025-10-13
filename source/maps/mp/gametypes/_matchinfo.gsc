@@ -50,6 +50,14 @@ Init()
 		game["match_state"] = "";
 	}
 
+	level.match_description = "";
+	level.match_description_players1 = "";
+	level.match_description_players2 = "";
+	level.match_description_playersUnknown = "";
+	level.match_missingPlayers = 0;
+	level.match_mixedPlayers = 0;
+	level.match_unjoinedPlayers = 0;
+
 	// Matchinfo not possible, exit here
 	if (game["scr_matchinfo"] == 0)
 		return;
@@ -62,6 +70,7 @@ Init()
 	}
 
 	addEventListener("onConnecting",   ::onConnecting);
+	addEventListener("onDisconnect",   ::onDisconnect);
 	addEventListener("onStopGameType", ::onStopGameType);
 	addEventListener("onJoinedTeam",   ::onJoinedTeam);
 	addEventListener("onSpawned",      ::onSpawned);
@@ -71,35 +80,290 @@ Init()
 }
 
 
+prepareMap() {
+
+	// Save data from previous map
+	team1_winnedMaps = int(matchGetData("team1_winnedMaps")); // number of maps winned by team 1
+	team2_winnedMaps = int(matchGetData("team2_winnedMaps")); // number of maps winned by team 2
+	finishedMapsCount = int(matchGetData("finishedMapsCount")); // number of played maps
+	finishedMap1 = matchGetData("finishedMap1");
+	finishedMap2 = matchGetData("finishedMap2");
+	finishedMap3 = matchGetData("finishedMap3");
+	finishedMap4 = matchGetData("finishedMap4");
+	finishedMap5 = matchGetData("finishedMap5");
+
+	// Clear data from previous map
+	matchClearData();
+
+	// Restore data from previous map
+	matchSetData("team1_winnedMaps", team1_winnedMaps);
+	matchSetData("team2_winnedMaps", team2_winnedMaps);
+	matchSetData("finishedMapsCount", finishedMapsCount);
+	if (finishedMap1 != "") matchSetData("finishedMap1", finishedMap1);
+	if (finishedMap2 != "") matchSetData("finishedMap2", finishedMap2);
+	if (finishedMap3 != "") matchSetData("finishedMap3", finishedMap3);
+	if (finishedMap4 != "") matchSetData("finishedMap4", finishedMap4);
+	if (finishedMap5 != "") matchSetData("finishedMap5", finishedMap5);
+
+	// Dont upload data on new map until RUP
+	//uploadMatchData(false, true);
+}
+
+
+finishMap() {
+
+	// Load data from previous map
+	team1_winnedMaps = int(matchGetData("team1_winnedMaps")); // 0 if not defined
+	team2_winnedMaps = int(matchGetData("team2_winnedMaps")); // 0 if not defined
+	finishedMapsCount = int(matchGetData("finishedMapsCount")); // 0 if not defined
+	finishedMap1 = matchGetData("finishedMap1");
+	finishedMap2 = matchGetData("finishedMap2");
+	finishedMap3 = matchGetData("finishedMap3");
+	finishedMap4 = matchGetData("finishedMap4");
+	finishedMap5 = matchGetData("finishedMap5");
+
+	// Update data
+	finishedMapsCount++;
+	team1_score = int(game["match_team1_score"]);
+	team2_score = int(game["match_team2_score"]);
+	if (team1_score > team2_score) {
+		team1_winnedMaps++;
+	} else if (team2_score > team1_score) {
+		team2_winnedMaps++;
+	}
+
+	// Save data
+	matchSetData("team1_winnedMaps", team1_winnedMaps);
+	matchSetData("team2_winnedMaps", team2_winnedMaps);
+	matchSetData("finishedMapsCount", finishedMapsCount);
+	switch(finishedMapsCount) {
+		case 1: matchSetData("finishedMap1", level.mapname); break;
+		case 2: matchSetData("finishedMap2", level.mapname); break;
+		case 3: matchSetData("finishedMap3", level.mapname); break;
+		case 4: matchSetData("finishedMap4", level.mapname); break;
+		case 5: matchSetData("finishedMap5", level.mapname); break;
+	}
+
+	// Upload match data to master server
+	uploadMatchData("finishMap", false, false);
+}
+
+
+endMap() {
+
+	team1_winnedMaps = int(matchGetData("team1_winnedMaps")); // 0 if not defined
+	team2_winnedMaps = int(matchGetData("team2_winnedMaps")); // 0 if not defined
+	format = matchGetData("format"); // BO1, BO3, BO5 (defined by CoD2x)
+	
+	matchFinished = false;
+	switch (format) {
+		default:
+		case "BO1":
+			matchFinished = true;
+			break;
+		case "BO3":
+			if (team1_winnedMaps >= 2 || team2_winnedMaps >= 2)
+				matchFinished = true;
+			break;
+		case "BO5":
+			if (team1_winnedMaps >= 3 || team2_winnedMaps >= 3)
+				matchFinished = true;
+			break;
+	}
+
+	if (matchFinished) {
+		matchFinish(); // kick all players, cancel match, fast_restart
+
+	} else {
+		maps = matchGetData("maps"); // might be empty
+
+		// Maps are defined
+		if (maps.size > 0) {
+			// Collect finished maps into an array
+			finishedMaps = [];
+			finishedMap1 = matchGetData("finishedMap1");  if (finishedMap1 != "") finishedMaps[finishedMaps.size] = finishedMap1;
+			finishedMap2 = matchGetData("finishedMap2");  if (finishedMap2 != "") finishedMaps[finishedMaps.size] = finishedMap2;
+			finishedMap3 = matchGetData("finishedMap3");  if (finishedMap3 != "") finishedMaps[finishedMaps.size] = finishedMap3;
+			finishedMap4 = matchGetData("finishedMap4");  if (finishedMap4 != "") finishedMaps[finishedMaps.size] = finishedMap4;
+			finishedMap5 = matchGetData("finishedMap5");  if (finishedMap5 != "") finishedMaps[finishedMaps.size] = finishedMap5;
+
+			// Find the first unplayed map in the maps array
+			nextMap = "";
+			for (i = 0; i < maps.size; i++) {
+				isPlayed = false;
+				for (j = 0; j < finishedMaps.size; j++) {
+					if (maps[i] == finishedMaps[j]) {
+						isPlayed = true;
+						break;
+					}
+				}
+				if (!isPlayed) {
+					nextMap = maps[i];
+					break;
+				}
+			}
+
+			// If all maps are played, fallback to first map
+			if (nextMap == "" && maps.size > 0) {
+				nextMap = maps[0];
+			}
+
+			map(nextMap, false);
+		
+		// Maps not defined, let players decide
+		} else {		
+			map_restart(false); // fast_restart
+		}
+	}
+
+}
+
+
+canMapBeChanged() {
+
+	if (matchIsActivated()) {
+
+		maps = matchGetData("maps"); // might be empty
+
+		allow = true;
+
+		// Maps are defined, cod2x set them into map_rotation, so disable map change / restart
+		if (maps.size > 0) {
+			allow = false;
+
+		// Maps are not defined, allow match change before first round ends
+		} else {	
+			switch(level.gametype) {
+				case "sd":				
+					if (game["state"] == "playing" && // will be false on interrmission when we want to allow map change
+						!game["readyup_first_run"] && // allow change in first readyup
+						(game["allies_score"] > 0 || game["axis_score"] > 0) // allow change if score is 0:0 (so in first round its still possible to change))
+					) {
+						allow = false;
+					}
+					break;
+				case "dm":
+					if (game["state"] == "playing" && // will be false on interrmission when we want to allow map change
+						!game["readyup_first_run"] // allow change in first readyup
+					) {
+						allow = false;
+					}
+					break;
+			}
+		}
+
+		if (!allow) {
+			iprint_to_team_players("^1Map change / restart is disabled during match!");
+			return false; // prevent map change / restart
+		}
+	}
+	return true;
+}
+
+
 // Called by code before map change, map restart, or server shutdown.
 //  fromScript: true if map change was triggered from a script, false if from a command.
 //  bComplete: true if map change or restart is complete, false if it's a round restart so persistent variables are kept.
 //  shutdown: true if the server is shutting down, false otherwise.
-onStopGameType(fromScript, bComplete, shutdown) {
-	
-	// Its full map restart or shutdown
-	if (bComplete || shutdown) {
-		map_score1 = getCvar("sv_map_score1");
-		map_score2 = getCvar("sv_map_score2");
+//  source: "map", "fast_restart", "map_restart", "map_rotate", "shutdown"
+onStopGameType(fromScript, bComplete, shutdown, source) {
 
-		// TODO: overtime a radsi prdeleat na novy cvar -> last_winning_team
-		// For SD, if the map is switched before last round is finished, increase the score to the map score limit
-		if (level.gametype == "sd") {
-			scorelimit = getCvarInt("scr_sd_end_score");
-			if (scorelimit > 0 && int(map_score1) != scorelimit && int(map_score2) != scorelimit){
-				if (int(map_score1) == scorelimit - 1)
-					map_score1 = scorelimit;
-				if (int(map_score2) == scorelimit - 1)
-					map_score2 = scorelimit;
-			}
-		}
-		setCvar("sv_map_score1", map_score1);
-		setCvar("sv_map_score2", map_score2);
-		
-		// Upload match data to master server
-		uploadMatchData();
+	// Disable map change (if called via command, rcon for example)
+	if (fromScript == false && shutdown == false)
+	{
+		if (!canMapBeChanged())
+			return false; // prevent map change / restart
 	}
 }
+
+
+
+
+uploadMatchData(debug, printSuccess, printError) {
+
+	if (!matchIsActivated()) {
+		return;
+	}
+
+	team1_score = "0";
+	team2_score = "0";
+	if (isDigitalNumber(game["match_team1_score"]))
+		team1_score = game["match_team1_score"];
+	if (isDigitalNumber(game["match_team2_score"]))
+		team2_score = game["match_team2_score"];
+
+	state = "playing";
+	if (game["state"] == "intermission") {
+		state = "finished";
+	}
+
+	// Set global data
+	matchSetData(
+		"team1_score", team1_score,
+		"team2_score", team2_score,
+		"map", level.mapname,
+		"round", game["match_round"],
+		"state", state,
+		"debug", debug
+	);
+
+	// Set player data
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		player = players[i];
+
+		stats = player maps\mp\gametypes\_player_stat::getStats();
+		if (!isDefined(stats)) continue;
+		
+		if (level.gametype == "sd") {
+
+			player matchPlayerSetData(
+				"score", 	format_fractional(stats["score"], 1, 1),
+				"kills", 	stats["kills"],
+				"assists", 	stats["assists"],
+				"damage", 	format_fractional(stats["damage"] / 100, 1, 1),
+				"deaths", 	stats["deaths"],
+				"grenades", stats["grenades"],
+				"plants", 	stats["plants"],
+				"defuses", 	stats["defuses"]
+			);
+		} else if (level.gametype == "dm") {
+			player matchPlayerSetData(
+				"score", 	format_fractional(stats["score"], 1, 1),
+				"kills", 	stats["kills"],
+				"deaths", 	stats["deaths"]
+			);
+		} else {
+			player matchPlayerSetData(
+				"score", 	player.score,
+				"deaths", 	player.deaths
+			);
+		}
+	}
+
+	// Start upload
+	if (printSuccess && printError)
+		matchUploadData(::matchUploadDone, ::matchUploadError);
+	else if (printSuccess)
+		matchUploadData(::matchUploadDone, ::matchUploadErrorVoid);
+	else if (printError)
+		matchUploadData(::matchUploadDoneVoid, ::matchUploadError);
+	else
+		matchUploadData();
+
+}
+
+matchUploadDoneVoid() {}
+matchUploadDone() {
+	iprintln("^2Match data uploaded successfully.");
+}
+matchUploadErrorVoid() {}
+matchUploadError(error) {
+	iprintln("^1Error uploading match data: " + error);
+}
+
+
 
 // This function is called when cvar changes value.
 // Is also called when cvar is registered
@@ -169,22 +433,26 @@ onConnected()
 		self.pers["matchinfo_ingame"] = false;
 		self.pers["matchinfo_ingame_visible"] = false;
 		self.pers["matchinfo_matchDataWarningShowed"] = false;
+		self.pers["matchinfo_nickWarningLastTime"] = 0;
+		self.pers["matchinfo_error"] = "";
+		self.pers["matchinfo_color"] = "";
 
 		// Show warning about unknown player
 		if (matchIsActivated())
 		{
 			if (self matchPlayerIsAllowed() == false) {
 				if (self matchPlayerGetData("uuid") == "")
-					iprint_to_team_players(self.name + "^3 is not logged into the match!");
+					iprint_to_team_players(self.name + "^1 is not logged into the match!");
 				else
-					iprint_to_team_players(self.name + "^3 is not assigned to any team!");
+					iprint_to_team_players(self.name + "^1 is not assigned to any team!");
 			} else {
-				iprint_to_team_players(self.name + "^7's name: " + self matchPlayerGetData("name"));
-				iprint_to_team_players(self.name + "^7's team: " + self matchPlayerGetData("team_name"));
+				//iprint_to_team_players(self.name + "^7's name: " + self matchPlayerGetData("name"));
+				//iprint_to_team_players(self.name + "^7's team: " + self matchPlayerGetData("team_name"));
 			}
 		}
 	}
 
+	level thread generateMatchDescriptionDebounced();
 
 	if (game["scr_matchinfo"] > 0)
 	{
@@ -210,18 +478,31 @@ onConnected()
 
 }
 
+onDisconnect() {
+	level thread generateMatchDescriptionDebounced();
+}
+
+
+generateMatchDescriptionDebounced()
+{
+	if (matchIsActivated()) {
+
+		// Prevent calling multiple times in one frame
+		level notify("generateMatchDescriptionDebounced");
+		level endon("generateMatchDescriptionDebounced");
+		waittillframeend;
+
+		level generateMatchDescription(); // regenerate match description
+	}
+}
+
+
 onJoinedTeam(teamName)
 {
-	// Always hide ingame menu for streamer as they have own menu
-	if (teamName == "streamer")
-	{
-		self ingame_hide();
-	}
-	else
-	{
-		if (ingame_isEnabled())
-			ingame_show();
-	}
+	// Ingame match info bar
+	self ingame_handleVisiblity();
+
+	level thread generateMatchDescriptionDebounced(); // regenerate match description
 }
 
 // On player or spectator is spawned
@@ -234,6 +515,11 @@ onSpawned()
 		self.pers["matchinfo_matchDataWarningShowed"] = true;
 		//self printMatchDataInfo();
 	}
+
+	// Ingame match info bar
+	self ingame_handleVisiblity();
+
+	level thread generateMatchDescriptionDebounced(); // regenerate match description
 }
 
 
@@ -249,7 +535,8 @@ onReadyupOver()
 			continue;
 
 		// Upload data - readyup is over
-		uploadMatchData();
+		// Canceled
+		//uploadMatchData(false, false);
 
 		if (!game["readyup_first_run"])
 			continue;
@@ -280,20 +567,22 @@ printMatchDataInfo() {
 
 		self iPrintLn("Match is activated and being recorded.");
 		// Team1 vs Team2
-		self iPrintLn("- " + team1_color + matchGetData("team1_name") + "^7 vs " + team2_color + matchGetData("team2_name") + "^7");
+		self iPrintLn("- [" + team1_color + removeColorsFromString(matchGetData("team1_name")) + "^7]  vs  [" + team2_color + removeColorsFromString(matchGetData("team2_name")) + "^7]");
 		//self iPrintLn("- Match ID: " + matchGetData("match_id"));
 		//self iPrintLn("- Team 1: " + matchGetData("team1_name"));
 		//self iPrintLn("- Team 2: " + matchGetData("team2_name"));
 		maps = matchGetData("maps");
-		if (maps.size == 1) {
-			self iPrintLn("- Map: " + maps[0]);
-		} else {
-			mapsString = "";
-			for (i = 0; i < maps.size; i++) {
-				if (i > 0) mapsString += ", ";
-				mapsString += maps[i];
+		if (maps.size > 0) {
+			if (maps.size == 1) {
+				self iPrintLn("- Map: " + maps[0]);
+			} else {
+				mapsString = "";
+				for (i = 0; i < maps.size; i++) {
+					if (i > 0) mapsString += ", ";
+					mapsString += GetMapName(maps[i]);
+				}
+				self iPrintLn("- Maps: " + mapsString);
 			}
-			self iPrintLn("- Maps: " + mapsString);
 		}
 
 		teamNum = self matchPlayerGetData("team"); // team1 / team2 / ""
@@ -358,6 +647,14 @@ ingame_hide()
 		if (game["scr_matchinfo"] > 0)
 			self thread UpdatePlayerCvars();
 	}
+}
+
+ingame_handleVisiblity() {
+	// Ingame match info bar
+	if ((ingame_isEnabled() || (level.in_readyup && matchIsActivated())) && self.pers["team"] != "streamer") // always show ingame menu for spectator during readyup
+		ingame_show();
+	else if (!ingame_isEnabled() || self.pers["team"] == "streamer") // always hide ingame menu for streamer as they have own menu
+		ingame_hide();
 }
 
 
@@ -455,57 +752,80 @@ determineTeamByMatchData()
 	}
 
 	// Fill team names
-	game["match_team1_name"] = matchGetData("team1_name");
-	game["match_team2_name"] = matchGetData("team2_name");
-
-
+	match_team1_name = matchGetData("team1_name");
+	match_team2_name = matchGetData("team2_name");
+	team1_players = [];
+	team2_players = [];
 	team1_allies = 0;
 	team1_axis = 0;
 	team2_allies = 0;
 	team2_axis = 0;
+	totalPlayingPlayers = 0;
 	players = getentarray("player", "classname");
 	for(i = 0; i < players.size; i++)
 	{
 		player = players[i];
 
-		if (isDefined(player.pers["team"]))
+		if (isDefined(player.pers["team"]) && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
 		{
+			totalPlayingPlayers++;
+
 			teamName = player matchPlayerGetData("team_name");
 
-			if (teamName == game["match_team1_name"])
+			if (teamName == match_team1_name)
 			{
 				if (player.pers["team"] == "allies")
 					team1_allies++;
 				else if (player.pers["team"] == "axis")
 					team1_axis++;
+				team1_players[team1_players.size] = player;
 			}
-			else if (teamName == game["match_team2_name"])
+			else if (teamName == match_team2_name)
 			{
 				if (player.pers["team"] == "allies")
 					team2_allies++;
 				else if (player.pers["team"] == "axis")
 					team2_axis++;
+				team2_players[team2_players.size] = player;
 			}
 		}
 	}
 
 	// Find which side that team is now
 	// Atleast one team needs to join team to be able to determine sides
-	if (team1_allies > team1_axis || team2_axis > team2_allies)
+	game["match_team1_name"] = "";
+	game["match_team2_name"] = "";
+	game["match_team1_side"] = "";
+	game["match_team2_side"] = "";
+
+	if (level.gametype != "dm") 
 	{
-		game["match_team1_side"] = "allies";
-		game["match_team2_side"] = "axis";
+		// Fill team names
+		game["match_team1_name"] = match_team1_name;
+		game["match_team2_name"] = match_team2_name;
+
+		if (team1_allies > team1_axis || team2_axis > team2_allies)
+		{
+			game["match_team1_side"] = "allies";
+			game["match_team2_side"] = "axis";
+		}
+		else if (team1_axis > team1_allies || team2_allies > team2_axis)
+		{
+			game["match_team1_side"] = "axis";
+			game["match_team2_side"] = "allies";
+		}
+	} else {
+		// If there are exactly 2 playing players, set as assigned
+		if (totalPlayingPlayers > 0 && totalPlayingPlayers <= 2 && (team1_players.size == 1 || team2_players.size == 1)) {
+
+			game["match_team1_name"] = match_team1_name;
+			game["match_team2_name"] = match_team2_name;
+
+			if (team1_players.size == 1) game["match_team1_side"] = "player_" + (team1_players[0] getEntityNumber());
+			if (team2_players.size == 1) game["match_team2_side"] = "player_" + (team2_players[0] getEntityNumber());
+		}
 	}
-	else if (team1_axis > team1_allies || team2_allies > team2_axis)
-	{
-		game["match_team1_side"] = "axis";
-		game["match_team2_side"] = "allies";
-	}
-	else
-	{
-		game["match_team1_side"] = "";
-		game["match_team2_side"] = "";
-	}
+
 }
 
 
@@ -519,58 +839,74 @@ determineTeamByHistoryCvars()
 
 	// Find that side that team is now
 	// Atleast one team must stay unrenamed or this will not work
-	if (game["match_team1_name"] == level.teamname_allies || game["match_team2_name"] == level.teamname_axis)
+	game["match_team1_side"] = "";
+	game["match_team2_side"] = "";
+
+	if (level.gametype != "dm") 
 	{
-		game["match_team1_side"] = "allies";
-		game["match_team2_side"] = "axis";
-	}
-	else if (game["match_team2_name"] == level.teamname_allies || game["match_team1_name"] == level.teamname_axis)
-	{
-		game["match_team1_side"] = "axis";
-		game["match_team2_side"] = "allies";
-	}
-	else
-	{
-		game["match_team1_side"] = "";
-		game["match_team2_side"] = "";
+		if (game["match_team1_name"] == level.teamname_allies || game["match_team2_name"] == level.teamname_axis)
+		{
+			game["match_team1_side"] = "allies";
+			game["match_team2_side"] = "axis";
+		}
+		else if (game["match_team2_name"] == level.teamname_allies || game["match_team1_name"] == level.teamname_axis)
+		{
+			game["match_team1_side"] = "axis";
+			game["match_team2_side"] = "allies";
+		}
+	} else {
+		// Not supported
 	}
 }
 
 determineTeamByFirstConnected()
 {
-	refreshTeamNames();
-
 	// Find first team by looking wich player connect
 	players = getentarray("player", "classname");
-	firstPlayer = undefined;
-	for(i = 0; i < players.size; i++)
-	{
-		player = players[i];
 
-		if (isDefined(player.pers["team"]) && (player.pers["team"] == "allies" || player.pers["team"] == "axis") &&
-			(!isDefined(firstPlayer) || player.pers["timeConnected"] < firstPlayer.pers["timeConnected"]))
-			firstPlayer = player;
+	refreshTeamNames();
+
+	game["match_team1_name"] = "";
+	game["match_team2_name"] = "";
+	game["match_team1_side"] = "";
+	game["match_team2_side"] = "";
+
+	if (level.gametype != "dm") 
+	{
+
+		firstPlayer = undefined;
+		for(i = 0; i < players.size; i++)
+		{
+			player = players[i];
+
+			if (isDefined(player.pers["team"]) && (player.pers["team"] == "allies" || player.pers["team"] == "axis") &&
+				(!isDefined(firstPlayer) || player.pers["timeConnected"] < firstPlayer.pers["timeConnected"]))
+				firstPlayer = player;
+		}
+
+		// Fill team 1
+		teamname1 = "";
+		team1 = "allies";
+		if (isDefined(firstPlayer))
+		{
+			teamname1 = level.teamname[firstPlayer.pers["team"]];
+			team1 = firstPlayer.pers["team"];
+		}
+		// Fill team 2
+		team2 = "axis";
+		if (team1 == "axis")
+			team2 = "allies";
+		teamname2 = level.teamname[team2];
+
+		game["match_team1_name"] = teamname1;
+		game["match_team1_side"] = team1;
+		game["match_team2_name"] = teamname2;
+		game["match_team2_side"] = team2;
+	
+	} else {
+		// Not supported
 	}
 
-	// Fill team 1
-	teamname1 = "";
-	team1 = "allies";
-	if (isDefined(firstPlayer))
-	{
-		teamname1 = level.teamname[firstPlayer.pers["team"]];
-		team1 = firstPlayer.pers["team"];
-	}
-	// Fill team 2
-	team2 = "axis";
-	if (team1 == "axis")
-		team2 = "allies";
-	teamname2 = level.teamname[team2];
-
-
-	game["match_team1_name"] = teamname1;
-	game["match_team1_side"] = team1;
-	game["match_team2_name"] = teamname2;
-	game["match_team2_side"] = team2;
 }
 
 resetAll()
@@ -752,12 +1088,17 @@ UpdatePlayerCvars()
 
 
 
-		side_left = game["match_"+teamNum_left+"_side"];
+		side_left = game["match_"+teamNum_left+"_side"];  // allies / axis / player_<playername>
 		side_right = game["match_"+teamNum_right+"_side"];
 
 		side_left_team = "";
 		side_right_team = "";
-		if (side_left == "axis" || side_right == "allies")
+		if (startsWith(side_left, "player_") || startsWith(side_right, "player_"))
+		{
+			side_left_team = "none"; 
+			side_right_team = "none";
+		}
+		else if (side_left == "axis" || side_right == "allies")
 		{
 			side_left_team = game["axis"]; 	  // german
 			side_right_team = game["allies"]; // american british russian
@@ -766,8 +1107,7 @@ UpdatePlayerCvars()
 		{
 			side_left_team = game["allies"]; // american british russian
 			side_right_team = game["axis"];	 // german
-		}
-
+		} 
 
 
 		// Team names
@@ -817,31 +1157,66 @@ UpdatePlayerCvars()
 			}
 		}
 
-		// Round
-		self setClientCvarIfChanged("ui_matchinfo_round", game["match_round"]);
-		self setClientCvarIfChanged("ui_matchinfo_state", game["match_state"]);
-		// Half
-		self setClientCvarIfChanged("ui_matchinfo_halfInfo", halfInfo);
-		// Play time
-		self setClientCvarIfChanged("ui_matchinfo_matchtime", matchtimetext);
+
+		// For players in readyup in match show match info
+		if (matchIsActivated() && level.in_readyup && (self.pers["team"] != "streamer")) {
+			info_players = "";
+			if (teamNum_left == "team1")
+				info_players = level.match_description_players1 + "^7 | " + level.match_description_players2;
+			else
+				info_players = level.match_description_players2 + "^7 | " + level.match_description_players1;
+
+			info_warning = "";
+			if (level.match_description_playersUnknown != "")
+				info_warning += "^3Unknown players: " + level.match_description_playersUnknown + "^7\n";
+			if (!self matchPlayerIsAllowed()) {
+				if (self matchPlayerGetData("uuid") == "")
+					info_warning += "^1You are not logged into the match!^7";
+				else
+					info_warning += "^1You are not assigned to any team!^7";
+			}
+
+			self setClientCvarIfChanged("ui_matchinfo_info", info_warning);
+			self setClientCvarIfChanged("ui_matchinfo_round", info_players);
+			self setClientCvarIfChanged("ui_matchinfo_state", ""); // not used in ingame
+			self setClientCvarIfChanged("ui_matchinfo_halfInfo", "");
+			self setClientCvarIfChanged("ui_matchinfo_matchtime", "");
+
+		} else {
+			self setClientCvarIfChanged("ui_matchinfo_info", "");
+			self setClientCvarIfChanged("ui_matchinfo_round", game["match_round"]);
+			self setClientCvarIfChanged("ui_matchinfo_state", game["match_state"]);
+			self setClientCvarIfChanged("ui_matchinfo_halfInfo", halfInfo);
+			self setClientCvarIfChanged("ui_matchinfo_matchtime", matchtimetext);
+		}
+
 
 		// Map history
 		for (j = 1; j <= 3; j++)
 		{
-			map = GetMapName(getCvar("sv_map" + j + "_name"));
+			map = getCvar("sv_map" + j + "_name");
 			score1 = getCvar("sv_map" + j + "_score1");
 			score2 = getCvar("sv_map" + j + "_score2");
-			if (teamNum_left == "team2")
-			{
-				temp = score1;
-				score1 = score2;
-				score2 = temp;
-			}
-			score = "";
-			if (score1 != "" && score2 != "")
-				score = score1 + ":" + score2;
 
-			self setClientCvarIfChanged("ui_matchinfo_map" + j, map + "  " + score);
+			cvarData = "";
+			if (map == "" || score1 == "" || score2 == "") {
+				break;
+			} else 
+			{
+				if (teamNum_left == "team2")
+				{
+					temp = score1;
+					score1 = score2;
+					score2 = temp;
+				}
+				score = "";
+				if (score1 != "" && score2 != "")
+					score = score1 + ":" + score2;
+
+				cvarData = GetMapName(map) + "  " + score;
+			}
+
+			self setClientCvarIfChanged("ui_matchinfo_map" + j, cvarData);
 			//self setClientCvarIfChanged("ui_matchinfo_map" + j, "Toujane  13:7");
 		}
 	}
@@ -859,6 +1234,8 @@ UpdatePlayerCvars()
 		self setClientCvarIfChanged("ui_matchinfo_team2_team", "");
 		self setClientCvarIfChanged("ui_matchinfo_ingame_team1_team", "");
 		self setClientCvarIfChanged("ui_matchinfo_ingame_team2_team", "");
+
+		self setClientCvarIfChanged("ui_matchinfo_info", "");
 
 		// Round
 		self setClientCvarIfChanged("ui_matchinfo_round", "");
@@ -917,66 +1294,6 @@ getTimeString()
 }
 
 
-uploadMatchData(printStatus) {
-
-	if (!matchIsActivated()) {
-		return;
-	}
-
-	team1_score = 0;
-	team2_score = 0;
-	if (game["match_team1_side"] != "") 	team1_score = game[game["match_team1_side"] + "_score"];
-	if (game["match_team2_side"] != "") 	team2_score = game[game["match_team2_side"] + "_score"];
-
-	state = "playing";
-	if (game["state"] == "intermission") {
-		state = "finished";
-	}
-
-	// Set global data
-	matchSetData(
-		"team1_score", team1_score,
-		"team2_score", team2_score,
-		"map", level.mapname,
-		"round", game["match_round"],
-		"state", state
-	);
-
-	// Set player data
-	players = getentarray("player", "classname");
-	for(i = 0; i < players.size; i++)
-	{
-		player = players[i];
-		stats = player maps\mp\gametypes\_player_stat::getStats();
-		if (!isDefined(stats)) continue;
-
-		player matchPlayerSetData(
-			"score", 	format_fractional(stats["score"], 1, 1),
-			"kills", 	stats["kills"],
-			"assists", 	stats["assists"],
-			"damage", 	format_fractional(stats["damage"] / 100, 1, 1),
-			"deaths", 	stats["deaths"],
-			"grenades", stats["grenades"],
-			"plants", 	stats["plants"],
-			"defuses", 	stats["defuses"]
-		);
-	}
-
-	// Start upload
-	if (isDefined(printStatus) && printStatus) {
-		matchUploadData(::matchUploadDone, ::matchUploadError);
-	} else {
-		matchUploadData();
-	}
-}
-
-matchUploadDone() {
-	iprintln("^2Match data uploaded successfully.");
-}
-matchUploadError(error) {
-	iprintln("^1Error uploading match data: " + error);
-}
-
 
 refresh(firstMapRestart)
 {
@@ -1014,18 +1331,59 @@ refresh(firstMapRestart)
 	wait level.frame * 8; // offset thread from other threads
 
 
-	// New map, upload data
+	// New map
 	if (matchIsActivated() && firstMapRestart) {
-
-		// Clear data from previous map
-		matchClearData();
-
-		uploadMatchData(true);
+		prepareMap();
 	}
+
+
+	thread playerNames();
 		
 
 	for (;;)
 	{
+		team1_players = [];
+		team2_players = [];
+
+		players = getentarray("player", "classname");
+		for(i = 0; i < players.size; i++)
+		{
+			player = players[i];
+
+			if (isDefined(player.pers["team"]) && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
+			{	
+				if (level.gametype != "dm") 
+				{
+					if (game["match_team1_side"] == player.pers["team"])
+						team1_players[team1_players.size] = player;
+					else if (game["match_team2_side"] == player.pers["team"])
+						team2_players[team2_players.size] = player;
+
+				} else {
+					playerSideName = "player_" + (player getEntityNumber());
+					if (playerSideName == game["match_team1_side"])
+						team1_players[team1_players.size] = player;
+					else if (playerSideName == game["match_team2_side"])
+						team2_players[team2_players.size] = player;
+					else {
+						// If player name not match, try to find by team
+						if (team1_players.size < 1)
+							team1_players[team1_players.size] = player;
+						else if (team2_players.size < 1)
+							team2_players[team2_players.size] = player;
+						else {
+							// Too many players, split to both teams
+							if (team1_players.size <= team2_players.size)
+								team1_players[team1_players.size] = player;
+							else
+								team2_players[team2_players.size] = player;
+						}
+					}
+				}		
+			}
+		}
+
+
 		/***********************************************************************************************************************************
 		*** Determinate team names, side, score
 		/***********************************************************************************************************************************/
@@ -1064,10 +1422,17 @@ refresh(firstMapRestart)
 			}
 
 			// Main score update
-			if (game["match_team1_side"] == "") 	game["match_team1_score"] = "?";
-			else 									game["match_team1_score"] = game[game["match_team1_side"] + "_score"];
-			if (game["match_team2_side"] == "") 	game["match_team2_score"] = "?";
-			else 									game["match_team2_score"] = game[game["match_team2_side"] + "_score"];
+			game["match_team1_score"] = "?";
+			game["match_team2_score"] = "?";
+			if (level.gametype != "dm") {
+				if (game["match_team1_side"] != "") game["match_team1_score"] = game[game["match_team1_side"] + "_score"];
+				if (game["match_team2_side"] != "") game["match_team2_score"] = game[game["match_team2_side"] + "_score"];
+			} else {
+				if (team1_players.size <= 1 && team2_players.size <= 1) {
+					if (game["match_team1_side"] != "" && team1_players.size == 1) game["match_team1_score"] = team1_players[0].score;
+					if (game["match_team2_side"] != "" && team2_players.size == 1) game["match_team2_score"] = team2_players[0].score;
+				}
+			}
 		}
 
 		else if (game["scr_matchinfo"] == 1) // basic info (no team names)
@@ -1132,9 +1497,15 @@ refresh(firstMapRestart)
 		/***********************************************************************************************************************************
 		*** Update history cvars to be able load info in next map
 		/***********************************************************************************************************************************/
+		totalScoreElapsed = false;
+		if (level.gametype != "dm") {
+			totalScoreElapsed = (game["allies_score"] + game["axis_score"]) > 1;
+		} else {
+			totalScoreElapsed = true;
+		}
 
 		// Save data from this map for next map
-		if ((game["match_teams_set"] || game["scr_matchinfo"] == 1) && elapsedTime > (3*60) && (game["allies_score"] + game["axis_score"]) > 1) // save map into hostory after 3 mins
+		if ((game["match_teams_set"] || game["scr_matchinfo"] == 1) && elapsedTime > (3*60) && totalScoreElapsed) // save map into hostory after 3 mins
 		{
 			setCvarIfChanged("sv_map_name", level.mapname);
 			setCvarIfChanged("sv_map_score1", game["match_team1_score"]);
@@ -1222,11 +1593,430 @@ refresh(firstMapRestart)
 		thread UpdateCvarsForPlayers();
 
 
-		if (level.in_readyup)
-			wait level.fps_multiplier * 1;
-		else 
-			wait level.fps_multiplier * 0.5; // update every 0.5 seconds due to timer
+		wait level.fps_multiplier * 0.5; // update every 0.5 seconds due to timer
 	}
 
+
+}
+
+
+playerNames()
+{
+	if (!matchIsActivated())
+		return;
+
+	for (;;)
+	{
+		wait level.fps_multiplier * 1;
+
+		players = getentarray("player", "classname");
+		for(i = 0; i < players.size; i++)
+		{
+			player = players[i];
+
+			// Player may disconnect due to wait
+			if (!isDefined(player)) continue;
+
+			// Handle rename
+			if (isDefined(player.matchinfo_lastName) && player.matchinfo_lastName != player.name)
+			{
+				level thread generateMatchDescriptionDebounced();
+			}
+			player.matchinfo_lastName = player.name;
+
+			// Check time of last warning
+			if (getTime() - player.pers["matchinfo_nickWarningLastTime"] < 8000)
+				continue; // 8 seconds between warnings
+
+			if ((player.pers["team"] == "allies" || player.pers["team"] == "axis") && level.in_readyup)
+			{
+				// If match is activated, check if the name contains player name
+				if (player matchPlayerIsAllowed()) {
+					match_name = player matchPlayerGetData("name");
+					player_name = removeColorsFromString(player.name);
+
+					if (contains(player_name, match_name) == false)
+					{
+						player iprintlnbold(" ");
+						player iprintlnbold("^3Please rename yourself");
+						player iprintlnbold("^3Your nickname must contain your player name: ^7'" + match_name + "'");
+						player iprintlnbold(" ");
+						player iprintlnbold(" ");
+
+						player.pers["matchinfo_nickWarningLastTime"] = getTime();
+					}
+
+				}
+			}
+			
+		}	
+	}
+}
+
+
+
+generateMatchDescription()
+{
+	level.match_description = "";
+	level.match_description_players1 = "";
+	level.match_description_players2 = "";
+	level.match_description_playersUnknown = "";
+	level.match_missingPlayers = 0;
+	level.match_mixedPlayers = 0;
+	level.match_unjoinedPlayers = 0;
+
+	level.match_players_names = "";
+	level.match_players_nicknames = "";
+	level.match_players_side = "";
+	level.match_players_status = "";
+
+	if (!matchIsActivated()) {
+		return;
+	}
+
+	match_team1_name = matchGetData("team1_name");
+	match_team2_name = matchGetData("team2_name");
+	match_players1_uuid_arr = matchGetData("team1_player_uuids");
+	match_players2_uuid_arr = matchGetData("team2_player_uuids");
+	match_players1_name_arr = matchGetData("team1_player_names");
+	match_players2_name_arr = matchGetData("team2_player_names");
+	match_players1_arr_found = [];
+	match_players2_arr_found = [];
+	match_maps_arr = matchGetData("maps"); // might be empty
+	match_minPlayerCount = int(matchGetData("players_count"));
+	match_format = matchGetData("format"); // BO1, BO3, BO5
+
+	factual_team1_allies = 0;
+	factual_team1_axis = 0;
+	factual_team1_otherSide = 0;
+	factual_team2_allies = 0;
+	factual_team2_axis = 0;
+	factual_team2_otherSide = 0;
+
+	strPlayers1 = "";
+	strPlayers2 = "";
+	strPlayersUnknown = "";
+
+	players_team1 = [];
+	players_team2 = [];
+	players_unknown = [];
+
+	// Find player from connected players
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++) {
+		player = players[i];
+
+		// Count factual players in teams
+		teamNum = player matchPlayerGetData("team"); // team1 / team2
+
+		if (teamNum == "team1" || (game["match_team1_side"] == player.pers["team"] && teamNum != "team2")) // include also unassigned players by checking the side assigned by match system
+		{
+			if (player.pers["team"] == "allies")
+				factual_team1_allies++;
+			else if (player.pers["team"] == "axis")
+				factual_team1_axis++;
+			else
+				factual_team1_otherSide++;
+		}
+		else if (teamNum == "team2" || (game["match_team2_side"] == player.pers["team"] && teamNum != "team1")) // include also unassigned players by checking the side assigned by match system
+		{
+			if (player.pers["team"] == "allies")
+				factual_team2_allies++;
+			else if (player.pers["team"] == "axis")
+				factual_team2_axis++;
+			else
+				factual_team2_otherSide++;
+		}
+
+		player.pers["matchinfo_error"] = "";
+		player.pers["matchinfo_color"] = "";
+
+		// Create colored strings of players in teams and their status
+		player_uuid = player matchPlayerGetData("uuid");
+		found = false;
+		if (player_uuid != "") {
+			for (j = 0; j < match_players1_uuid_arr.size; j++) {
+				if (match_players1_uuid_arr[j] == player_uuid && !isDefined(match_players1_arr_found[j])) {
+					if (strPlayers1 != "")
+						strPlayers1 += ", ";
+
+					player.pers["matchinfo_error"] = "Player has not joined a side yet";
+					player.pers["matchinfo_color"] = "^5"; // cyan, team not selected yet
+					if ((game["match_team1_side"] == "allies" || game["match_team1_side"] == "axis") && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
+					{
+						if (game["match_team1_side"] != player.pers["team"]) {
+							player.pers["matchinfo_error"] = "Player is on the wrong side (" + player.pers["team"] + " instead of " + game["match_team1_side"] + ")";
+							player.pers["matchinfo_color"] = "^1"; // red, wrong side
+						} else {
+							player.pers["matchinfo_error"] = "";
+							player.pers["matchinfo_color"] = "^2"; // green, correct
+						}
+					} else if (startsWith(game["match_team1_side"], "player_") && (player.pers["team"] == "allies" || player.pers["team"] == "axis")) {
+						if (game["match_team1_side"] != "player_" + (player getEntityNumber())) {
+							player.pers["matchinfo_error"] = "Player is not in the correct team";
+							player.pers["matchinfo_color"] = "^1"; // red, wrong side
+						} else {
+							player.pers["matchinfo_error"] = "";
+							player.pers["matchinfo_color"] = "^2"; // green, correct
+						}
+					}
+					
+					strPlayers1 += player.pers["matchinfo_color"] + removeColorsFromString(match_players1_name_arr[j]) + "^7";
+					match_players1_arr_found[j] = true;
+					players_team1[players_team1.size] = player;
+					found = true;
+					break;
+				}
+			}
+			for (j = 0; !found && j < match_players2_uuid_arr.size; j++) {
+				if (match_players2_uuid_arr[j] == player_uuid && !isDefined(match_players2_arr_found[j])) {
+					if (strPlayers2 != "")
+						strPlayers2 += ", ";
+
+					player.pers["matchinfo_error"] = "Player has not joined a side yet";
+					player.pers["matchinfo_color"] = "^5"; // cyan, team not selected yet
+					if ((game["match_team2_side"] == "allies" || game["match_team2_side"] == "axis") && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
+					{
+						if (game["match_team2_side"] != player.pers["team"]) {
+							player.pers["matchinfo_error"] = "Player is on the wrong side (" + player.pers["team"] + " instead of " + game["match_team2_side"] + ")";
+							player.pers["matchinfo_color"] = "^1"; // red, wrong side
+						} else {
+							player.pers["matchinfo_error"] = "";
+							player.pers["matchinfo_color"] = "^2"; // green, correct
+						}
+					} else if (startsWith(game["match_team2_side"], "player_") && (player.pers["team"] == "allies" || player.pers["team"] == "axis")) { // DM
+						if (game["match_team2_side"] != "player_" + (player getEntityNumber())) {
+							player.pers["matchinfo_error"] = "Player is not in the correct team";
+							player.pers["matchinfo_color"] = "^1"; // red, wrong side
+						} else {
+							player.pers["matchinfo_error"] = "";
+							player.pers["matchinfo_color"] = "^2"; // green, correct
+						}
+					}
+
+					strPlayers2 += player.pers["matchinfo_color"] + removeColorsFromString(match_players2_name_arr[j]) + "^7";
+					match_players2_arr_found[j] = true;
+					players_team2[players_team2.size] = player;
+					found = true;
+					break;
+				}
+			}
+		}
+
+		if (!found && player.pers["team"] != "streamer") {
+			if (strPlayersUnknown != "")
+				strPlayersUnknown += ", ";
+			strPlayersUnknown += removeColorsFromString(player.name);
+		}
+
+		if (!found) {
+			players_unknown[players_unknown.size] = player;
+			player.pers["matchinfo_error"] = "Player does not belong to any team / match";
+			player.pers["matchinfo_color"] = "^3"; // yellow, unknown player
+		}
+	}
+
+
+	// Add line to player list
+	level.match_players_names += 		"Match player name:" + "\n\n";
+	level.match_players_nicknames += 	"Nick:" + "\n\n";
+	level.match_players_side += 		"Side:" + "\n\n";
+	level.match_players_status += 		"Status:" + "\n\n";
+
+	for (j = 0; j < players_team1.size; j++) {
+		player = players_team1[j];
+
+		// Add line to player list
+		level.match_players_names += 		"^7" + player.pers["matchinfo_color"] + player matchPlayerGetData("name") + "\n";
+		level.match_players_nicknames += 	"^7" + player.pers["matchinfo_color"] + removeColorsFromString(player.name) + "\n";
+		level.match_players_side += 		"^7" + player.pers["matchinfo_color"] + player.pers["team"] + "\n";
+		level.match_players_status += 		"^7" + player.pers["matchinfo_color"] + iff(player.pers["matchinfo_error"] == "", "Ok", player.pers["matchinfo_error"]) + "\n";
+	}
+	// Loop match players and find not connected players
+	for (j = 0; j < match_players1_name_arr.size; j++) {
+		if (!isDefined(match_players1_arr_found[j])) {
+			if (strPlayers1 != "")
+				strPlayers1 += ", ";
+			strPlayers1 += "^7" + match_players1_name_arr[j] + "^7";
+
+			// Add line to player list
+			level.match_players_names += 		"^7" + match_players1_name_arr[j] + "\n";
+			level.match_players_nicknames += 	"^7" + "-" + "\n";
+			level.match_players_side += 		"^7" + "-" + "\n";
+			level.match_players_status += 		"^7" + "Not connected" + "\n";
+		}
+	}
+
+	level.match_players_names += 		"\n";
+	level.match_players_nicknames += 	"\n";
+	level.match_players_side += 		"\n";
+	level.match_players_status += 		"\n";
+
+	for (j = 0; j < players_team2.size; j++) {
+		player = players_team2[j];
+
+		// Add line to player list
+		level.match_players_names += 		"^7" + player.pers["matchinfo_color"] + player matchPlayerGetData("name") + "\n";
+		level.match_players_nicknames += 	"^7" + player.pers["matchinfo_color"] + removeColorsFromString(player.name) + "\n";
+		level.match_players_side += 		"^7" + player.pers["matchinfo_color"] + player.pers["team"] + "\n";
+		level.match_players_status += 		"^7" + player.pers["matchinfo_color"] + iff(player.pers["matchinfo_error"] == "", "Ok", player.pers["matchinfo_error"]) + "\n";
+	}
+	// Loop match players and find not connected players
+	for (j = 0; j < match_players2_name_arr.size; j++) {
+		if (!isDefined(match_players2_arr_found[j])) {
+			if (strPlayers2 != "")
+				strPlayers2 += ", ";
+			strPlayers2 += "^7" + match_players2_name_arr[j] + "^7";
+
+			// Add line to player list
+			level.match_players_names += 		"^7" + match_players2_name_arr[j] + "\n";
+			level.match_players_nicknames += 	"^7" + "-" + "\n";
+			level.match_players_side += 		"^7" + "-" + "\n";
+			level.match_players_status += 		"^7" + "Not connected" + "\n";
+		}
+	}
+
+	level.match_players_names += 		"\n";
+	level.match_players_nicknames += 	"\n";
+	level.match_players_side += 		"\n";
+	level.match_players_status += 		"\n";
+
+	for (j = 0; j < players_unknown.size; j++) {
+		player = players_unknown[j];
+
+		// Add line to player list
+		level.match_players_names += 		"^7" + player.pers["matchinfo_color"] + "-" + "\n";
+		level.match_players_nicknames += 	"^7" + player.pers["matchinfo_color"] + removeColorsFromString(player.name) + "\n";
+		level.match_players_side += 		"^7" + player.pers["matchinfo_color"] + player.pers["team"] + "\n";
+		level.match_players_status += 		"^7" + player.pers["matchinfo_color"] + player.pers["matchinfo_error"] + "\n";
+	}
+
+
+	// Check right number of players in teams, allow unknown players and allow 1 missing player
+	team1_count_final = factual_team1_allies + factual_team1_axis; // match players + unknown players in team allies + axis
+	team2_count_final = factual_team2_allies + factual_team2_axis;
+	team1_count_total = factual_team1_allies + factual_team1_axis + factual_team1_otherSide; // match players + unknown players + logged players in other side (spectator)
+	team2_count_total = factual_team2_allies + factual_team2_axis + factual_team2_otherSide;
+
+	//iprintln("## team1 | allies=" + factual_team1_allies + " axis=" + factual_team1_axis + " otherSide=" + factual_team1_otherSide);
+	//iprintln("## team2 | allies=" + factual_team2_allies + " axis=" + factual_team2_axis + " otherSide=" + factual_team2_otherSide);
+
+	minPlayerCount = match_minPlayerCount;
+
+	if (minPlayerCount > 0) { // 0 means no limit
+		if (team1_count_total < minPlayerCount || team2_count_total < minPlayerCount)
+		{
+			// Count missing players
+			level.match_missingPlayers = 0;
+			if (team1_count_total < minPlayerCount)
+				level.match_missingPlayers += (minPlayerCount - team1_count_total);
+			if (team2_count_total < minPlayerCount)
+				level.match_missingPlayers += (minPlayerCount - team2_count_total);
+
+			//iprintln("## level.match_missingPlayers = " + level.match_missingPlayers);
+		}
+
+		if (team1_count_final < minPlayerCount || team2_count_final < minPlayerCount)
+		{
+			// Count missing players
+			level.match_unjoinedPlayers = 0;
+			if (team1_count_final < minPlayerCount)
+				level.match_unjoinedPlayers += factual_team1_otherSide;
+			if (team2_count_final < minPlayerCount)
+				level.match_unjoinedPlayers += factual_team2_otherSide;
+
+			//iprintln("## level.match_unjoinedPlayers = " + level.match_unjoinedPlayers);
+		}
+	}
+
+
+
+
+	// If we have both teams with mixed players, disable readyup
+	/*if ((factual_team1_allies > 0 && factual_team1_axis > 0) || (factual_team2_allies > 0 && factual_team2_axis > 0))
+	{
+		// Count mixed players
+		level.match_mixedPlayers = 0;
+		// Only count the minority side in each mixed team without using min/max
+		if (factual_team1_allies > 0 && factual_team1_axis > 0)
+		{
+			if (factual_team1_allies < factual_team1_axis)
+				level.match_mixedPlayers += factual_team1_allies;
+			else
+				level.match_mixedPlayers += factual_team1_axis;
+		}
+		if (factual_team2_allies > 0 && factual_team2_axis > 0)
+		{
+			if (factual_team2_allies < factual_team2_axis)
+				level.match_mixedPlayers += factual_team2_allies;
+			else
+				level.match_mixedPlayers += factual_team2_axis;
+		}
+
+		//iprintln("## level.match_mixedPlayers = " + level.match_mixedPlayers);
+	}*/
+
+	// Check if side has players from both sides and count how many
+	if ((game["match_team1_side"] == "allies" || game["match_team1_side"] == "axis") && (game["match_team2_side"] == "allies" || game["match_team2_side"] == "axis"))
+	{
+		if (factual_team1_allies > 0 && factual_team2_allies > 0) { // allies has players from both teams	
+			// Determine which team is on wrong side
+			if (game["match_team1_side"] == "allies") {
+				level.match_mixedPlayers += factual_team2_allies; // team1 is allies, team2 is axis, count players in team2 on wrong side
+			} else {
+				level.match_mixedPlayers += factual_team1_allies; // team1 is axis, team2 is allies, count players in team1 on wrong side
+			}		
+		}
+		if (factual_team1_axis > 0 && factual_team2_axis > 0) { // axis has players from both teams
+			// Determine which team is on wrong side
+			if (game["match_team1_side"] == "axis") {
+				level.match_mixedPlayers += factual_team2_axis; // team1 is axis, team2 is allies, count players in team2 on wrong side
+			} else {
+				level.match_mixedPlayers += factual_team1_axis; // team1 is allies, team2 is axis, count players in team1 on wrong side
+			}
+		}
+	}
+
+
+	level.match_description_players1 = strPlayers1;
+	level.match_description_players2 = strPlayers2;
+	level.match_description_playersUnknown = strPlayersUnknown;
+
+
+
+
+
+	level.match_description = 
+		"Match: [^8" + removeColorsFromString(matchGetData("team1_name")) + "^7]  vs  [^9" + removeColorsFromString(matchGetData("team2_name")) + "^7]\n";// +
+		//"Team 1: " + strPlayers1 + "^7\n" +
+		//"Team 2: " + strPlayers2 + "^7\n";
+
+	if (strPlayersUnknown != "")
+		level.match_description += "^3Unknown players: " + strPlayersUnknown + "^7\n";
+
+    // Format:  BO1 | 5v5
+	level.match_description += "Format:  " + match_format + " | ";
+	if (match_minPlayerCount > 0)
+		level.match_description += match_minPlayerCount + "v" + match_minPlayerCount;
+	else
+		level.match_description += "no player limit";
+	level.match_description += "\n";
+
+	if (match_maps_arr.size > 0) {
+		level.match_description += "Maps:  ";
+		for (j = 0; j < match_maps_arr.size; j++) {
+			if (j != 0)
+				level.match_description += ", ";
+			level.match_description += GetMapName(match_maps_arr[j]);
+		}
+		level.match_description += "\n";
+	}
+
+	if (level.match_missingPlayers > 0)
+		level.match_description += "^1There are " + level.match_missingPlayers + " missing players!^7\n";
+	else if (level.match_unjoinedPlayers > 0)
+		level.match_description += "^1There are " + level.match_unjoinedPlayers + " unjoined players!^7\n";
+	else if (level.match_mixedPlayers > 0)
+		level.match_description += "^1There are " + level.match_mixedPlayers + " mixed players!^7\n";
 
 }

@@ -29,11 +29,17 @@ restartIfEmpty()
 		level notify("server_restart");
 		level endon("server_restart");
 
-		wait level.fps_multiplier * 30;
+		wait level.fps_multiplier * 60;
 
 		players = getentarray("player", "classname");
 		if (players.size == 0)
 		{
+			if (matchIsActivated())
+			{
+				matchCancel("empty server"); // doing fast_Restart
+				return;
+			}
+
 			iprintln("Restarting server...");
 			// Will disable all comming map-restrat (so map can be changed correctly)
 			level.pam_mode_change = true;

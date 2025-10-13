@@ -13,13 +13,13 @@
 		blurWorld		5.0
 		onOpen
 		{
-			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo_bar;
 			open weapon_rifles_keys;
 		}
 		onClose
 		{
 			HIDE_ALL
-			close matchinfo;
+			close matchinfo_bar;
 			close weapon_rifles_keys;
 		}
 		onEsc

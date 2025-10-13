@@ -1877,7 +1877,7 @@ endRound(roundwinner)
 	maps\mp\gametypes\_round_report::printToAll();
 
 	// Upload match data
-	maps\mp\gametypes\_matchinfo::uploadMatchData(true);
+	maps\mp\gametypes\_matchinfo::uploadMatchData("sd endround", true, true);
 
 
 	// In SD there are 3 checks: Time limit, Score limit and Round limit

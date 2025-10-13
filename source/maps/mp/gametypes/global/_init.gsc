@@ -51,7 +51,6 @@ InitModules()
 
 	thread maps\mp\gametypes\_weapons::init();		// must be caled before _menus because of rifle mode
 	thread maps\mp\gametypes\_menus::init();		// must be called before another onMenuResponse
-	thread maps\mp\gametypes\_menu_serverinfo::init();
 	thread maps\mp\gametypes\_teams::init();
 	thread maps\mp\gametypes\_killcam::init();
 	thread maps\mp\gametypes\_shellshock::init();
@@ -83,6 +82,8 @@ InitModules()
 	thread maps\mp\gametypes\_scoreboard::init();	// must be called before matchinfo
 	thread maps\mp\gametypes\_teamname::init();
 	thread maps\mp\gametypes\_matchinfo::init();	// depends on readyup, teamname, bash, overtime
+	thread maps\mp\gametypes\_menu_serverinfo::init();	// depends on matchinfo
+	thread maps\mp\gametypes\_menu_matchinfo::init();	// depends on matchinfo
 	thread maps\mp\gametypes\_record::init();	// depends on matchinfo
 	thread maps\mp\gametypes\_players_left::Init(); // depends on matchinfo
 	thread maps\mp\gametypes\_streamer::init(); // depends on readyup, matchinfo

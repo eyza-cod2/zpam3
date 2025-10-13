@@ -11,7 +11,7 @@
 		blurWorld		5.0
 		onOpen
 		{
-			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo_bar;
 			open serverinfo_tdm_keys;
 
 			exec "vstr server16;" // server16 contains string with player's settings

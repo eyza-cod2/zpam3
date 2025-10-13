@@ -218,10 +218,9 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 restartMap()
 {
-	// TODO
-	/*if (matchIsActivated()) {
+	if (!maps\mp\gametypes\_matchinfo::canMapBeChanged())
 		return;
-	}*/
+		
 	iprintln("Restarting map...");
 	wait level.fps_multiplier * 2;
 	map(level.mapname, false);

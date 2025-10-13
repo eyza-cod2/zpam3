@@ -17,6 +17,7 @@ onStartGameType()
 	{
 		game["menu_moddownload"] = "moddownload";
 		game["menu_ingame"] = "ingame";
+		game["menu_matchinfo"] = "matchinfo";
 		game["menu_team"] = "team_" + game["allies"] + game["axis"];	// team_britishgerman
 		game["menu_weapon_allies"] = "weapon_" + game["allies"];
 		game["menu_weapon_axis"] = "weapon_" + game["axis"];
@@ -35,6 +36,7 @@ onStartGameType()
 
 		precacheMenu(game["menu_moddownload"]);
 		precacheMenu(game["menu_ingame"]);
+		precacheMenu(game["menu_matchinfo"]);
 		precacheMenu(game["menu_team"]);
 		precacheMenu(game["menu_weapon_allies"]);
 		precacheMenu(game["menu_weapon_axis"]);
@@ -235,6 +237,15 @@ onMenuResponse(menu, response)
 		return true;
 	}
 
+	else if (menu == game["menu_matchinfo"] && response == "close")
+	{
+		self closeMenu();
+		self closeInGameMenu();
+		self openMenu(game["menu_team"]);
+
+		return true;
+	}
+
 
 
 	if(response == "back")
@@ -276,6 +287,14 @@ onMenuResponse(menu, response)
 			self closeInGameMenu();
 			self openMenu(game["menu_serverinfo"]);
 			self maps\mp\gametypes\_menu_serverinfo::updateServerInfo();
+			return true;
+		}
+		if (response == "matchinfo")
+		{
+			self closeMenu();
+			self closeInGameMenu();
+			self openMenu(game["menu_matchinfo"]);
+			self maps\mp\gametypes\_menu_matchinfo::refreshMenu();
 			return true;
 		}
 		if (response == "callvote")

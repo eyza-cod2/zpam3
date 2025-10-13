@@ -192,3 +192,13 @@ format_fractional(num, fixedPositions, precision)
 {
 	return maps\mp\gametypes\global\string::format_fractional(num, fixedPositions, precision);
 }
+
+
+/*************************************************************************************************************
+* Other
+**************************************************************************************************************/
+iff(condition, valueTrue, valueFalse)
+{
+	if (condition) return valueTrue; 
+	else return valueFalse;
+}

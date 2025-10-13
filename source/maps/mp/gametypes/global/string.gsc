@@ -37,12 +37,17 @@ contains(string, substring)
 // If string starts with dash and number, like -1337, true is returned
 isDigitalNumber(string)
 {
+	string = "" + string; // to avoid unmatching types 'float' and 'string'
+
+	if (string == "")
+		return false;
+
 	for (i = 0; i < string.size; i++)
 	{
 		char = string[i];
 		charNext = "";
 		if ((i+1) < string.size)
-			char = string[i+1];
+			charNext = string[i+1];
 
 		if (isDigit(char)  ||  (i == 0 && char == "-" && isDigit(charNext)))
 			continue;

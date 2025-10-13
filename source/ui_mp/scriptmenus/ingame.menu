@@ -11,13 +11,13 @@
 		blurWorld		5.0
 		onOpen
 		{
-			close matchinfo;
+			close matchinfo_bar;
 			close ingame_scoreboard_sd;
 
 			// Make sure cursor is enable (in case of spectator menu fails)
 			setDvar cl_bypassMouseInput "0" // enable cursor movement
 
-			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo_bar;
 			uiScript openMenuOnDvar ui_scoreboard_show "sd" ingame_scoreboard_sd;
 			open ingame_keys;
 
@@ -26,7 +26,7 @@
 		onClose
 		{
 			CLOSE_SUBMENUS;
-			close matchinfo;
+			close matchinfo_bar;
 		}
 		onEsc
 		{
@@ -73,6 +73,8 @@
 		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, CLOSE_ALL; open main;)
 		// Server info
 		ITEM_BAR_BOTTOM_BUTTON("^9[I]^7 Server Info",	280, 80, scriptMenuResponse "serverinfo"; /*exec "openscriptmenu ingame serverinfo";*/)
+		// Match info
+		ITEM_BAR_BOTTOM_BUTTON("^9[M]^7 Match Info",	390, 80, scriptMenuResponse "matchinfo"; /*exec "openscriptmenu ingame matchinfo";*/)
 	}
 
 	// Key choices has to be in different menu if we are using submenus
@@ -92,7 +94,7 @@
 
 		execKeyInt 32 { play "mouse_click"; CLOSE_ALL; open main; } // space
 		execKeyInt 105 { play "mouse_click"; exec "openscriptmenu ingame serverinfo";  } // i
-		execKeyInt 116 { play "mouse_click"; exec "openscriptmenu ingame timeout";  } // t
+		execKeyInt 109 { play "mouse_click"; exec "openscriptmenu ingame matchinfo" } // m
 	}
 
 	// Match info
@@ -100,24 +102,24 @@
 	// This is why its defined only here and used also in other menus
 	menuDef
 	{
-		name				"matchinfo"
+		name				"matchinfo_bar"
 		rect 				0 0 400 80 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
 		focuscolor	GLOBAL_FOCUSED_COLOR
 		style				WINDOW_STYLE_EMPTY
 
-		onOpen
+		/*onOpen
 		{
 			open matchinfo_2;
 		}
 		onClose
 		{
 			close matchinfo_2;
-		}
+		}*/
 
 		MATCHINFO("ui_matchinfo_team1_team", "ui_matchinfo_team2_team", "ui_matchinfo_show", 0.3 0.3 0.9 .9, 0.7 0 0 .8)
 	}
 
-	menuDef
+	/*menuDef
 	{
 		name				"matchinfo_2"
 		rect 				0 0 640 50
@@ -179,7 +181,7 @@
 				play "mouse_over";
 			}
 		}
-	}
+	}*/
 
 
 

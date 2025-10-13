@@ -734,10 +734,10 @@ itemDef \
 
 #define MATCHINFO(cvar_team1_team, cvar_team2_team, cvar_show, color_allies, color_axis) \
 \
-	MATCHINFO_BGCOLOR(-131 0 130 15, color_allies, 		cvar_team1_team, showDvar { "american"; "british"; "russian"; })  \
+	MATCHINFO_BGCOLOR(-131 0 130 15, color_allies, 		cvar_team1_team, showDvar { "american"; "british"; "russian"; "none" })  \
 	MATCHINFO_BGCOLOR(-131 0 130 15, color_axis, 		cvar_team1_team, showDvar { "german" })  \
 \
-	MATCHINFO_BGCOLOR(-131 0 130 14, .1 .1 .1 .55, 		cvar_team1_team, showDvar { "american"; "british"; "russian"; "german" }) \
+	MATCHINFO_BGCOLOR(-131 0 130 14, .1 .1 .1 .55, 		cvar_team1_team, showDvar { "american"; "british"; "russian"; "german"; "none" }) \
 	MATCHINFO_ICON(-128 1, "hudicon_american", 		cvar_team1_team, showDvar { "american" } ) \
 	MATCHINFO_ICON(-128 1, "hudicon_british", 		cvar_team1_team, showDvar { "british" } ) \
 	MATCHINFO_ICON(-128 1, "hudicon_russian", 		cvar_team1_team, showDvar { "russian" } ) \
@@ -745,9 +745,9 @@ itemDef \
 \
 \
 	MATCHINFO_BGCOLOR(1 0 130 15, color_allies, 		cvar_team2_team, showDvar { "american"; "british"; "russian"; }) \
-	MATCHINFO_BGCOLOR(1 0 130 15, color_axis, 		cvar_team2_team, showDvar { "german" }) \
+	MATCHINFO_BGCOLOR(1 0 130 15, color_axis, 		cvar_team2_team, showDvar { "german"; "none" }) \
 \
-	MATCHINFO_BGCOLOR(1 0 130 14, .1 .1 .1 .55, 		cvar_team2_team, showDvar { "american"; "british"; "russian"; "german" }) \
+	MATCHINFO_BGCOLOR(1 0 130 14, .1 .1 .1 .55, 		cvar_team2_team, showDvar { "american"; "british"; "russian"; "german"; "none" }) \
 	MATCHINFO_ICON(3 1, "hudicon_american", 		cvar_team2_team, showDvar { "american" } ) \
 	MATCHINFO_ICON(3 1, "hudicon_british", 			cvar_team2_team, showDvar { "british" } ) \
 	MATCHINFO_ICON(3 1, "hudicon_russian", 			cvar_team2_team, showDvar { "russian" } ) \
@@ -757,6 +757,7 @@ itemDef \
 	ITEM_DVAR_DVAR("ui_matchinfo_team2_name", 16, 12, .2, ITEM_ALIGN_LEFT, 1 1 1 1, cvar_show, showDvar { "1" }) \
 \
 	ITEM_DVAR_DVAR("ui_matchinfo_round", 0, 24, .18, ITEM_ALIGN_CENTER, 1 1 1 1, cvar_show, showDvar { "1" }) \
+	ITEM_DVAR_DVAR("ui_matchinfo_info", 0, 32, .18, ITEM_ALIGN_CENTER, 1 1 1 1, cvar_show, showDvar { "1" }) \
 \
 	ITEM_DVAR_DVAR("ui_matchinfo_matchtime", -67, 24, .18, ITEM_ALIGN_CENTER, 1 1 1 1, cvar_show, showDvar { "1" }) \
 	ITEM_DVAR_DVAR("ui_matchinfo_halfInfo", 67, 24, .18, ITEM_ALIGN_CENTER, 1 1 1 1, cvar_show, showDvar { "1" }) \
@@ -821,9 +822,9 @@ itemDef \
 	MATCHINFO_STREAMER_IMAGE(-188 0 375 11, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_topbar", color_heading, cvar_show, showDvar { "1" } ) \
 \
 	/* Background - Team 1*/ \
-	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1", 				color_allies2, cvar_team1_team, showDvar { "american"; "british"; "russian"; } ) \
+	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1", 				color_allies2, cvar_team1_team, showDvar { "american"; "british"; "russian"; "none"; } ) \
 	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1", 				color_axis2,   cvar_team1_team, showDvar { "german" } ) \
-	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1_gradient", 	color_allies, cvar_team1_team, showDvar { "american"; "british"; "russian"; } ) \
+	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1_gradient", 	color_allies, cvar_team1_team, showDvar { "american"; "british"; "russian"; "none"; } ) \
 	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1_gradient", 	color_axis,   cvar_team1_team, showDvar { "german" } ) \
 	/* Icon - Team 1 */ \
 	MATCHINFO_STREAMER_IMAGE(-186 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_american", 	1 1 1 1, cvar_team1_team, showDvar { "american" } ) \
@@ -835,9 +836,9 @@ itemDef \
 \
 	/* Background - Team 2*/ \
 	MATCHINFO_STREAMER_IMAGE(54 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team2", 			color_allies2, cvar_team2_team, showDvar { "american"; "british"; "russian"; } ) \
-	MATCHINFO_STREAMER_IMAGE(54 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team2", 			color_axis2,   cvar_team2_team, showDvar { "german" } ) \
+	MATCHINFO_STREAMER_IMAGE(54 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team2", 			color_axis2,   cvar_team2_team, showDvar { "german"; "none"; } ) \
 	MATCHINFO_STREAMER_IMAGE(54 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team2_gradient", 	color_allies, cvar_team2_team, showDvar { "american"; "british"; "russian"; } ) \
-	MATCHINFO_STREAMER_IMAGE(54 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team2_gradient", 	color_axis,   cvar_team2_team, showDvar { "german" } ) \
+	MATCHINFO_STREAMER_IMAGE(54 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team2_gradient", 	color_axis,   cvar_team2_team, showDvar { "german"; "none" } ) \
 	/* Icon - Team 2 */ \
 	MATCHINFO_STREAMER_IMAGE(172 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_american", 	1 1 1 1, cvar_team2_team, showDvar { "american" } ) \
 	MATCHINFO_STREAMER_IMAGE(172 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_british", 	1 1 1 1, cvar_team2_team, showDvar { "british" } ) \

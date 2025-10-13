@@ -12,7 +12,7 @@
 		onOpen
 		{
 			CLOSE_SUBMENUS;
-			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo;
+			uiScript openMenuOnDvar ui_matchinfo_show "1" matchinfo_bar;
 			uiScript openMenuOnDvar ui_scoreboard_show "sd" ingame_scoreboard_sd;
 			open team_russiangerman_keys;
 
@@ -24,7 +24,7 @@
 		onClose
 		{
 			CLOSE_SUBMENUS;
-			close matchinfo;
+			close matchinfo_bar;
 		}
 		onEsc
 		{
@@ -72,6 +72,8 @@
 		ITEM_BAR_BOTTOM_BUTTON("^9[SPACE]^7 Main Menu",	135, 120, close team_russiangerman; open main;)
 		// Server info
 		ITEM_BAR_BOTTOM_BUTTON("^9[I]^7 Server Info",	280, 80, exec "openscriptmenu ingame serverinfo";)
+		// Match info
+		ITEM_BAR_BOTTOM_BUTTON("^9[M]^7 Match Info",	390, 80, exec "openscriptmenu ingame matchinfo";)
 	}
 
 	// Key choices has to be in different menu if we are using submenus
@@ -91,6 +93,7 @@
 
 		execKeyInt 32 { play "mouse_click"; close team_russiangerman; open main; } // space
 		execKeyInt 105 { play "mouse_click"; exec "openscriptmenu ingame serverinfo" } // i
+		execKeyInt 109 { play "mouse_click"; exec "openscriptmenu ingame matchinfo" } // m
 	}
 
 

@@ -61,7 +61,7 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_replace_russian", 0); 					// Replace russians with Americans / Brisith
 	arr = ruleCvarDefault(arr, "scr_blackout", 0); 						// If match is in progress, show map background all over the screen and disable sounds for connected player
 	arr = ruleCvarDefault(arr, "scr_recording", 0); 						// Starts automatically recording when match starts
-	arr = ruleCvarDefault(arr, "scr_matchinfo", 0); 						// Show match info in menu (1 = without team names, 2 = with team names)
+	arr = ruleCvarDefault(arr, "scr_matchinfo", 2); 						// Show match info in menu (1 = without team names, 2 = with team names)
 	arr = ruleCvarDefault(arr, "scr_map_vote", 0);						// Open voting system so players can vote about next map
 	arr = ruleCvarDefault(arr, "scr_map_vote_replay", 0);					// Show option to replay this map in voting system
 	arr = ruleCvarDefault(arr, "scr_remove_killtriggers", 1);					// Remove some of the kill-triggers created in 1.3 path

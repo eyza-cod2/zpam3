@@ -457,9 +457,9 @@ onStartGameType()
     if (getCvar("debug") == "1") iprintln(GetTime() + ": ^6CATCHED: onStartGameType");
 }
 
-onStopGameType(fromScript, bComplete, shutdown)
+onStopGameType(fromScript, bComplete, shutdown, source)
 {
-    if (getCvar("debug") == "1") iprintln(GetTime() + ": ^6CATCHED: onStopGameType, fromScript:" + fromScript + ", bComplete:" + bComplete + ", shutdown:" + shutdown);
+    if (getCvar("debug") == "1") iprintln(GetTime() + ": ^6CATCHED: onStopGameType, fromScript:" + fromScript + ", bComplete:" + bComplete + ", shutdown:" + shutdown + ", source:" + source);
 }
 
 onConnecting(firstTime)
