@@ -33,6 +33,7 @@ init()
 		precacheString2("STRING_PAM_WWW_DOWNLOADING", &"WWW downloading must be enabled. Set ^9sv_wwwDownload^7 and ^9sv_wwwBaseURL");
 		precacheString2("STRING_PAM_BLACKLIST", &"Old zPAM or maps detected in ^9main^7 folder. Delete iwd file you see printed above.");
 		precacheString2("STRING_PAM_IWD_CUSTOM", &"Rename iwd file ^9zzz_zpam_custom.iwd^7 to something unique (e.g. ^9zzz_zpam_custom_fpschallange_v1.iwd^7)."); // ZPAM_RENAME
+		precacheString2("STRING_PAM_COD2X_BLACKLIST", &"Old CoD2x version detected. Please update CoD2x version.");
 
 
 		// Help url
@@ -338,6 +339,32 @@ CheckInstallation()
 			setError(game["STRING_PAM_BLACKLIST"], file);
 
 			level thread printTextInLoop(file);
+
+			return;
+		}
+	}
+
+
+
+	cod2x_blacklist = [];
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.1";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.2";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.3";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.4";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.5";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.6";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.7";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.8";
+
+	// ZPAM_RENAME - add incompatible versions
+
+	for(i = 0; i < cod2x_blacklist.size; i++)
+	{
+		if (tolower(getCvar("shortversion")) == cod2x_blacklist[i])
+		{
+			setError(game["STRING_PAM_COD2X_BLACKLIST"], cod2x_blacklist[i]);
+
+			level thread printTextInLoop(cod2x_blacklist[i]);
 
 			return;
 		}
