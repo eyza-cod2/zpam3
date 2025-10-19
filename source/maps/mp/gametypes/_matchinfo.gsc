@@ -57,6 +57,7 @@ Init()
 	level.match_missingPlayers = 0;
 	level.match_mixedPlayers = 0;
 	level.match_unjoinedPlayers = 0;
+	level.match_badlyNamedPlayers = 0;
 
 	// Matchinfo not possible, exit here
 	if (game["scr_matchinfo"] == 0)
@@ -434,6 +435,7 @@ onConnected()
 		self.pers["matchinfo_ingame_visible"] = false;
 		self.pers["matchinfo_matchDataWarningShowed"] = false;
 		self.pers["matchinfo_nickWarningLastTime"] = 0;
+		self.pers["matchinfo_badNick"] = false;
 		self.pers["matchinfo_error"] = "";
 		self.pers["matchinfo_color"] = "";
 
@@ -1609,6 +1611,11 @@ playerNames()
 	{
 		wait level.fps_multiplier * 1;
 
+		// Check if force nick names is enabled
+		forceNickNames = matchGetData("forceNickNames");
+		if (forceNickNames != "1" && forceNickNames != "true")
+			continue;
+
 		players = getentarray("player", "classname");
 		for(i = 0; i < players.size; i++)
 		{
@@ -1622,34 +1629,66 @@ playerNames()
 			{
 				level thread generateMatchDescriptionDebounced();
 			}
+
 			player.matchinfo_lastName = player.name;
 
-			// Check time of last warning
-			if (getTime() - player.pers["matchinfo_nickWarningLastTime"] < 8000)
-				continue; // 8 seconds between warnings
-
-			if ((player.pers["team"] == "allies" || player.pers["team"] == "axis") && level.in_readyup)
+			if ((player.pers["team"] == "allies" || player.pers["team"] == "axis"))
 			{
+				player.pers["matchinfo_badNick"] = false;
+
 				// If match is activated, check if the name contains player name
 				if (player matchPlayerIsAllowed()) {
 					match_name = player matchPlayerGetData("name");
 					player_name = removeColorsFromString(player.name);
 
-					if (contains(player_name, match_name) == false)
+					// Remove spaces from names
+					match_name_noSpaces = "";
+					for (j = 0; j < match_name.size; j++)
 					{
-						player iprintlnbold(" ");
-						player iprintlnbold("^3Please rename yourself");
-						player iprintlnbold("^3Your nickname must contain your player name: ^7'" + match_name + "'");
-						player iprintlnbold(" ");
-						player iprintlnbold(" ");
+						if (match_name[j] != " ")
+							match_name_noSpaces += toLower(match_name[j]);
+					}
+					player_name_noSpaces = "";
+					for (j = 0; j < player_name.size; j++)
+					{
+						if (player_name[j] != " ")
+							player_name_noSpaces += toLower(player_name[j]);
+					}
 
-						player.pers["matchinfo_nickWarningLastTime"] = getTime();
+					if (contains(player_name_noSpaces, match_name_noSpaces) == false)
+					{
+						// Check time of last warning
+						if (getTime() - player.pers["matchinfo_nickWarningLastTime"] > 8000)
+						{
+							player iprintlnbold(" ");
+							player iprintlnbold("^3Please rename yourself");
+							player iprintlnbold("^3Your nickname must include your player name: ^7'" + match_name + "'");
+							player iprintlnbold(" ");
+							player iprintlnbold(" ");
+
+							// Force rename
+							if (!level.in_readyup) {
+								player setClientCvar("name", match_name);
+							}
+
+							player.pers["matchinfo_nickWarningLastTime"] = getTime();
+						}
+					
+						player.pers["matchinfo_badNick"] = true;
 					}
 
 				}
-			}
-			
-		}	
+			}	
+		}
+
+		// Count badly named players
+		level.match_badlyNamedPlayers = 0;
+		for(i = 0; i < players.size; i++)
+		{
+			if (isDefined(players[i]) && players[i].pers["matchinfo_badNick"])
+				level.match_badlyNamedPlayers++;
+		}
+
 	}
 }
 
@@ -1742,22 +1781,32 @@ generateMatchDescription()
 
 					player.pers["matchinfo_error"] = "Player has not joined a side yet";
 					player.pers["matchinfo_color"] = "^5"; // cyan, team not selected yet
-					if ((game["match_team1_side"] == "allies" || game["match_team1_side"] == "axis") && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
+
+					if (player.pers["team"] == "allies" || player.pers["team"] == "axis")
 					{
-						if (game["match_team1_side"] != player.pers["team"]) {
-							player.pers["matchinfo_error"] = "Player is on the wrong side (" + player.pers["team"] + " instead of " + game["match_team1_side"] + ")";
-							player.pers["matchinfo_color"] = "^1"; // red, wrong side
-						} else {
-							player.pers["matchinfo_error"] = "";
-							player.pers["matchinfo_color"] = "^2"; // green, correct
-						}
-					} else if (startsWith(game["match_team1_side"], "player_") && (player.pers["team"] == "allies" || player.pers["team"] == "axis")) {
-						if (game["match_team1_side"] != "player_" + (player getEntityNumber())) {
-							player.pers["matchinfo_error"] = "Player is not in the correct team";
-							player.pers["matchinfo_color"] = "^1"; // red, wrong side
-						} else {
-							player.pers["matchinfo_error"] = "";
-							player.pers["matchinfo_color"] = "^2"; // green, correct
+						if ((game["match_team1_side"] == "allies" || game["match_team1_side"] == "axis"))
+						{
+							if (game["match_team1_side"] != player.pers["team"]) {
+								player.pers["matchinfo_error"] = "Player is on the wrong side (" + player.pers["team"] + " instead of " + game["match_team1_side"] + ")";
+								player.pers["matchinfo_color"] = "^1"; // red, wrong side
+							} else if (player.pers["matchinfo_badNick"]) {
+								player.pers["matchinfo_error"] = "Player's nickname does not contain user name";
+								player.pers["matchinfo_color"] = "^1"; // red, wrong nick
+							} else {
+								player.pers["matchinfo_error"] = "";
+								player.pers["matchinfo_color"] = "^2"; // green, correct
+							}
+						} else if (startsWith(game["match_team1_side"], "player_")) {
+							if (game["match_team1_side"] != "player_" + (player getEntityNumber())) {
+								player.pers["matchinfo_error"] = "Player is not in the correct team";
+								player.pers["matchinfo_color"] = "^1"; // red, wrong side
+							} else if (player.pers["matchinfo_badNick"]) {
+								player.pers["matchinfo_error"] = "Player's nickname does not contain user name";
+								player.pers["matchinfo_color"] = "^1"; // red, wrong nick
+							} else {
+								player.pers["matchinfo_error"] = "";
+								player.pers["matchinfo_color"] = "^2"; // green, correct
+							}
 						}
 					}
 					
@@ -1775,22 +1824,32 @@ generateMatchDescription()
 
 					player.pers["matchinfo_error"] = "Player has not joined a side yet";
 					player.pers["matchinfo_color"] = "^5"; // cyan, team not selected yet
-					if ((game["match_team2_side"] == "allies" || game["match_team2_side"] == "axis") && (player.pers["team"] == "allies" || player.pers["team"] == "axis"))
+
+					if (player.pers["team"] == "allies" || player.pers["team"] == "axis")
 					{
-						if (game["match_team2_side"] != player.pers["team"]) {
-							player.pers["matchinfo_error"] = "Player is on the wrong side (" + player.pers["team"] + " instead of " + game["match_team2_side"] + ")";
-							player.pers["matchinfo_color"] = "^1"; // red, wrong side
-						} else {
-							player.pers["matchinfo_error"] = "";
-							player.pers["matchinfo_color"] = "^2"; // green, correct
-						}
-					} else if (startsWith(game["match_team2_side"], "player_") && (player.pers["team"] == "allies" || player.pers["team"] == "axis")) { // DM
-						if (game["match_team2_side"] != "player_" + (player getEntityNumber())) {
-							player.pers["matchinfo_error"] = "Player is not in the correct team";
-							player.pers["matchinfo_color"] = "^1"; // red, wrong side
-						} else {
-							player.pers["matchinfo_error"] = "";
-							player.pers["matchinfo_color"] = "^2"; // green, correct
+						if ((game["match_team2_side"] == "allies" || game["match_team2_side"] == "axis"))
+						{
+							if (game["match_team2_side"] != player.pers["team"]) {
+								player.pers["matchinfo_error"] = "Player is on the wrong side (" + player.pers["team"] + " instead of " + game["match_team2_side"] + ")";
+								player.pers["matchinfo_color"] = "^1"; // red, wrong side
+							} else if (player.pers["matchinfo_badNick"]) {
+								player.pers["matchinfo_error"] = "Player's nickname does not contain user name";
+								player.pers["matchinfo_color"] = "^1"; // red, wrong nick
+							} else {
+								player.pers["matchinfo_error"] = "";
+								player.pers["matchinfo_color"] = "^2"; // green, correct
+							}
+						} else if (startsWith(game["match_team2_side"], "player_")) { // DM
+							if (game["match_team2_side"] != "player_" + (player getEntityNumber())) {
+								player.pers["matchinfo_error"] = "Player is not in the correct team";
+								player.pers["matchinfo_color"] = "^1"; // red, wrong side
+							} else if (player.pers["matchinfo_badNick"]) {
+								player.pers["matchinfo_error"] = "Player's nickname does not contain user name";
+								player.pers["matchinfo_color"] = "^1"; // red, wrong nick
+							} else {
+								player.pers["matchinfo_error"] = "";
+								player.pers["matchinfo_color"] = "^2"; // green, correct
+							}
 						}
 					}
 
@@ -2018,5 +2077,6 @@ generateMatchDescription()
 		level.match_description += "^1There are " + level.match_unjoinedPlayers + " unjoined players!^7\n";
 	else if (level.match_mixedPlayers > 0)
 		level.match_description += "^1There are " + level.match_mixedPlayers + " mixed players!^7\n";
-
+	if (level.match_badlyNamedPlayers > 0)
+		level.match_description += "^1There are " + level.match_badlyNamedPlayers + " badly named players!^7\n";
 }

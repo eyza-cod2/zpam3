@@ -20,6 +20,7 @@ init()
 		precacheString2("STRING_READYUP_MISSING_PLAYERS", &"Missing Players");
 		precacheString2("STRING_READYUP_MIXED_PLAYERS", &"Mixed Players");
 		precacheString2("STRING_READYUP_UNJOINED_PLAYERS", &"Unjoined Players");
+		precacheString2("STRING_READYUP_BADLY_NAMED_PLAYERS", &"Misnamed Players");
 		precacheString2("STRING_READYUP_YOUR_STATUS", &"Your Status");
 		precacheString2("STRING_READYUP_READY", &"Ready");
 		precacheString2("STRING_READYUP_NOT_READY", &"Not Ready");
@@ -462,6 +463,7 @@ playerReadyUpThread()
 	hudAimTrainerStatusVisible = false;
 	aimTrainerStatusLast = -1;
 	teamLast = "";
+	nickLast = self.name;
 
 	while(!level.playersready)
 	{
@@ -533,6 +535,14 @@ playerReadyUpThread()
 		teamLast = self.pers["team"];
 
 
+		// Name change (in match mode we might wait for misnamed players)
+		if (matchIsActivated() && nickLast != self.name && (self.pers["team"] == "allies" || self.pers["team"] == "axis"))
+		{
+			nickLast = self.name;
+
+			// Check if all players are ready
+			level thread Check_All_Ready();
+		}
 
 
 		if(self useButtonPressed() && !self.flying)
@@ -723,20 +733,25 @@ setAimTraining()
 // Set level.playersready to true if all player is ready
 Check_All_Ready()
 {
-	waittillframeend; // wait untill player is fully connected / disconnected
-
+	// Readyup is over
 	if (level.playersready)
 		return;
 
+	// Make sure only 1 thread is running
+	level notify("readyup_checkAllReady");
+	level endon("readyup_checkAllReady");
+
+	if (matchIsActivated() && game["scr_matchinfo"] != 0) {
+		level thread maps\mp\gametypes\_matchinfo::generateMatchDescriptionDebounced();
+	}
+
+	waittillframeend; // wait untill player is fully connected / disconnected + wait for match description to be generated
+
+	// Give players a few time to change their status if he was the last one even if all players are ready
+	wait level.fps_multiplier * 1;
 
 	if (areAllPlayersReady())
-	{
-		// Give players a few time to change their status if he was tle last one even if all players are ready
-		wait level.fps_multiplier * 1;
-
-		if (areAllPlayersReady())
-			level.playersready = true;
-	}
+		level.playersready = true;
 }
 
 areAllPlayersReady()
@@ -746,12 +761,9 @@ areAllPlayersReady()
 	if (players.size == 0)
         return false;
 
-	if (matchIsActivated() && game["scr_matchinfo"] != 0) {
-		maps\mp\gametypes\_matchinfo::generateMatchDescription();
-
-		if (level.match_mixedPlayers > 0 || level.match_missingPlayers > 0 || level.match_unjoinedPlayers > 0)
-			return false;
-	}
+	// If there is any problem with players, dont allow to start
+	if (level.match_mixedPlayers > 0 || level.match_missingPlayers > 0 || level.match_unjoinedPlayers > 0 || level.match_badlyNamedPlayers > 0)
+		return false;
 
 	for(i = 0; i < players.size; i++)
 	{
@@ -963,6 +975,12 @@ Update_Players_Count()
 		{
 			level.notreadyhud setValue(level.match_unjoinedPlayers);
 			level.playerstext setText(game["STRING_READYUP_UNJOINED_PLAYERS"]);
+			level.playerstext.color = (1, .66, .66); // red
+		}
+		else if (level.match_badlyNamedPlayers > 0)
+		{
+			level.notreadyhud setValue(level.match_badlyNamedPlayers);
+			level.playerstext setText(game["STRING_READYUP_BADLY_NAMED_PLAYERS"]);
 			level.playerstext.color = (1, .66, .66); // red
 		}
 		else {

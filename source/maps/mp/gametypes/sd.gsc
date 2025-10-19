@@ -1785,7 +1785,7 @@ endRound(roundwinner)
 	level thread announceWinner(roundwinner, 2);
 
 
-	// Disable name changing to avoid spamming
+	// Enable name changing
 	setClientNameMode("auto_change"); // name is changed after map restart
 
 
