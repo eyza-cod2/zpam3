@@ -83,6 +83,48 @@ Init()
 
 prepareMap() {
 
+	// Check valid format
+	format = matchGetData("format");
+	if (format != "BO1" && format != "BO3" && format != "BO5") {
+		matchCancel("Invalid match format: '" + format + "'. Supported formats are: BO1, BO3, BO5.");
+		return;
+	}
+
+	// Check valid playersCount
+	playersCount = matchGetData("playersCount");
+	if (playersCount == "" || !isDigitalNumber(playersCount)) {
+		matchCancel("Invalid or missing playersCount: '" + playersCount + "'.");
+		return;
+	}
+	playersCount = int(playersCount);
+	if (playersCount < 0 || playersCount > 32) {
+		matchCancel("Invalid playersCount: " + playersCount + ". Supported range is: 0 to 32.");
+		return;
+	}
+
+	// Check number of players
+	players1_uuid_arr = matchGetData("team1_player_uuids");
+	if (players1_uuid_arr.size < playersCount) {
+		matchCancel("Team 1 has less players than required by playersCount");
+		return;
+	}
+	players2_uuid_arr = matchGetData("team2_player_uuids");
+	if (players2_uuid_arr.size < playersCount) {
+		matchCancel("Team 2 has less players than required by playersCount");
+		return;
+	}
+
+	maps = matchGetData("maps"); // might be empty
+	if (maps.size > 0) {
+		if ((format == "BO1" && maps.size != 1) ||
+			(format == "BO3" && maps.size != 3) ||
+			(format == "BO5" && maps.size != 5)) {
+			matchCancel("Invalid map count (" + maps.size + ") for format '" + format + "'");
+			return;
+		}
+	}
+
+
 	// Save data from previous map
 	team1_winnedMaps = int(matchGetData("team1_winnedMaps")); // number of maps winned by team 1
 	team2_winnedMaps = int(matchGetData("team2_winnedMaps")); // number of maps winned by team 2
@@ -576,7 +618,7 @@ printMatchDataInfo() {
 		maps = matchGetData("maps");
 		if (maps.size > 0) {
 			if (maps.size == 1) {
-				self iPrintLn("- Map: " + maps[0]);
+				self iPrintLn("- Map: " + GetMapName(maps[0]));
 			} else {
 				mapsString = "";
 				for (i = 0; i < maps.size; i++) {
@@ -1722,7 +1764,7 @@ generateMatchDescription()
 	match_players1_arr_found = [];
 	match_players2_arr_found = [];
 	match_maps_arr = matchGetData("maps"); // might be empty
-	match_minPlayerCount = int(matchGetData("players_count"));
+	match_minPlayerCount = int(matchGetData("playersCount"));
 	match_format = matchGetData("format"); // BO1, BO3, BO5
 
 	factual_team1_allies = 0;
