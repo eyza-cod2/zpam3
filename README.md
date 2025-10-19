@@ -12,12 +12,14 @@ To see description of previous versions, click on the links in [Version list](#v
 
 ## Download
 - #### Actual testing version
-	- 2025/10/13 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.00-test3/zpam400_test3.zip">zPAM 4.00 - zpam400_test3.zip</a></b> - compatible with **CoD2x >=1.4.5.1-test8** only
+	- 2025/10/19 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.00-test4/zpam400_test4.zip">zPAM 4.00 - zpam400_test4.zip</a></b> - compatible with **CoD2x >=1.4.5.1-test9** only
 
 - #### Actual stable version
 	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
 
 ## Version list
+- 2025/10/19 - <b>zPAM 4.00 TEST 4 • CoD2x</b>
+- 2025/10/13 - <b>zPAM 4.00 TEST 3 • CoD2x</b>
 - 2025/09/21 - <b>zPAM 4.00 TEST 2 • CoD2x</b>
 - 2025/09/20 - <b>zPAM 4.00 TEST 1 • CoD2x</b>
 - 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/0ed8a460cddaffb7de0c1b54ce115c4c8dcdcbe6">zPAM 3.36</a></b>
@@ -39,6 +41,20 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+<details><summary>zPAM 4.00 TEST 4 changes (click to open)</summary>
+<p>
+
+**Changes / Fixes / Improvements:**
+- Check if all players are ready once streamer joins team and there is atleast once player in allies or axis
+- Black list of old CoD2x versions
+- Match system: Some of the variables moved from CoD2x to zPAM
+- Match system: Force player nicknames if required by match
+</p>
+</details>
+
+
+
 
 <details><summary>zPAM 4.00 TEST 3 changes (click to open)</summary>
 <p>
