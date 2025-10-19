@@ -519,18 +519,31 @@ playerReadyUpThread()
 
 
 
-		// Team change
+		// Team changed to streamer or spectator, set ready
 		if (teamLast != self.pers["team"] && (self.pers["team"] == "streamer" || self.pers["team"] == "spectator") && self.isReady == false)
 		{
 			setReady();
 		}
+		// Team changed from streamer or spectator, unset ready
 		if (teamLast != self.pers["team"] && (teamLast == "streamer" || teamLast == "spectator") && self.pers["team"] != "streamer" && self.pers["team"] != "spectator" && self.isReady)
 		{
 			unsetReady();
 		}
-		if (teamLast != self.pers["team"] && self.pers["team"] != "streamer")
+		if (teamLast != self.pers["team"])
 		{
-			level thread Check_All_Ready();
+			// If team joined streamer, check if all players are ready only if if there is atleast one player
+			if (self.pers["team"] == "streamer") {
+				players = getentarray("player", "classname");
+				for(i = 0; i < players.size; i++){
+					player = players[i];
+					if (player.pers["team"] == "allies" || player.pers["team"] == "axis") {
+						level thread Check_All_Ready();
+						break;
+					}
+				}
+			} else {
+				level thread Check_All_Ready();
+			}
 		}		
 		teamLast = self.pers["team"];
 
