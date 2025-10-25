@@ -463,7 +463,8 @@ hud_waypoint_animate(spectator, player)
 
 		if (self.name == "layout")
 		{
-			stance = player maps\mp\gametypes\global\player::getStance(); // prone crouch stand
+			// prone crouch stand 
+			stance = player getStance(); // (CoD2x 1.4.5.1)
 
 			angles = player getPlayerAngles();
 

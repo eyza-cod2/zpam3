@@ -443,7 +443,8 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 				boxLeft = 11;
 				boxRight = 11;
 			}
-			stance = self maps\mp\gametypes\global\player::getStance(); // prone crouch stand
+			// prone crouch stand 
+			stance = self getStance(); // (CoD2x 1.4.5.1)
 			if (stance == "prone")
 			{
 				boxDown = 8;
