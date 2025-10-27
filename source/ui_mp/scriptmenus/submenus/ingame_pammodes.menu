@@ -48,11 +48,14 @@ PAMMODE_TEXT(50 185, "^9scope and shotgun disabled", 0.2)
 PAMMODE_TEXT(10 197, "rifle", 0.2)
 PAMMODE_TEXT(50 197, "^9bolt action and sniper only, no grenades, no weapon drop", 0.2)
 
-PAMMODE_TEXT(10 209, "lan", 0.2)
-PAMMODE_TEXT(50 209, "^9readyup warnings are disabled", 0.2)
+PAMMODE_TEXT(10 209, "draw", 0.2)
+PAMMODE_TEXT(50 209, "^9no overtime", 0.2)
 
-PAMMODE_TEXT(10 221, "custom", 0.2)
-PAMMODE_TEXT(50 221, "^9custom ruleset", 0.2)
+PAMMODE_TEXT(10 221, "lan", 0.2)
+PAMMODE_TEXT(50 221, "^9readyup warnings are disabled", 0.2)
+
+PAMMODE_TEXT(10 233, "custom", 0.2)
+PAMMODE_TEXT(50 233, "^9custom ruleset", 0.2)
 
 
 

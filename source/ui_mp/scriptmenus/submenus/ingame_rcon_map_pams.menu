@@ -84,6 +84,7 @@ ITEM_GAMETYPE_ONDVAR(86 0, 0 15, "- ignored -",	"ui_rcon_map_pam_strat", "start"
 
 // Toggles for every gametype
 ITEM_GAMETYPE_ONDVAR( 86 32, 45 15, "1v1 / 2v2",	"ui_rcon_map_pam_2v2", "1", 		exec "openscriptmenu ingame rcon_map_pam_2v2")
-ITEM_GAMETYPE_ONDVAR(134 32, 26 15, "rifle",		"ui_rcon_map_pam_rifle", "1", 		exec "openscriptmenu ingame rcon_map_pam_rifle")
-ITEM_GAMETYPE_ONDVAR(164 32, 19 15, "lan",		"ui_rcon_map_pam_lan", "1", 		exec "openscriptmenu ingame rcon_map_pam_lan")
-ITEM_GAMETYPE_ONDVAR(189 32, 39 15, "custom",		"ui_rcon_map_pam_custom", "1", 		exec "openscriptmenu ingame rcon_map_pam_custom")
+ITEM_GAMETYPE_ONDVAR(134 32, 25 15, "rifle",		"ui_rcon_map_pam_rifle", "1", 		exec "openscriptmenu ingame rcon_map_pam_rifle")
+ITEM_GAMETYPE_ONDVAR(163 32, 25 15, "draw",		    "ui_rcon_map_pam_draw", "1", 		exec "openscriptmenu ingame rcon_map_pam_draw")
+ITEM_GAMETYPE_ONDVAR(193 32, 19 15, "lan",		    "ui_rcon_map_pam_lan", "1", 		exec "openscriptmenu ingame rcon_map_pam_lan")
+ITEM_GAMETYPE_ONDVAR(218 32, 39 15, "custom",		"ui_rcon_map_pam_custom", "1", 		exec "openscriptmenu ingame rcon_map_pam_custom")
