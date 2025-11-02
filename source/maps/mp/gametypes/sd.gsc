@@ -1773,7 +1773,9 @@ endRound(roundwinner)
 		if(isdefined(player.progressbar))
 			player.progressbar destroy2();
 
-
+		if (player.pers["team"] == "streamer")
+			continue;
+			
 		player unlink();
 		player enableWeapon();
 	}

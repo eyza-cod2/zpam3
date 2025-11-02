@@ -131,7 +131,10 @@ menuDef
 	execKey "r"   { open quickmessage_streamersystem_menu_killcam; }
 	execKey "x"   { exec "openscriptmenu streamersystem xray" }
 	execKey "h"   { exec "openscriptmenu streamersystem hit" }
-	//execKey "c"   { play "mouse_click"; exec "openscriptmenu streamersystem color"; close quickmessage_streamersystem_menu; }
+	execKey "c"   { 
+		exec "openscriptmenu streamersystem camera"; 
+		close quickmessage_streamersystem_menu;
+	}
 	execKey "f"   { exec "+activate; -activate" } // simulate F bind press
 	execKeyInt 32 { exec "openscriptmenu streamersystem help" } // space
 

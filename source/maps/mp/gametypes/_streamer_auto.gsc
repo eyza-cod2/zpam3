@@ -40,7 +40,6 @@ init()
 
 onConnected()
 {
-	self.streamerSystem_inCinematic = false;
 }
 
 onConnectedAll()
