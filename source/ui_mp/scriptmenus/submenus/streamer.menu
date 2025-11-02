@@ -58,6 +58,8 @@ menuDef
 		exec "set cg_drawCompass 0"; // CoD2x
 		exec "set cg_drawSpectatedPlayerName 0"; // CoD2x
 		exec "set con_printDoubleColors 0"; // CoD2x
+
+		exec "exec streamer.cfg"
 	}
 	onClose
 	{

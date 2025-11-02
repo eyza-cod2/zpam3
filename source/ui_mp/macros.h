@@ -822,10 +822,10 @@ itemDef \
 	MATCHINFO_STREAMER_IMAGE(-188 0 375 11, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_topbar", color_heading, cvar_show, showDvar { "1" } ) \
 \
 	/* Background - Team 1*/ \
-	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1", 				color_allies2, cvar_team1_team, showDvar { "american"; "british"; "russian"; "none"; } ) \
-	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1", 				color_axis2,   cvar_team1_team, showDvar { "german" } ) \
-	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1_gradient", 	color_allies, cvar_team1_team, showDvar { "american"; "british"; "russian"; "none"; } ) \
-	MATCHINFO_STREAMER_IMAGE(-188 11 134 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1_gradient", 	color_axis,   cvar_team1_team, showDvar { "german" } ) \
+	MATCHINFO_STREAMER_IMAGE(-188 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1", 				color_allies2, cvar_team1_team, showDvar { "american"; "british"; "russian"; "none"; } ) \
+	MATCHINFO_STREAMER_IMAGE(-188 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1", 				color_axis2,   cvar_team1_team, showDvar { "german" } ) \
+	MATCHINFO_STREAMER_IMAGE(-188 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1_gradient", 	color_allies, cvar_team1_team, showDvar { "american"; "british"; "russian"; "none"; } ) \
+	MATCHINFO_STREAMER_IMAGE(-188 11 133 16, HORIZONTAL_ALIGN_SUBLEFT, "streamer_matchinfo_team1_gradient", 	color_axis,   cvar_team1_team, showDvar { "german" } ) \
 	/* Icon - Team 1 */ \
 	MATCHINFO_STREAMER_IMAGE(-186 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_american", 	1 1 1 1, cvar_team1_team, showDvar { "american" } ) \
 	MATCHINFO_STREAMER_IMAGE(-186 12 14 14, HORIZONTAL_ALIGN_SUBLEFT, "hudicon_british", 	1 1 1 1, cvar_team1_team, showDvar { "british" } ) \
@@ -1029,7 +1029,7 @@ itemDef \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 9 9 horizontal_align 0 \
 	origin		123 2 \
-	backcolor	color_allies_BG \
+	backcolor	color_allies \
 	visible		1 \
 	background  "streamer_playerbar_circle" \
 	dvartest	cvarprefix "_health" \
@@ -1042,7 +1042,7 @@ itemDef \
 	style		WINDOW_STYLE_FILLED \
 	rect		x_offset y_offset 9 9 horizontal_align 0 \
 	origin		123 2 \
-	backcolor	color_axis_BG \
+	backcolor	color_axis \
 	background  "streamer_playerbar_circle" \
 	visible		1 \
 	dvartest	cvarprefix "_health" \

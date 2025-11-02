@@ -1,7 +1,7 @@
 // This file is intended to be changed via custom IWD files
 // The default colors are Cyan and Purple
 
-#define STREAMER_COLOR_HEADING                 0.082 0.086 0.161 0.900
+#define STREAMER_COLOR_HEADING                 0.082 0.086 0.161 1.000
 
 #define STREAMER_COLOR_ALLIES_GR               0.149 0.318 0.992 1.000
 #define STREAMER_COLOR_ALLIES_BG               0.059 0.192 0.682 1.000
