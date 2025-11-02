@@ -24,6 +24,9 @@ init()
 	addEventListener("onSpawnedStreamer",  ::onSpawnedStreamer);
 	addEventListener("onConnectedAll",    	::onConnectedAll);
 	addEventListener("onMenuResponse",  	::onMenuResponse);
+	addEventListener("onCvarChanged", ::onCvarChanged);
+
+	registerCvar("scr_vmix", "INT", 0, 0, 2);
 
 	//setCvar("debug_spectator", 1);
 }
@@ -99,6 +102,21 @@ onSpawnedStreamer()
 	}
 }
 
+
+
+// This function is called when cvar changes value.
+// Is also called when cvar is registered
+// Return true if cvar was handled here, otherwise false
+onCvarChanged(cvar, value, isRegisterTime)
+{
+	switch(cvar)
+	{
+		case "scr_vmix":
+			level.scr_vmix = value;
+			return true;
+	}
+	return false;
+}
 
 
 
