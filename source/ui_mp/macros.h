@@ -862,6 +862,9 @@ itemDef \
 	MATCHINFO_STREAMER_TEXT(0 30,   HORIZONTAL_ALIGN_CENTER, "ui_matchinfo_state", 	                .19,  ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_NORMAL, UI_FONT_NORMAL, 1 1 1 1, cvar_show, showDvar { "1" }) \
 	MATCHINFO_STREAMER_TEXT(0 42,   HORIZONTAL_ALIGN_CENTER, "ui_streamersystem_scoreProgress", 	.2,  ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_SHADOWED, UI_FONT_NORMAL, 1 1 1 1, cvar_show, showDvar { "1" }) \
 \
+\
+	MATCHINFO_STREAMER_TEXT(0 60,   HORIZONTAL_ALIGN_CENTER, "ui_streamersystem_spectatedPlayerName", 	.3,  ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_SHADOWED, UI_FONT_NORMAL, 1 1 1 1, cvar_show, showDvar { "1" }) \
+\
 	/* 5v5  5v4  5v3  4v3 */ \
 	/*MATCHINFO_STREAMER_BGCOLOR(-258 449 40 18, HORIZONTAL_ALIGN_RIGHT, color_heading, 	"ui_streamersystem_playerProgress", hideDvar { "" })*/ \
 	/*MATCHINFO_STREAMER_TEXT(-239 463,           HORIZONTAL_ALIGN_RIGHT, "ui_streamersystem_playerProgress", 	.3, ITEM_ALIGN_CENTER, ITEM_TEXTSTYLE_NORMAL, UI_FONT_NORMAL, 1 1 1 1, cvar_show, showDvar { "1" })*/ \

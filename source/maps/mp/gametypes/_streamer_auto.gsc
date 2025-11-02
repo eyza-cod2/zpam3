@@ -119,36 +119,37 @@ HUD_loop()
 		self.streamerSystem_HUD_autoSpectator.fontscale = 0.6;
 	}*/
 
-	if (!isDefined(self.streamerSystem_HUD_spectatedPlayerName))
+	/*if (!isDefined(self.streamerSystem_HUD_spectatedPlayerName))
 	{
 		self.streamerSystem_HUD_spectatedPlayerName = addHUDClient(self, 0, 50, 1, (1,1,1), "center", "top", "center", "top");
 		self.streamerSystem_HUD_spectatedPlayerName.alpha = 0;
 		self.streamerSystem_HUD_spectatedPlayerName.archived = false;
-	}
+	}*/
 
 	//hud_text_last = "";
 	last_followed_playerId = -1;
 
 	for (;;)
 	{
-		if (self.pers["team"] != "streamer")
-			break;
-
-		if (self.streamerSystem_freeSpectating || isDefined(self.killcam))
+		if (self.streamerSystem_freeSpectating || isDefined(self.killcam) || !isPlayer(level.streamerSystem_player) || self.pers["team"] != "streamer")
 		{
 			// Hide
-			if (self.streamerSystem_HUD_spectatedPlayerName.alpha != 0) 	self.streamerSystem_HUD_spectatedPlayerName.alpha = 0;
+			self setClientCvarIfChanged("ui_streamersystem_spectatedPlayerName", "");
+
+			// Exit loop
+			if (self.pers["team"] != "streamer")
+				break;
+
 		} else 
 		{
-			// Show
-			if (self.streamerSystem_HUD_spectatedPlayerName.alpha != 1) 	self.streamerSystem_HUD_spectatedPlayerName.alpha = 1;
+			teamColor = "^7"; // default white
+			if (level.streamerSystem_player.pers["team"] == "allies")
+				teamColor = "^8"; // allies
+			else if (level.streamerSystem_player.pers["team"] == "axis")
+				teamColor = "^9"; // axis
 
-			// The spectated player has changed
-			if (last_followed_playerId != level.streamerSystem_playerID) {
-				last_followed_playerId = level.streamerSystem_playerID;
+			self setClientCvarIfChanged("ui_streamersystem_spectatedPlayerName", teamColor + removeColorsFromString(level.streamerSystem_player.name));
 
-				if (isPlayer(level.streamerSystem_player)) {
-					self.streamerSystem_HUD_spectatedPlayerName SetPlayerNameString(level.streamerSystem_player);
 				} else {
 					self.streamerSystem_HUD_spectatedPlayerName setText(&"");
 				}
@@ -205,11 +206,11 @@ HUD_loop()
 		self.streamerSystem_HUD_autoSpectator destroy2();
 		self.streamerSystem_HUD_autoSpectator = undefined;
 	}*/
-	if(isdefined(self.streamerSystem_HUD_spectatedPlayerName))
+	/*if(isdefined(self.streamerSystem_HUD_spectatedPlayerName))
 	{
 		self.streamerSystem_HUD_spectatedPlayerName destroy2();
 		self.streamerSystem_HUD_spectatedPlayerName = undefined;
-	}
+	}*/
 }
 
 
