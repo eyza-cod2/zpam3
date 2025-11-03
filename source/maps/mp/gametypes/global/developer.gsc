@@ -1268,50 +1268,37 @@ onConnected()
 			//thread skipReadyup();
 		}*/
 	}
+
+	// Streamer
 	else if (i==1)
 	{
-		if (self.name == "client_1 ")
+		if (self.name == "client_1 " || self getEntityNumber() == 0)
 		{
 			self notify("menuresponse", game["menu_team"], "streamer");
 
-			setCvar("scr_bots_add", 9);
+			setCvar("debug_spectator", 1);
+
+			setCvar("scr_bots_add", 0);
+			setCvar("scr_bots_freeze", 0);
 			setCvar("scr_sd_roundlength", 10);
 			setCvar("scr_sd_PlantTime", 1);
-			//setCvar("scr_sd_strat_time", 1);
-
+			setCvar("scr_sd_strat_time", 1);
 
 			wait level.fps_multiplier * 3.5;
-
-
-
 
 			thread skipReadyup();
 
 		}
-		else if (self.name == "client_3 ")
-		{
-			self notify("menuresponse", game["menu_team"], "axis");
-    			wait level.frame;
-    			self notify("menuresponse", game["menu_weapon_allies"], "mp44_mp");
-
-		}
 		else if (self.name[0] != "b")
 		{
-			self notify("menuresponse", game["menu_team"], "allies");
-    			wait level.frame;
-    			self notify("menuresponse", game["menu_weapon_allies"], "m1garand_mp");
-
-
-
-		}/*
-		else if (self.name[0] != "b") // bot
-		{
-			self notify("menuresponse", game["menu_team"], "axis");
-    			wait level.frame;
-    			self notify("menuresponse", game["menu_weapon_allies"], "mp44_mp");
-
-			//thread skipReadyup();
-		}*/
+			self notify("menuresponse", game["menu_team"], "autoassign");
+    		wait level.frame;
+			// Select weapon
+			if(self.pers["team"] == "allies")
+				self notify("menuresponse", game["menu_weapon_allies"], "m1garand_mp");
+			else if(self.pers["team"] == "axis")
+				self notify("menuresponse", game["menu_weapon_axis"], "mp44_mp");
+		}
 	}
 	else if (i==2)
 	{
