@@ -905,10 +905,10 @@ determineTeamByHistoryCvars()
 
 determineTeamByFirstConnected()
 {
+	refreshTeamNames();
+
 	// Find first team by looking wich player connect
 	players = getentarray("player", "classname");
-
-	refreshTeamNames();
 
 	game["match_team1_name"] = "";
 	game["match_team2_name"] = "";
