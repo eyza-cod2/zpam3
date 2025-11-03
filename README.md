@@ -12,7 +12,7 @@ To see description of previous versions, click on the links in [Version list](#v
 
 ## Download
 - #### Actual testing version
-	- 2025/10/27 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.00-test5/zpam400_test5.zip">zPAM 4.00 - zpam400_test5.zip</a></b> - compatible with **CoD2x >=1.4.5.1-test9** only
+	- 2025/11/03 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.00-test6/zpam400_test6.zip">zPAM 4.00 - zpam400_test6.zip</a></b> - compatible with **CoD2x >=1.4.5.1-test12** only
 
 - #### Actual stable version
 	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
