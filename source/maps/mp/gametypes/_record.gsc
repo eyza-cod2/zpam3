@@ -18,13 +18,8 @@ init()
 	if (!level.scr_recording)
 		return;
 
-	// Match ID is just random string to avoid demo overwrite
-	if (!isDefined(game["recordingMatchID"]))
-		game["recordingMatchID"] = generateHash(2);
-
 	addEventListener("onSpawnedPlayer",     ::onSpawnedPlayer);
 	addEventListener("onSpawnedSpectator",     ::onSpawnedSpectator);
-	addEventListener("onMenuResponse",  ::onMenuResponse);
 
 	level thread onReadyupOver();
 }
@@ -54,9 +49,6 @@ onConnected()
 	if (!isDefined(self.pers["recording_executed"]))
 		self.pers["recording_executed"] = false;
 
-	if (!isDefined(self.pers["recording_stop_executed"]))
-		self.pers["recording_stop_executed"] = false;
-
 	// Shot text "Recording will start automatically"
 	if (isEnabled())
 		self show();
@@ -77,32 +69,6 @@ onSpawnedSpectator()
 
 	self onSpawned();
 }
-
-
-
-/*
-Called when command scriptmenuresponse is executed on client side
-self is player that called scriptmenuresponse
-Return true to indicate that menu response was handled in this function
-*/
-onMenuResponse(menu, response)
-{
-	if (menu != "exec_cmd")
-		return;
-
-	if (response == "start_recording")
-	{
-		self.pers["recording_executed"] = true;
-		return true;
-	}
-	if (response == "stop_recording")
-	{
-		self.pers["recording_stop_executed"] = true;
-		return true;
-	}
-}
-
-
 
 
 onSpawned()
@@ -133,7 +99,7 @@ onReadyupOver()
 
 isEnabled()
 {
-  return isDefined(self.pers["autorecording_enabled"]) && self.pers["autorecording_enabled"];
+  return true; //isDefined(self.pers["autorecording_enabled"]) && self.pers["autorecording_enabled"];
 }
 
 enable()
@@ -165,7 +131,7 @@ show()
   {
     if (!isDefined(self.recording_info))
     {
-      self.recording_info = addHUDClient(self, 2, -1, 1, (1,1,1), "left", "bottom", "left", "bottom");
+      self.recording_info = addHUDClient(self, 2, -1, 0.75, (1,1,1), "left", "bottom", "left", "bottom");
       self.recording_info setText(game["STRING_RECORDING_INFO"]);
       self.recording_info.font = "smallfixed";
     }
@@ -299,21 +265,23 @@ generateDemoName()
 		mapname = getsubstr(mapname, 0, 3);
 	}
 
-	demoName = teamPrefix + "_" + mapname;
+	demoName = "";
+
+	if (matchIsActivated()) {
+		demoName += getsubstr(getSecureString(self matchPlayerGetData("name")), 0, 12) + "_";
+	}
+
+	demoName += teamPrefix + "_" + mapname;
 
 	if (level.gametype != "sd")
 		demoName += "#" + level.gametype;
 
-	demoName += "#" + game["recordingMatchID"];
-
 	// Avoiding file overwritting
-	if ((level.gametype == "sd" || level.gametype == "re") && game["roundsplayed"] > 0 && !game["overtime_active"])
+	if ((level.gametype == "sd" || level.gametype == "re") && game["roundsplayed"] > 0) {
+		if (game["overtime_active"])
+			demoName += "_ot";
 		demoName += "_r" + game["roundsplayed"]; // use round-number
-	else if (level.gametype != "sd" && level.gametype != "re" && isDefined(level.matchstarted) && level.matchstarted)
-	{
-		demoName += "_" + self generateHash(2); // add random hash at the end of demo name to avoid file overwritting
 	}
-
 
 	return demoName;
 }
@@ -323,7 +291,7 @@ getSecureString(string)
 {
     // Remove chars that cannot be used in filename on Windows (for recording purposes)
     string_secure = "";
-    allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789=-+_#!.()[]{}";
+    allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789=-+_#!()[]{}";
 
 
     for (j = 0; j < string.size; j++)
@@ -377,15 +345,6 @@ execRecording()
 	if (self.pers["isBot"])
 		return;
 
-	// Auto recording is turned off by player, print atleast warning message
-	if (!self isEnabled())
-	{
-		self iprintln("Don't forget to record!");
-		self.pers["recording_executed"] = true;
-		return;
-	}
-
-
 	if (self.pers["recording_executed"])
 	{
 		self iprintln("Already recording");
@@ -394,25 +353,13 @@ execRecording()
 
 	demoName = generateDemoName();
 
-	// Try to execute the command every second untill its confirmed by openscriptmenu
-	while(!self.pers["recording_executed"])
-	{
-		// Exec command on client side
-		// If some menu is already opened:
-		//	- by player (main menu / quick messages) -> NOT WORKING - command will not be executed
-		//	- by player (by ESC key) -> that menu will be closed
-		//  	- by script (via openMenu()) -> that menu will be closed and exec_cmd will not be closed correctly
-		//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
-		self closeMenu();
-		self closeInGameMenu();
-		self setClientCvar2("exec_cmd", "clear; stoprecord; record " + demoName + "; openScriptMenu exec_cmd start_recording");
-		self openMenu(game["menu_exec_cmd"]);		// open menu via script
-		self closeMenu();				// will only close menu opened by script
-
-		// Wait a second before next menu opening
-		for (i = 0; i < 9 && !self.pers["recording_executed"]; i++)
-			wait level.fps_multiplier * .1;
+	if (matchIsActivated()) {
+		self setClientCvar2("cl_demoAutoRecordUploadUrl", "https://master.cod2x.me/api/match/test/demo-upload/"); // CoD2x 1.4.5.1-test.12 and later
 	}
+	
+	self setClientCvar2("cl_demoAutoRecordName", demoName); // CoD2x 1.4.5.1-test.12 and later
+
+	self.pers["recording_executed"] = true;
 
 	self iprintln("Recording to 'main/demos/"+demoName+".dm_1'");
 
@@ -445,32 +392,7 @@ stopRecording()
 	if (!self isEnabled())
 		return;
 
-	self.pers["recording_stop_executed"] = false;
-
-	// Try to execute the command every second untill its confirmed by openscriptmenu
-	while(!self.pers["recording_stop_executed"])
-	{
-		// Open menu only if player is alive (to make sure no other menu is opened)
-		// Because stop recording may be called when matchinfo is cleared - it will close sevrerinfo menu for connected players
-		if (IsAlive(self))
-		{
-			// Exec command on client side
-			// If some menu is already opened:
-			//	- by player (main menu / quick messages) -> NOT WORKING - command will not be executed
-			//	- by player (by ESC key) -> that menu will be closed
-			//  	- by script (via openMenu()) -> that menu will be closed and exec_cmd will not be closed correctly
-			//			(mouse will be visible with clear backgorund.... so closeMenu() is called to close that menu)
-			self closeMenu();
-			self closeInGameMenu();
-			self setClientCvar2("exec_cmd", "stoprecord; openScriptMenu exec_cmd stop_recording");
-			self openMenu(game["menu_exec_cmd"]);		// open menu via script
-			self closeMenu();				// will only close menu opened by script
-		}
-
-		// Wait a second before next menu opening
-		for (i = 0; i < 9 && !self.pers["recording_stop_executed"]; i++)
-			wait level.fps_multiplier * .1;
-	}
+	self setClientCvar2("cl_demoAutoRecordName", ""); // CoD2x 1.4.5.1-test.12 and later
 
 	self iprintln("Recording stopped.");
 
