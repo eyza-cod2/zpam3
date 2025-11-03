@@ -448,7 +448,7 @@ mapOptions_updateRconCommand()
 
 	scoreAlliesChanged = self.pers["rcon_map_scoreAllies"] != -1;
 	scoreAxisChanged = self.pers["rcon_map_scoreAxis"] != -1;
-	scoreAllowed = game["readyup_first_run"] && (self.pers["rcon_map_gametype"] == "sd" || self.pers["rcon_map_gametype"] == "re") && !fastRestart && !pamChanged && !gametypeChanged;
+	scoreAllowed = level.scr_score_change_mode > 0 && (game["readyup_first_run"] || level.scr_score_change_mode == 2) && (self.pers["rcon_map_gametype"] == "sd" || self.pers["rcon_map_gametype"] == "re") && !fastRestart && !pamChanged && !gametypeChanged;
 
 	changedCvarsAllowed = !fastRestart && !gametypeChanged && !pamChanged && level.pam_mode_custom; // enable that option only if cvars are changed
 

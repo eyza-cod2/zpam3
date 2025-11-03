@@ -4,6 +4,7 @@ init()
 {
 	addEventListener("onCvarChanged", ::onCvarChanged);
 
+	registerCvarEx("", "scr_score_change_mode", "INT", 1, 0, 2); // 0 - disabled, 1 - only in first ready-up, 2 - always
 	registerCvarEx("I", "scr_score_allies", "INT", -1, -1, 9999);
 	registerCvarEx("I", "scr_score_axis", "INT", -1, -1, 9999);
 }
@@ -15,6 +16,10 @@ onCvarChanged(cvar, value, isRegisterTime)
 {
 	switch(cvar)
 	{
+		case "scr_score_change_mode":
+			level.scr_score_change_mode = value;
+			return true;
+
 		case "scr_score_allies":
 			thread handleAllies(cvar, value, isRegisterTime);
 			return true;
@@ -66,7 +71,12 @@ handle(team, roundsplayed, value)
 		iprintln("^1Score changing is available only in S&D gametype.");
 		return false;
 	}
-	if (!game["readyup_first_run"])
+	if (level.scr_score_change_mode == 0)
+	{
+		iprintln("^1Score changing is disabled by server rules.");
+		return false;
+	}
+	if (level.scr_score_change_mode == 1 && !game["readyup_first_run"])
 	{
 		iprintln("^1Invalid attempt to change score. Score can be changed only in first ready-up time");
 		return false;
