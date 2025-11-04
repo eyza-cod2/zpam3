@@ -80,13 +80,13 @@
 			hidedvar { "0" }
 		}
 
-/*
+
 		itemDef
 		{
 			visible			1
 			origin			447 15
 			forecolor		1 1 1  1
-			text			"You are playing on server with ^5zPAM4.00" // ZPAM_RENAME
+			text			"You are playing on server with ^5zPAM4.01" // ZPAM_RENAME
 			textfont		UI_FONT_NORMAL
 			textscale		0.2
 			textstyle		ITEM_TEXTSTYLE_SHADOWED
@@ -105,8 +105,8 @@
 			textalign		ITEM_ALIGN_CENTER
 			decoration
 		}
-*/
 
+/*
 		itemDef
 		{
 			visible			1
@@ -131,7 +131,7 @@
 			textalign		ITEM_ALIGN_CENTER
 			decoration
 		}
-
+*/
 
 	}
 }

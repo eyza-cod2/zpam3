@@ -76,8 +76,8 @@ update()
 	errors = "";
 
 	// ZPAM_RENAME
-	errors += "^3This is testing version of PAM, server may crash!^7\n";
-	errors += "^3Report feedback to eyza#7930^7\n";
+	/*errors += "^3This is testing version of PAM, server may crash!^7\n";
+	errors += "^3Report feedback to eyza#7930^7\n";*/
 
 	if (getcvarint("sv_cheats"))
 	{
