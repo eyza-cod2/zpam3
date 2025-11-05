@@ -11,10 +11,10 @@ cg_hudRadarEntityOffsetY
 -40.21
 
 cg_hudRadarMapImageRotation
--90
+180
 
 cg_hudRadarMapImageOffsetX
-0
+-25
 
 cg_hudRadarMapImageOffsetY
--25
+3
