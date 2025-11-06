@@ -107,7 +107,7 @@ Register_Shared_Cvars()
 
 	[[sVarEx]]("I", "scr_posters", "BOOL", 0);              // level.scr_posters, ignore change
 
-	[[sVar]]("sv_cracked", "BOOL", 0);		// CoD2x
+	[[sVarEx]]("", "sv_cracked", "BOOL", 0);		// CoD2x
 	[[sVar]]("g_competitive", "BOOL", 1);   // CoD2x
 }
 

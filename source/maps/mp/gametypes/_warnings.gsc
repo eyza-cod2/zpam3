@@ -87,10 +87,6 @@ update()
 	{
 		errors += "^3Server password is not set!^7\n";
 	}
-	if (getcvarint("sv_cracked"))
-	{
-		errors += "^3Server is cracked!^7\n";
-	}
 	if (getCvar("shortversion") == "1.3" || getCvar("shortversion") == "1.2" || getCvar("shortversion") == "1.1" || getCvar("shortversion") == "1.0")
 	{
 		errors += "^3Server is running old version of game.\nVersion " + getCvar("shortversion") + " is not fully supported.^7\n";
