@@ -491,7 +491,10 @@ HUD_PlayerBoxes_Loop()
 
 
 		// Server name
-		self setClientCvarIfChanged("ui_streamersystem_heading", getCvar("sv_hostname") + "  |  " + "Match time:   " + game["match_totaltime_text"]); // server name
+		heading = getCvar("sv_hostname");
+		if (game["match_totaltime_text"] != "")
+			heading += "  |  " + "Match time:   " + game["match_totaltime_text"];
+		self setClientCvarIfChanged("ui_streamersystem_heading", heading); // server name
 
 
 

@@ -105,7 +105,7 @@ Register_Shared_Cvars()
 	[[sVar]]("scr_replace_russian", "BOOL", 0);              // level.scr_replace_russian  (can be changed only at start of the game, in progress it will mess up britsh/russians scripts...)
 	[[sVar]]("scr_friendlyfire", "INT", 0, 0, 3); 	// level.scr_friendlyfire on, off, reflect, shared
 
-	[[sVarEx]]("I", "scr_posters", "BOOL", 0);              // level.scr_posters, ignore change
+	[[sVarEx]]("", "scr_posters", "BOOL", 0);              // level.scr_posters, ignore change
 
 	[[sVarEx]]("", "sv_cracked", "BOOL", 0);		// CoD2x
 	[[sVar]]("g_competitive", "BOOL", 1);   // CoD2x

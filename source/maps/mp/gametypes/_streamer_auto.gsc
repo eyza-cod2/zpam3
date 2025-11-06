@@ -128,15 +128,34 @@ HUD_loop()
 
 	for (;;)
 	{
-		if (self.streamerSystem_freeSpectating || isDefined(self.killcam) || !isPlayer(level.streamerSystem_player) || self.pers["team"] != "streamer")
+		// VMIX data for streamer overlays
+		if (level.scr_vmix > 0) {
+			self setClientCvarIfChanged("cl_vmix_scr_data",  // CoD2x
+				self.pers["team"] + "|" + 
+				game["state"] + "|" + 
+				level.mapname + "|" + 
+				level.gametype + "|" + 
+				level.in_readyup + "|" + 
+				game["readyup_first_run"] + "|" +
+				level.in_bash + "|" +
+				level.in_timeout + "|" +
+				game["overtime_active"]
+			);
+		} else {
+			self setClientCvarIfChanged("cl_vmix_scr_data", ""); // CoD2x
+		}
+
+		if (self.streamerSystem_freeSpectating || isDefined(self.killcam) || !isPlayer(level.streamerSystem_player) || game["state"] == "intermission" || self.pers["team"] != "streamer")
 		{
 			// Hide
 			self setClientCvarIfChanged("ui_streamersystem_spectatedPlayerName", "");
 
-			// CoD2x data for streamer overlays
+			// VMIX data for streamer overlays
 			if (level.scr_vmix > 0) {
 				self setClientCvarIfChanged("cl_vmix_scr_spectatedHWID", ""); // CoD2x 
 				self setClientCvarIfChanged("cl_vmix_scr_spectatedUserId", ""); // CoD2x 
+				self setClientCvarIfChanged("cl_vmix_scr_spectatedUserName", ""); // CoD2x 
+				self setClientCvarIfChanged("cl_vmix_scr_spectatedUserTeam", ""); // CoD2x
 			}
 
 			// Exit loop
@@ -153,7 +172,7 @@ HUD_loop()
 
 			self setClientCvarIfChanged("ui_streamersystem_spectatedPlayerName", teamColor + removeColorsFromString(level.streamerSystem_player.name));
 
-			// CoD2x data for streamer overlays
+			// VMIX data for streamer overlays
 			if (level.scr_vmix > 0) {
 
 				// HWID
@@ -164,14 +183,26 @@ HUD_loop()
 					self setClientCvarIfChanged("cl_vmix_scr_spectatedHWID", level.streamerSystem_player getIp()); // CoD2x
 				}
 
-				userId = level.streamerSystem_player.name;
+				userId = "";
+				userName = "";
 				if (matchIsActivated()) {
 					userId = level.streamerSystem_player matchPlayerGetData("uuid");
+					userName = level.streamerSystem_player matchPlayerGetData("name");
 				} else {
 					userId = level.streamerSystem_player getCDKeyHash();
+					userName = level.streamerSystem_player.name;
 				}
-				self setClientCvarIfChanged("cl_vmix_scr_spectatedUserId", userId); // CoD2x
+				
+				userTeam = "0";
+				if (level.streamerSystem_player.pers["team"] == "allies") {
+					userTeam = "1";
+				} else if (level.streamerSystem_player.pers["team"] == "axis") {
+					userTeam = "2";
+				}
 
+				self setClientCvarIfChanged("cl_vmix_scr_spectatedUserId", userId); // CoD2x
+				self setClientCvarIfChanged("cl_vmix_scr_spectatedUserTeam", userTeam); // CoD2x
+				self setClientCvarIfChanged("cl_vmix_scr_spectatedUserName", userName); // CoD2x
 
 				// Loop players and build debug string for vmix
 				players = getentarray("player", "classname");
@@ -205,8 +236,10 @@ HUD_loop()
 					}
 					if (matchIsActivated()) {
 						debugString += " | MATCH-UUID:" + player matchPlayerGetData("uuid");
+						debugString += " | NAME:" + removeColorsFromString(player matchPlayerGetData("name"));
 					} else {
 						debugString += " | CDKEYHASH:" + player getCDKeyHash();
+						debugString += " | NAME:" + removeColorsFromString(player.name);
 					}
 					teamColor = "^7"; // default white
 					if (player.pers["team"] == "allies")

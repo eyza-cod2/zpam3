@@ -777,6 +777,8 @@ player_loop()
 		{
 			self streamerSystemTurnOff();
 			self streamerSystemExit();
+
+			self setClientCvar2("m_enable", 1); // CoD2x cvar: enable cursor movement
 			break;
 		}
 
@@ -885,7 +887,7 @@ player_loop()
 
 		}
 
-		self setClientCvarIfChanged("m_enable", !self.pers["streamerSystem_menu_opened"] || (self.streamerSystem_freeSpectating && !self.streamerSystem_inBirdView)); // CoD2x cvar to disable cursor movement, but keep system cursor ingame
+		self setClientCvar2("m_enable", !self.pers["streamerSystem_menu_opened"] || (self.streamerSystem_freeSpectating && !self.streamerSystem_inBirdView)); // CoD2x cvar to disable cursor movement, but keep system cursor ingame
 	}
 }
 
