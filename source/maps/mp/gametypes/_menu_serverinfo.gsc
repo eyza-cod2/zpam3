@@ -5,7 +5,7 @@ init()
 	addEventListener("onStartGameType", ::onStartGameType);
 	addEventListener("onCvarChanged",   ::onCvarChanged);
 
-	registerCvarEx("I", "scr_motd", "STRING", "Welcome. This server is running zPAM4.02");	// ZPAM_RENAME
+	registerCvarEx("I", "scr_motd", "STRING", "Welcome. This server is running zPAM4.03");	// ZPAM_RENAME
 
 	level.motd = "";
 	level.serverversion = "";
@@ -119,7 +119,7 @@ generateGlobalServerInfo()
 			isDigit(motd[i+7])
 		)
 		{
-			motd_final += "zPAM4.02"; // ZPAM_RENAME
+			motd_final += "zPAM4.03"; // ZPAM_RENAME
 			i += 8;
 			continue;
 		}
