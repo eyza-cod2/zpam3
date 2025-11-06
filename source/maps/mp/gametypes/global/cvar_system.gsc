@@ -330,7 +330,19 @@ setClientCvar2(cvar, value, aaa, bbb, ccc)
 	#/
 */
 
-        self setClientCvar(cvar, value, aaa, bbb, ccc);
+	// Limit max size of cvar or server would crash "Attempted to overrun string in call to va"
+	// Max len of overall command: 1024
+	// va("%c %s \"%s\"", 118, pszDvar, szOutString)
+	valueStr = value + "";
+	va_len = 2 + cvar.size + 2 + valueStr.size + 1; // 2 for %c and space, 2 for quotes, 1 for null terminator
+	if (va_len >= 1000) {
+		/#
+		iprintln("WARNING: setClientCvar2() cvar " + cvar + " size " + valueStr.size + " > 1000, truncating value.");
+		#/
+		value = getsubstr(valueStr, 0, 1000 - (2 + cvar.size + 2 + 1) - 1);
+	}
+
+    self setClientCvar(cvar, value, aaa, bbb, ccc);
 }
 
 countCvarsInSingleFrame()
@@ -379,17 +391,6 @@ setClientCvarIfChanged(cvar, value)
 	#/
 
 	valueStr = value + "";	// Convert value to string (to avoid wierd unmatching variable types errors)
-
-	// Limit max size of cvar or server would crash "Attempted to overrun string in call to va"
-	// Max len of overall command: 1024
-	if (valueStr.size > 1000)
-	{
-		/#
-		assertmsg("setClientCvarIfChanged() value.size " + value.size + " > 1000");
-		#/
-		value = getsubstr(value, 0, 1000);
-	}
-
 
 	cvar = toLower(cvar);	// Convert to lower to match same cvars
 	lastValue = self.pers["cvar_" + cvar]; // Get last value, may be undefined for first time
