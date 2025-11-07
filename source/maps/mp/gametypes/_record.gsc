@@ -354,7 +354,12 @@ execRecording()
 	demoName = generateDemoName();
 
 	if (matchIsActivated()) {
-		self setClientCvar2("cl_demoAutoRecordUploadUrl", "https://master.cod2x.me/api/match/test/demo-upload/"); // CoD2x 1.4.5.1-test.12 and later
+
+		folder = "test";
+		if (PAMModeContains("lan"))
+			folder = "lan";
+
+		self setClientCvar2("cl_demoAutoRecordUploadUrl", "https://master.cod2x.me/api/match/" + folder + "/demo-upload/"); // CoD2x 1.4.5.1-test.12 and later
 	}
 	
 	self setClientCvar2("cl_demoAutoRecordName", demoName); // CoD2x 1.4.5.1-test.12 and later
