@@ -36,7 +36,6 @@ restartIfEmpty()
 		{
 			if (matchIsActivated())
 			{
-				matchCancel("empty server"); // doing fast_Restart
 				return;
 			}
 
