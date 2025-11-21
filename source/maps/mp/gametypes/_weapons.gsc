@@ -97,6 +97,7 @@ registerCvars()
 	[[var]]("scr_shotgun_consistent", "BOOL", 0);	// level.scr_shotgun_consistent
 	[[var]]("scr_hitbox_hand_fix", "BOOL", 0);	// level.scr_hitbox_hand_fix
 	[[var]]("scr_hitbox_torso_fix", "BOOL", 0);		// level.scr_hitbox_torso_fix
+	[[var]]("scr_hitbox_neck_kill", "BOOL", 0);	// level.scr_hitbox_neck_kill
 
 	[[var]]("scr_bar_buffed", "BOOL", 0);		// level.scr_bar_buffed
 }
@@ -219,10 +220,13 @@ onCvarChanged(cvar, value, isRegisterTime)
 			level.scr_hitbox_torso_fix = value;
 			return true;
 
+		case "scr_hitbox_neck_kill":
+			level.scr_hitbox_neck_kill = value;
+			return true;
+
 		case "scr_bar_buffed":
 			level.scr_bar_buffed = value;
 			return true;
-
 	}
 
 
