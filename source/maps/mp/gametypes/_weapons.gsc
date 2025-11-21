@@ -100,6 +100,7 @@ registerCvars()
 	[[var]]("scr_hitbox_neck_kill", "BOOL", 0);	// level.scr_hitbox_neck_kill
 
 	[[var]]("scr_bar_buffed", "BOOL", 0);		// level.scr_bar_buffed
+	[[var]]("scr_bren_buffed", "BOOL", 0);		// level.scr_bren_buffed
 }
 
 
@@ -226,6 +227,10 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 		case "scr_bar_buffed":
 			level.scr_bar_buffed = value;
+			return true;
+
+		case "scr_bren_buffed":
+			level.scr_bren_buffed = value;
 			return true;
 	}
 
@@ -357,6 +362,7 @@ precacheWeapons()
 		//precacheItem("shotgun_mp");
 		precacheItem("thompson_mp");
 		precacheItem("bren_mp");
+		precacheItem("bren_buffed_mp");
 
 		if (level.scr_smoke_fix) // new way
 		{
@@ -473,6 +479,7 @@ defineWeapons()
 		addWeapon("enfield_scope_mp", 		"sniper",		"allies", 	"scr_allow_enfieldsniper", 	"ui_allow_enfieldsniper");
 		addWeapon("thompson_mp", 		"smg", 			"allies", 	"scr_allow_thompson", 		"ui_allow_thompson");
 		addWeapon("bren_mp", 			"mg", 			"allies", 	"scr_allow_bren", 		"ui_allow_bren");
+		addWeapon("bren_buffed_mp", 	"mg", 			"allies", 	"scr_allow_bren", 		"ui_allow_bren"); // bren overlap each other
 		break;
 
 	case "russian":
@@ -992,7 +999,7 @@ getWeaponName(weapon)
 	case "bar_buffed_mp":
 		weaponname = "BAR (buffed)";
 		break;
-        
+	  
 	case "springfield_mp":
 		weaponname = &"WEAPON_SPRINGFIELD";
 		break;
@@ -1016,6 +1023,10 @@ getWeaponName(weapon)
 
 	case "bren_mp":
 		weaponname = &"WEAPON_BREN";
+		break;
+
+	case "bren_buffed_mp":
+		weaponname = "Bren LMG (buffed)";
 		break;
 
 	case "enfield_scope_mp":
@@ -1130,6 +1141,10 @@ getWeaponName2(weapon)
 		break;
 
 	case "bren_mp":
+		weaponname = "Bren LMG";
+		break;
+	
+	case "bren_buffed_mp":
 		weaponname = "Bren LMG";
 		break;
 
