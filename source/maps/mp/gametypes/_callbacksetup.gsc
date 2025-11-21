@@ -338,6 +338,11 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		eAttacker.pers["antilagTimeOffset"] = timeOffset;
 	}
 
+	if (level.scr_hitbox_neck_kill) {
+		if (sHitLoc == "neck") {
+			sHitLoc = "head";
+		}
+	}
 
 	// Protection - players in spectator inflict damage
 	if(isDefined(eAttacker) && isPlayer(eAttacker) && eAttacker.sessionteam == "spectator")

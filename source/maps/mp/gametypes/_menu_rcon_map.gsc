@@ -347,6 +347,8 @@ saveSubPamMode(str)
 		else
 			self.pers["rcon_map_pam_gamesettings"] = str;
 	}
+	else if (str == "na")
+		self.pers["rcon_map_pam_na"] = !self.pers["rcon_map_pam_na"];
 	else if (str == "1v1" || str == "2v2")
 		self.pers["rcon_map_pam_2v2"] = !self.pers["rcon_map_pam_2v2"];
 	else if (str == "draw")
@@ -364,6 +366,7 @@ loadSubPamModes()
 {
 	self.pers["rcon_map_pam_league"] = "";
 	self.pers["rcon_map_pam_gamesettings"] = "";
+	self.pers["rcon_map_pam_na"] = false;
 	self.pers["rcon_map_pam_2v2"] = false;
 	self.pers["rcon_map_pam_draw"] = false;
 	self.pers["rcon_map_pam_lan"] = false;
@@ -384,6 +387,7 @@ joinSubPamModes()
 	str = self.pers["rcon_map_pam_league"];
 	if (self.pers["rcon_map_pam_gamesettings"] != "") 	str += "_" + self.pers["rcon_map_pam_gamesettings"];
 	if (self.pers["rcon_map_pam_rifle"]) 		str += "_rifle";
+	if (self.pers["rcon_map_pam_na"])		str += "_na";
 	if (self.pers["rcon_map_pam_2v2"]) 		str += "_2v2";
 	if (self.pers["rcon_map_pam_draw"]) 		str += "_draw";
 	if (self.pers["rcon_map_pam_lan"]) 		str += "_lan";
@@ -538,6 +542,7 @@ mapOptions_updateRconCommand()
 	htf_gamesettings = "-1";
 	re_gamesettings = "-1";
 
+	pam_na = "0";
 	pam_2v2 = "0";
 	pam_draw = "0";
 	pam_lan = "0";
@@ -547,6 +552,8 @@ mapOptions_updateRconCommand()
 	keepChangedCvars = "-2";
 	numOfChangedCvars = "";
 
+	if (self.pers["rcon_map_pam_na"])
+		pam_na = "1";
 	if (self.pers["rcon_map_pam_2v2"])
 		pam_2v2 = "1";
 	if (self.pers["rcon_map_pam_draw"])
@@ -604,6 +611,7 @@ mapOptions_updateRconCommand()
 
 		gametype = "-2";
 
+		pam_na = "-2";
 		pam_2v2 = "-2";
 		pam_draw = "-2";
 		pam_lan = "-2";
@@ -652,6 +660,7 @@ mapOptions_updateRconCommand()
 
 	if (gametype == "strat")
 	{
+		pam_na = "-1";
 		pam_2v2 = "-1";
 		pam_draw = "-1";
 		pam_lan = "-1";
@@ -692,6 +701,7 @@ mapOptions_updateRconCommand()
 	self setClientCvar2("ui_rcon_map_pam_htf_gamesettings", htf_gamesettings);
 	self setClientCvar2("ui_rcon_map_pam_re_gamesettings", re_gamesettings);
 
+	self setClientCvar2("ui_rcon_map_pam_na", pam_na);
 	self setClientCvar2("ui_rcon_map_pam_2v2", pam_2v2);
 	self setClientCvar2("ui_rcon_map_pam_draw", pam_draw);
 	self setClientCvar2("ui_rcon_map_pam_lan", pam_lan);
