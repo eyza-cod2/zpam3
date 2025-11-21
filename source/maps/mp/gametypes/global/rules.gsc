@@ -169,7 +169,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^7_mr3, _mr10, _mr12, _mr15, _20rounds");
-				iprintln("^7_2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "dm")
 			{
@@ -177,7 +177,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp, warmup");
 				iprintln("^3Sub-modes:");
 				iprintln("^710min, 15min, 30min, 60min, unlim");
-				iprintln("^7_2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "tdm")
 			{
@@ -185,7 +185,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^710min, 15min, 30min, 60min, unlim");
-				iprintln("^7_2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "ctf")
 			{
@@ -193,7 +193,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^710min, 15min, 30min, 60min, unlim");
-				iprintln("^7_2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "hq")
 			{
@@ -201,7 +201,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^710min, 15min, 30min, 60min, unlim");
-				iprintln("^7_2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "htf")
 			{
@@ -209,7 +209,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^710min, 15min, 30min, 60min, unlim");
-				iprintln("^7_2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "re")
 			{
@@ -217,7 +217,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^7_mr3, _mr10, _mr12, _mr15, _20rounds");
-				iprintln("^7_2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
 			}
 			else
 				iprintln("^3Change to other gametype!");
@@ -264,13 +264,13 @@ IsValidPAMModeForGametype(gametype, pammode)
 		else
 		{
 			if (!IsToggleSubPamMode(array[i]) && (
-			    (gametype == "sd"  && array[i] != "mr3" && array[i] != "mr10" && array[i] != "mr12" && array[i] != "mr15" && array[i] != "20rounds") ||
-			    (gametype == "dm"  && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
-			    (gametype == "tdm" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
-			    (gametype == "ctf" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
-			    (gametype == "hq"  && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
-			    (gametype == "htf" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim") ||
-			    (gametype == "re" && array[i] != "mr3" && array[i] != "mr10" && array[i] != "mr12" && array[i] != "mr15" && array[i] != "20rounds")))
+			    (gametype == "sd"  && array[i] != "mr3" && array[i] != "mr10" && array[i] != "mr12" && array[i] != "mr15" && array[i] != "20rounds" && array[i] != "na") ||
+			    (gametype == "dm"  && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na") ||
+			    (gametype == "tdm" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na") ||
+			    (gametype == "ctf" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na") ||
+			    (gametype == "hq"  && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na") ||
+			    (gametype == "htf" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na") ||
+			    (gametype == "re" && array[i] != "mr3" && array[i] != "mr10" && array[i] != "mr12" && array[i] != "mr15" && array[i] != "20rounds" && array[i] != "na")))
 			{
 				isValid = false;
 				break;
@@ -308,6 +308,7 @@ IsToggleSubPamMode(name)
 		case "lan":
 		case "custom":
 		case "rifle":
+		case "na":
 			return true;
 	}
 	/#
@@ -326,6 +327,7 @@ LoadToggleSubPamMode(name)
 		case "lan": 	maps\mp\gametypes\rules\lan::Load(); return true;
 		case "custom": 	maps\mp\gametypes\rules\custom::Load(); return true;
 		case "rifle": 	maps\mp\gametypes\rules\rifle::Load(); return true;
+		case "na":		maps\mp\gametypes\rules\comp_na::Load(); return true;
 	}
 	/#
 	if (name == "developer") {
