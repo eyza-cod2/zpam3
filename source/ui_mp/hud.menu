@@ -568,4 +568,18 @@
 			ownerdraw UI_TALKER4
 		}
 	}
+
+/*
+	menuDef
+	{
+		name dvar_forces
+	  	fullScreen MENU_FALSE
+	  	visible MENU_TRUE
+	    rect 0 0 640 480
+
+
+		// showDvar supports only 128 items
+		DVAR_CHECK("Set r_rendererPreference to DX7 (DirectX 7)", "r_rendererPreference", hideDvar{ "dx7" })
+	}
+*/
 }

@@ -6,7 +6,7 @@ Particle
 
 	spawnFlags			orgOnCylinder
 
-	count				15
+	count				10 12
 
 	life				4e+004
 
@@ -18,7 +18,7 @@ Particle
 
 	rotation			-45 45
 
-	gravity				0 -0.3
+	gravity				0 -1
 
 	sequenceStartFrameMode	1
 
@@ -47,13 +47,13 @@ Particle
 		curve
 		[
 			0 0 0 0
-			0.04598 0.7822 0 0
-			0.1351 1 0 0
-			0.2902 1 0 0
-			0.4856 1 0 0
-			0.6782 1 0 0
-			0.8075 0.8663 0 0
-			0.9224 0.3812 0 0
+			0.03161 0.6683 0 0
+			0.08333 0.8317 0 0
+			0.1724 0.9356 0 0
+			0.3851 0.9257 0 0
+			0.5977 0.901 0 0
+			0.773 0.797 0 0
+			0.8851 0.3218 0 0
 			1 0 0 0
 		]
 	}
@@ -77,11 +77,11 @@ Particle
 	{
 		curve
 		[
-			0 0.3354 0 0
-			0.05814 0.5127 0 0
-			0.1366 0.6582 0 0
-			0.2355 0.7975 0 0
-			0.3953 0.8924 0 0
+			0 0.2595 0 0
+			0.05233 0.4177 0 0
+			0.1279 0.5759 0 0
+			0.2326 0.7278 0 0
+			0.4099 0.8671 0 0
 			0.589 0.9369 0 0
 			1 1 0 0
 		]
@@ -163,9 +163,9 @@ Particle
 		curve
 		[
 			0 -0.2778 0 0
-			0.204 -0.2157 0 0
-			0.296 -0.09314 0 0
-			0.3908 -0.009804 0 0
+			0.2615 -0.2696 0 0
+			0.2989 -0.1324 0 0
+			0.3966 -0.04902 0 0
 			1 0 0 0
 		]
 
@@ -941,7 +941,7 @@ Particle
 			1 -0.2669 0 0
 		]
 
-		scale			28
+		scale			32
 	}
 
 	rotationDeltaRand
@@ -1101,17 +1101,17 @@ Particle
 {
 	name				smoke_fill
 
-	flags				useAlpha useRandomColors useRandomRotationDelta useRandomVelocity absoluteVel blocksSight
+	flags				useAlpha useRandomColors useRandomRotationDelta useRandomVelocity useRandomVelocity2 absoluteVel blocksSight disableFarPlaneCulling
 
 	spawnFlags			orgOnCylinder axisFromSphere
 
-	count				45
+	count				55
 
 	life				4e+004
 
-	delay				750 7000
+	delay				500 8000
 
-	radius				0 20
+	radius				0 15
 
 	height				0
 
@@ -1125,7 +1125,7 @@ Particle
 	{
 		curve
 		[
-			0 0.4974 0.4745 0.4745
+			0 0.4745 0.4745 0.4745
 			1 0.5451 0.5451 0.5451
 		]
 	}
@@ -1144,12 +1144,13 @@ Particle
 		curve
 		[
 			0 0 0 0
-			0.08046 0.7723 0 0
-			0.2126 0.9554 0 0
-			0.319 1 0 0
-			0.7931 1 0 0
-			0.9282 0.7871 0 0
-			0.9856 0.3267 0 0
+			0.03448 0.6733 0 0
+			0.06322 0.9455 0 0
+			0.1609 1 0 0
+			0.3391 1 0 0
+			0.6897 1 0 0
+			0.8477 0.8366 0 0
+			0.9483 0.3267 0 0
 			1 0 0 0
 		]
 	}
@@ -1167,7 +1168,7 @@ Particle
 	{
 		curve
 		[
-			0 0.6835 0 0
+			0 0.6076 0 0
 			1 1 0 0
 		]
 
@@ -1230,7 +1231,7 @@ Particle
 			1 -0.02727 0 0
 		]
 
-		scale			2
+		scale			4
 	}
 
 	rotationDeltaRand
@@ -1250,13 +1251,13 @@ Particle
 		curve
 		[
 			0 0.5 0 0
-			0.07471 0.4902 0 0
-			0.1178 0.402 0 0
-			0.1379 0.2598 0 0
-			0.1724 0.1078 0 0
-			0.2701 0.01961 0 0
-			0.3678 0.009804 0 0
-			1 0.004902 0 0
+			0.06609 0.5 0 0
+			0.1063 0.4216 0 0
+			0.1264 0.2892 0 0
+			0.1638 0.1225 0 0
+			0.2443 0.03922 0 0
+			0.3649 0.009804 0 0
+			1 0.01471 0 0
 		]
 
 		scale			55

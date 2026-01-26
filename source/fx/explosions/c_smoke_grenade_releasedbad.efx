@@ -2,11 +2,11 @@ Particle
 {
 	name				center_volume
 
-	flags				useAlpha useRandomColors useRandomAlpha useRandomRotationDelta useRandomVelocity absoluteVel blocksSight disableFarPlaneCulling
+	flags				useAlpha useRandomColors useRandomAlpha useRandomRotationDelta useRandomVelocity absoluteVel blocksSight
 
 	spawnFlags			orgOnCylinder
 
-	count				11
+	count				15
 
 	life				4e+004
 
@@ -14,11 +14,11 @@ Particle
 
 	origin				50 0 0
 
-	radius				155
+	radius				150
 
 	rotation			-45 45
 
-	gravity				0 -0.35
+	gravity				0 -0.3
 
 	sequenceStartFrameMode	1
 
@@ -47,10 +47,10 @@ Particle
 		curve
 		[
 			0 0 0 0
-			0.07184 0.7376 0 0
-			0.1494 0.9505 0 0
-			0.2443 1 0 0
-			0.431 1 0 0
+			0.04598 0.7822 0 0
+			0.1351 1 0 0
+			0.2902 1 0 0
+			0.4856 1 0 0
 			0.6782 1 0 0
 			0.8075 0.8663 0 0
 			0.9224 0.3812 0 0
@@ -77,11 +77,11 @@ Particle
 	{
 		curve
 		[
-			0 0.2595 0 0
-			0.05233 0.4177 0 0
-			0.1279 0.5759 0 0
-			0.2326 0.7278 0 0
-			0.4099 0.8671 0 0
+			0 0.3354 0 0
+			0.05814 0.5127 0 0
+			0.1366 0.6582 0 0
+			0.2355 0.7975 0 0
+			0.3953 0.8924 0 0
 			0.589 0.9369 0 0
 			1 1 0 0
 		]
@@ -163,9 +163,9 @@ Particle
 		curve
 		[
 			0 -0.2778 0 0
-			0.2615 -0.2696 0 0
-			0.2989 -0.1324 0 0
-			0.3966 -0.04902 0 0
+			0.204 -0.2157 0 0
+			0.296 -0.09314 0 0
+			0.3908 -0.009804 0 0
 			1 0 0 0
 		]
 
@@ -1109,7 +1109,7 @@ Particle
 
 	life				4e+004
 
-	delay				700 7000
+	delay				750 7000
 
 	radius				0 20
 
@@ -1144,12 +1144,12 @@ Particle
 		curve
 		[
 			0 0 0 0
-			0.02874 0.7822 0 0
-			0.0977 0.9703 0 0
-			0.2989 1 0 0
-			0.727 1 0 0
-			0.9052 0.797 0 0
-			0.9684 0.3267 0 0
+			0.08046 0.7723 0 0
+			0.2126 0.9554 0 0
+			0.319 1 0 0
+			0.7931 1 0 0
+			0.9282 0.7871 0 0
+			0.9856 0.3267 0 0
 			1 0 0 0
 		]
 	}
@@ -1167,7 +1167,7 @@ Particle
 	{
 		curve
 		[
-			0 0.6076 0 0
+			0 0.6835 0 0
 			1 1 0 0
 		]
 

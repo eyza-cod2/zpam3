@@ -767,7 +767,8 @@ getAdjustedNeckDamage(sWeapon, iDamage) {
 		case "mosin_nagant_mp":
 		case "mosin_nagant_sniper_mp":
 		case "mp40_mp":
-		case "mp44_mp":		
+		case "mp44_mp":
+		case "pps42_mp":
 		case "springfield_mp":
 		case "sten_mp":
 		case "svt40_mp":
