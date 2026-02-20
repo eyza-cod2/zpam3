@@ -334,6 +334,33 @@ startRecordingForAll()
     }
 }
 
+replacePlaceholder(string, placeholder, replacement)
+{
+	// Guard: empty placeholder would cause an infinite loop or undefined behavior
+	if (placeholder == "")
+		return string;
+
+	result = "";
+	i = 0;
+
+	// Iterate through the original string and copy characters or the replacement
+	while (i < string.size)
+	{
+		// Check if placeholder fits at current position
+		if (i + placeholder.size <= string.size && getSubStr(string, i, i + placeholder.size) == placeholder)
+		{
+			result = result + replacement;
+			i = i + placeholder.size;
+		}
+		else
+		{
+			result = result + string[i];
+			i = i + 1;
+		}
+	}
+
+	return result;
+}
 
 execRecording()
 {
@@ -355,11 +382,22 @@ execRecording()
 
 	if (matchIsActivated()) {
 
-		folder = "test";
-		if (PAMModeContains("lan"))
-			folder = "lan";
-
-		self setClientCvar2("cl_demoAutoRecordUploadUrl", "https://master.cod2x.me/api/match/" + folder + "/demo-upload/"); // CoD2x 1.4.5.1-test.12 and later
+		// URL prefix, CoD2x will add demo name suffix automatically
+		// https://fpschallenge.eu/api/v2/cod2/user/{{playerUUID}}/map/{{mapName}}/demo/
+		// https://fpschallenge.eu/api/v2/cod2/user/3c7acf99-b881-469e-966f-63b68f5a039e/map/mp_toujane_fix/demo/
+		urlTemplate = matchGetData("demoUploadURL");
+		url = "";
+		if (urlTemplate != "") {
+			playerUUID = self matchPlayerGetData("uuid");
+			if (playerUUID != "") {
+				// Replace placeholders (apply sequentially on the updated url)
+				url = urlTemplate;
+				url = replacePlaceholder(url, "{{playerUUID}}", playerUUID);
+				url = replacePlaceholder(url, "{{mapName}}", level.mapname);
+				url = replacePlaceholder(url, "{{demoName}}", ""); // remove because CoD2x client is always appending real demo name to the end of the URL, would require client patch
+			}
+		}
+		self setClientCvar2("cl_demoAutoRecordUploadUrl", url); // CoD2x 1.4.5.1-test.12 and later
 	}
 	
 	self setClientCvar2("cl_demoAutoRecordName", demoName); // CoD2x 1.4.5.1-test.12 and later
