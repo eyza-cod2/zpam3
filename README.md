@@ -7,17 +7,18 @@ The code from the previous version zPAM 2.07 was completely rewritten and ported
 Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 4.04.<br>
+*This page describe only actual version zPAM 4.05.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
 - #### Actual version for CoD2x 1.4
-	- 2025/11/07 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.04/zpam404.zip">zPAM 4.04 - zpam404.zip</a></b> - compatible with CoD2x 1.4.6.1 and higher.
+	- 2026/02/21 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.05/zpam405.zip">zPAM 4.05 - zpam405.zip</a></b> - compatible with CoD2x 1.4.6.1 and higher.
 
 - #### Actual version for 1.3
 	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
 
 ## Version list
+- 2025/11/07 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/6b7f60d0b8ea01e2554cd181623879bfd9096344">zPAM 4.04</a></b>
 - 2025/11/07 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/478a7971b3986bce16c13c73c64ff32648f238c6">zPAM 4.03</a></b>
 - 2025/11/06 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/52eab26af151bc50b19bd5f073849e07f519a002">zPAM 4.02</a></b>
 - 2025/11/04 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/43bd47d464998407dad16f29ce3b1aaaa81744b9">zPAM 4.01</a></b>
@@ -46,6 +47,16 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+<details><summary>zPAM 4.05 changes (click to open)</summary>
+<p>
+
+**Changes / Fixes / Improvements:**
+- Custom URL for demo upload from match data
+</p>
+</details>
+
+
 
 <details><summary>zPAM 4.04 changes (click to open)</summary>
 <p>

@@ -26,7 +26,7 @@ init()
 		// Errors
 		precacheString2("STRING_PAM_DONT_STEAL", &"This version of pam is only for testing! Dont steal!");
 		precacheString2("STRING_PAM_FS_GAME", &"Cvar /fs_game is not empty!)");
-		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam404.iwd^7 must be installed in ^9main^7 folder."); // ZPAM_RENAME
+		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam405.iwd^7 must be installed in ^9main^7 folder."); // ZPAM_RENAME
 		precacheString2("STRING_PAM_GETTING_IWD_FILES_ERROR", &"Error while getting loaded iwd files. Make sure iwd files does not contains spaces.");
 		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v6.iwd^7 does not exists in ^9main^7 folder"); // ZPAM_RENAME
 		precacheString2("STRING_PAM_MAPS_LOAD_ERROR", &"Error while checking if fixed maps exists. Map printed above was not found on server.");
@@ -42,7 +42,7 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam404"; // ZPAM_RENAME
+	level.pam_folder = "main/zpam405"; // ZPAM_RENAME
 	level.pam_map_iwd = "zpam_maps_v6";
 
 	level.pam_mode_change = false;
@@ -320,6 +320,8 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam400_test6";
 	blackList[blackList.size] = "zpam401";
 	blackList[blackList.size] = "zpam402";
+	blackList[blackList.size] = "zpam403";
+	blackList[blackList.size] = "zpam404";
 
 	blackList[blackList.size] = "mp_chelm_fix";
 	blackList[blackList.size] = "mp_breakout_tls";
