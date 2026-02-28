@@ -133,8 +133,6 @@ Init()
 		if (rifle && ot && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"Rifle | ^3Overtime";
 		if (rifle && !ot && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"Rifle";
 
-
-
 		precacheString(game["leagueOptionsString"]);
 	}
 

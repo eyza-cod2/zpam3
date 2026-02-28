@@ -508,16 +508,11 @@ mapOptions_updateRconCommand()
 				addCvarToChange("scr_score_axis", self.pers["rcon_map_scoreAxis"]);
 			}
 
-			// If map of gametype is changed, map needs to be reseted
-			if (mapChanged || gametypeChanged)
+			// always reset the map, now that cvars in subpammodes may need map restart (scr_smoke_type)
+			if (mapChanged || gametypeChanged || pamChanged)
 			{
 				rconString += "/rcon map " + self.pers["rcon_map_map"] + "; ";
 				self.pers["rcon_map_apply_action"] = self.pers["rcon_map_map"];
-			}
-			else if (pamChanged)
-			{
-				rconString += "/rcon fast_restart;";
-				self.pers["rcon_map_apply_action"] = "fast_restart";
 			}
 		}
 	}

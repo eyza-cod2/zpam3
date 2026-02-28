@@ -47,7 +47,7 @@ To see description of previous versions, click on the links in [Version list](#v
 
 ## Changelog
 
-<details><summary>zPAM 4.05 changes (click to open)</summary>
+<details><summary>zPAM 4.06 changes (click to open)</summary>
 <p>
 
 **Changes:**

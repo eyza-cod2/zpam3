@@ -14,7 +14,6 @@ GetCvars(arr)
     arr = ruleCvarDefault(arr, "scr_bar_buffed", 1);
     arr = ruleCvarDefault(arr, "scr_bren_buffed", 1);
     arr = ruleCvarDefault(arr, "scr_breakout_british", 1);
-    arr = ruleCvarDefault(arr, "scr_allow_turrets", 0);
 
     return arr;
 }

@@ -42,13 +42,12 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam405"; // ZPAM_RENAME
+	level.pam_folder = "main/zpam406"; // ZPAM_RENAME
 	level.pam_map_iwd = "zpam_maps_v7";
 
 	level.pam_mode_change = false;
 
 	level.pam_installation_error = false;
-
 
 	addEventListener("onStartGameType", ::onStartGameType);
 }
@@ -321,6 +320,7 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam400_test6";
 	blackList[blackList.size] = "zpam401";
 	blackList[blackList.size] = "zpam402";
+	blackList[blackList.size] = "zpam405_na";
 
 	blackList[blackList.size] = "mp_chelm_fix";
 	blackList[blackList.size] = "mp_breakout_tls";
@@ -352,8 +352,6 @@ CheckInstallation()
 			return;
 		}
 	}
-
-
 
 	cod2x_blacklist = [];
 	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.1";
@@ -436,7 +434,8 @@ ChangeTo(mode)
 	// Reset custom cvars
 	setCvar("pam_mode_custom", 0);
 
-	map_restart(false); // fast_restart
+	map(level.mapname, false);
+	//map_restart(false); // fast_restart
 }
 
 
