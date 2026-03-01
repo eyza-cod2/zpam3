@@ -321,6 +321,8 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam401";
 	blackList[blackList.size] = "zpam402";
 	blackList[blackList.size] = "zpam405_na";
+	blackList[blackList.size] = "zpam403";
+	blackList[blackList.size] = "zpam404";
 
 	blackList[blackList.size] = "mp_chelm_fix";
 	blackList[blackList.size] = "mp_breakout_tls";
