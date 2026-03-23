@@ -104,13 +104,10 @@ Register_Shared_Cvars()
 	[[sVar]]("scr_breakout_british", "BOOL", 0);	// level.scr_breakout_british
 	[[sVar]]("scr_friendlyfire", "INT", 0, 0, 3); 	// level.scr_friendlyfire on, off, reflect, shared
 
-	[[sVarEx]]("", "scr_posters", "BOOL", 0);              // level.scr_posters, ignore change
+	[[sVar]]("scr_posters", "BOOL", 0);              // level.scr_posters, ignore change
 
-	[[sVarEx]]("", "sv_cracked", "BOOL", 0);		// CoD2x
 	[[sVar]]("g_competitive", "BOOL", 1);   // CoD2x
-
 	[[sVar]]("g_shotgun_spread_fix", "BOOL", 1);   // CoD2x since 1.4.7.1
-
 }
 
 

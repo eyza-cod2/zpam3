@@ -147,7 +147,8 @@ generateGlobalServerInfo()
 	else if (contains(level.serverversion, "linux"))
 		level.serverversion += " (Linux server)";
 
-
+	if (getCvarInt("sv_cracked"))
+		level.serverversion += " ^3(Cracked)^7";
 
 
 	title = "PAM mode:\n";
