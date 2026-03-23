@@ -449,16 +449,16 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		if (level.debug_handhitbox || applyFix)
 		{
 			// Define box around head tag tag will be used to determine, if hit location is inside this box and it should be a kill
-			boxBack = 8;		//	 _________				//	 _________
-			boxFront = 30;		//	|  -[]-	 |	       Back		//	|  _[]_	 |	       Top
-			boxLeft = 9;		//	|   |	 |	Left  [Head]  Right	//	| || ||	 |	Left  [Head]  Right
-			boxRight = 9;		//	|	 |	      Front		//	|__| |___|	      Down
-			boxUp = 8;		//	|________|	        ^		//	   ||
-			boxDown = 14;		//	Top view	      Enemy		//	Front view
+			boxBack = 8;        //     _________                              //     ________
+			boxFront = 30;      //    |  -[]-  |             Back             //    | _[]_  |           Top
+			boxLeft = 9;        //    |   |    |      Left  [Head]  Right     //    | || || |    Left  [Head]  Right
+			boxRight = 11;       //   |        |            Front             //    |__| |__|           Down
+			boxUp = 8;          //    |________|              ^               //       ||
+			boxDown = 16;        //    Top view             Enemy             //    Front view
 			if (self.isMoving) // if player is moving, make the box bigger so it will compensate poor hitboxes
 			{
-				boxLeft = 11;
-				boxRight = 11;
+				boxLeft = 13;
+				boxRight = 15;
 			}
 			// prone crouch stand 
 			stance = self getStance(); // (CoD2x 1.4.5.1)
