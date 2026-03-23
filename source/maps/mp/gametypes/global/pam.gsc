@@ -269,6 +269,8 @@ CheckInstallation()
 	}
 
 	blackList = [];
+
+	// ZPAM file
 	blackList[blackList.size] = "zPAM207";
 	blackList[blackList.size] = "zpam300_beta_2016_2_2";
 	blackList[blackList.size] = "zpam300_beta";
@@ -320,10 +322,15 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam400_test6";
 	blackList[blackList.size] = "zpam401";
 	blackList[blackList.size] = "zpam402";
-	blackList[blackList.size] = "zpam405_na";
 	blackList[blackList.size] = "zpam403";
+	blackList[blackList.size] = "zpam403_na";
 	blackList[blackList.size] = "zpam404";
+	blackList[blackList.size] = "zpam404_na";
+	blackList[blackList.size] = "zpam_maps_v6";
+	blackList[blackList.size] = "zpam405_na";
+	blackList[blackList.size] = "zpam405";
 
+	// Maps
 	blackList[blackList.size] = "mp_chelm_fix";
 	blackList[blackList.size] = "mp_breakout_tls";
 	blackList[blackList.size] = "wawa_3daim_tdm";
@@ -336,8 +343,6 @@ CheckInstallation()
 	blackList[blackList.size] = "mp_railyard_mjr_test2";
 	blackList[blackList.size] = "mp_leningrad_mjr_test1";
 	blackList[blackList.size] = "mp_leningrad_mjr_test2";
-	blackList[blackList.size] = "zpam404";
-	blackList[blackList.size] = "zpam_maps_v6";
 
 	// ZPAM_RENAME - add old pam
 
@@ -369,6 +374,10 @@ CheckInstallation()
 	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.11";
 	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.12";
 	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.13";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.6.1";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.6.2";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.6.3";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.6.4";
 
 	// ZPAM_RENAME - add incompatible versions
 
