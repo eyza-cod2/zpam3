@@ -402,6 +402,18 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	// 1 = print debug messages to player with name eyza
 	eyza_debug = 0;
 
+
+	// Fix MG wrong damage values when holding pistols
+	if (sMeansOfDeath == "MOD_RIFLE_BULLET" && eAttacker && eAttacker isUsingTurret())
+	{
+		if (sHitLoc == "head" || sHitLoc == "neck")
+			iDamage = 50;
+		else
+			iDamage = 35;
+
+		sWeapon = "mg_mp";
+	}
+
 	// Change neck hit to head
 	// It effectively affect only M1, pistols, automatic weapons
 	if (level.scr_hitbox_neck_kill && sHitLoc == "neck" && eAttacker && (!eAttacker isUsingTurret())
