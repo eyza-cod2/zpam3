@@ -402,10 +402,13 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	// 1 = print debug messages to player with name eyza
 	eyza_debug = 0;
 
-	// neck counts as headshot?
-	if (level.scr_hitbox_neck_kill && sHitLoc == "neck") {
+	// Change neck hit to head
+	// It effectively affect only M1, pistols, automatic weapons
+	if (level.scr_hitbox_neck_kill && sHitLoc == "neck" && eAttacker && (!eAttacker isUsingTurret())
+	    && (sMeansOfDeath == "MOD_PISTOL_BULLET" || sMeansOfDeath == "MOD_RIFLE_BULLET")) {
 		sHitLoc = "head";
 		iDamage = getAdjustedNeckDamage(sWeapon, iDamage);
+		//iPrintLn("^1Neck hit changed to head for " + self.name + " by " + sWeapon + ", damage adjusted to " + iDamage);
 	}
 
 	// Hitbox left and right hand fix
