@@ -648,39 +648,11 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		// Range 0-250   (1 pellet needed for kill)
 		if (dist <= 250)
 		{
-			isKill = true;
-
-			// If its hit to hand or leg
-			if (sHitLoc == "left_hand" || sHitLoc == "left_arm_lower" || sHitLoc == "right_hand" || sHitLoc == "right_arm_lower" ||
-			    sHitLoc == "left_foot" || sHitLoc == "left_leg_lower" || sHitLoc == "right_foot" || sHitLoc == "right_leg_lower")
-			{
-				// Head or pelvis is visible to player
-				bodyOrHeadVisible = eAttacker maps\mp\gametypes\global\player::isPlayerInSight(self);
-
-				// Head and pelvis is not at sight (only hand or lags are visible to player) - this should be a hit only
-				if (!bodyOrHeadVisible)
-					isKill = false;
-
-				if (eyza_debug) printToEyza("### Consistent shotgun: upcoming hit is to leg or hand | bodyOrHeadVisible:" + bodyOrHeadVisible + " for " + eAttacker.name); // EYZA_DEBUG
-			}
-
-
-			if (isKill)
-			{
-				iDamage = 100;
-				damageFeedbackSoundCount = 2; // Do big damage feedback, because this bullet kills the player and the others are canceled due to this
-				if (level.debug_shotgun) eAttacker iprintln("^1Distance " + int(dist) + " | close range 0-250 | KILL");
-				if (eyza_debug) printToEyza("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | close range 0-250 | KILL"); // EYZA_DEBUG
-				eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_1_kill"; // Range 1, kill
-			}
-			else
-			{
-				// Scale the damage based on distance
-				iDamage = damageScale(dist, 0, 250, 100, 50); //distance, distStart, distEnd, hpStart, hpEnd
-				if (level.debug_shotgun) eAttacker iprintln("^1Distance " + int(dist) + " | close range 0-250 | ^3hit to hand or leg");
-				if (eyza_debug) printToEyza("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | close range 0-250 | hit to hand or leg"); // EYZA_DEBUG
-				eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_1_hit"; // Range 1, hit only, because head and body is not visible
-			}
+			iDamage = 100;
+			damageFeedbackSoundCount = 2; // Do big damage feedback, because this bullet kills the player and the others are canceled due to this
+			if (level.debug_shotgun) eAttacker iprintln("^1Distance " + int(dist) + " | close range 0-250 | KILL");
+			if (eyza_debug) printToEyza("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | close range 0-250 | KILL"); // EYZA_DEBUG
+			eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_1_kill"; // Range 1, kill
 		}
 
 		// Range 250-384   (2 pellets needed for kill)

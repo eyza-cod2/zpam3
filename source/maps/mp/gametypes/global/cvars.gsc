@@ -108,6 +108,9 @@ Register_Shared_Cvars()
 
 	[[sVarEx]]("", "sv_cracked", "BOOL", 0);		// CoD2x
 	[[sVar]]("g_competitive", "BOOL", 1);   // CoD2x
+
+	[[sVar]]("g_shotgun_spread_fix", "BOOL", 1);   // CoD2x since 1.4.7.1
+
 }
 
 
@@ -218,6 +221,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 		case "sv_cracked": return true;
 		case "g_competitive": return true;
+		case "g_shotgun_spread_fix": return true;
 	}
 	return false;
 }
