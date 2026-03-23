@@ -53,85 +53,86 @@ Init()
 		draw = PAMModeContains("draw");
 		lan = PAMModeContains("lan");
 		custom = PAMModeContains("custom");
-		ot = isDefined(game["overtime_active"]) && game["overtime_active"];
+		//ot = isDefined(game["overtime_active"]) && game["overtime_active"];
+		NA = PAMModeContains("na");
 		rifle = PAMModeContains("rifle");
 
 		// This is because of fucking cod2 precache system
-		game["leagueOptionsString"] = &"";
-		if (!rifle && !ot && !custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"2v2 | ^3Draw^7 | ^3LAN";
-		if (!rifle && !ot && !custom && _2v2 && !draw && lan)	game["leagueOptionsString"] = &"2v2 | ^3LAN";
-		if (!rifle && !ot && !custom && _2v2 && draw && !lan)	game["leagueOptionsString"] = &"2v2 | ^3Draw^7";
-		if (!rifle && !ot && !custom && !_2v2 && draw && lan)	game["leagueOptionsString"] = &"^3Draw^7 | ^3LAN";
-		if (!rifle && !ot && !custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"2v2";
-		if (!rifle && !ot && !custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"^3Draw^7";
-		if (!rifle && !ot && !custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"^3LAN";
+		game["leagueOptionsString"] = &"EU";
+		if (!rifle && !NA && !custom && _2v2 && draw && lan)	game["leagueOptionsString"] = &"EU | 2v2 | ^3Draw^7 | ^3LAN";
+		if (!rifle && !NA && !custom && _2v2 && !draw && lan)	game["leagueOptionsString"] = &"EU | 2v2 | ^3LAN";
+		if (!rifle && !NA && !custom && _2v2 && draw && !lan)	game["leagueOptionsString"] = &"EU | 2v2 | ^3Draw^7";
+		if (!rifle && !NA && !custom && !_2v2 && draw && lan)	game["leagueOptionsString"] = &"EU | ^3Draw^7 | ^3LAN";
+		if (!rifle && !NA && !custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"EU | 2v2";
+		if (!rifle && !NA && !custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"EU | ^3Draw^7";
+		if (!rifle && !NA && !custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"EU | ^3LAN";
 		// -
-		if (!rifle && !ot && custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | ^3Draw^7 | ^3LAN";
-		if (!rifle && !ot && custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | ^3LAN";
-		if (!rifle && !ot && custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | ^3Draw^7";
-		if (!rifle && !ot && custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | ^3Draw^7 | ^3LAN";
-		if (!rifle && !ot && custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^3Custom^7 | 2v2";
-		if (!rifle && !ot && custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"^3Custom^7 | ^3Draw^7";
-		if (!rifle && !ot && custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"^3Custom^7 | ^3LAN";
-		if (!rifle && !ot && custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^3Custom";
+		if (!rifle && !NA && custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"EU | ^3Custom^7 | 2v2 | ^3Draw^7 | ^3LAN";
+		if (!rifle && !NA && custom && _2v2 && !draw && lan)	game["leagueOptionsString"] = &"EU | ^3Custom^7 | 2v2 | ^3LAN";
+		if (!rifle && !NA && custom && _2v2 && draw && !lan)	game["leagueOptionsString"] = &"EU | ^3Custom^7 | 2v2 | ^3Draw^7";
+		if (!rifle && !NA && custom && !_2v2 && draw && lan)	game["leagueOptionsString"] = &"EU | ^3Custom^7 | ^3Draw^7 | ^3LAN";
+		if (!rifle && !NA && custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"EU | ^3Custom^7 | 2v2";
+		if (!rifle && !NA && custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"EU | ^3Custom^7 | ^3Draw^7";
+		if (!rifle && !NA && custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"EU | ^3Custom^7 | ^3LAN";
+		if (!rifle && !NA && custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"EU | ^3Custom";
 		//
 		//
-		if (!rifle && ot && !custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"2v2 | ^3Draw^7 | ^3LAN | ^3Overtime";
-		if (!rifle && ot && !custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"2v2 | ^3LAN | ^3Overtime";
-		if (!rifle && ot && !custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"2v2 | ^3Draw^7 | ^3Overtime";
-		if (!rifle && ot && !custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^3Draw^7 | ^3LAN | ^3Overtime";
-		if (!rifle && ot && !custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"2v2 | ^3Overtime";
-		if (!rifle && ot && !custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"^3Draw^7 | ^3Overtime";
-		if (!rifle && ot && !custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"^3LAN | ^3Overtime";
+		if (!rifle && NA && !custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | 2v2 | ^3Draw^7 | ^3LAN";
+		if (!rifle && NA && !custom && _2v2 && !draw && lan)	game["leagueOptionsString"] = &"^5NA^7 | 2v2 | ^3LAN";
+		if (!rifle && NA && !custom && _2v2 && draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | 2v2 | ^3Draw^7";
+		if (!rifle && NA && !custom && !_2v2 && draw && lan)	game["leagueOptionsString"] = &"^5NA^7 | ^3Draw^7 | ^3LAN";
+		if (!rifle && NA && !custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | 2v2";
+		if (!rifle && NA && !custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | ^3Draw^7";
+		if (!rifle && NA && !custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"^5NA^7 | ^3LAN";
 		// -
-		if (!rifle && ot && custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | ^3Draw^7 | ^3LAN | ^3Overtime";
-		if (!rifle && ot && custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | ^3LAN | ^3Overtime";
-		if (!rifle && ot && custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | ^3Draw^7 | ^3Overtime";
-		if (!rifle && ot && custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | ^3Draw^7 | ^3LAN | ^3Overtime";
-		if (!rifle && ot && custom && _2v2 && !draw && !lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | ^3Overtime";
-		if (!rifle && ot && custom && !_2v2 && draw && !lan)		game["leagueOptionsString"] = &"^3Custom^7 | ^3Draw^7 | ^3Overtime";
-		if (!rifle && ot && custom && !_2v2 && !draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | ^3LAN | ^3Overtime";
-		if (!rifle && ot && custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^3Custom^7 | ^3Overtime";
-		if (!rifle && ot && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^3Overtime";
+		if (!rifle && NA && custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | 2v2 | ^3Draw^7 | ^3LAN";
+		if (!rifle && NA && custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | 2v2 | ^3LAN";
+		if (!rifle && NA && custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | 2v2 | ^3Draw^7";
+		if (!rifle && NA && custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | ^3Draw^7 | ^3LAN";
+		if (!rifle && NA && custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | 2v2";
+		if (!rifle && NA && custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | ^3Draw^7";
+		if (!rifle && NA && custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | ^3LAN";
+		if (!rifle && NA && custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7";
+		if (!rifle && NA && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^5NA^7";
 		//
 		//
 		//
-		if (rifle && !ot && !custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"2v2 | Rifle | ^3Draw^7 | ^3LAN";
-		if (rifle && !ot && !custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"2v2 | Rifle | ^3LAN";
-		if (rifle && !ot && !custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"2v2 | Rifle | ^3Draw^7";
-		if (rifle && !ot && !custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^3Draw^7 | Rifle | ^3LAN";
-		if (rifle && !ot && !custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"2v2 | Rifle";
-		if (rifle && !ot && !custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"^3Draw^7 | Rifle";
-		if (rifle && !ot && !custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"^3LAN | Rifle";
+		if (rifle && !NA && !custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"EU | 2v2 | Rifle | ^3Draw^7 | ^3LAN";
+		if (rifle && !NA && !custom && _2v2 && !draw && lan)	game["leagueOptionsString"] = &"EU | 2v2 | Rifle | ^3LAN";
+		if (rifle && !NA && !custom && _2v2 && draw && !lan)	game["leagueOptionsString"] = &"EU | 2v2 | Rifle | ^3Draw^7";
+		if (rifle && !NA && !custom && !_2v2 && draw && lan)	game["leagueOptionsString"] = &"EU | ^3Draw^7 | Rifle | ^3LAN";
+		if (rifle && !NA && !custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"EU | 2v2 | Rifle";
+		if (rifle && !NA && !custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"EU | ^3Draw^7 | Rifle";
+		if (rifle && !NA && !custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"EU | ^3LAN | Rifle";
 		// -
-		if (rifle && !ot && custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | Rifle | ^3Draw^7 | ^3LAN";
-		if (rifle && !ot && custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | Rifle | ^3LAN";
-		if (rifle && !ot && custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | Rifle | ^3Draw^7";
-		if (rifle && !ot && custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | ^3Draw^7 | Rifle | ^3LAN";
-		if (rifle && !ot && custom && _2v2 && !draw && !lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | Rifle";
-		if (rifle && !ot && custom && !_2v2 && draw && !lan)		game["leagueOptionsString"] = &"^3Custom^7 | ^3Draw^7 | Rifle";
-		if (rifle && !ot && custom && !_2v2 && !draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | ^3LAN | Rifle";
-		if (rifle && !ot && custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^3Custom^7 | Rifle";
+		if (rifle && !NA && custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"EU | ^3Custom^7 | 2v2 | Rifle | ^3Draw^7 | ^3LAN";
+		if (rifle && !NA && custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"EU | ^3Custom^7 | 2v2 | Rifle | ^3LAN";
+		if (rifle && !NA && custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"EU | ^3Custom^7 | 2v2 | Rifle | ^3Draw^7";
+		if (rifle && !NA && custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"EU | ^3Custom^7 | ^3Draw^7 | Rifle | ^3LAN";
+		if (rifle && !NA && custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"EU | ^3Custom^7 | 2v2 | Rifle";
+		if (rifle && !NA && custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"EU | ^3Custom^7 | ^3Draw^7 | Rifle";
+		if (rifle && !NA && custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"EU | ^3Custom^7 | ^3LAN | Rifle";
+		if (rifle && !NA && custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"EU | ^3Custom^7 | Rifle";
 		//
 		//
-		if (rifle && ot && !custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"2v2 | Rifle | ^3Draw^7 | ^3LAN | ^3Overtime";
-		if (rifle && ot && !custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"2v2 | Rifle | ^3LAN | ^3Overtime";
-		if (rifle && ot && !custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"2v2 | Rifle | ^3Draw^7 | ^3Overtime";
-		if (rifle && ot && !custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^3Draw^7 | Rifle | ^3LAN | ^3Overtime";
-		if (rifle && ot && !custom && _2v2 && !draw && !lan)		game["leagueOptionsString"] = &"2v2 | Rifle | ^3Overtime";
-		if (rifle && ot && !custom && !_2v2 && draw && !lan)		game["leagueOptionsString"] = &"^3Draw^7 | Rifle | ^3Overtime";
-		if (rifle && ot && !custom && !_2v2 && !draw && lan)		game["leagueOptionsString"] = &"Rifle | ^3LAN | ^3Overtime";
+		if (rifle && NA && !custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | 2v2 | Rifle | ^3Draw^7 | ^3LAN";
+		if (rifle && NA && !custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | 2v2 | Rifle | ^3LAN";
+		if (rifle && NA && !custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"^5NA^7 | 2v2 | Rifle | ^3Draw^7";
+		if (rifle && NA && !custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Draw^7 | Rifle | ^3LAN";
+		if (rifle && NA && !custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | 2v2 | Rifle";
+		if (rifle && NA && !custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | ^3Draw^7 | Rifle";
+		if (rifle && NA && !custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"^5NA^7 | Rifle | ^3LAN";
 		// -
-		if (rifle && ot && custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | Rifle | ^3Draw^7 | ^3LAN | ^3Overtime";
-		if (rifle && ot && custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | Rifle | ^3LAN | ^3Overtime";
-		if (rifle && ot && custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | Rifle | ^3Draw^7 | ^3Overtime";
-		if (rifle && ot && custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | ^3Draw^7 | Rifle | ^3LAN | ^3Overtime";
-		if (rifle && ot && custom && _2v2 && !draw && !lan)		game["leagueOptionsString"] = &"^3Custom^7 | 2v2 | Rifle | ^3Overtime";
-		if (rifle && ot && custom && !_2v2 && draw && !lan)		game["leagueOptionsString"] = &"^3Custom^7 | ^3Draw^7 | Rifle | ^3Overtime";
-		if (rifle && ot && custom && !_2v2 && !draw && lan)		game["leagueOptionsString"] = &"^3Custom^7 | Rifle | ^3LAN | ^3Overtime";
-		if (rifle && ot && custom && !_2v2 && !draw && !lan)		game["leagueOptionsString"] = &"^3Custom^7 | Rifle | ^3Overtime";
-		if (rifle && ot && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"Rifle | ^3Overtime";
-		if (rifle && !ot && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"Rifle";
+		if (rifle && NA && custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | 2v2 | Rifle | ^3Draw^7 | ^3LAN";
+		if (rifle && NA && custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | 2v2 | Rifle | ^3LAN";
+		if (rifle && NA && custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | 2v2 | Rifle | ^3Draw^7";
+		if (rifle && NA && custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | ^3Draw^7 | Rifle | ^3LAN";
+		if (rifle && NA && custom && _2v2 && !draw && !lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | 2v2 | Rifle";
+		if (rifle && NA && custom && !_2v2 && draw && !lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | ^3Draw^7 | Rifle";
+		if (rifle && NA && custom && !_2v2 && !draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | Rifle | ^3LAN";
+		if (rifle && NA && custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | Rifle";
+		if (rifle && NA && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | Rifle";
+		if (rifle && !NA && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"EU | Rifle";
 
 		precacheString(game["leagueOptionsString"]);
 	}
@@ -325,7 +326,7 @@ LoadToggleSubPamMode(name)
 		case "lan": 	maps\mp\gametypes\rules\lan::Load(); return true;
 		case "custom": 	maps\mp\gametypes\rules\custom::Load(); return true;
 		case "rifle": 	maps\mp\gametypes\rules\rifle::Load(); return true;
-		case "na":		maps\mp\gametypes\rules\comp_na::Load(); return true;
+		case "na":		maps\mp\gametypes\rules\na::Load(); return true;
 	}
 	/#
 	if (name == "developer") {
