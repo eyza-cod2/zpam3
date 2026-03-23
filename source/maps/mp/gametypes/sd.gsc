@@ -707,7 +707,7 @@ watchPlayerDamageForStats(enemy, damage, sMeansOfDeath, sWeapon)
 	weapons["webley_mp"] = 			50;*/
 	weapons["mg_mp"] = 			50;
 
-	if (self.usingMG)
+	if (self isUsingTurret())
 		sWeapon = "mg_mp";
 
 

@@ -193,7 +193,7 @@ getFOV()
 		current = self getcurrentweapon(); // can be none
 		zoom = self playerAds();	// 1 = zoom | 0 = no zoom
 
-		if (self.usingMG)
+		if (self isUsingTurret())
 		{
 			current = "mg_mp";
 			zoom = 1;

@@ -26,7 +26,6 @@ init()
 
 onConnected()
 {
-	self.usingMG = false;
 }
 
 // This function is called when cvar changes value.
@@ -65,10 +64,10 @@ start()
 handleTurretEntity(name)
 {
 	entities = getentarray(name, "classname");
-        for(i = 0; i < entities.size; i++)
-        {
-            entities[i] thread waitTrigger();
-        }
+	for(i = 0; i < entities.size; i++)
+	{
+		entities[i] thread waitTrigger();
+	}
 }
 
 
@@ -92,7 +91,6 @@ handleDrop(turret)
 {
 	self endon("disconnect");
 
-	self.usingMG = true;
 	//iprintln("Player "+self.name+ " is using MG");
 
 	wait level.frame;
@@ -100,34 +98,33 @@ handleDrop(turret)
 	// Compute position of player behid the MG
 	forward = AnglesToForward( turret.angles ); // 1.0 scale
 	dist = -40; // how far behind MG should player spawn
-	pos = turret.origin + (forward[0] * dist, forward[1] * dist, forward[2] * dist); // new pos
+	positionBehindMG = turret.origin + (forward[0] * dist, forward[1] * dist, forward[2] * dist); // new pos
 
-	trace = bulletTrace(pos, (pos + (0, 0, -40)), false, undefined);
+	trace = bulletTrace(positionBehindMG, (positionBehindMG + (0, 0, -40)), false, undefined);
 	if(trace["fraction"] < 1)
 	{
-		pos = trace["position"];
+		positionBehindMG = trace["position"];
 	}
 	else
 	{
-		pos = pos + (0, 0, -24); // new pos
+		positionBehindMG = positionBehindMG + (0, 0, -24); // new pos
 	}
 
-	while (true)
-	{
-	        self setOrigin(pos);
+	
+	usingTurretLast = true;
 
-	        wait level.frame;
+	for (;;) {
+		usingTurret = self isUsingTurret();
 
-		// Next frame the position of player is overwrited when using MG
-		// Via that we can detect if player is still using the MG - by checking distance between position
+		// Player stopped using turret
+		if (usingTurretLast && !usingTurret) {
+			self setOrigin(positionBehindMG);
+			break;
+		}
 
-		dist = distance(self.origin, pos);
-
-	        if (dist < 2)
-	          break;
+		usingTurretLast = usingTurret;
+		wait level.frame;
 	}
 
 	//iprintln("Player "+self.name+ " dropped MG");
-
-	self.usingMG = false;
 }

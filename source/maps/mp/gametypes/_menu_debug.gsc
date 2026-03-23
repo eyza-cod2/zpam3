@@ -153,21 +153,22 @@ debugBasics()
 		self setClientCvar2("debug_line_9", "self.tag_head = " + "["+head_pos[0]+", "+head_pos[1]+", "+head_pos[2]+"]" + distance((0, 0, head_pos[2]), (0, 0, self.origin[2])));
 
 		self setClientCvar2("debug_line_10", "self.isMoving   = " + self.isMoving + "  (diff: " + self.movingDifference + ")");
+		self setClientCvar2("debug_line_11", "self isUsingTurret()   = " + (self isUsingTurret()));
 
 
 
 
 		self setClientCvar2("debug_line_18", "level.in_readyup      = " + level.in_readyup);
 		self setClientCvar2("debug_line_19", "level.in_timeout      = " + level.in_timeout);
-		self setClientCvar2("debug_line_20", "level.in_strattime    = " + level.in_strattime);
 
-	        if (level.gametype == "sd")
-	        {
-	            	self setClientCvar2("debug_line_21", "level.roundstarted    = " + level.roundstarted);
-	    		self setClientCvar2("debug_line_22", "level.roundended      = " + level.roundended);
-	    		self setClientCvar2("debug_line_23", "level.bombplanted     = " + level.bombplanted);
-	    		self setClientCvar2("debug_line_24", "level.bombexploded    = " + level.bombexploded);
-	        }
+		if (level.gametype == "sd")
+		{
+			self setClientCvar2("debug_line_20", "level.in_strattime    = " + level.in_strattime);
+			self setClientCvar2("debug_line_21", "level.roundstarted    = " + level.roundstarted);
+			self setClientCvar2("debug_line_22", "level.roundended      = " + level.roundended);
+			self setClientCvar2("debug_line_23", "level.bombplanted     = " + level.bombplanted);
+			self setClientCvar2("debug_line_24", "level.bombexploded    = " + level.bombexploded);
+		}
 
 		maps\mp\gametypes\_teamname::refreshTeamName("allies");
     		maps\mp\gametypes\_teamname::refreshTeamName("axis");

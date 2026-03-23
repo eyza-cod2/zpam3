@@ -878,7 +878,7 @@ generateMeNewTargetPosition(reason)
 
 
 	weapon = self getcurrentweapon(); // can be none
-	if (self.usingMG)
+	if (self isUsingTurret())
 		weapon = "mg_mp";
 
 	mode = 1;
