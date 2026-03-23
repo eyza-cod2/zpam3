@@ -52,10 +52,21 @@ itemDef \
 	style			WINDOW_STYLE_FILLED \
 	rect			0 0 width_height 0 0 \
 	origin			origin_choice \
-	backcolor		.92 .55 .06 .2 \
+	backcolor		.92 .55 .06 .5 \
 	visible			1 \
 	dvartest		dvarstring \
 	showDvar    		{dvarvalue} \
+	decoration \
+} \
+itemDef \
+{ \
+	style			WINDOW_STYLE_FILLED \
+	rect			0 0 width_height 0 0 \
+	origin			origin_choice \
+	backcolor		.9 .9 .9 .05 \
+	visible			1 \
+	dvartest		dvarstring \
+	hideDvar    	{dvarvalue} \
 	decoration \
 } \
 itemDef  \
@@ -69,7 +80,7 @@ itemDef  \
 	textfont		UI_FONT_NORMAL \
 	textscale		0.19 \
 	textstyle		ITEM_TEXTSTYLE_SHADOWED \
-	textalignx		8 \
+	textalignx		5 \
 	textaligny		10 \
 	dvartest		dvarstring \
 	hideDvar    		{""} \
