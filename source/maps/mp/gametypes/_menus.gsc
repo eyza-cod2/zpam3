@@ -369,6 +369,10 @@ onMenuResponse(menu, response)
 			response = "bar_buffed_mp";
 		}
 
+		if (level.scr_bren_buffed && response == "bren_mp") {
+			response = "bren_buffed_mp";
+		}
+
 		self closeMenu();
 		self closeInGameMenu();
 		self [[level.weapon]](response);

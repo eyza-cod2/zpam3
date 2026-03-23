@@ -12,11 +12,11 @@ ITEM_GAMETYPE_ONDVAR(86 64,     60 15, "Carentan FIX",          "ui_rcon_map_map
 ITEM_GAMETYPE_ONDVAR(86 80,     71 15, "Trainstation FIX",      "ui_rcon_map_map", "mp_trainstation_fix", exec "openscriptmenu ingame rcon_map_map_mp_trainstation_fix")
 ITEM_GAMETYPE_ONDVAR(86 96,     60 15, "Breakout TLS",          "ui_rcon_map_map", "mp_breakout_tls",  exec "openscriptmenu ingame rcon_map_map_mp_breakout_tls")
 
-ITEM_GAMETYPE_ONDVAR(165 00,    58 15, "Vallente FIX",          "ui_rcon_map_map", "mp_vallente_fix",  exec "openscriptmenu ingame rcon_map_map_mp_vallente_fix")
-ITEM_GAMETYPE_ONDVAR(165 16,    49 15, "Chelm FIX",     	    "ui_rcon_map_map", "mp_chelm_fix",  exec "openscriptmenu ingame rcon_map_map_mp_chelm_fix")
-ITEM_GAMETYPE_ONDVAR(165 32,    65 15, "Dawnville SUN",         "ui_rcon_map_map", "mp_dawnville_sun",  exec "openscriptmenu ingame rcon_map_map_mp_dawnville_sun")
-ITEM_GAMETYPE_ONDVAR(165 48,    61 15, "Carentan BAL",	        "ui_rcon_map_map", "mp_carentan_bal",  exec "openscriptmenu ingame rcon_map_map_mp_carentan_bal")
-ITEM_GAMETYPE_ONDVAR(165 64,    64 15, "Leningrad TLS",         "ui_rcon_map_map", "mp_leningrad_tls", exec "openscriptmenu ingame rcon_map_map_mp_leningrad_tls")
+ITEM_GAMETYPE_ONDVAR(165 00,    71 15, "Trainstation BHG",      "ui_rcon_map_map", "mp_trainstation_bhg", exec "openscriptmenu ingame rcon_map_map_mp_trainstation_bhg")
+ITEM_GAMETYPE_ONDVAR(165 16,    58 15, "Vallente FIX",          "ui_rcon_map_map", "mp_vallente_fix",  exec "openscriptmenu ingame rcon_map_map_mp_vallente_fix")
+ITEM_GAMETYPE_ONDVAR(165 32,    49 15, "Chelm FIX",     	    "ui_rcon_map_map", "mp_chelm_fix",  exec "openscriptmenu ingame rcon_map_map_mp_chelm_fix")
+ITEM_GAMETYPE_ONDVAR(165 48,    65 15, "Dawnville SUN",         "ui_rcon_map_map", "mp_dawnville_sun",  exec "openscriptmenu ingame rcon_map_map_mp_dawnville_sun")
+ITEM_GAMETYPE_ONDVAR(165 64,    61 15, "Carentan BAL",	        "ui_rcon_map_map", "mp_carentan_bal",  exec "openscriptmenu ingame rcon_map_map_mp_carentan_bal")
 ITEM_GAMETYPE_ONDVAR(165 80,    66 15, "Leningrad MJR",         "ui_rcon_map_map", "mp_leningrad_mjr", exec "openscriptmenu ingame rcon_map_map_mp_leningrad_mjr")
 ITEM_GAMETYPE_ONDVAR(165 96,    61 15, "Railyard MJR",          "ui_rcon_map_map", "mp_railyard_mjr", exec "openscriptmenu ingame rcon_map_map_mp_railyard_mjr")
 
@@ -26,6 +26,7 @@ ITEM_GAMETYPE_ONDVAR(255 32,    51 15, "Farmhouse",    "ui_rcon_map_map", "mp_fa
 ITEM_GAMETYPE_ONDVAR(255 48,    31 15, "Rhine",        "ui_rcon_map_map", "mp_rhine", exec "openscriptmenu ingame rcon_map_map_mp_rhine")
 ITEM_GAMETYPE_ONDVAR(255 64,    56 15, "Trainstation", "ui_rcon_map_map", "mp_trainstation", exec "openscriptmenu ingame rcon_map_map_mp_trainstation")
 ITEM_GAMETYPE_ONDVAR(255 80,    51 15, "Crossroads",	        "ui_rcon_map_map", "mp_crossroads",  exec "openscriptmenu ingame rcon_map_map_mp_crossroads")
+ITEM_GAMETYPE_ONDVAR(255 96,    64 15, "Leningrad TLS",         "ui_rcon_map_map", "mp_leningrad_tls", exec "openscriptmenu ingame rcon_map_map_mp_leningrad_tls")
 
 ITEM_GAMETYPE_ONDVAR(325 00,    50 15, "Downtown",     "ui_rcon_map_map", "mp_downtown",  exec "openscriptmenu ingame rcon_map_map_mp_downtown")
 ITEM_GAMETYPE_ONDVAR(325 16,    54 15, "Leningrad",    "ui_rcon_map_map", "mp_leningrad",  exec "openscriptmenu ingame rcon_map_map_mp_leningrad")
@@ -34,8 +35,8 @@ ITEM_GAMETYPE_ONDVAR(325 48,    37 15, "Harbor",       "ui_rcon_map_map", "mp_ha
 ITEM_GAMETYPE_ONDVAR(325 64,    41 15, "Railyard",     "ui_rcon_map_map", "mp_railyard", exec "openscriptmenu ingame rcon_map_map_mp_railyard")
 ITEM_GAMETYPE_ONDVAR(325 80,    61 15, "Wawa 3D Aim",  "ui_rcon_map_map", "wawa_3daim",  exec "openscriptmenu ingame rcon_map_map_wawa_3daim")
 
-ITEM_MAP_OPTIONS_HEADING(3 122, 0.245, "Gametype:")
 
+ITEM_MAP_OPTIONS_HEADING(3 122, 0.245, "Gametype:")
 
 ITEM_GAMETYPE_ONDVAR(86  122, 85 15, "Search and Destroy",  	"ui_rcon_map_gametype", "sd", exec "openscriptmenu ingame rcon_map_gametype_sd")
 ITEM_GAMETYPE_ONDVAR(190 122, 56 15, "Deathmatch",  		"ui_rcon_map_gametype", "dm", exec "openscriptmenu ingame rcon_map_gametype_dm")

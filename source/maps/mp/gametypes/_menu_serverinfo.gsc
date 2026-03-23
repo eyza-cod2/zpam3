@@ -5,7 +5,7 @@ init()
 	addEventListener("onStartGameType", ::onStartGameType);
 	addEventListener("onCvarChanged",   ::onCvarChanged);
 
-	registerCvarEx("I", "scr_motd", "STRING", "Welcome. This server is running zPAM4.05");	// ZPAM_RENAME
+	registerCvarEx("I", "scr_motd", "STRING", "Welcome. This server is running zPAM4.06");	// ZPAM_RENAME
 
 	level.motd = "";
 	level.serverversion = "";
@@ -119,7 +119,7 @@ generateGlobalServerInfo()
 			isDigit(motd[i+7])
 		)
 		{
-			motd_final += "zPAM4.05"; // ZPAM_RENAME
+			motd_final += "zPAM4.06"; // ZPAM_RENAME
 			i += 8;
 			continue;
 		}
@@ -173,6 +173,12 @@ generateGlobalServerInfo()
 	changed = "^7"; if (maps\mp\gametypes\global\cvar_system::isCvarChangedFromRuleValue("scr_hitbox_torso_fix") && !game["is_public_mode"]) changed = "^3";
 	if (level.scr_hitbox_torso_fix) 	value += changed+"Enabled ^9Disabled^7" + "\n";
 	else					value += "^9Enabled "+changed+"Disabled^7" + "\n";
+
+	title +="Neck hitbox kills:\n";
+	changed = "^7"; if (maps\mp\gametypes\global\cvar_system::isCvarChangedFromRuleValue("scr_hitbox_neck_kill") && !game["is_public_mode"]) changed = "^3";
+	if (level.scr_hitbox_neck_kill) 	value += changed+"Enabled ^9Disabled^7" + "\n";
+	else					value += "^9Enabled "+changed+"Disabled^7" + "\n";
+
 
 	title +="Prone peek fix:\n";
 	changed = "^7"; if (maps\mp\gametypes\global\cvar_system::isCvarChangedFromRuleValue("scr_prone_peek_fix") && !game["is_public_mode"]) changed = "^3";

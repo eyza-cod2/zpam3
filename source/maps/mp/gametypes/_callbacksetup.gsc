@@ -310,7 +310,7 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	resettimeout();
 
 	// Do debug print if it's enabled
-	if(level.g_debugDamage)
+	if (level.g_debugDamage)
 	{
 		if (isDefined(eAttacker) && isPlayer(eAttacker))
 		{
@@ -338,7 +338,6 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		eAttacker.pers["antilagTimeOffset"] = timeOffset;
 	}
 
-
 	// Protection - players in spectator inflict damage
 	if(isDefined(eAttacker) && isPlayer(eAttacker) && eAttacker.sessionteam == "spectator")
 		return;
@@ -357,9 +356,7 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	// For shotgun there will be multiple hits in one frame for one player
 	// For other weapons / nades there might be multiple hits in one frame for multiple players
 
-
 	// Shotgun kill / 1 player = sound 2x
-
 
 	// Save info about hits
 	self_num = self getEntityNumber();
@@ -402,9 +399,14 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		damageFeedbackEnemyCount = int(eAttacker.hitPlayers.size);
 	}
 
-
 	// 1 = print debug messages to player with name eyza
 	eyza_debug = 0;
+
+	// neck counts as headshot?
+	if (level.scr_hitbox_neck_kill && sHitLoc == "neck") {
+		sHitLoc = "head";
+		iDamage = getAdjustedNeckDamage(sWeapon, iDamage);
+	}
 
 	// Hitbox left and right hand fix
 	if (level.scr_hitbox_hand_fix &&
@@ -542,7 +544,6 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		}
 	}
 
-
 	// Bigger torso hitbox
 	if (level.scr_hitbox_torso_fix && isDefined(sWeapon) && isDefined(sHitLoc) && isDefined(eAttacker) && isPlayer(eAttacker) && isDefined(vPoint))
 	{
@@ -601,8 +602,6 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 			else if (!distOk) 			eAttacker iprintln("^9Torso hitbox fix - no fix, because hit distance " + int(dist*10)/10 + " > " + distanceLimit);
 		}
 	}
-
-
 
 	// Consistent shotgun
 	if (level.scr_shotgun_consistent && isDefined(eAttacker) && isPlayer(eAttacker) && isDefined(sHitLoc) && isDefined(sMeansOfDeath) && isDefined(sHitLoc) &&
@@ -713,6 +712,7 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		if (dist > 800)
 			return;
 	}
+
 	// Prevents a pistol from killing in one shot if active
 	if (level.prevent_single_shot_pistol && isDefined(sWeapon) && maps\mp\gametypes\_weapons::isPistol(sWeapon) && isdefined(sHitLoc) && sHitLoc == "head")
 		iDamage = int(iDamage * .85);
@@ -720,12 +720,9 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	if (level.prevent_single_shot_ppsh && isDefined(sWeapon) && sWeapon == "ppsh_mp" && isdefined(sHitLoc) && sHitLoc == "head")
 		iDamage = int(iDamage * .9);
 
-
-
 	// Save affected damage value
 	if (isDefined(eAttacker) && isPlayer(eAttacker))
 		eAttacker.hitData[self_num].damage = iDamage;
-
 
 	//println("##################### " + "notifyDamaging");
 	// Call onDamage event and return if damage was prevented
@@ -751,6 +748,52 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		if(isPlayer(eAttacker) && eAttacker != self && !(iDFlags & level.iDFLAGS_NO_PROTECTION))
 			eAttacker thread maps\mp\gametypes\_damagefeedback::updateDamageFeedback(self, damageFeedbackSoundCount, damageFeedbackEnemyCount);
 	}
+}
+
+getAdjustedNeckDamage(sWeapon, iDamage) {
+	switch (sWeapon)
+	{
+		case "bar_buffed_mp":
+		case "bar_mp":
+		case "bren_buffed_mp":
+		case "bren_mp":
+		case "enfield_mp":
+		case "enfield_scope_mp":			
+		case "fg42_mp":
+		case "greasegun_mp":
+		case "kar98k_mp":
+		case "kar98k_sniper_mp":
+		case "m1carbine_mp":				
+		case "mosin_nagant_mp":
+		case "mosin_nagant_sniper_mp":
+		case "mp40_mp":
+		case "mp44_mp":
+		case "pps42_mp":
+		case "springfield_mp":
+		case "sten_mp":
+		case "svt40_mp":
+		case "thompson_mp":
+		case "tt30_mp":
+			iDamage = int((iDamage / 1.5) * 3);
+			break;
+
+		case "ppsh_stick30_mp":
+			iDamage = int((iDamage / 1.5) * 3.5);
+			break;
+
+		case "g43_mp":
+		case "m1garand_mp":
+			iDamage = int((iDamage / 2) * 3);
+			break;
+
+		case "colt_mp":
+		case "luger_mp":
+		case "webley_mp":
+			iDamage = int((iDamage / 1.5) * 2.5);
+			break;
+	}
+
+	return iDamage;
 }
 
 hitDataAutoRestart(eAttacker, self_num)

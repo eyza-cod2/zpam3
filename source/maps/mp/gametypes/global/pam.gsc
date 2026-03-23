@@ -28,7 +28,7 @@ init()
 		precacheString2("STRING_PAM_FS_GAME", &"Cvar /fs_game is not empty!)");
 		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam405.iwd^7 must be installed in ^9main^7 folder."); // ZPAM_RENAME
 		precacheString2("STRING_PAM_GETTING_IWD_FILES_ERROR", &"Error while getting loaded iwd files. Make sure iwd files does not contains spaces.");
-		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v6.iwd^7 does not exists in ^9main^7 folder"); // ZPAM_RENAME
+		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v7.iwd^7 does not exists in ^9main^7 folder"); // ZPAM_RENAME
 		precacheString2("STRING_PAM_MAPS_LOAD_ERROR", &"Error while checking if fixed maps exists. Map printed above was not found on server.");
 		precacheString2("STRING_PAM_WWW_DOWNLOADING", &"WWW downloading must be enabled. Set ^9sv_wwwDownload^7 and ^9sv_wwwBaseURL");
 		precacheString2("STRING_PAM_BLACKLIST", &"Old zPAM or maps detected in ^9main^7 folder. Delete iwd file you see printed above.");
@@ -42,13 +42,12 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam405"; // ZPAM_RENAME
-	level.pam_map_iwd = "zpam_maps_v6";
+	level.pam_folder = "main/zpam406"; // ZPAM_RENAME
+	level.pam_map_iwd = "zpam_maps_v7";
 
 	level.pam_mode_change = false;
 
 	level.pam_installation_error = false;
-
 
 	addEventListener("onStartGameType", ::onStartGameType);
 }
@@ -241,6 +240,7 @@ CheckInstallation()
 		maps[maps.size] = "mp_leningrad_tls";
 		maps[maps.size] = "mp_vallente_fix";
 		maps[maps.size] = "mp_trainstation_fix";
+		maps[maps.size] = "mp_trainstation_bhg";
 		maps[maps.size] = "mp_carentan_bal";
 		maps[maps.size] = "mp_railyard_mjr";
 		maps[maps.size] = "mp_leningrad_mjr";
@@ -320,6 +320,7 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam400_test6";
 	blackList[blackList.size] = "zpam401";
 	blackList[blackList.size] = "zpam402";
+	blackList[blackList.size] = "zpam405_na";
 	blackList[blackList.size] = "zpam403";
 	blackList[blackList.size] = "zpam404";
 
@@ -335,6 +336,8 @@ CheckInstallation()
 	blackList[blackList.size] = "mp_railyard_mjr_test2";
 	blackList[blackList.size] = "mp_leningrad_mjr_test1";
 	blackList[blackList.size] = "mp_leningrad_mjr_test2";
+	blackList[blackList.size] = "zpam404";
+	blackList[blackList.size] = "zpam_maps_v6";
 
 	// ZPAM_RENAME - add old pam
 
@@ -351,8 +354,6 @@ CheckInstallation()
 			return;
 		}
 	}
-
-
 
 	cod2x_blacklist = [];
 	cod2x_blacklist[cod2x_blacklist.size] = "1.4.5.1-test.1";
@@ -435,7 +436,8 @@ ChangeTo(mode)
 	// Reset custom cvars
 	setCvar("pam_mode_custom", 0);
 
-	map_restart(false); // fast_restart
+	map(level.mapname, false);
+	//map_restart(false); // fast_restart
 }
 
 

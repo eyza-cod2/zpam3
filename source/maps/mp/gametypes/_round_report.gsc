@@ -436,7 +436,7 @@ getWeapon(sMeansOfDeath, sWeapon)
 	if (sMeansOfDeath == "MOD_GRENADE_SPLASH")
 		return "Grenade";
 
-	weaponsTexts["m1carbine_mp"] = "Carabine";
+	weaponsTexts["m1carbine_mp"] = "Carbine";
 	weaponsTexts["m1garand_mp"] = "M1 Garand";
 	weaponsTexts["thompson_mp"] = "Thompson";
 	weaponsTexts["bar_mp"] = "Bar";

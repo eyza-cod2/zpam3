@@ -51,7 +51,6 @@ Register_Shared_Cvars()
 	//[[sVar]]("developer", "INT", 0, 0, 2);
 	//[[sVar]]("developer_script", "BOOL", 0);
 
-
 	[[sVar]]("sv_fps", "INT", 20, 10, 1000);
 	[[sVar]]("rate", "INT", 25000, 25000, 25000);
 	[[sVar]]("g_allowVote", "BOOL", 1);
@@ -96,13 +95,13 @@ Register_Shared_Cvars()
 	[[sVar]]("voice_global", "BOOL", 0);
 	[[sVar]]("voice_localEcho", "BOOL", 0);
 
-
 	[[sVar]]("scr_allow_ambient_sounds", "BOOL", 1);       // level.scr_allow_ambient_sounds
 	[[sVar]]("scr_allow_ambient_fire", "BOOL", 1);         // level.scr_allow_ambient_fire
 	[[sVar]]("scr_allow_ambient_weather", "BOOL", 1);      // level.scr_allow_ambient_weather
 	[[sVar]]("scr_allow_ambient_fog", "BOOL", 1);          // level.scr_allow_ambient_fog
 	[[sVar]]("scr_remove_killtriggers", "BOOL", 0); 	        // level.scr_remove_killtriggers - remove some of the killtriggers created by infinityward where kill is not needed (like toujane jump on middle building,...)
 	[[sVar]]("scr_replace_russian", "BOOL", 0);              // level.scr_replace_russian  (can be changed only at start of the game, in progress it will mess up britsh/russians scripts...)
+	[[sVar]]("scr_breakout_british", "BOOL", 0);	// level.scr_breakout_british
 	[[sVar]]("scr_friendlyfire", "INT", 0, 0, 3); 	// level.scr_friendlyfire on, off, reflect, shared
 
 	[[sVarEx]]("", "scr_posters", "BOOL", 0);              // level.scr_posters, ignore change
@@ -195,8 +194,16 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "scr_allow_ambient_fog": 		level.scr_allow_ambient_fog = value; return true;
 		case "scr_remove_killtriggers":		level.scr_remove_killtriggers = value; return true;
 		case "scr_friendlyfire": 		level.scr_friendlyfire = value; return true;
+		
 		case "scr_replace_russian": 		
 			level.scr_replace_russian = value; 
+			if (!isRegisterTime) {
+				level thread restartMap();
+			}
+			return true;
+
+		case "scr_breakout_british":
+			level.scr_breakout_british = value;
 			if (!isRegisterTime) {
 				level thread restartMap();
 			}

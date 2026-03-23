@@ -5,12 +5,22 @@ main()
 
 	Ambient_Sound();
 
-	game["allies"] = "british";
-	game["axis"] = "german";
-	game["attackers"] = "allies";
-	game["defenders"] = "axis";
-	game["british_soldiertype"] = "normandy";
-	game["german_soldiertype"] = "normandy";
+	if (level.scr_breakout_british) {
+		game["allies"] = "british";
+		game["axis"] = "german";
+		game["attackers"] = "allies";
+		game["defenders"] = "axis";
+		game["british_soldiertype"] = "normandy";
+		game["german_soldiertype"] = "normandy";
+	}
+	else {
+		game["allies"] = "american";
+		game["axis"] = "german";
+		game["attackers"] = "allies";
+		game["defenders"] = "axis";
+		game["american_soldiertype"] = "normandy";
+		game["german_soldiertype"] = "normandy";
+	}
 
 	setcvar("r_glowbloomintensity0",".25");
 	setcvar("r_glowbloomintensity1",".25");
