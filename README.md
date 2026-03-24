@@ -7,17 +7,19 @@ The code from the previous version zPAM 2.07 was completely rewritten and ported
 Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 4.05.<br>
+*This page describe only actual version zPAM 4.06.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
 - #### Actual version for CoD2x 1.4
-	- 2026/02/21 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.05/zpam405.zip">zPAM 4.05 - zpam405.zip</a></b> - compatible with CoD2x 1.4.6.1 and higher.
+	- 2026/03/24 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.06/zpam406.zip">zPAM 4.06 - zpam406.zip</a></b> - compatible with CoD2x 1.4.6.5 and higher.
 
-- #### Actual version for 1.3
+- #### Compatible version for 1.3
 	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
 
 ## Version list
+- 2026/03/24 - <b>zPAM 4.06</b>
+- 2026/02/21 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/69d849e354cb94ca01ac7dc077c292a17bc7c0d3">zPAM 4.05</a></b>
 - 2025/11/07 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/6b7f60d0b8ea01e2554cd181623879bfd9096344">zPAM 4.04</a></b>
 - 2025/11/07 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/478a7971b3986bce16c13c73c64ff32648f238c6">zPAM 4.03</a></b>
 - 2025/11/06 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/52eab26af151bc50b19bd5f073849e07f519a002">zPAM 4.02</a></b>
@@ -52,16 +54,28 @@ To see description of previous versions, click on the links in [Version list](#v
 <p>
 
 **Changes:**
-- Added `comp_na` PAM mode ruleset for the North American region.
-- `scr_hitbox_neck_kills 0/1` - CVAR that will convert all neck shots to head shots.
-- `scr_smoke_type 0/1/2` - CVAR that will change the smoke bloom type. 0 being thin original smoke. 1 being the smoke fix (thick smoke). 2 being a new consistent smoke modeled after thick smoke.
-- `scr_bar_buffed 0/1` - CVAR that enables the buffed BAR. Bar has faster reload and fire rate.
-- `scr_bren_buffed 0/1` - CVAR thaat enables the buffed Bren LMG. Bren LMG has faster reload.
-- `scr_breakout_british 0/1` - CVAR that toggles between British and American on the allied faction of Breakout_TLS.
-- Added `mp_trainstation_bhg` to RCON menu and map pack.
-
+- New PAM mode ruleset for the North American region - comp_na
+- Shotgun - new consistent pellet spread using predefined pattern of pellets with random rotation + removed hits in close range 0-250
+- Smoke - added new rendering for smoke grenades and possibility to choose between original thin smoke, thick smoke and new consistent smoke.
+- Neck hitbox fix - when enabled, it will convert all neck shots to head shots and adjust damage for them.
+- Buffed BAR and Bren LMG - when enabled, they will have faster reload and fire rate.
+- Breakout TLS - added possibility to switch between British and American on the allied faction
+- New map Trainstation BHG
+- MG damage fixed - previously the damage of MG was wrongly calculated according to the weapon you were holding, now it will be calculated correctly; head+neck = 50hp; other parts = 35hp
+- MG tearing fixed when following player that holds MG turret
+- Improvement of hand hitbox fix by slightly increasing the size of box
+- Fixed reseting of sv_cracked, added info about cracked server into server info menu
+- Added new commands to RCON menu settings:
+	- `scr_smoke_type 0/1/2` - CVAR that will change the smoke bloom type. 0 being thin original smoke. 1 being the smoke fix (thick smoke). 2 being a new consistent smoke modeled after thick smoke.
+	- `g_shotgun_spread_fix 0/1` - CVAR that will enable the shotgun consistent pellet spread.
+	- `scr_hitbox_neck_kills 0/1` - CVAR that will convert all neck shots to head shots.
+	- `scr_bar_buffed 0/1` - CVAR that enables the buffed BAR. Bar has faster reload and fire rate.
+	- `scr_bren_buffed 0/1` - CVAR that enables the buffed Bren LMG. Bren LMG has faster reload.
+	- `scr_breakout_british 0/1` - CVAR that toggles between British and American on the allied faction of Breakout_TLS.
 </p>
 </details>
+
+
 
 <details><summary>zPAM 4.05 changes (click to open)</summary>
 <p>
@@ -562,9 +576,9 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.01/zpam401.zip">zPAM 4.01</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam401.iwd
-	- ./Call of Duty 2/main/zpam_maps_v6.iwd <i>(*not required for 1.0 and 1.2 game version)</i>
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.06/zpam406.zip">zPAM 4.06</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam406.iwd
+	- ./Call of Duty 2/main/zpam_maps_v7.iwd <i>(*not required for 1.0 and 1.2 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
 
@@ -577,7 +591,7 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 
 - For game version 1.3:
-	- Mappack file <b>zpam_maps_v6.iwd</b> needs to be included in main folder. [What is zpam_maps_v6.iwd file?](#what-is-zpam_maps_v6iwd-file)
+	- Mappack file <b>zpam_maps_v7.iwd</b> needs to be included in main folder. [What is zpam_maps_v7.iwd file?](#what-is-zpam_maps_v7iwd-file)
 	- Fast download must be enabled via these settings (custom URL may be used):
 		- <b>sv_wwwDownload 1</b>
 		- <b>sv_wwwBaseURL "http://cod2x.me/zpam"</b>
@@ -634,7 +648,7 @@ cokY, Sk1lzZ, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / d
 
 ## Questions & Answers
 
-### What is zpam_maps_v6.iwd file
+### What is zpam_maps_v7.iwd file
 
 | Name              | Game name           | Credit                                     | More info                                      |
 |-------------------|---------------------|--------------------------------------------|------------------------------------------------|
@@ -1128,11 +1142,11 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 #### Cvar /fs_game is not empty!
 Make sure cvar /fs_game is empty (+set fs_game "") and iwd files are placed in main folder.
 
-#### Iwd file zpam334.iwd must be installed in main folder.
+#### Iwd file zpam406.iwd must be installed in main folder.
  - Since version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that player's settings changed in game are not saved into the config when running a game with fs_game set.
 
-#### Iwd file zpam_maps_v6.iwd does not exists in main folder
+#### Iwd file zpam_maps_v7.iwd does not exists in main folder
 - Since version 3.20, fixed versions of some maps are available. PAM is forcing to include these files to make sure maps are available on every server.
 
 #### Error while getting loaded iwd files. Make sure iwd files does not contains spaces.

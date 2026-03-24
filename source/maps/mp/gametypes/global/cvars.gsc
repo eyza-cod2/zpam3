@@ -107,7 +107,7 @@ Register_Shared_Cvars()
 	[[sVar]]("scr_posters", "BOOL", 0);              // level.scr_posters, ignore change
 
 	[[sVar]]("g_competitive", "BOOL", 1);   // CoD2x
-	[[sVar]]("g_shotgun_spread_fix", "BOOL", 1);   // CoD2x since 1.4.7.1
+	[[sVar]]("g_shotgun_spread_fix", "BOOL", 1);   // CoD2x since 1.4.6.5
 }
 
 
