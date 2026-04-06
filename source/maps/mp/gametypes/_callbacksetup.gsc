@@ -407,9 +407,9 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	if (sMeansOfDeath == "MOD_RIFLE_BULLET" && isDefined(eAttacker) && eAttacker isUsingTurret())
 	{
 		if (sHitLoc == "head" || sHitLoc == "neck")
-			iDamage = 50;
+			iDamage = 100;
 		else
-			iDamage = 35;
+			iDamage = 50;
 
 		sWeapon = "mg_mp";
 	}
