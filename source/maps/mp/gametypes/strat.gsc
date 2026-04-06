@@ -285,12 +285,27 @@ onPlayerDamaging(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon
 		}
 		else
 		{
+			dist = int(distance(eAttacker getViewOrigin(), vPoint)) / 100; // distance with one decimal
+			self_num = self getEntityNumber();
+
+			shogunInfo = "";
+			if (isDefined(eAttacker.hitData) && eAttacker.hitData[self_num].adjustedBy != "") {
+				if (eAttacker.hitData[self_num].adjustedBy == "consistent_shotgun_1_kill")
+					shogunInfo += ", range-1";
+				else if (eAttacker.hitData[self_num].adjustedBy == "consistent_shotgun_2")
+					shogunInfo += ", range-2";
+				else if (eAttacker.hitData[self_num].adjustedBy == "consistent_shotgun_3")
+					shogunInfo += ", range-3";
+				else if (eAttacker.hitData[self_num].adjustedBy == "consistent_shotgun_4")
+					shogunInfo += ", range-4";
+			}
+
 			// You inflicted 28 damage to BOT1
-			eAttacker iprintln("^7You inflicted ^2" + iDamage + "^7 damage to " + self.name + " (hitLoc: " + sHitLoc + ")");
+			eAttacker iprintln("^7Inflicted ^2" + iDamage + "^7 damage (" + dist + "m, " + sHitLoc + shogunInfo + ") to " + self.name + "");
 			//eAttacker iprintln("^2Hit ^7" + self.name + "^2 for ^1" + iDamage + " ^2 damage^7"); // Attacker damage notice
 
 			// Bot1 inflicted 12 damage to you
-			self iprintln(eAttacker.name + "^7 inflicted ^1" + iDamage + "^7 damage to you (hitLoc: " + sHitLoc + ")");
+			self iprintln(eAttacker.name + "^7 inflicted ^1" + iDamage + "^7 damage to you  (" + dist + "m, " + sHitLoc + shogunInfo + ")");
 			//self iprintln("^1Hit by ^7" + eAttacker.name + "^1 for ^3" + iDamage + " ^1 damage^7"); // Hit Player damage notice
 		}
 	}
