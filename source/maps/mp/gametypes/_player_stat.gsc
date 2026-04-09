@@ -98,6 +98,38 @@ findData(name, entityId, hwid)
   return -1;
 }
 
+findReconnectData(name, entityId, hwid)
+{
+  dataId = findData(name, entityId, hwid);
+  if (dataId >= 0 && game["playerstats"][dataId]["isConnected"] == false)
+    return dataId;
+
+  // Reclaim stale 999 client row immediately when the same player reconnects
+  // before the old connection times out on cracked servers.
+  if (isDefined(hwid) && hwid != "")
+  {
+    for (i = 0; i < game["playerstats"].size; i++)
+    {
+      data = game["playerstats"][i];
+      if (data["deleted"]) continue;
+
+      if (data["hwid"] == hwid && data["name"] == name)
+        return i;
+    }
+  }
+
+  for (i = 0; i < game["playerstats"].size; i++)
+  {
+    data = game["playerstats"][i];
+    if (data["deleted"]) continue;
+
+    if (data["name"] == name && data["isConnected"] == false)
+      return i;
+  }
+
+  return -1;
+}
+
 handleRename()
 {
   if (isDefined(self.pers["lastName"]))
@@ -202,13 +234,16 @@ onConnected()
 
 	id = self getEntityNumber();
 
-	dataId = findData(self.name, id, self getHWID());
-	if (dataId >= 0 && game["playerstats"][dataId]["isConnected"] == false) // note: isConnected is reseted every map_restart
+	dataId = findReconnectData(self.name, id, self getHWID());
+	if (dataId >= 0) // note: isConnected is reseted every map_restart
 	{
 		game["playerstats"][dataId]["player"] = self;
+		game["playerstats"][dataId]["entityId"] = id;
+		game["playerstats"][dataId]["hwid"] = self getHWID();
 		game["playerstats"][dataId]["isConnected"] = true;
 		game["playerstats"][dataId]["team"] = self.sessionteam;
 		game["playerstats"][dataId]["lastTime"] = getTime();
+		game["playerstats"][dataId]["name"] = self.name;
 
 		self thread restoreScore(game["playerstats"][dataId]["kills"], game["playerstats"][dataId]["deaths"]);
 	}
