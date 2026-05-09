@@ -645,35 +645,35 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 			damageFeedbackSoundCount = 0;
 
 
-		// Range 0-250   (1 pellet needed for kill)
-		if (dist <= 250)
+		// Range 0-280   (1 pellet needed for kill)
+		if (dist <= 280)
 		{
 			iDamage = 100;
 			damageFeedbackSoundCount = 2; // Do big damage feedback, because this bullet kills the player and the others are canceled due to this
-			if (level.debug_shotgun) eAttacker iprintln("^1Distance " + int(dist) + " | range-1 0-250 | KILL");
-			if (eyza_debug) printToEyza("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | range-1 0-250 | KILL"); // EYZA_DEBUG
+			if (level.debug_shotgun) eAttacker iprintln("^1Distance " + int(dist) + " | range-1 0-280 | KILL");
+			if (eyza_debug) printToEyza("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | range-1 0-280 | KILL"); // EYZA_DEBUG
 			eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_1_kill"; // Range 1, kill
 		}
 
-		// Range 250-384   (2 pellets needed for kill)
-		else if (dist <= 384)
+		// Range 280-400   (2 pellets needed for kill)
+		else if (dist <= 400)
 		{
 			// Scale the damage based on distance
-			iDamage = damageScale(dist, 250, 384, 100, 50); //distance, distStart, distEnd, hpStart, hpEnd
+			iDamage = 50;
 
-			if (level.debug_shotgun) eAttacker iprintln("^3Distance " + int(dist) + " | range-2 250-384 | " + iDamage + "hp damage (pellet id: " + eAttacker.hitData[self_num].id + ")");
-			if (eyza_debug) printToEyza("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | range-2 250-384 | damage:" + iDamage + " | pelletId:" + eAttacker.hitData[self_num].id); // EYZA_DEBUG
+			if (level.debug_shotgun) eAttacker iprintln("^3Distance " + int(dist) + " | range-2 280-400 | " + iDamage + "hp damage (pellet id: " + eAttacker.hitData[self_num].id + ")");
+			if (eyza_debug) printToEyza("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | range-2 280-400 | damage:" + iDamage + " | pelletId:" + eAttacker.hitData[self_num].id); // EYZA_DEBUG
 			eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_2"; // Range 2
 		}
 
-		// Range 384-500   (3 pellets needed for kill)
+		// Range 400-500   (3 pellets needed for kill)
 		else if (dist <= 500)
 		{
 			// Scale the damage based on distance
-			iDamage = damageScale(dist, 384, 500, 50, 34); //distance, distStart, distEnd, hpStart, hpEnd
+			iDamage = 35;
 
-			if (level.debug_shotgun) eAttacker iprintln("^4Distance " + int(dist) + " | range-3 384-500 | " + iDamage + "hp damage (pellet id: " + eAttacker.hitData[self_num].id + ")");
-			if (eyza_debug) printToEyza("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | range-3 384-500 | damage:" + iDamage + " | pelletId:" + eAttacker.hitData[self_num].id); // EYZA_DEBUG
+			if (level.debug_shotgun) eAttacker iprintln("^4Distance " + int(dist) + " | range-3 400-500 | " + iDamage + "hp damage (pellet id: " + eAttacker.hitData[self_num].id + ")");
+			if (eyza_debug) printToEyza("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | range-3 400-500 | damage:" + iDamage + " | pelletId:" + eAttacker.hitData[self_num].id); // EYZA_DEBUG
 			eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_3"; // Range 3
 		}
 
