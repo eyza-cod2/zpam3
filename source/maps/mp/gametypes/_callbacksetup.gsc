@@ -350,8 +350,6 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	if (sMeansOfDeath == "MOD_GRENADE_SPLASH" && !isAlive(self))
 		return;
 
-	damageFeedbackSoundCount = 1; // how many times to play damage feedback sound
-	damageFeedbackEnemyCount = 1; // number of enemies that has been hit in same frame by this attacker (for double-cross damage icon)
 
 	// For shotgun there will be multiple hits in one frame for one player
 	// For other weapons / nades there might be multiple hits in one frame for multiple players
@@ -366,13 +364,6 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		if (!isDefined(eAttacker.hitId))
 			eAttacker.hitId = 0;			// inited to 0, but will be incremented. 1 then means first bullet
 		eAttacker.hitId++;
-
-		// Create variable to hold data about players hit in this frame
-		if (!isDefined(eAttacker.hitPlayers))
-			eAttacker.hitPlayers = [];
-		if (!isDefined(eAttacker.hitPlayers[self_num])) {
-			eAttacker.hitPlayers[self_num] = self_num;
-		}
 
 		// Create variable to hold hit data
 		if (!isDefined(eAttacker.hitData))
@@ -391,12 +382,6 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 
 		self thread hitDataAutoRestart(eAttacker, self_num);
 		eAttacker thread hitIdAutoRestart();
-		eAttacker thread hitPlayersAutoRestart();
-
-		// Since damage feedback is called only once per frame, solve "multi-hit" in one frame by setting id of hit, which corresponds to how many times player was hit in one frame
-		damageFeedbackSoundCount = eAttacker.hitId;
-		// If this is second player that was hit by this attacker in same frame, set double feedback
-		damageFeedbackEnemyCount = int(eAttacker.hitPlayers.size);
 	}
 
 	// 1 = print debug messages to player with name eyza
@@ -636,20 +621,10 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		// Save the used distance for round report
 		eAttacker.hitData[self_num].shotgun_distance = dist;
 
-
-		// Make sure pellets do only once a feedback damage sound
-		// This is the first pellet
-		if (eAttacker.hitData[self_num].id == 1)
-			damageFeedbackSoundCount = 1;
-		else
-			damageFeedbackSoundCount = 0;
-
-
 		// Range 0-280   (1 pellet needed for kill)
 		if (dist <= 280)
 		{
 			iDamage = 100;
-			damageFeedbackSoundCount = 2; // Do big damage feedback, because this bullet kills the player and the others are canceled due to this
 			if (level.debug_shotgun) eAttacker iprintln("^1Distance " + int(dist) + " | range-1 0-280 | KILL");
 			if (eyza_debug) printToEyza("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | range-1 0-280 | KILL"); // EYZA_DEBUG
 			eAttacker.hitData[self_num].adjustedBy = "consistent_shotgun_1_kill"; // Range 1, kill
@@ -730,11 +705,8 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	[[level.onAfterPlayerDamaged]](eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
 
 	// Damage feedback
-	if (damageFeedbackSoundCount >= 1)
-	{
-		if(isPlayer(eAttacker) && eAttacker != self && !(iDFlags & level.iDFLAGS_NO_PROTECTION))
-			eAttacker thread maps\mp\gametypes\_damagefeedback::updateDamageFeedback(self, damageFeedbackSoundCount, damageFeedbackEnemyCount);
-	}
+	if(isPlayer(eAttacker) && eAttacker != self && !(iDFlags & level.iDFLAGS_NO_PROTECTION))
+		eAttacker thread maps\mp\gametypes\_damagefeedback::updateDamageFeedback(self);
 }
 
 getAdjustedNeckDamage(sWeapon, iDamage) {
@@ -819,12 +791,6 @@ hitIdAutoRestart()
 {
 	waittillframeend;
 	self.hitId = undefined;
-}
-
-hitPlayersAutoRestart()
-{
-	waittillframeend;
-	self.hitPlayers = undefined;
 }
 
 

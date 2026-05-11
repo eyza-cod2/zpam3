@@ -27,26 +27,77 @@ onCvarChanged(cvar, value, isRegisterTime)
 	return false;
 }
 
-updateDamageFeedback(enemy, soundCount, enemyCount)
+
+
+updateDamageFeedback(enemy)
 {
 	self endon("disconnect");
+
+	// Create variable to hold data about players hit in this frame
+	if (!isDefined(self.hitPlayers))
+		self.hitPlayers = [];
+
+	// Enemy might be undefined when called programmatically
+	if (isPlayer(enemy)) {
+		enemy_num = enemy getEntityNumber();
+		if (!isDefined(self.hitPlayers[enemy_num])) {
+			self.hitPlayers[enemy_num] = []; // false = hit, true = kill
+			self.hitPlayers[enemy_num]["kill"] = false; // false = hit, true = kill
+			self.hitPlayers[enemy_num]["player"] = enemy; // false = hit, true = kill
+		}
+	}
+
+
+	waittillframeend; // wait until player is killed
+
+	if (isPlayer(enemy) && !isAlive(enemy)) {
+		enemy_num = enemy getEntityNumber();
+		self.hitPlayers[enemy_num]["kill"] = true; // set kill
+	}
 
 	// Make sure only one thread is running
 	self notify("updateDamageFeedback");
 	self endon("updateDamageFeedback");
 
-	waittillframeend; // wait intill player is killed
+
+	waittillframeend; // ensure this func runs only once per frame
+
+
+	// Data processing
+	numberOfHitPlayers = int(self.hitPlayers.size);
+	containKill = !isPlayer(enemy); // false as default if enemy is defined, true if enemy is undefined (called programmatically)
+	containTeamShot = false;
+	containEnemyShot = false;
+	allKilled = true;
+	for (i = 0; i < 64; i++) {
+		if (!isDefined(self.hitPlayers[i]))
+			continue;
+		// false = hit, true = kill
+		if (self.hitPlayers[i]["kill"]) {
+			containKill = true;
+		} else {
+			allKilled = false;
+		}
+
+		e = self.hitPlayers[i]["player"];
+		if (isPlayer(e) && e.pers["team"] == self.pers["team"])
+			containTeamShot = true;
+		else if (isPlayer(e) && e.pers["team"] != self.pers["team"])
+			containEnemyShot = true;
+	}
+
+	self.hitPlayers = undefined;
+
+
 
 	if (level.scr_show_hitblip)
 	{
 		if(isPlayer(self))
 		{
-			//self iprintln("^6DMG, soundCount: " + soundCount + ", enemyCount: " + enemyCount);
-
 			// Play hit sound
-			for (i = 1; i <= soundCount; i++)
+			if (containKill)
 			{
-				self playlocalsound("MP_hit_alert");
+				self playLocalSound("MP_hit_alert");
 			}
 
 
@@ -62,7 +113,7 @@ updateDamageFeedback(enemy, soundCount, enemyCount)
 				self.hud_damagefeedback setShader("damage_feedback", 24, 24);
 			}
 
-			if (enemyCount >= 2 && !isDefined(self.hud_damagefeedback2)) {
+			if (numberOfHitPlayers >= 2 && !isDefined(self.hud_damagefeedback2)) {
 				self.hud_damagefeedback2 = newClientHudElem2(self);
 				self.hud_damagefeedback2.horzAlign = "center";
 				self.hud_damagefeedback2.vertAlign = "middle";
@@ -73,52 +124,80 @@ updateDamageFeedback(enemy, soundCount, enemyCount)
 				self.hud_damagefeedback2 setShader("damage_feedback", 26, 20);
 			}
 
+			// | Alpha 100%    | Alpha transitioning to 0 |
+			// | Delay time    | Time                     |
 
+			// Times for kill
 			alpha = 1;
-			time = 1.2;
-			delay = 0.25;
+			time = 0.5;
+			delay = 0.8;
 			color = (1,1,1);
-			if (isPlayer(enemy) && level.gametype == "sd" /*&& !level.in_readyup*/)
+			width = 30;
+			offset = -15;
+
+			// Hit only
+			if (!containKill)
 			{
-				if (enemy.pers["team"] == self.pers["team"])
-					color = (1,0.5,0.5);
-				else if (isAlive(enemy))
-				{
-					// Hit only
-					alpha = 0.75;
-					time = 1;
-					delay = 0;
-				}
+				alpha = 0.6;
+				time = 1.2;
+				delay = 0;
+				width = 24;
+				offset = -12;
+				color = (1,1,0.85); // yellowish
 			}
 
-			//iprintln("playing feedback, alpha: " + alpha);
+			// Team hit/kill
+			if (containTeamShot && !containEnemyShot)
+				color = (1,0.5,0.5);
+
 
 
 			self.hud_damagefeedback.color = color;
 			self.hud_damagefeedback fadeOverTime(0.00001);	// cancel fade time
+			self.hud_damagefeedback scaleOverTime(0.00001, width, width);	// cancel scale time
+			self.hud_damagefeedback moveOverTime(0.00001);	// cancel move time
 			self.hud_damagefeedback.alpha = alpha;
+			self.hud_damagefeedback.x = offset;
+			self.hud_damagefeedback.y = offset;
 
-			if (enemyCount >= 2) {
-				self.hud_damagefeedback2.color = color;
+
+			if (numberOfHitPlayers >= 2) {
+
+				alpha2 = 1;
+				color2 = (1, 1, 1);
+
+				if (!allKilled) {
+					color2 = (1,1,0.85); // yellowish
+					alpha2 = 0.6;
+				}
+				// Team hit/kill
+				if (containTeamShot)
+					color2 = (1,0.5,0.5);
+
+				self.hud_damagefeedback2.color = color2;
 				self.hud_damagefeedback2 fadeOverTime(0.00001);	// cancel fade time
-				self.hud_damagefeedback2.alpha = alpha;
+				self.hud_damagefeedback2.alpha = alpha2;
 			} else if (isDefined(self.hud_damagefeedback2)) {
 				self.hud_damagefeedback2.alpha = 0;
 			}
+
+			wait level.frame;
+
+			self.hud_damagefeedback scaleOverTime(0.15, 24, 24);
+			self.hud_damagefeedback moveOverTime(0.15);
+			self.hud_damagefeedback.x = -12;
+			self.hud_damagefeedback.y = -12;
+
 
 			wait delay * level.fps_multiplier;
 
 			self.hud_damagefeedback fadeOverTime(time);
 			self.hud_damagefeedback.alpha = 0;
 
-			if (enemyCount >= 2) {
+			if (numberOfHitPlayers >= 2) {
 				self.hud_damagefeedback2 fadeOverTime(time);
 				self.hud_damagefeedback2.alpha = 0;
 			}
-
-
-
-
 		}
 	}
 }

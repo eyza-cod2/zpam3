@@ -678,6 +678,17 @@ If you know bugs that are not fixed yet, please contact me!<br>
 
 <br>
 
+### How does the "Hit marker" / "Damage feedback" works
+Since zPAM4.07, hit marker was improved to better represent hit vs kill.
+- If its hit only, cross is more transparent and disappears quicker
+- If its kill, cross is fully showed with animation and stays longer
+- If its a teammate hit, reddish cross is showed
+- If its a double hit, another hit cross is showed
+- Whenever you hit both enemy and teammate, both hit crosses are showed with particular animation and color
+- Sound "hit" feedback was removed for hits, and is played only for kills now (this is to better distinguish between hit and kill)
+- <img src="images/hit_indicators.png" height="200" />
+- <img src="images/hit_animations.gif" height="200" />
+
 ### How does the "Hand hitbox fix" works / what is it
 There are some weird situations when you shot player to the body, but the game process it as a hit only.
 These types of bugs are probably caused by badly implemented hit boxes within the game engine.
