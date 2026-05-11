@@ -1005,15 +1005,52 @@ spawnPlayer()
 	// If there is saved weapons from last round
 	if(isdefined(self.pers["weapon1"]) && isdefined(self.pers["weapon2"]))
 	{
-	 	self setWeaponSlotWeapon("primary", self.pers["weapon1"]);
-		self giveMaxAmmo(self.pers["weapon1"]);
+        weapon1 = self.pers["weapon1"];
+        weapon2 = self.pers["weapon2"];
 
-	 	self setWeaponSlotWeapon("primaryb", self.pers["weapon2"]);
-		self giveMaxAmmo(self.pers["weapon2"]);
+        // Remove pistols and limited weapons
+        if (!self maps\mp\gametypes\_weapon_limiter::isWeaponSaveable(weapon1))
+            weapon1 = "none";
+        if (!self maps\mp\gametypes\_weapon_limiter::isWeaponSaveable(weapon2))
+            weapon2 = "none";
 
-		self setSpawnWeapon(self.pers["weapon1"]);
+        // Player switched to weapon that does not match any saved weapons, replace primary with currently selected weapon
+        if (self.pers["weapon"] != weapon1 && self.pers["weapon"] != weapon2) {
+            weapon1 = self.pers["weapon"];
 
-		self.spawnedWeapon = self.pers["weapon1"];
+        // Player switched to weapon that is saved in secondary slot, simply swap the weapon
+        } else if (self.pers["weapon"] != weapon1 && self.pers["weapon"] == weapon2) {
+            weapon1_old = weapon1;
+            weapon1 = weapon2;
+            weapon2 = weapon1_old;    
+        } 
+
+        // Avoid duplicate
+        if (weapon1 == weapon2)
+            weapon2 = "none";
+
+        // Give player spawned weapon if there is no saveable weapons
+        if (weapon1 == "none" && weapon2 == "none")
+            weapon1 = self.pers["weapon"];
+
+        // Swap weapons if there is weapon in secondary slot only
+        if (weapon1 == "none" && weapon2 != "none")
+        {
+            temp = weapon1;
+            weapon1 = weapon2;
+            weapon2 = temp;
+        }
+
+
+	 	self setWeaponSlotWeapon("primary", weapon1);
+		self giveMaxAmmo(weapon1);
+
+	 	self setWeaponSlotWeapon("primaryb", weapon2);
+		self giveMaxAmmo(weapon2);
+
+		self setSpawnWeapon(weapon1);
+
+		self.spawnedWeapon = weapon1;
 	}
 	else
 	{
@@ -1924,21 +1961,21 @@ endRound(roundwinner)
 		player = players[i];
 
 		/*
-		Recoded weapon saving system:
+        Recoded weapon saving system:
 
-		Round start  	| End of Round 	| Next round	| Case selected weapon is
-		Spawned weap 	| Weapon slots 	| Spawned weap	| changed to thompson during round
-		--------------------------------------------------------------------------------
-		M1		| M1	-	| M1	-	| thomp	-
-		M1		| -	M1	| M1	-	| thomp	-
-		M1		| M1	KAR	| M1	KAR	| thomp	KAR
-		M1		| KAR	M1	| KAR	M1	| thomp M1
-		M1		| KAR	MP44	| KAR	MP44	| thomp	MP44
-		M1		| KAR	-	| KAR	-	| thomp	-
-		M1		| -	KAR	| KAR	-	| thomp	-
-		M1		| M1	thomp	| M1	thomp	| thomp	-
-		M1		| thomp	M1	| thomp M1	| thomp M1
-		M1		| -	-	| M1	-	| thomp	-
+        Round start      | End of Round     | Next round      | Case selected weapon is
+        Spawned weap     | Weapon slots     | Spawned weap    | changed to thompson during round
+        --------------------------------------------------------------------------------
+        M1               | M1     -         | M1     -        | thomp    -
+        M1               | -      M1        | M1     -        | thomp    -
+        M1               | M1     KAR       | M1     KAR      | thomp    KAR
+        M1               | KAR    M1        | KAR    M1       | thomp    M1
+        M1               | KAR    MP44      | KAR    MP44     | thomp    MP44
+        M1               | KAR    -         | KAR    -        | thomp    -
+        M1               | -      KAR       | KAR    -        | thomp    -
+        M1               | M1     thomp     | M1     thomp    | thomp    -
+        M1               | thomp  M1        | thomp  M1       | thomp    M1
+        M1               | -      -         | M1     -        | thomp    -
 
 		*/
 
@@ -1947,33 +1984,6 @@ endRound(roundwinner)
 		{
 			weapon1 = player getWeaponSlotWeapon("primary");
 			weapon2 = player getWeaponSlotWeapon("primaryb");
-
-			// Remove pistols and limited weapons
-			if (!player maps\mp\gametypes\_weapon_limiter::isWeaponSaveable(weapon1))
-				weapon1 = "none";
-			if (!player maps\mp\gametypes\_weapon_limiter::isWeaponSaveable(weapon2))
-				weapon2 = "none";
-
-			// Give player selected weapon if selected weapon is changed
-			if (player.selectedWeaponOnRoundStart != player.pers["weapon"])
-			{
-				weapon1 = player.pers["weapon"];
-				// In case we change to weapon, that is actually in slot, avoid duplicate
-				if (weapon1 == weapon2)
-					weapon2 = "none";
-			}
-
-			// Give player spawned weapon if there is no saveable weapons
-			if (weapon1 == "none" && weapon2 == "none")
-				weapon1 = player.pers["weapon"];
-
-			// Swap weapons if there is weapon in secondary slot only
-			if (weapon1 == "none" && weapon2 != "none")
-			{
-				temp = weapon1;
-				weapon1 = weapon2;
-				weapon2 = temp;
-			}
 
 			// Save spawned weapon
 			player.pers["weapon1"] = weapon1;
