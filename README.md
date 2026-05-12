@@ -7,18 +7,19 @@ The code from the previous version zPAM 2.07 was completely rewritten and ported
 Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 4.06.<br>
+*This page describe only actual version zPAM 4.07.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
 - #### Actual version for CoD2x 1.4
-	- 2026/03/24 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.06/zpam406.zip">zPAM 4.06 - zpam406.zip</a></b> - compatible with CoD2x 1.4.6.5 and higher.
+	- 2026/05/12 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.07/zpam407.zip">zPAM 4.07 - zpam407.zip</a></b> - compatible with CoD2x 1.4.6.7 and higher.
 
 - #### Compatible version for 1.3
 	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
 
 ## Version list
-- 2026/03/24 - <b>zPAM 4.06</b>
+- 2026/05/12 - <b>zPAM 4.07</b>
+- 2026/03/24 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/85e6cf4a8c1e6b848973ca5ceb2e1db64fd57885">zPAM 4.06</a></b>
 - 2026/02/21 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/69d849e354cb94ca01ac7dc077c292a17bc7c0d3">zPAM 4.05</a></b>
 - 2025/11/07 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/6b7f60d0b8ea01e2554cd181623879bfd9096344">zPAM 4.04</a></b>
 - 2025/11/07 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/478a7971b3986bce16c13c73c64ff32648f238c6">zPAM 4.03</a></b>
@@ -49,6 +50,22 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+<details><summary>zPAM 4.07 changes (click to open)</summary>
+<p>
+
+**Changes:**
+- Shotgun - changed damage ranges to (0 -> 280 -> 400 -> 500 -> 800) with fixed damage
+- MG - damage change to 100hp for head+neck and 50hp for other parts
+- Changed hit indicators and sound feedback to better recognize between hit and kill
+- New images for radar for Trainstation and Vallente
+- Improved text messages for shotgun damage info
+- Fix player stats preserve when reconnecting over stale 999-ping slot
+- Fixed possibility to have both scope and shotgun after timeout
+</p>
+</details>
+
+
 
 <details><summary>zPAM 4.06 changes (click to open)</summary>
 <p>
@@ -576,8 +593,8 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.06/zpam406.zip">zPAM 4.06</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam406.iwd
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.07/zpam407.zip">zPAM 4.07</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam407.iwd
 	- ./Call of Duty 2/main/zpam_maps_v7.iwd <i>(*not required for 1.0 and 1.2 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
@@ -613,7 +630,7 @@ If you are running server manually, this is example of command line parameters:<
 
 
 ## Contact
-Write message on discord <b>TLS CoD2 Community</b> in <b>#zpam3-chat</b> channel. https://discord.gg/HDsC6u5k6y<br>
+Write message on discord <b>CoD2x</b> in <b>#chat</b> channel. https://discord.gg/mGTR4RuANk<br>
 Or add me on discord <b>eyza_</b> (old name eyza#7930)<br>
 Or write me on email <b>kratas.tom@seznam.cz</b><br>
 <br>
@@ -627,6 +644,9 @@ Big thanks for consulting and testing
 
 **YctN**   (discord: yctn, YctN#1140)<br>
 Big thanks for server support, hosting and fixed maps consulting
+
+**harold**   (discord: sh0tyz)<br> 
+Big thanks for NA settings
 
 **Stendby**   (discord: stendby, Stendby#3298)<br>
 Big thanks for fixed maps
@@ -733,66 +753,31 @@ There were multiple versions of shotguns in a lifetime of new zPAM.
 - Classic shotgun - original and zPAM2.07
 - Rebalanced shotgun - zPAM3.22
 - Consistent shotgun - zPAM3.30
+- Consistent shotgun + pellets - zPAM4.06
 
-The main goal of these shotgun versions is to avoid close range hits and long range kills.<br>
-An improvement was made with rebalanced shotgun, but it still was not perfect. Consistent shotgun is the latest version.<br>
+The main goal of these shotgun versions is to avoid close range hits and long range kills.
 Shotgun problem analysis: https://youtu.be/7saFLaQoiwI
 <br>
-### How does the "Consistent shotgun" works / what is it
-First of all, lets describe how the classic shotgun works:
+
+### How does the original shotgun works
 - When you fire from shotgun, 8 pellets are fired.
 - Spread of pellets is unpredictable and completly random.
 - This ingame image demonstrates the ransomness of the pellets:
 - <img src="images/shotgun_spread.png" height="60" />
 - Damage of each individual pellet is based on distance between you and the pellet hit location.
-- #### Shotguns chart
+- Damage is splited into 2 range parts according to distance between you and hit location of enemy player: (this is how it is when the game was released in 2005)
+- Each one of 8 fired pellets follow this rules:
+	- if **distance is 0 - 384**: constant **50hp damage** is applied for every pellet
+	- if **distance is 384 - 800**: damage is linearly based on distance in range of **50hp - 5hp**
+
+### How does the "Consistent shotgun" works / what is it
 - <a href="images/shotgun.png"><img src="images/shotgun.png" /> </a>
-- #### Original shotgun
-	- Damage is splited into 2 range parts according to distance between you and hit location of enemy player: (this is how it is when the game was released in 2005)
-	- Each one of 8 fired pellets follow this rules:
-		- if **distance is 0 - 384**: constant **50hp damage** is applied for every pellet
-		- if **distance is 384 - 800**: damage is linearly based on distance in range of **50hp - 5hp**
-- #### Consistent shotgun
  - Consistent shotgun tries to address close range hits and long range kills.
    - Close range hits are caused by only 1 pellet hit the target, others goes off target
    - Long range kills are caused by pellets fired close together.
   - Random spread is responsible for these close range hits and long range kills
  - To make it better, consistent shotgun defines new damage values for close range and long range
- - Each one of 8 fired pellets follow these rules:
- 	- Distance 0 - 250 (close range):
-		- **100hp damage** is applied if you see head and body of enemy
-		- **50 - 99hp damage** is linearly applied based on distance if head and body not visible
- 	- Distance 250 - 384:
-		- **50hp - 99hp** is linearly applied based on distance
- 	- Distance 384 - 500:
-		- **34hp - 49hp** is linearly applied based on distance
- 	- Distance 500 - 800 (long range):
-		- **0hp - 33hp** is applied; only 1 pellet is used, others are ignored
- - Examples:
-	 - Example 1:
-		 - You fire at close range (distance 150), **only 1 pellet** hits the target
-			- original shotgun: **50hp damage**
-			- rebalanced shotgun:
-				- in case of hit to body: **kill**
-				- in case of hit to hand: **~80hp damage**
-			- consistent shotgun:
-				- head and body visible: **kill**
-				- head and body not visible: **~80hp damage**
-	 - Example 2:
-		 - You fire at close range (distance 150), **2 or more pellets** hits the target
-			 - original shotgun: **kill**
-			 - rebalanced shotgun: **kill**
-			 - consistent shotgun: **kill**
-	 - Example 3:
-		- You fire at mid range (distance 280), **only 1 pellet** hits the target
-			- original shotgun: **50hp damage**
-			- rebalanced shotgun: **~63hp damage**
-			- consistent shotgun: **~63hp damage**
-	 - Example 4:
-		- You fire at far range (distance 650), **5 pellets** hits the target
-			- original shotgun: **~105hp damage** (~21hp damage per bullet)
-			- rebalanced shotgun: **max 99hp damage** (total damage limited)
-			- consistent shotgun: **~12hp damage**
+ - With combination of CoD2x, consistent pellet spread is used
  - You can debug consistent shotgun in game via command **/rcon debug_shotgun 1**
 
 **Consistent shotgun is enabled by default**
@@ -1153,7 +1138,7 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 #### Cvar /fs_game is not empty!
 Make sure cvar /fs_game is empty (+set fs_game "") and iwd files are placed in main folder.
 
-#### Iwd file zpam406.iwd must be installed in main folder.
+#### Iwd file zpam407.iwd must be installed in main folder.
  - Since version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that player's settings changed in game are not saved into the config when running a game with fs_game set.
 

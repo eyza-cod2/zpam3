@@ -1,0 +1,213 @@
+name: zPAM Release
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      version_label:
+        description: "Optional override in format zPAM4.XX"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  MAP_PACK_VERSION: "v7"
+  MAP_PACK_URL: "https://cod2x.me/zpam/main/zpam_maps_v7.iwd"
+
+jobs:
+  detect-version:
+    runs-on: windows-latest
+    outputs:
+      should_release: ${{ steps.detect.outputs.should_release }}
+      version_label: ${{ steps.detect.outputs.version_label }}
+      version_tag: ${{ steps.detect.outputs.version_tag }}
+      version_digits: ${{ steps.detect.outputs.version_digits }}
+      iwd_name: ${{ steps.detect.outputs.iwd_name }}
+      bundle_name: ${{ steps.detect.outputs.bundle_name }}
+    steps:
+      - name: Detect release version from commit message
+        id: detect
+        shell: pwsh
+        run: |
+          $subject = ""
+
+          if ("${{ github.event_name }}" -eq "workflow_dispatch" -and "${{ inputs.version_label }}") {
+            $subject = "${{ inputs.version_label }}".Trim()
+          }
+          elseif ("${{ github.event_name }}" -eq "push") {
+            $message = "${{ github.event.head_commit.message }}"
+            $subject = ($message -split "`n")[0].Trim()
+          }
+
+          if (-not $subject) {
+            "should_release=false" >> $env:GITHUB_OUTPUT
+            exit 0
+          }
+
+          if ($subject -notmatch '^zPAM(?<major>\d+)\.(?<minor>\d{2})$') {
+            "should_release=false" >> $env:GITHUB_OUTPUT
+            exit 0
+          }
+
+          $major = $Matches.major
+          $minor = $Matches.minor
+          $versionLabel = "zPAM$major.$minor"
+          $versionTag = "$major.$minor"
+          $versionDigits = "$major$minor"
+          $iwdName = "zpam$versionDigits.iwd"
+          $bundleName = "zpam$versionDigits.zip"
+
+          "should_release=true" >> $env:GITHUB_OUTPUT
+          "version_label=$versionLabel" >> $env:GITHUB_OUTPUT
+          "version_tag=$versionTag" >> $env:GITHUB_OUTPUT
+          "version_digits=$versionDigits" >> $env:GITHUB_OUTPUT
+          "iwd_name=$iwdName" >> $env:GITHUB_OUTPUT
+          "bundle_name=$bundleName" >> $env:GITHUB_OUTPUT
+
+  build-and-release:
+    needs: detect-version
+    if: needs.detect-version.outputs.should_release == 'true'
+    runs-on: windows-latest
+    env:
+      VERSION_LABEL: ${{ needs.detect-version.outputs.version_label }}
+      VERSION_TAG: ${{ needs.detect-version.outputs.version_tag }}
+      IWD_NAME: ${{ needs.detect-version.outputs.iwd_name }}
+      BUNDLE_NAME: ${{ needs.detect-version.outputs.bundle_name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate required files
+        shell: pwsh
+        run: |
+          $required = @(
+            "source",
+            "zip/readme.txt",
+            "zip/main/server.cfg"
+          )
+
+          foreach ($path in $required) {
+            if (-not (Test-Path $path)) {
+              throw "Required path not found: $path"
+            }
+          }
+
+      - name: Install 7-Zip
+        shell: pwsh
+        run: |
+          choco install 7zip -y --no-progress
+          $sevenZip = "C:\Program Files\7-Zip\7z.exe"
+          if (-not (Test-Path $sevenZip)) {
+            throw "7-Zip installation failed: $sevenZip not found."
+          }
+
+      - name: Build release structure
+        shell: pwsh
+        run: |
+          $sevenZip = "C:\Program Files\7-Zip\7z.exe"
+          if (-not (Test-Path $sevenZip)) {
+            throw "7-Zip executable not found at required path: $sevenZip"
+          }
+
+          $stagingRoot = Join-Path $PWD "dist"
+          $stagingZip = Join-Path $stagingRoot "zip"
+          $stagingMain = Join-Path $stagingZip "main"
+          $iwdOutput = Join-Path $stagingMain $env:IWD_NAME
+          $bundleOutput = Join-Path $stagingRoot $env:BUNDLE_NAME
+
+          if (Test-Path $stagingRoot) {
+            Remove-Item $stagingRoot -Recurse -Force
+          }
+
+          New-Item -ItemType Directory -Path $stagingMain -Force | Out-Null
+
+          # Keep manually maintained files unchanged.
+          Copy-Item "zip/readme.txt" -Destination (Join-Path $stagingZip "readme.txt") -Force
+          Copy-Item "zip/main/server.cfg" -Destination (Join-Path $stagingMain "server.cfg") -Force
+
+          Invoke-WebRequest -Uri "${{ env.MAP_PACK_URL }}" -OutFile (Join-Path $stagingMain "zpam_maps_${{ env.MAP_PACK_VERSION }}.iwd")
+
+          if (Test-Path $iwdOutput) {
+            Remove-Item $iwdOutput -Force
+          }
+          Push-Location "source"
+          & "$sevenZip" a -tzip "$iwdOutput" "*" | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+            throw "7-Zip failed while creating $($env:IWD_NAME)."
+          }
+          Pop-Location
+
+          if (Test-Path $bundleOutput) {
+            Remove-Item $bundleOutput -Force
+          }
+          Push-Location $stagingZip
+          & "$sevenZip" a -tzip "$bundleOutput" "*" | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+            throw "7-Zip failed while creating $($env:BUNDLE_NAME)."
+          }
+          Pop-Location
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ needs.detect-version.outputs.bundle_name }}
+          path: dist/${{ needs.detect-version.outputs.bundle_name }}
+
+      - name: Check if tag already exists
+        shell: pwsh
+        run: |
+          git fetch --tags --force
+          $tagRef = "refs/tags/$env:VERSION_TAG"
+          $exists = git ls-remote --tags origin $tagRef
+
+          if ($exists) {
+            throw "Tag '$env:VERSION_TAG' already exists on origin. Release creation aborted."
+          }
+
+      - name: Generate release body from commits
+        shell: pwsh
+        run: |
+          git fetch --tags --force
+
+          $notesPath = Join-Path $PWD "dist\release-notes.md"
+          $previousTag = git tag --sort=-v:refname | Where-Object { $_ -ne $env:VERSION_TAG } | Select-Object -First 1
+
+          if ($previousTag) {
+            $range = "$previousTag..HEAD"
+            $title = "## Commits since $previousTag"
+          }
+          else {
+            $range = "HEAD"
+            $title = "## Commits"
+          }
+
+          $commits = git log $range --pretty=format:"- %s (%h)"
+          if (-not $commits) {
+            $commits = "- No commits found in selected range."
+          }
+
+          $body = @(
+            "# $env:VERSION_LABEL",
+            "",
+            $title,
+            $commits
+          ) -join "`r`n"
+
+          Set-Content -Path $notesPath -Value $body -Encoding UTF8
+
+      - name: Create or update GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION_TAG }}
+          name: ${{ env.VERSION_LABEL }}
+          files: dist/${{ needs.detect-version.outputs.bundle_name }}
+          body_path: dist/release-notes.md
+          generate_release_notes: false
+          make_latest: true
+          overwrite_files: true
