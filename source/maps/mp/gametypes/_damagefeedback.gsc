@@ -80,9 +80,9 @@ updateDamageFeedback(enemy)
 		}
 
 		e = self.hitPlayers[i]["player"];
-		if (isPlayer(e) && e.pers["team"] == self.pers["team"])
+		if (isPlayer(e) && e.pers["team"] == self.pers["team"] && level.gametype != "dm")
 			containTeamShot = true;
-		else if (isPlayer(e) && e.pers["team"] != self.pers["team"])
+		else if (isPlayer(e) && e.pers["team"] != self.pers["team"] || level.gametype == "dm")
 			containEnemyShot = true;
 	}
 
@@ -94,11 +94,10 @@ updateDamageFeedback(enemy)
 	{
 		if(isPlayer(self))
 		{
-			// Play hit sound
-			if (containKill)
-			{
+			// Play again if its kill, so hits and kills are more distinguishable
+			for (i = 1; i <= numberOfHitPlayers; i++) {
 				self playLocalSound("MP_hit_alert");
-			}
+			}	
 
 
 			if (!isDefined(self.hud_damagefeedback))
@@ -138,7 +137,7 @@ updateDamageFeedback(enemy)
 			// Hit only
 			if (!containKill)
 			{
-				alpha = 0.6;
+				alpha = 0.7;
 				time = 1.2;
 				delay = 0;
 				width = 24;
@@ -168,7 +167,7 @@ updateDamageFeedback(enemy)
 
 				if (!allKilled) {
 					color2 = (1,1,0.85); // yellowish
-					alpha2 = 0.6;
+					alpha2 = 0.7;
 				}
 				// Team hit/kill
 				if (containTeamShot)

@@ -26,7 +26,7 @@ init()
 		// Errors
 		precacheString2("STRING_PAM_DONT_STEAL", &"This version of pam is only for testing! Dont steal!");
 		precacheString2("STRING_PAM_FS_GAME", &"Cvar /fs_game is not empty!)");
-		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam406.iwd^7 must be installed in ^9main^7 folder."); // ZPAM_RENAME
+		precacheString2("STRING_PAM_MUST_EXISTS_UNDER_MAIN", &"Iwd file ^9zpam407.iwd^7 must be installed in ^9main^7 folder."); // ZPAM_RENAME
 		precacheString2("STRING_PAM_GETTING_IWD_FILES_ERROR", &"Error while getting loaded iwd files. Make sure iwd files does not contains spaces.");
 		precacheString2("STRING_PAM_MAPS_MISSING", &"Iwd file ^9zpam_maps_v7.iwd^7 does not exists in ^9main^7 folder"); // ZPAM_RENAME
 		precacheString2("STRING_PAM_MAPS_LOAD_ERROR", &"Error while checking if fixed maps exists. Map printed above was not found on server.");
@@ -42,7 +42,7 @@ init()
 	}
 
 
-	level.pam_folder = "main/zpam406"; // ZPAM_RENAME
+	level.pam_folder = "main/zpam407"; // ZPAM_RENAME
 	level.pam_map_iwd = "zpam_maps_v7";
 
 	level.pam_mode_change = false;
@@ -329,6 +329,8 @@ CheckInstallation()
 	blackList[blackList.size] = "zpam_maps_v6";
 	blackList[blackList.size] = "zpam405_na";
 	blackList[blackList.size] = "zpam405";
+	blackList[blackList.size] = "zpam406";
+	// ZPAM_RENAME - ^ add old pam ^
 
 	// Maps
 	blackList[blackList.size] = "mp_chelm_fix";
@@ -343,8 +345,6 @@ CheckInstallation()
 	blackList[blackList.size] = "mp_railyard_mjr_test2";
 	blackList[blackList.size] = "mp_leningrad_mjr_test1";
 	blackList[blackList.size] = "mp_leningrad_mjr_test2";
-
-	// ZPAM_RENAME - add old pam
 
 	for(i = 0; i < blackList.size; i++)
 	{
@@ -378,8 +378,9 @@ CheckInstallation()
 	cod2x_blacklist[cod2x_blacklist.size] = "1.4.6.2";
 	cod2x_blacklist[cod2x_blacklist.size] = "1.4.6.3";
 	cod2x_blacklist[cod2x_blacklist.size] = "1.4.6.4";
-
-	// ZPAM_RENAME - add incompatible versions
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.6.5";
+	cod2x_blacklist[cod2x_blacklist.size] = "1.4.6.6";
+	// ZPAM_RENAME - ^ add incompatible versions ^
 
 	for(i = 0; i < cod2x_blacklist.size; i++)
 	{

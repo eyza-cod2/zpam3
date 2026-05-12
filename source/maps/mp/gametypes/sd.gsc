@@ -1014,6 +1014,13 @@ spawnPlayer()
         if (!self maps\mp\gametypes\_weapon_limiter::isWeaponSaveable(weapon2))
             weapon2 = "none";
 
+		// If player has only 1 weapon in slot, move it to secondary slot to avoid non-spawn weapon removal
+		if (weapon1 != "none" && weapon2 == "none")
+		{
+			weapon2 = weapon1;
+			weapon1 = "none";
+		}
+
         // Player switched to weapon that does not match any saved weapons, replace primary with currently selected weapon
         if (self.pers["weapon"] != weapon1 && self.pers["weapon"] != weapon2) {
             weapon1 = self.pers["weapon"];

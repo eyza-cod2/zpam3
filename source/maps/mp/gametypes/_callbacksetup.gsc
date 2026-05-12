@@ -176,9 +176,6 @@ CodeCallback_PlayerConnect()
 
 	self.sessionteam = "none"; // show player in "none" team in scoreboard while connecting
 
-	if (!isDefined(self.pers["antilagTimeOffset"]))
-		self.pers["antilagTimeOffset"] = 0;
-
 	self thread maps\mp\gametypes\global\events::notifyConnecting(self.pers["callbacksetup_firstTime"]);
 
 	// Wait here until player is fully connected
@@ -309,35 +306,6 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	// Resets the infinite loop check timer, to prevent an incorrect infinite loop error when a lot of script must be run
 	resettimeout();
 
-	// Do debug print if it's enabled
-	if (level.g_debugDamage)
-	{
-		if (isDefined(eAttacker) && isPlayer(eAttacker))
-		{
-			dist = int(distance(self getOrigin(), eAttacker getOrigin()));
-			eAttacker iprintln("You inflicted " + iDamage + " damage to " + self.name + " (" + sHitLoc + ", "+ sMeansOfDeath +", distance "+dist+")");
-			self iprintln("You recieved " + iDamage + " damage from " + eAttacker.name + " (" + sHitLoc + ", "+ sMeansOfDeath +", distance "+dist+")");
-		}
-		else
-			self iprintln("You recieved " + iDamage + " damage (" + sHitLoc + ", "+ sMeansOfDeath +")");
-	}
-
-	/#
-	dist = -1; if (isDefined(eAttacker) && isPlayer(eAttacker)) dist = int(distance(self getOrigin(), eAttacker getOrigin()));
-	strAttacker = "undefined"; if (isDefined(eAttacker)) if (isPlayer(eAttacker)) strAttacker = "#" + (eAttacker getEntityNumber()) + " " + eAttacker.name; else strAttacker = "-entity-";
-	sPoint = "undefined";	if (isDefined(vPoint)) sPoint = vPoint;
-
-	println("##### " + gettime() + " " + level.frame_num + " ##### PlayerDamage: " + strAttacker + " -> #" + self getEntityNumber() + " " + self.name + " health:" + self.health + " damage:" + iDamage + " hitLoc:" + sHitLoc + " iDFlags:" + iDFlags +
-	" sMeansOfDeath:" + sMeansOfDeath + " sWeapon:" + sWeapon + " vPoint:" + sPoint + " distance:" + dist);
-	#/
-
-
-	// Save antilag time offset
-	if (isDefined(eAttacker) && isPlayer(eAttacker))
-	{
-		eAttacker.pers["antilagTimeOffset"] = timeOffset;
-	}
-
 	// Protection - players in spectator inflict damage
 	if(isDefined(eAttacker) && isPlayer(eAttacker) && eAttacker.sessionteam == "spectator")
 		return;
@@ -394,12 +362,13 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 			iDamage = 100;
 		// Body
 		else if (sHitLoc == "torso_upper" || sHitLoc == "torso_lower" || sHitLoc == "right_leg_upper" || sHitLoc == "left_leg_upper")
-			iDamage = 50;
+			iDamage = 75;
 		// Other
 		else
 			iDamage = 35;
 
-		sWeapon = "mg_mp";
+		// The weapon must be changed because original contains the holded weapon in slots, not the mg
+		sWeapon = "mg42_bipod_stand_mp";
 	}
 
 	// Change neck hit to head
@@ -637,7 +606,7 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 		else if (dist <= 400)
 		{
 			// Scale the damage based on distance
-			iDamage = 50;
+			iDamage = 75;
 
 			if (level.debug_shotgun) eAttacker iprintln("^3Distance " + int(dist) + " | range-2 280-400 | " + iDamage + "hp damage (pellet id: " + eAttacker.hitData[self_num].id + ")");
 			if (eyza_debug) printToEyza("### Consistent shotgun: attacker:"+eAttacker.name+" | victim:"+self.name+" | distance:" + int(dist) + " | hitLoc:" + sHitLoc + " | range-2 280-400 | damage:" + iDamage + " | pelletId:" + eAttacker.hitData[self_num].id); // EYZA_DEBUG
@@ -688,6 +657,32 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	// Save affected damage value
 	if (isDefined(eAttacker) && isPlayer(eAttacker))
 		eAttacker.hitData[self_num].damage = iDamage;
+
+
+
+	// Do debug print if it's enabled
+	if (level.g_debugDamage)
+	{
+		if (isDefined(eAttacker) && isPlayer(eAttacker))
+		{
+			dist = int(distance(self getOrigin(), eAttacker getOrigin()));
+			eAttacker iprintln("You inflicted " + iDamage + " damage to " + self.name + " (" + sHitLoc + ", "+ sMeansOfDeath +", distance "+dist+")");
+			self iprintln("You recieved " + iDamage + " damage from " + eAttacker.name + " (" + sHitLoc + ", "+ sMeansOfDeath +", distance "+dist+")");
+		}
+		else
+			self iprintln("You recieved " + iDamage + " damage (" + sHitLoc + ", "+ sMeansOfDeath +")");
+	}
+
+	/#
+	dist = -1; if (isDefined(eAttacker) && isPlayer(eAttacker)) dist = int(distance(self getOrigin(), eAttacker getOrigin()));
+	strAttacker = "undefined"; if (isDefined(eAttacker)) if (isPlayer(eAttacker)) strAttacker = "#" + (eAttacker getEntityNumber()) + " " + eAttacker.name; else strAttacker = "-entity-";
+	sPoint = "undefined";	if (isDefined(vPoint)) sPoint = vPoint;
+
+	println("##### " + gettime() + " " + level.frame_num + " ##### PlayerDamage: " + strAttacker + " -> #" + self getEntityNumber() + " " + self.name + " health:" + self.health + " damage:" + iDamage + " hitLoc:" + sHitLoc + " iDFlags:" + iDFlags +
+	" sMeansOfDeath:" + sMeansOfDeath + " sWeapon:" + sWeapon + " vPoint:" + sPoint + " distance:" + dist);
+	#/
+
+
 
 	//println("##################### " + "notifyDamaging");
 	// Call onDamage event and return if damage was prevented
