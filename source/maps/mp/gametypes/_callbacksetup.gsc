@@ -354,8 +354,6 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	// For shotgun there will be multiple hits in one frame for one player
 	// For other weapons / nades there might be multiple hits in one frame for multiple players
 
-	// Shotgun kill / 1 player = sound 2x
-
 	// Save info about hits
 	self_num = self getEntityNumber();
 	if (isDefined(eAttacker) && isPlayer(eAttacker))
@@ -391,10 +389,15 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	// Fix MG wrong damage values when holding pistols
 	if (sMeansOfDeath == "MOD_RIFLE_BULLET" && isDefined(eAttacker) && eAttacker isUsingTurret())
 	{
+		// Head
 		if (sHitLoc == "head" || sHitLoc == "neck")
 			iDamage = 100;
-		else
+		// Body
+		else if (sHitLoc == "torso_upper" || sHitLoc == "torso_lower" || sHitLoc == "right_leg_upper" || sHitLoc == "left_leg_upper")
 			iDamage = 50;
+		// Other
+		else
+			iDamage = 35;
 
 		sWeapon = "mg_mp";
 	}

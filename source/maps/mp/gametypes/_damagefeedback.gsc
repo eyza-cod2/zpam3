@@ -132,8 +132,8 @@ updateDamageFeedback(enemy)
 			time = 0.5;
 			delay = 0.8;
 			color = (1,1,1);
-			width = 30;
-			offset = -15;
+			width = 28;
+			offset = -14;
 
 			// Hit only
 			if (!containKill)
