@@ -1015,18 +1015,22 @@ spawnPlayer()
             weapon2 = "none";
 
 		// If player has only 1 weapon in slot, move it to secondary slot to avoid non-spawn weapon removal
-		if (weapon1 != "none" && weapon2 == "none")
+		// COMMENTED: if player did this at the end of the round, he did that on purpose
+		/*if (weapon1 != "none" && weapon2 == "none")
 		{
 			weapon2 = weapon1;
 			weapon1 = "none";
-		}
+		}*/
 
         // Player switched to weapon that does not match any saved weapons, replace primary with currently selected weapon
-        if (self.pers["weapon"] != weapon1 && self.pers["weapon"] != weapon2) {
+		// COMMENTED: if player did this at the end of the round, he did that on purpose
+        /*if (self.pers["weapon"] != weapon1 && self.pers["weapon"] != weapon2) {
             weapon1 = self.pers["weapon"];
-
+        } else */
+		
         // Player switched to weapon that is saved in secondary slot, simply swap the weapon
-        } else if (self.pers["weapon"] != weapon1 && self.pers["weapon"] == weapon2) {
+		// This is efectively fixing "kar bug", where player could save kar98k in secondary slot, which makes game thinks the other weapon is primary, which allow weapon change, so people could drop kar98k and select it again to have kar98k
+		if (self.pers["weapon"] != weapon1 && self.pers["weapon"] == weapon2) {
             weapon1_old = weapon1;
             weapon1 = weapon2;
             weapon2 = weapon1_old;    
