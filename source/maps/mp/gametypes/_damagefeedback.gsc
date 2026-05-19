@@ -153,11 +153,18 @@ updateDamageFeedback(enemy)
 
 			self.hud_damagefeedback.color = color;
 			self.hud_damagefeedback fadeOverTime(0.00001);	// cancel fade time
-			self.hud_damagefeedback scaleOverTime(0.00001, width, width);	// cancel scale time
-			self.hud_damagefeedback moveOverTime(0.00001);	// cancel move time
-			self.hud_damagefeedback.alpha = alpha;
-			self.hud_damagefeedback.x = offset;
-			self.hud_damagefeedback.y = offset;
+			if (isHitIndicatorScaleEnabled()) {
+				self.hud_damagefeedback scaleOverTime(0.00001, width, width);	// cancel scale time
+				self.hud_damagefeedback moveOverTime(0.00001);	// cancel move time
+				self.hud_damagefeedback.alpha = alpha;
+				self.hud_damagefeedback.x = offset;
+				self.hud_damagefeedback.y = offset;
+			} else {
+				self.hud_damagefeedback scaleOverTime(0.00001, 24, 24);	// cancel scale time
+				self.hud_damagefeedback.alpha = alpha;
+				self.hud_damagefeedback.x = -12;
+				self.hud_damagefeedback.y = -12;
+			}
 
 
 			if (numberOfHitPlayers >= 2) {
@@ -182,10 +189,12 @@ updateDamageFeedback(enemy)
 
 			wait level.frame;
 
-			self.hud_damagefeedback scaleOverTime(0.15, 24, 24);
-			self.hud_damagefeedback moveOverTime(0.15);
-			self.hud_damagefeedback.x = -12;
-			self.hud_damagefeedback.y = -12;
+			if (isHitIndicatorScaleEnabled()) {
+				self.hud_damagefeedback scaleOverTime(0.15, 24, 24);
+				self.hud_damagefeedback moveOverTime(0.15);
+				self.hud_damagefeedback.x = -12;
+				self.hud_damagefeedback.y = -12;
+			}
 
 
 			wait delay * level.fps_multiplier;
@@ -199,6 +208,29 @@ updateDamageFeedback(enemy)
 			}
 		}
 	}
+}
+
+isHitIndicatorScaleEnabled()
+{
+	return !isDefined(self.pers["hitindicator"]) || self.pers["hitindicator"];
+}
+
+enableHitIndicator()
+{
+	self.pers["hitindicator"] = true;
+}
+
+disableHitIndicator()
+{
+	self.pers["hitindicator"] = false;
+}
+
+toggleHitIndicator()
+{
+	if (isHitIndicatorScaleEnabled())
+		self disableHitIndicator();
+	else
+		self enableHitIndicator();
 }
 
 updateAssistsFeedback()

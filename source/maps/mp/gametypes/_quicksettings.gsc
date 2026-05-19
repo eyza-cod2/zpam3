@@ -83,6 +83,10 @@ parseString(string)
 			else if (item == "streamer_1")     self maps\mp\gametypes\_streamer::join_streamer_enable(true, 1); // true = loaded from quick settings, 1 = blue red
 			else if (item == "streamer_2")     self maps\mp\gametypes\_streamer::join_streamer_enable(true, 2); // true = loaded from quick settings, 2 = cyan purple
 
+			else if (item == "hitindicator")    self maps\mp\gametypes\_damagefeedback::toggleHitIndicator();
+			else if (item == "hitindicator_0")  self maps\mp\gametypes\_damagefeedback::disableHitIndicator();
+			else if (item == "hitindicator_1")  self maps\mp\gametypes\_damagefeedback::enableHitIndicator();
+
 			lastItemPos = i + 1;
 		}
 	}
@@ -102,6 +106,7 @@ updateClientSettings(reason)
 	score = self maps\mp\gametypes\_hud_teamscore::isEnabled();
 	playersleft = self maps\mp\gametypes\_players_left::isEnabled();
 	streamer = self maps\mp\gametypes\_streamer::join_streamer_quicksettings();
+	hitindicator = self maps\mp\gametypes\_damagefeedback::isHitIndicatorScaleEnabled();
 
 	string = string + "autorecording_" + recording;
 	string = string + delimiter;
@@ -112,6 +117,8 @@ updateClientSettings(reason)
 	string = string + "playersleft_" + playersleft;
 	string = string + delimiter;
 	string = string + "streamer_" + streamer;
+	string = string + delimiter;
+	string = string + "hitindicator_" + hitindicator;
 
 	self setClientCvar2("server16", string);
 
@@ -120,6 +127,7 @@ updateClientSettings(reason)
 	self setClientCvar2("ui_quicksettings_matchinfo", matchinfo);
 	self setClientCvar2("ui_quicksettings_score", score);
 	self setClientCvar2("ui_quicksettings_playersleft", playersleft);
+	self setClientCvar2("ui_quicksettings_hitindicator", hitindicator);
 
 
 
