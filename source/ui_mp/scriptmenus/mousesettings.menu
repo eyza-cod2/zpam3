@@ -122,37 +122,50 @@
 
 
 
+		QUICKMESSAGE_LINE_TEXT(51, "3. [-]   MG sensitivity:", 1 1 1 1)
+		QUICKMESSAGE_LINE_TEXT(64, "4. [+]  ^9/sensitivity_mg", 1 1 1 1)
+		ITEM_DVAR("sensitivity_mg", 155, 328, .25, ITEM_ALIGN_LEFT, 0 1 1 1)
 
-		QUICKMESSAGE_LINE_TEXT(51, "3. [-]   Vertical sensitivity:", 1 1 1 1)
-		QUICKMESSAGE_LINE_TEXT(64, "4. [+]  ^9/m_pitch", 1 1 1 1)
-		ITEM_DVAR("ui_m_pitch", 125, 328, .25, ITEM_ALIGN_LEFT, 0 1 1 1)
-
-		execKey "3" { exec "togglep m_pitch 0.033 0.028 0.022 0.017 0.011"; exec "setfromdvar ui_m_pitch m_pitch" }
-		execKey "4" { exec "togglep m_pitch 0.011 0.017 0.022 0.028 0.033"; exec "setfromdvar ui_m_pitch m_pitch" }
-
+		execKey "3" { exec "togglep sensitivity_mg 3 2.9 2.8 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2 1.9 1.8 1.7 1.6 1.5 1.4 1.3 1.2 1.1 1 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1" }
+		execKey "4" { exec "togglep sensitivity_mg 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2 2.1 2.2 2.3 2.4 2.5 2.6 2.7 2.8 2.9 3" }
 
 
 
+		QUICKMESSAGE_LINE_TEXT_DVAR(82, "5. [-]   Vertical sensitivity", 							1 1 1 1, "m_pitch", hideDvar { "0"; "0.011"; "0.017"; "0.022"; "0.028"; "0.033" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(82, "5. [-]   Vertical sensitivity  ^9(default)", 				1 1 1 1, "m_pitch", showDvar { "0.022" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(82, "5. [-]   Vertical sensitivity  ^9(high)", 	            1 1 1 1, "m_pitch", showDvar { "0.028"; "0.033"; })
+		QUICKMESSAGE_LINE_TEXT_DVAR(82, "5. [-]   Vertical sensitivity  ^9(low)", 	                1 1 1 1, "m_pitch", showDvar { "0.011"; "0.017"; })
+		QUICKMESSAGE_LINE_TEXT(95, "6. [+]  ^9/m_pitch", 1 1 1 1)
+		ITEM_DVAR("ui_m_pitch", 123, 359, .25, ITEM_ALIGN_LEFT, 0 1 1 1)
 
-		QUICKMESSAGE_LINE_TEXT(82, "5. [-]   Acceleration:", 1 1 1 1)
-		QUICKMESSAGE_LINE_TEXT(95, "6. [+]  ^9/cl_mouseAccel", 1 1 1 1)
-		ITEM_DVAR("cl_mouseAccel", 153, 359, .25, ITEM_ALIGN_LEFT, 0 1 1 1)
-
-		execKey "5" { exec "togglep cl_mouseAccel 0.04 0.03 0.02 0.01 0" }
-		execKey "6" { exec "togglep cl_mouseAccel 0 0.01 0.02 0.03 0.04" }
-
-
-
-
-
-		QUICKMESSAGE_LINE_TEXT(113, "7. [-]   Rinput:", 1 1 1 1)
-		QUICKMESSAGE_LINE_TEXT(126, "8. [+]  ^9/m_rinput", 1 1 1 1)
-		ITEM_DVAR("m_rinput", 130, 390, .25, ITEM_ALIGN_LEFT, 0 1 1 1)
-
-		execKey "7" { exec "togglep m_rinput 2 1 0" }
-		execKey "8" { exec "togglep m_rinput 0 1 2" }
+		execKey "5" { exec "togglep m_pitch 0.033 0.028 0.022 0.017 0.011"; exec "setfromdvar ui_m_pitch m_pitch" }
+		execKey "6" { exec "togglep m_pitch 0.011 0.017 0.022 0.028 0.033"; exec "setfromdvar ui_m_pitch m_pitch" }
 
 
-		QUICKMESSAGE_LINE_TEXT(167, "@QUICKMESSAGE_ESC_EXIT", 1 1 1 1)
+
+		QUICKMESSAGE_LINE_TEXT_DVAR(113, "7. [-]   Acceleration", 									1 1 1 1, "cl_mouseAccel", hideDvar { "0"; "0.01"; "0.02"; "0.03"; "0.04"  })
+		QUICKMESSAGE_LINE_TEXT_DVAR(113, "7. [-]   Acceleration  ^9(off)", 							1 1 1 1, "cl_mouseAccel", showDvar { "0" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(113, "7. [-]   Acceleration  ^9(on)", 	                        1 1 1 1, "cl_mouseAccel", showDvar { "0.01"; "0.02"; "0.03"; "0.04" })
+		QUICKMESSAGE_LINE_TEXT(126, "8. [+]  ^9/cl_mouseAccel", 1 1 1 1)
+		ITEM_DVAR("cl_mouseAccel", 153, 390, .25, ITEM_ALIGN_LEFT, 0 1 1 1)
+
+		execKey "7" { exec "togglep cl_mouseAccel 0.04 0.03 0.02 0.01 0" }
+		execKey "8" { exec "togglep cl_mouseAccel 0 0.01 0.02 0.03 0.04" }
+
+
+
+
+		QUICKMESSAGE_LINE_TEXT_DVAR(144, "9. [-]   Raw input:", 							        1 1 1 1, "m_rinput", hideDvar { "0"; "1"; "2" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(144, "9. [-]   Raw input:  ^9(off)", 							1 1 1 1, "m_rinput", showDvar { "0" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(144, "9. [-]   Raw input:  ^9(on - in separated thread)", 		1 1 1 1, "m_rinput", showDvar { "1" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(144, "9. [-]   Raw input:  ^9(on - in main thread)",			1 1 1 1, "m_rinput", showDvar { "2" })
+		QUICKMESSAGE_LINE_TEXT(157, "0. [+]  ^9/m_rinput", 1 1 1 1)
+		ITEM_DVAR("m_rinput", 130, 421, .25, ITEM_ALIGN_LEFT, 0 1 1 1)
+
+		execKey "9" { exec "togglep m_rinput 2 1 0" }
+		execKey "0" { exec "togglep m_rinput 0 1 2" }
+
+
+		QUICKMESSAGE_LINE_TEXT(174, "@QUICKMESSAGE_ESC_EXIT", 1 1 1 1)
 	}
 }
