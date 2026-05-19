@@ -32,15 +32,21 @@ jobs:
       - name: Detect release version from commit message
         id: detect
         shell: pwsh
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_VERSION_LABEL: ${{ inputs.version_label }}
+          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           $subject = ""
 
-          if ("${{ github.event_name }}" -eq "workflow_dispatch" -and "${{ inputs.version_label }}") {
-            $subject = "${{ inputs.version_label }}".Trim()
+          if ($env:EVENT_NAME -eq "workflow_dispatch" -and $env:INPUT_VERSION_LABEL) {
+            $subject = $env:INPUT_VERSION_LABEL.Trim()
           }
-          elseif ("${{ github.event_name }}" -eq "push") {
-            $message = "${{ github.event.head_commit.message }}"
-            $subject = ($message -split "`n")[0].Trim()
+          elseif ($env:EVENT_NAME -eq "push") {
+            $message = $env:HEAD_COMMIT_MESSAGE
+            if ($message) {
+              $subject = ($message -split "`r?`n")[0].Trim()
+            }
           }
 
           if (-not $subject) {
