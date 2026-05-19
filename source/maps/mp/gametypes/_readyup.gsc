@@ -362,7 +362,7 @@ respawnOnKilled(sWeapon, deathAnimDuration)
 	if(!isdefined(self.switching_teams))
 		body = self cloneplayer(deathAnimDuration);
 
-	wait level.fps_multiplier * 2;
+	wait level.fps_multiplier * 0.5;
 
 	// Delete dead body in readyup
 	if(isDefined(body))
