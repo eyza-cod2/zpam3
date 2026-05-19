@@ -49,10 +49,6 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 onConnected()
 {
-	// Enable player list by default, can be overwritten by player settings
-	if (!isDefined(self.pers["playersleft_list"]))
-		self.pers["playersleft_list"] = true;
-
 	if (level.scr_show_players_left)
 		self thread createHUD();
 	else
@@ -330,33 +326,6 @@ updateHUD(alliesChanged, axisChanged)
 
 
 
-isEnabled()
-{
-	return isDefined(self.pers["playersleft_list"]) && self.pers["playersleft_list"];
-}
-
-enable()
-{
-	self.pers["playersleft_list"] = true;
-	if (level.scr_show_players_left)
-		self show();
-}
-
-disable()
-{
-	self.pers["playersleft_list"] = false;
-	if (level.scr_show_players_left)
-		self hide();
-}
-
-toggle()
-{
-	if (isEnabled())
-		self disable();
-	else
-		self enable();
-}
-
 // Show hud element
 show()
 {
@@ -387,7 +356,7 @@ updateEnemyList()
 		return;
 	}
 
-	if (game["is_public_mode"] || !level.scr_show_players_left || self isEnabled() == false)
+	if (game["is_public_mode"] || !level.scr_show_players_left)
 	{
 		self setClientCvarIfChanged("ui_playersleft_list", "");
 		return;

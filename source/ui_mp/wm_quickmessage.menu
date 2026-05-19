@@ -146,7 +146,10 @@
 		execKey "3" { close quickmessage_default; open quickresponses }
 
 
-		QUICKMESSAGE_LINE_TEXT(100, "6. Settings", 1 1 1 1)
+		QUICKMESSAGE_LINE_TEXT(76, "5. Mouse Settings", 1 1 1 1)
+		execKey "5" { close quickmessage_default; open mousesettings }
+
+		QUICKMESSAGE_LINE_TEXT(92, "6. zPAM Settings", 1 1 1 1)
 		execKey "6" { close quickmessage_default; open quicksettings }
 
 		QUICKMESSAGE_LINE_TEXT_DVAR(116, "7. Call pistol bash", .35 .35 .35 1, 	"ui_allow_bash", showDvar { "0" }) 	// 0 = "" (invisible)
@@ -166,7 +169,7 @@
 		execKey "8" { close quickmessage_default; exec "openscriptmenu ingame timeout" }
 
 
-		QUICKMESSAGE_LINE_TEXT(148, "@QUICKMESSAGE_ESC_EXIT", 1 1 1 1)
+		QUICKMESSAGE_LINE_TEXT(167, "@QUICKMESSAGE_ESC_EXIT", 1 1 1 1)
 
 	}
 }

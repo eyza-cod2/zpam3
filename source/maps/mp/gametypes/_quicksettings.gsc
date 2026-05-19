@@ -62,11 +62,7 @@ parseString(string)
 		{
 			item = ToLower(getsubstr(string, lastItemPos, i)); //<item>_<value>
 
-			if (item == "autorecording")          self maps\mp\gametypes\_record::toggle();
-			else if (item == "autorecording_0")   self maps\mp\gametypes\_record::disable();
-			else if (item == "autorecording_1")   self maps\mp\gametypes\_record::enable();
-
-			else if (item == "matchinfo")         self maps\mp\gametypes\_matchinfo::ingame_toggle();
+			if (item == "matchinfo")         self maps\mp\gametypes\_matchinfo::ingame_toggle();
 			else if (item == "matchinfo_0")       self maps\mp\gametypes\_matchinfo::ingame_disable();
 			else if (item == "matchinfo_1")       self maps\mp\gametypes\_matchinfo::ingame_enable();
 
@@ -74,18 +70,14 @@ parseString(string)
 			else if (item == "score_0")           self maps\mp\gametypes\_hud_teamscore::disable();
 			else if (item == "score_1")           self maps\mp\gametypes\_hud_teamscore::enable();
 
-			else if (item == "playersleft")       self maps\mp\gametypes\_players_left::toggle();
-			else if (item == "playersleft_0")     self maps\mp\gametypes\_players_left::disable();
-			else if (item == "playersleft_1")     self maps\mp\gametypes\_players_left::enable();
+			else if (item == "hitindicator")    self maps\mp\gametypes\_damagefeedback::toggleHitIndicator();
+			else if (item == "hitindicator_0")  self maps\mp\gametypes\_damagefeedback::disableHitIndicator();
+			else if (item == "hitindicator_1")  self maps\mp\gametypes\_damagefeedback::enableHitIndicator();
 
 			else if (item == "streamer")       self maps\mp\gametypes\_streamer::join_streamer_toggle();
 			else if (item == "streamer_0")     self maps\mp\gametypes\_streamer::join_streamer_disable(true);  // true = loaded from quick settings
 			else if (item == "streamer_1")     self maps\mp\gametypes\_streamer::join_streamer_enable(true, 1); // true = loaded from quick settings, 1 = blue red
 			else if (item == "streamer_2")     self maps\mp\gametypes\_streamer::join_streamer_enable(true, 2); // true = loaded from quick settings, 2 = cyan purple
-
-			else if (item == "hitindicator")    self maps\mp\gametypes\_damagefeedback::toggleHitIndicator();
-			else if (item == "hitindicator_0")  self maps\mp\gametypes\_damagefeedback::disableHitIndicator();
-			else if (item == "hitindicator_1")  self maps\mp\gametypes\_damagefeedback::enableHitIndicator();
 
 			lastItemPos = i + 1;
 		}
@@ -101,32 +93,24 @@ updateClientSettings(reason)
 	string = "openscriptmenu quicksettings ";
 	delimiter = "|";
 
-	recording = self maps\mp\gametypes\_record::isEnabled();
 	matchinfo = self maps\mp\gametypes\_matchinfo::ingame_isEnabled();
 	score = self maps\mp\gametypes\_hud_teamscore::isEnabled();
-	playersleft = self maps\mp\gametypes\_players_left::isEnabled();
 	streamer = self maps\mp\gametypes\_streamer::join_streamer_quicksettings();
 	hitindicator = self maps\mp\gametypes\_damagefeedback::isHitIndicatorScaleEnabled();
 
-	string = string + "autorecording_" + recording;
-	string = string + delimiter;
 	string = string + "matchinfo_" + matchinfo;
 	string = string + delimiter;
 	string = string + "score_" + score;
 	string = string + delimiter;
-	string = string + "playersleft_" + playersleft;
+	string = string + "hitindicator_" + hitindicator;
 	string = string + delimiter;
 	string = string + "streamer_" + streamer;
-	string = string + delimiter;
-	string = string + "hitindicator_" + hitindicator;
 
 	self setClientCvar2("server16", string);
 
 	// Cvars for switching text in quick menu
-	self setClientCvar2("ui_quicksettings_autorecording", recording);
 	self setClientCvar2("ui_quicksettings_matchinfo", matchinfo);
 	self setClientCvar2("ui_quicksettings_score", score);
-	self setClientCvar2("ui_quicksettings_playersleft", playersleft);
 	self setClientCvar2("ui_quicksettings_hitindicator", hitindicator);
 
 

@@ -40,9 +40,6 @@ onCvarChanged(cvar, value, isRegisterTime)
 
 onConnected()
 {
-	if (!isDefined(self.pers["autorecording_enabled"]))
-		self.pers["autorecording_enabled"] = true;
-
 	if (!level.scr_recording)
 		return;
 
@@ -50,15 +47,13 @@ onConnected()
 		self.pers["recording_executed"] = false;
 
 	// Shot text "Recording will start automatically"
-	if (isEnabled())
-		self show();
+	self show();
 }
 
 
 onSpawnedPlayer()
 {
-	if (isEnabled())
-		self show();
+	self show();
 
 	self onSpawned();
 }
@@ -96,33 +91,6 @@ onReadyupOver()
 
 
 
-
-isEnabled()
-{
-  return true; //isDefined(self.pers["autorecording_enabled"]) && self.pers["autorecording_enabled"];
-}
-
-enable()
-{
-  self.pers["autorecording_enabled"] = true;
-  if (level.scr_recording)
-    self show();
-}
-
-disable()
-{
-  self.pers["autorecording_enabled"] = false;
-  if (level.scr_recording)
-    self hide();
-}
-
-toggle()
-{
-  if (isEnabled())
-    self disable();
-  else
-    self enable();
-}
 
 // Show hud element
 show()
@@ -430,10 +398,6 @@ stopRecordingForAll()
 stopRecording()
 {
 	self endon("disconnect");
-
-	// Auto recording is disabled
-	if (!self isEnabled())
-		return;
 
 	self setClientCvar2("cl_demoAutoRecordName", ""); // CoD2x 1.4.5.1-test.12 and later
 

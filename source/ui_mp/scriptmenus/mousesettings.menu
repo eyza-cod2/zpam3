@@ -143,6 +143,16 @@
 
 
 
+
+
+		QUICKMESSAGE_LINE_TEXT(113, "7. [-]   Rinput:", 1 1 1 1)
+		QUICKMESSAGE_LINE_TEXT(126, "8. [+]  ^9/m_rinput", 1 1 1 1)
+		ITEM_DVAR("m_rinput", 130, 390, .25, ITEM_ALIGN_LEFT, 0 1 1 1)
+
+		execKey "7" { exec "togglep m_rinput 2 1 0" }
+		execKey "8" { exec "togglep m_rinput 0 1 2" }
+
+
 		QUICKMESSAGE_LINE_TEXT(167, "@QUICKMESSAGE_ESC_EXIT", 1 1 1 1)
 	}
 }

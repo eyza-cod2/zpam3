@@ -89,7 +89,7 @@
 			forecolor		1 1 1 1
 			backcolor		0 0 0 0.7975
 			type			ITEM_TYPE_TEXT
-			text			"Quick settings"
+			text			"zPAM settings"
 			textfont		UI_FONT_NORMAL
 			textscale		.24
 			textalignx		112
@@ -108,30 +108,19 @@
 			decoration
 		}
 
-		QUICKMESSAGE_LINE_TEXT_DVAR(20, "1. Auto recording: ^5On", 1 1 1 1, "ui_quicksettings_autorecording", showDvar { "1" })
-		QUICKMESSAGE_LINE_TEXT_DVAR(20, "1. Auto recording: ^5Off", 1 1 1 1, "ui_quicksettings_autorecording", showDvar { "0" })
-		execKey "1" { exec "openscriptmenu quicksettings autorecording" }
+		QUICKMESSAGE_LINE_TEXT_DVAR(20, "1. Show match info on top: ^5Yes", 1 1 1 1, "ui_quicksettings_matchinfo", showDvar { "1" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(20, "1. Show match info on top: ^5No", 1 1 1 1, "ui_quicksettings_matchinfo", showDvar { "0" })
+		execKey "1" { exec "openscriptmenu quicksettings matchinfo" }
 
-		QUICKMESSAGE_LINE_TEXT_DVAR(35, "2. Show match info in game: ^5Yes", 1 1 1 1, "ui_quicksettings_matchinfo", showDvar { "1" })
-		QUICKMESSAGE_LINE_TEXT_DVAR(35, "2. Show match info in game: ^5No", 1 1 1 1, "ui_quicksettings_matchinfo", showDvar { "0" })
-		execKey "2" { exec "openscriptmenu quicksettings matchinfo" }
+		QUICKMESSAGE_LINE_TEXT_DVAR(35, "2. Show score during round: ^5Yes", 1 1 1 1, "ui_quicksettings_score", showDvar { "1" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(35, "2. Show score during round: ^5No", 1 1 1 1, "ui_quicksettings_score", showDvar { "0" })
+		execKey "2" { exec "openscriptmenu quicksettings score" }
 
-		QUICKMESSAGE_LINE_TEXT_DVAR(50, "3. Show score: ^5Yes", 1 1 1 1, "ui_quicksettings_score", showDvar { "1" })
-		QUICKMESSAGE_LINE_TEXT_DVAR(50, "3. Show score: ^5No", 1 1 1 1, "ui_quicksettings_score", showDvar { "0" })
-		execKey "3" { exec "openscriptmenu quicksettings score" }
-
-		QUICKMESSAGE_LINE_TEXT_DVAR(65, "4. Show enemy list: ^5Yes", 1 1 1 1, "ui_quicksettings_playersleft", showDvar { "1" })
-		QUICKMESSAGE_LINE_TEXT_DVAR(65, "4. Show enemy list: ^5No", 1 1 1 1, "ui_quicksettings_playersleft", showDvar { "0" })
-		execKey "4" { exec "openscriptmenu quicksettings playersleft" }
+		QUICKMESSAGE_LINE_TEXT_DVAR(50, "3. Hit indicator: ^5Old style", 1 1 1 1, "ui_quicksettings_hitindicator", showDvar { "0" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(50, "3. Hit indicator: ^5New with animation", 1 1 1 1, "ui_quicksettings_hitindicator", showDvar { "1" })
+		execKey "3" { exec "openscriptmenu quicksettings hitindicator" }
 
 
-		QUICKMESSAGE_LINE_TEXT_DVAR(80, "5. Hit indicator zoom: ^5On", 1 1 1 1, "ui_quicksettings_hitindicator", showDvar { "1" })
-		QUICKMESSAGE_LINE_TEXT_DVAR(80, "5. Hit indicator zoom: ^5Off", 1 1 1 1, "ui_quicksettings_hitindicator", showDvar { "0" })
-		execKey "5" { exec "openscriptmenu quicksettings hitindicator" }
-
-
-		QUICKMESSAGE_LINE_TEXT(110, "6. Mouse settings", 1 1 1 1)
-		execKey "6" { close quicksettings; open mousesettings }
 
 
 		QUICKMESSAGE_LINE_TEXT(167, "@QUICKMESSAGE_ESC_EXIT", 1 1 1 1)
