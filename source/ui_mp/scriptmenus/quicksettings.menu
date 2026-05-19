@@ -125,11 +125,9 @@
 		execKey "4" { exec "openscriptmenu quicksettings playersleft" }
 
 
-		QUICKMESSAGE_LINE_TEXT_DVAR(80, "5. Packet duplication: ^50x", 1 1 1 1, "cl_packetdup", showDvar { "0" })
-		QUICKMESSAGE_LINE_TEXT_DVAR(80, "5. Packet duplication: ^51x", 1 1 1 1, "cl_packetdup", showDvar { "1" })
-		QUICKMESSAGE_LINE_TEXT_DVAR(80, "5. Packet duplication: ^52x", 1 1 1 1, "cl_packetdup", showDvar { "2" })
-		QUICKMESSAGE_LINE_TEXT_DVAR(80, "5. Packet duplication: ^53x", 1 1 1 1, "cl_packetdup", showDvar { "3" })
-		execKey "5" { exec "togglep cl_packetdup 0 1 2 3" }
+		QUICKMESSAGE_LINE_TEXT_DVAR(80, "5. Hit indicator zoom: ^5On", 1 1 1 1, "ui_quicksettings_hitindicator", showDvar { "1" })
+		QUICKMESSAGE_LINE_TEXT_DVAR(80, "5. Hit indicator zoom: ^5Off", 1 1 1 1, "ui_quicksettings_hitindicator", showDvar { "0" })
+		execKey "5" { exec "openscriptmenu quicksettings hitindicator" }
 
 
 		QUICKMESSAGE_LINE_TEXT(110, "6. Mouse settings", 1 1 1 1)
