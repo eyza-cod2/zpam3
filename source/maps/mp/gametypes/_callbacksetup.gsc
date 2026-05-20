@@ -216,7 +216,7 @@ emptyName()
 
 	for(;;)
 	{
-		wait level.fps_multiplier * 1;
+		wait level.fps_multiplier * 0.5;
 
 		// Wait untill the name is changed
 		if (self.name == self.name_old)
@@ -244,19 +244,30 @@ emptyName()
 		}
 
 		// "[{}]" protection (to avoid Unbound binds exploit)
-		if (isSubstr(self.name, "[{") && isSubstr(self.name, "}]"))
+		hasBracesPattern = false;
+		for (open_i = 0; open_i + 1 < self.name.size; open_i++)
 		{
-			if (isDefined(self.pers["name_braces_warned"]))
+			if (self.name[open_i] == "[" && self.name[open_i + 1] == "{")
 			{
-				iprintln("Player ID " + id + " kicked due to using [{}] in name!");
-				kick(id);
+				// Require at least one character inside: [{x}]
+				for (close_i = open_i + 3; close_i + 1 < self.name.size; close_i++)
+				{
+					if (self.name[close_i] == "}" && self.name[close_i + 1] == "]")
+					{
+						hasBracesPattern = true;
+						break;
+					}
+				}
+
+				if (hasBracesPattern)
+					break;
 			}
-			else
-			{
-				self.pers["name_braces_warned"] = true;
-				self iprintlnbold("^1Using [{}] in name is not allowed!");
-				self iprintlnbold("^1Setting the name again will lead to kick!");
-			}
+		}
+
+		if (hasBracesPattern)
+		{
+			self iprintlnbold("^1Using [{}] in name is not allowed!");
+
 			safeName = "";
 			for (i = 0; i < self.name.size; i++)
 			{
@@ -269,7 +280,7 @@ emptyName()
 			if (safeName == "")
 				safeName = "Unnamed player";
 			self setClientCvar("name", safeName);
-			wait level.fps_multiplier * 3; // wait untill the name is trully renamed
+			wait level.fps_multiplier * 1; // wait untill the name is trully renamed
 		}
 
 		self.name_old = self.name;
