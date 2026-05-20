@@ -1,6 +1,6 @@
 Installation
 Extract files into following locations:
-	- ./Call of Duty 2/main/zpam407.iwd
+	- ./Call of Duty 2/main/zpam408.iwd
 	- ./Call of Duty 2/main/zpam_maps_v7.iwd
 	- ./Call of Duty 2/main/server.cfg
 

@@ -7,18 +7,19 @@ The code from the previous version zPAM 2.07 was completely rewritten and ported
 Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 4.07.<br>
+*This page describe only actual version zPAM 4.08.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
 - #### Actual version for CoD2x 1.4
-	- 2026/05/13 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.07/zpam407.zip">zPAM 4.07 - zpam407.zip</a></b> - compatible with CoD2x 1.4.6.7 and higher.
+	- 2026/05/20 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.08/zpam408.zip">zPAM 4.08 - zpam408.zip</a></b> - compatible with CoD2x 1.4.6.7 and higher.
 
 - #### Compatible version for 1.3
 	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
 
 ## Version list
-- 2026/05/13 - <b>zPAM 4.07</b>
+- 2026/05/20 - <b>zPAM 4.08</b>
+- 2026/05/13 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/d30f47d10380f98284d8912488b22c7868701b9f">zPAM 4.07</a></b>
 - 2026/03/24 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/85e6cf4a8c1e6b848973ca5ceb2e1db64fd57885">zPAM 4.06</a></b>
 - 2026/02/21 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/69d849e354cb94ca01ac7dc077c292a17bc7c0d3">zPAM 4.05</a></b>
 - 2025/11/07 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/6b7f60d0b8ea01e2554cd181623879bfd9096344">zPAM 4.04</a></b>
@@ -50,6 +51,24 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+
+<details><summary>zPAM 4.08 changes (click to open)</summary>
+<p>
+
+**Changes:**
+- Fixed weapon persistence to keep same weapons from end of the round also in next round; keep "kar bug" fix
+- Ability to toggle hit indicator animation via settings
+- Updated menu with zPAM settings; removed auto recording and enemy list as its always enabled now; mouse settings moved to top level, added m_rinput and sensitivity_mg cvars
+- Faster respawn in readyup (2sec to 0.5sec)
+- Added protection against [{name}] in players names, resulting to showing "Unbound" instead of player name
+- Ban time set to 0 seconds when player is kicked by zpam (because of bad name for example) in competitive settings
+- Code: Fix parse error when commit contains quotes
+</p>
+</details>
+
+
+
 
 <details><summary>zPAM 4.07 changes (click to open)</summary>
 <p>
@@ -593,8 +612,8 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.07/zpam407.zip">zPAM 4.07</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam407.iwd
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.08/zpam408.zip">zPAM 4.08</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam408.iwd
 	- ./Call of Duty 2/main/zpam_maps_v7.iwd <i>(*not required for 1.0 and 1.2 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
@@ -1138,7 +1157,7 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 #### Cvar /fs_game is not empty!
 Make sure cvar /fs_game is empty (+set fs_game "") and iwd files are placed in main folder.
 
-#### Iwd file zpam407.iwd must be installed in main folder.
+#### Iwd file zpam408.iwd must be installed in main folder.
  - Since version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that player's settings changed in game are not saved into the config when running a game with fs_game set.
 
