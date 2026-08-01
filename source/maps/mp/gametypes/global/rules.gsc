@@ -55,6 +55,7 @@ Init()
 		custom = PAMModeContains("custom");
 		//ot = isDefined(game["overtime_active"]) && game["overtime_active"];
 		NA = PAMModeContains("na");
+		SA = PAMModeContains("sa");
 		rifle = PAMModeContains("rifle");
 
 		// This is because of fucking cod2 precache system
@@ -96,6 +97,23 @@ Init()
 		if (!rifle && NA && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^5NA^7";
 		//
 		//
+		if (!rifle && SA && !custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | 2v2 | ^3Draw^7 | ^3LAN";
+		if (!rifle && SA && !custom && _2v2 && !draw && lan)	game["leagueOptionsString"] = &"^2SA^7 | 2v2 | ^3LAN";
+		if (!rifle && SA && !custom && _2v2 && draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | 2v2 | ^3Draw^7";
+		if (!rifle && SA && !custom && !_2v2 && draw && lan)	game["leagueOptionsString"] = &"^2SA^7 | ^3Draw^7 | ^3LAN";
+		if (!rifle && SA && !custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | 2v2";
+		if (!rifle && SA && !custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | ^3Draw^7";
+		if (!rifle && SA && !custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"^2SA^7 | ^3LAN";
+		// -
+		if (!rifle && SA && custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | 2v2 | ^3Draw^7 | ^3LAN";
+		if (!rifle && SA && custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | 2v2 | ^3LAN";
+		if (!rifle && SA && custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | 2v2 | ^3Draw^7";
+		if (!rifle && SA && custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | ^3Draw^7 | ^3LAN";
+		if (!rifle && SA && custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | 2v2";
+		if (!rifle && SA && custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | ^3Draw^7";
+		if (!rifle && SA && custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | ^3LAN";
+		if (!rifle && SA && custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7";
+		if (!rifle && SA && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^2SA^7";
 		//
 		if (rifle && !NA && !custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"EU | 2v2 | Rifle | ^3Draw^7 | ^3LAN";
 		if (rifle && !NA && !custom && _2v2 && !draw && lan)	game["leagueOptionsString"] = &"EU | 2v2 | Rifle | ^3LAN";
@@ -132,6 +150,23 @@ Init()
 		if (rifle && NA && custom && !_2v2 && !draw && lan)		game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | Rifle | ^3LAN";
 		if (rifle && NA && custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | ^3Custom^7 | Rifle";
 		if (rifle && NA && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^5NA^7 | Rifle";
+		if (rifle && SA && !custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | 2v2 | Rifle | ^3Draw^7 | ^3LAN";
+		if (rifle && SA && !custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | 2v2 | Rifle | ^3LAN";
+		if (rifle && SA && !custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"^2SA^7 | 2v2 | Rifle | ^3Draw^7";
+		if (rifle && SA && !custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Draw^7 | Rifle | ^3LAN";
+		if (rifle && SA && !custom && _2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | 2v2 | Rifle";
+		if (rifle && SA && !custom && !_2v2 && draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | ^3Draw^7 | Rifle";
+		if (rifle && SA && !custom && !_2v2 && !draw && lan)	game["leagueOptionsString"] = &"^2SA^7 | Rifle | ^3LAN";
+		// -
+		if (rifle && SA && custom && _2v2 && draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | 2v2 | Rifle | ^3Draw^7 | ^3LAN";
+		if (rifle && SA && custom && _2v2 && !draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | 2v2 | Rifle | ^3LAN";
+		if (rifle && SA && custom && _2v2 && draw && !lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | 2v2 | Rifle | ^3Draw^7";
+		if (rifle && SA && custom && !_2v2 && draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | ^3Draw^7 | Rifle | ^3LAN";
+		if (rifle && SA && custom && _2v2 && !draw && !lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | 2v2 | Rifle";
+		if (rifle && SA && custom && !_2v2 && draw && !lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | ^3Draw^7 | Rifle";
+		if (rifle && SA && custom && !_2v2 && !draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | Rifle | ^3LAN";
+		if (rifle && SA && custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | Rifle";
+		if (rifle && SA && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | Rifle";
 		if (rifle && !NA && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"EU | Rifle";
 
 		precacheString(game["leagueOptionsString"]);
@@ -168,7 +203,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^7_mr3, _mr10, _mr12, _mr15, _20rounds");
-				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _sa, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "dm")
 			{
@@ -176,7 +211,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp, warmup");
 				iprintln("^3Sub-modes:");
 				iprintln("^710min, 15min, 30min, 60min, unlim");
-				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _sa, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "tdm")
 			{
@@ -184,7 +219,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^710min, 15min, 30min, 60min, unlim");
-				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _sa, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "ctf")
 			{
@@ -192,7 +227,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^710min, 15min, 30min, 60min, unlim");
-				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _sa, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "hq")
 			{
@@ -200,7 +235,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^710min, 15min, 30min, 60min, unlim");
-				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _sa, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "htf")
 			{
@@ -208,7 +243,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^710min, 15min, 30min, 60min, unlim");
-				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _sa, _2v2, _rifle, _lan, _custom");
 			}
 			else if (level.gametype == "re")
 			{
@@ -216,7 +251,7 @@ IsValidPAMMode(cvar, value_now, registerTime)
 				iprintln("^7pub, comp");
 				iprintln("^3Sub-modes:");
 				iprintln("^7_mr3, _mr10, _mr12, _mr15, _20rounds");
-				iprintln("^7_na, _2v2, _rifle, _lan, _custom");
+				iprintln("^7_na, _sa, _2v2, _rifle, _lan, _custom");
 			}
 			else
 				iprintln("^3Change to other gametype!");
@@ -263,13 +298,13 @@ IsValidPAMModeForGametype(gametype, pammode)
 		else
 		{
 			if (!IsToggleSubPamMode(array[i]) && (
-			    (gametype == "sd"  && array[i] != "mr3" && array[i] != "mr10" && array[i] != "mr12" && array[i] != "mr15" && array[i] != "20rounds" && array[i] != "na") ||
-			    (gametype == "dm"  && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na") ||
-			    (gametype == "tdm" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na") ||
-			    (gametype == "ctf" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na") ||
-			    (gametype == "hq"  && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na") ||
-			    (gametype == "htf" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na") ||
-			    (gametype == "re" && array[i] != "mr3" && array[i] != "mr10" && array[i] != "mr12" && array[i] != "mr15" && array[i] != "20rounds" && array[i] != "na")))
+			    (gametype == "sd"  && array[i] != "mr3" && array[i] != "mr10" && array[i] != "mr12" && array[i] != "mr15" && array[i] != "20rounds" && array[i] != "na" && array[i] != "sa") ||
+			    (gametype == "dm"  && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na" && array[i] != "sa") ||
+			    (gametype == "tdm" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na" && array[i] != "sa") ||
+			    (gametype == "ctf" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na" && array[i] != "sa") ||
+			    (gametype == "hq"  && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na" && array[i] != "sa") ||
+			    (gametype == "htf" && array[i] != "10min" && array[i] != "15min" && array[i] != "30min" && array[i] != "60min" && array[i] != "unlim" && array[i] != "na" && array[i] != "sa") ||
+			    (gametype == "re" && array[i] != "mr3" && array[i] != "mr10" && array[i] != "mr12" && array[i] != "mr15" && array[i] != "20rounds" && array[i] != "na" && array[i] != "sa")))
 			{
 				isValid = false;
 				break;
@@ -308,6 +343,7 @@ IsToggleSubPamMode(name)
 		case "custom":
 		case "rifle":
 		case "na":
+		case "sa":
 			return true;
 	}
 	/#
@@ -327,6 +363,7 @@ LoadToggleSubPamMode(name)
 		case "custom": 	maps\mp\gametypes\rules\custom::Load(); return true;
 		case "rifle": 	maps\mp\gametypes\rules\rifle::Load(); return true;
 		case "na":		maps\mp\gametypes\rules\na::Load(); return true;
+		case "sa":		maps\mp\gametypes\rules\sa::Load(); return true;
 	}
 	/#
 	if (name == "developer") {
