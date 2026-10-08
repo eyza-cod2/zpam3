@@ -769,6 +769,10 @@ Check_All_Ready()
 
 areAllPlayersReady()
 {
+	// Time to join / ready-up expired, match is being canceled (_matchinfo_ready_timeout.gsc)
+	if (isDefined(level.ready_timeout_expired))
+		return false;
+
 	players = getentarray("player", "classname");
 
 	if (players.size == 0)
@@ -951,7 +955,7 @@ ReadyUp_AutoResume(minutes)
 				axisCount++;
 		}
 
-		if (alliesCount > 0 && axisCount > 0 && (alliesReady || axisReady))
+		if (alliesCount > 0 && axisCount > 0 && (alliesReady || axisReady) && !isDefined(level.ready_timeout_expired))
 		{
 			// After this time, set all player is ready
 			level.playersready = true;
