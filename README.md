@@ -58,12 +58,12 @@ To see description of previous versions, click on the links in [Version list](#v
 <p>
 
 **Changes:**
-- Extended match stats: real damage, headshots, entry kills/deaths, aces and clutches (thanks Frane)
+- Extended match stats: real damage, headshots, entry kills/deaths, aces and clutches (thanks h1z)
 	- damage in match data is now real HP dealt to enemies (capped by victim's remaining health)
 	- headshots counted in all gametypes; TDM/HQ/CTF/HTF now track kills/deaths/damage/headshots
 	- SD/RE: entry kills/deaths, aces and 1vX clutches (counted only if both teams have 2+ players)
 	- RE uploads match data after every round, TDM/HQ/CTF/HTF every minute
-- Kick players in team that are not allowed to play in the match (not logged in via /match login or not assigned to any team) - players are warned 2 times and then kicked; can be disabled via new cvar scr_matchinfo_kick_not_allowed (thanks Frane)
+- Kick players in team that are not allowed to play in the match (not logged in via /match login or not assigned to any team) - players are warned 2 times and then kicked; can be disabled via new cvar scr_matchinfo_kick_not_allowed (thanks h1z)
 - New PAM sub-mode ruleset for the South American region - comp_sa (thanks brolpzt)
 - EU competitive rules: scr_smoke_type changed to 2 (consistent smoke), same as NA
 </p>
@@ -698,8 +698,36 @@ Big thanks for testing and feedback
 **mtN**   (discord: mtn_53, mtN#8249)<br>
 Big thanks for PAM promoting
 
+**h1z**<br>
+Big thanks for extended match stats and kicking of players not allowed in the match
+
 **Other supporters:**<br>
 cokY, Sk1lzZ, kebit, foxbuster, <==Mustang==>Clan from Hungary, hubertgruber / dutch, excel, shady, jza, Saber, jansen
+
+
+<br><br>
+
+## Region rulesets
+EU ruleset is the default. NA and SA rulesets are based on the EU ruleset and change only the settings below. Use only one region option at a time.
+
+| Setting | EU<br>`comp` | NA<br>`comp_na` | SA<br>`comp_sa` |
+|---|:---:|:---:|:---:|
+| **Smoke type** - how smoke from smoke grenade looks, see [smoke types](#smoke-types)<br>`scr_smoke_type` | 2 - Consistent | 2 - Consistent | 2 - Consistent |
+| **Antilag** - player's ping is considered when calculating hits, what you see on your screen is what the server uses<br>`g_antilag` | ❌ | ✅ | ✅ |
+| **Shotgun pellet spread** - pellets form predefined pattern instead of random spread, see [pellet spread and damage](#pellet-spread-and-pellet-damage)<br>`g_shotgun_spread_fix` | ✅ | ✅ | ✅ |
+| **Shotgun pellet damage** - damage depends only on distance, kills at close range and is weak at long range, see [pellet spread and damage](#pellet-spread-and-pellet-damage)<br>`scr_shotgun_consistent` | ✅ | ✅ | ❌ |
+| **Buffed BAR** - faster reload and fire rate<br>`scr_bar_buffed` | ❌ | ✅ | ❌ |
+| **Buffed Bren** - faster reload<br>`scr_bren_buffed` | ❌ | ✅ | ❌ |
+| **British on Breakout TLS** - allies are British instead of Americans on map Breakout TLS<br>`scr_breakout_british` | ❌ | ✅ | ❌ |
+
+Same in all regions: neck shots count as headshots (`scr_hitbox_neck_kill 1`), server fps 30 (`sv_fps 30`).
+
+##### Smoke types
+| Value | Description |
+|---|---|
+| 0 - Thin | Original thin smoke |
+| 1 - Thick | Thick smoke |
+| 2 - Consistent | New consistent smoke modeled after thick smoke |
 
 
 <br><br>
@@ -819,6 +847,23 @@ Shotgun problem analysis: https://youtu.be/7saFLaQoiwI
  - You can debug consistent shotgun in game via command **/rcon debug_shotgun 1**
 
 **Consistent shotgun is enabled by default**
+
+#### Pellet spread and pellet damage
+The shotgun is controlled by 2 separate cvars. Both are enabled by default.
+
+<img src="images/shotgun_pellet_pattern.png" /><br>
+*Predefined patterns of pellets used by `g_shotgun_spread_fix`*
+
+- `g_shotgun_spread_fix` - **where the pellets go**. Pellets form one of the predefined patterns (rotated randomly), so the spread is predictable instead of completely random.
+- `scr_shotgun_consistent` - **how much damage each pellet hit does**. Makes damage depend only on distance, so the shotgun kills at close range and is weak at long range.
+
+| | `g_shotgun_spread_fix` | `scr_shotgun_consistent` |
+|---|---|---|
+| Handled by | CoD2x (since 1.4.6.5) | zPAM |
+| 0 - Off | Original random spread | Original damage: 50hp per pellet in 0-384, then linearly 50hp - 5hp in 384-800 |
+| 1 - On | Predefined pattern of pellets with random rotation | 0-280: 100hp (1 pellet kills)<br>280-400: 75hp per pellet<br>400-500: 35hp per pellet<br>500-800: only first pellet counts, linearly 34hp - 0hp |
+
+Distance is measured from the eye of the attacker to the pelvis of the enemy.
 
 
  <br>
@@ -1295,6 +1340,8 @@ Attackers should take both objectives to the goal (blue box) to win. (or elimina
 | draw | Overtime is disabled |
 | lan | Readyup warnings are disabled |
 | custom | custom ruleset |
+| na | North American region ruleset (see [Region rulesets](#region-rulesets)) |
+| sa | South American region ruleset (see [Region rulesets](#region-rulesets)) |
 
 <br><br>
 ##### Examples
@@ -1311,6 +1358,8 @@ PAM modes, score modes and options can be mixed together, for example:
 | /rcon pam_mode comp_rifle 	| Competitive mode, bolt action and sniper only |
 | /rcon pam_mode comp_rifle_2v2	| Competitive mode, bolt action only, sniper disabled |
 | /rcon pam_mode comp_lan  	| Competitive mode on LAN, no readyup time limits |
+| /rcon pam_mode comp_na  	| Competitive mode with North American ruleset |
+| /rcon pam_mode comp_sa  	| Competitive mode with South American ruleset |
 
 <br>
 
