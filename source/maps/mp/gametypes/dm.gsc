@@ -329,6 +329,9 @@ self is the player that took damage.
 */
 onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
 {
+	// Player's stats - increase damage dealt (_player_stat.gsc)
+	if (!(iDFlags & level.iDFLAGS_NO_PROTECTION) && isDefined(eAttacker) && isPlayer(eAttacker) && eAttacker != self && !level.in_readyup && level.matchstarted && !level.mapended)
+		eAttacker maps\mp\gametypes\_player_stat::AddDamageDealt(iDamage, self);
 }
 
 // Called as last funtction after all onPlayerDamaged events are processed
@@ -386,6 +389,9 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 		{
 			attacker maps\mp\gametypes\_player_stat::AddKill();
 			attacker maps\mp\gametypes\_player_stat::AddScore(1);
+
+			if (sMeansOfDeath == "MOD_HEAD_SHOT")
+				attacker maps\mp\gametypes\_player_stat::AddHeadshot();
 		}
 	}
 	

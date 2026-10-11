@@ -15,6 +15,9 @@ init()
     addEventListener("onConnectedAll",    ::onConnectedAll);
     addEventListener("onJoinedTeam",    ::onJoinedTeam);
 
+    // Minimal team size to count entry kills, 1vX clutches and aces (to ignore 1v1 matches)
+    level.stat_round_min_team_size = 2;
+
     //thread printThread();
 }
 
@@ -201,6 +204,14 @@ print()
       println("game[playerstats]["+i+"][grenades]    = " + data["grenades"]);
       println("game[playerstats]["+i+"][plants]      = " + data["plants"]);
       println("game[playerstats]["+i+"][defuses]     = " + data["defuses"]);
+      println("game[playerstats]["+i+"][damage_dealt]= " + data["damage_dealt"]);
+      println("game[playerstats]["+i+"][headshots]   = " + data["headshots"]);
+      println("game[playerstats]["+i+"][entry_kills] = " + data["entry_kills"]);
+      println("game[playerstats]["+i+"][entry_deaths]= " + data["entry_deaths"]);
+      println("game[playerstats]["+i+"][aces]        = " + data["aces"]);
+      for (c = 1; c <= data["clutches_max"]; c++)
+        if (isDefined(data["clutches_won_1v" + c]))
+          println("game[playerstats]["+i+"][clutches_won_1v"+c+"]  = " + data["clutches_won_1v" + c] + " / " + data["clutches_attempts_1v" + c]);
     }
     else
     {
@@ -285,6 +296,19 @@ onConnected()
 			game["playerstats"][newIndex]["grenades"] = 0;
 			game["playerstats"][newIndex]["plants"] = 0;
 			game["playerstats"][newIndex]["defuses"] = 0;
+			game["playerstats"][newIndex]["damage_dealt"] = 0;
+			game["playerstats"][newIndex]["headshots"] = 0;
+			game["playerstats"][newIndex]["entry_kills"] = 0;
+			game["playerstats"][newIndex]["entry_deaths"] = 0;
+			game["playerstats"][newIndex]["aces"] = 0;
+			game["playerstats"][newIndex]["round_kills"] = 0;
+			game["playerstats"][newIndex]["round_kills_team"] = "";
+			game["playerstats"][newIndex]["clutches_max"] = 5;
+			for (c = 1; c <= 5; c++)
+			{
+				game["playerstats"][newIndex]["clutches_won_1v" + c] = 0;
+				game["playerstats"][newIndex]["clutches_attempts_1v" + c] = 0;
+			}
 		}
 	}
 
@@ -316,6 +340,11 @@ onDisconnect()
 restoreScore(kills, deaths)
 {
   self endon("disconnect");
+
+  // Score is restored from kills only in gametypes where kills were always tracked (keep previous behaviour)
+  // Other gametypes have score based on objective points and teamkill penalties
+  if (level.gametype != "sd" && level.gametype != "re" && level.gametype != "dm")
+    return;
 
   wait level.frame; // wait untill score if properly initialized
 
@@ -400,5 +429,208 @@ AddDefuse()
     if (dataId >= 0)
     {
       game["playerstats"][dataId]["defuses"] += 1;
+    }
+}
+
+// Real HP damage dealt to enemy, capped by the victim's remaining health so overkill is not counted
+// Must be called before finishPlayerDamage is applied
+AddDamageDealt(iDamage, victim)
+{
+    if (iDamage < 1)
+      iDamage = 1;
+    if (iDamage > victim.health)
+      iDamage = victim.health;
+    if (iDamage <= 0)
+      return;
+
+    dataId = self getStatId();
+    if (dataId >= 0)
+    {
+      game["playerstats"][dataId]["damage_dealt"] += iDamage;
+    }
+}
+
+AddHeadshot()
+{
+    dataId = self getStatId();
+    if (dataId >= 0)
+    {
+      game["playerstats"][dataId]["headshots"] += 1;
+    }
+}
+
+
+
+/*
+Round based stats (entry kills, aces, clutches) - used in SD and RE
+Flow:
+  RoundStarted()          - when round goes live (after strat time)
+  AddRoundKill(victim)    - for every enemy kill counted into stats
+  UpdateClutch()          - every time alive players are recounted
+  RoundEnded(roundwinner) - when round ends
+*/
+
+RoundStarted()
+{
+    level.stat_round_active = true;
+    level.stat_round_entry_done = false;
+    level.stat_round_clutch = [];
+    level.stat_round_clutch_enemies = [];
+    level.stat_round_team_size = [];
+    level.stat_round_team_size["allies"] = 0;
+    level.stat_round_team_size["axis"] = 0;
+
+    updateRoundTeamSize();
+
+    for (i = 0; i < game["playerstats"].size; i++)
+    {
+      game["playerstats"][i]["round_kills"] = 0;
+      game["playerstats"][i]["round_kills_team"] = "";
+    }
+}
+
+// Team size is the max count of alive players seen in round
+// (with strat time 0 players may not be spawned yet when round starts, so its updated also on kills)
+updateRoundTeamSize()
+{
+    alive["allies"] = 0;
+    alive["axis"] = 0;
+
+    players = getentarray("player", "classname");
+    for(i = 0; i < players.size; i++)
+    {
+      player = players[i];
+      if ((player.pers["team"] == "allies" || player.pers["team"] == "axis") && player.sessionstate == "playing")
+        alive[player.pers["team"]]++;
+    }
+
+    if (alive["allies"] > level.stat_round_team_size["allies"])
+      level.stat_round_team_size["allies"] = alive["allies"];
+    if (alive["axis"] > level.stat_round_team_size["axis"])
+      level.stat_round_team_size["axis"] = alive["axis"];
+}
+
+isRoundActive()
+{
+    return isDefined(level.stat_round_active) && level.stat_round_active;
+}
+
+// self is attacker
+AddRoundKill(victim)
+{
+    if (!isRoundActive())
+      return;
+
+    // Victim is still counted as alive here
+    updateRoundTeamSize();
+
+    dataId = self getStatId();
+    if (dataId >= 0)
+    {
+      game["playerstats"][dataId]["round_kills"] += 1;
+      game["playerstats"][dataId]["round_kills_team"] = victim.pers["team"];
+    }
+
+    // First kill of the round
+    if (!level.stat_round_entry_done &&
+        level.stat_round_team_size["allies"] >= level.stat_round_min_team_size &&
+        level.stat_round_team_size["axis"] >= level.stat_round_min_team_size)
+    {
+      level.stat_round_entry_done = true;
+
+      if (dataId >= 0)
+        game["playerstats"][dataId]["entry_kills"] += 1;
+
+      victimId = victim getStatId();
+      if (victimId >= 0)
+        game["playerstats"][victimId]["entry_deaths"] += 1;
+    }
+}
+
+// Save 1vX situation when player becomes the last alive player of his team
+UpdateClutch()
+{
+    if (!isRoundActive() || level.roundended)
+      return;
+
+    // Catch players spawned after round start (strat time 0) even if no kill was counted yet
+    updateRoundTeamSize();
+
+    alive["allies"] = [];
+    alive["axis"] = [];
+    players = getentarray("player", "classname");
+    for(i = 0; i < players.size; i++)
+    {
+      player = players[i];
+      if ((player.pers["team"] == "allies" || player.pers["team"] == "axis") && player.sessionstate == "playing")
+        alive[player.pers["team"]][alive[player.pers["team"]].size] = player;
+    }
+
+    teams[0] = "allies";
+    teams[1] = "axis";
+    for (t = 0; t < teams.size; t++)
+    {
+      team = teams[t];
+      enemy = "axis";
+      if (team == "axis") enemy = "allies";
+
+      if (isDefined(level.stat_round_clutch[team]))
+        continue;
+      if (level.stat_round_team_size[team] < level.stat_round_min_team_size)
+        continue;
+      if (alive[team].size != 1 || alive[enemy].size < 1)
+        continue;
+
+      dataId = alive[team][0] getStatId();
+      if (dataId < 0)
+        continue;
+
+      level.stat_round_clutch[team] = dataId;
+      level.stat_round_clutch_enemies[team] = alive[enemy].size;
+    }
+}
+
+RoundEnded(roundwinner)
+{
+    if (!isRoundActive())
+      return;
+    level.stat_round_active = false;
+
+    // Clutches - won only if player's team won the round
+    teams[0] = "allies";
+    teams[1] = "axis";
+    for (t = 0; t < teams.size; t++)
+    {
+      team = teams[t];
+      if (!isDefined(level.stat_round_clutch[team]))
+        continue;
+
+      enemies = level.stat_round_clutch_enemies[team];
+      dataId = level.stat_round_clutch[team];
+
+      // 1v1 - 1v5 are inited on connect, bigger situations (6v6 etc.) are created on demand
+      if (!isDefined(game["playerstats"][dataId]["clutches_won_1v" + enemies]))
+      {
+        game["playerstats"][dataId]["clutches_won_1v" + enemies] = 0;
+        game["playerstats"][dataId]["clutches_attempts_1v" + enemies] = 0;
+        if (enemies > game["playerstats"][dataId]["clutches_max"])
+          game["playerstats"][dataId]["clutches_max"] = enemies;
+      }
+
+      game["playerstats"][dataId]["clutches_attempts_1v" + enemies] += 1;
+      if (roundwinner == team)
+        game["playerstats"][dataId]["clutches_won_1v" + enemies] += 1;
+    }
+
+    // Aces - player killed every enemy that was alive at round start
+    for (i = 0; i < game["playerstats"].size; i++)
+    {
+      data = game["playerstats"][i];
+      if (data["deleted"] || data["round_kills_team"] == "")
+        continue;
+
+      enemyCount = level.stat_round_team_size[data["round_kills_team"]];
+      if (enemyCount >= level.stat_round_min_team_size && data["round_kills"] >= enemyCount)
+        game["playerstats"][i]["aces"] += 1;
     }
 }

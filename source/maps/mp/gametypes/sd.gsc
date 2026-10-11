@@ -568,6 +568,7 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 		if (isDefined(eAttacker) && isPlayer(eAttacker) && eAttacker != self && eAttacker.pers["team"] != self.pers["team"] && !level.in_readyup && level.roundstarted && !level.roundended)
 		{
 			eAttacker thread watchPlayerDamageForStats(self, iDamage, sMeansOfDeath, sWeapon);
+			eAttacker maps\mp\gametypes\_player_stat::AddDamageDealt(iDamage, self);
 
 			// For assists
 			if (isDefined(self.lastAttacker) && self.lastAttacker != eAttacker)
@@ -786,6 +787,15 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 			{
 				attacker maps\mp\gametypes\_player_stat::AddKill();
 				attacker maps\mp\gametypes\_player_stat::AddScore(1);
+
+				// Bomb kills are not counted into entry kills and aces
+				if (!level.bombKill)
+					attacker maps\mp\gametypes\_player_stat::AddRoundKill(self);
+
+				if (sMeansOfDeath == "MOD_HEAD_SHOT")
+				{
+					attacker maps\mp\gametypes\_player_stat::AddHeadshot();
+				}
 
 				if (sMeansOfDeath == "MOD_GRENADE_SPLASH")
 				{
@@ -1312,6 +1322,8 @@ startRound()
 	// Round started
 	level.roundstarted = true;
 
+	// Player's stats - start tracking entry kills, aces and clutches (_player_stat.gsc)
+	level maps\mp\gametypes\_player_stat::RoundStarted();
 
 
 	// Hide pam info hud
@@ -1805,6 +1817,9 @@ endRound(roundwinner)
  	level.roundended = true;
 	level.roundwinner = roundwinner;
 
+	// Player's stats - evaluate aces and clutches (_player_stat.gsc)
+	level maps\mp\gametypes\_player_stat::RoundEnded(roundwinner);
+
 
 
 	// End bombzone threads and remove related hud elements and objectives
@@ -2128,6 +2143,9 @@ updateTeamStatus()
 
 	if(level.roundended)
 		return;
+
+	// Player's stats - detect 1vX situations (_player_stat.gsc)
+	level maps\mp\gametypes\_player_stat::UpdateClutch();
 
 	// if both allies and axis were alive and now they are both dead in the same instance
 	if(oldvalue["allies"] && !level.exist["allies"] && oldvalue["axis"] && !level.exist["axis"])

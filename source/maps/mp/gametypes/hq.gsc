@@ -486,6 +486,9 @@ self is the player that took damage.
 */
 onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime)
 {
+	// Player's stats - increase damage dealt (_player_stat.gsc)
+	if (!(iDFlags & level.iDFLAGS_NO_PROTECTION) && isDefined(eAttacker) && isPlayer(eAttacker) && eAttacker != self && eAttacker.pers["team"] != self.pers["team"] && !level.in_readyup && level.matchstarted && !level.mapended)
+		eAttacker maps\mp\gametypes\_player_stat::AddDamageDealt(iDamage, self);
 }
 
 // Called as last funtction after all onPlayerDamaged events are processed
@@ -527,6 +530,21 @@ self is the player that was killed.
 */
 onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration)
 {
+	if (level.in_readyup || !level.matchstarted || level.mapended)
+		return;
+
+	// Player's stats - increase death points (_player_stat.gsc)
+	if(!isdefined(self.switching_teams))
+		self maps\mp\gametypes\_player_stat::AddDeath();
+
+	// Player's stats - increase kill points (_player_stat.gsc)
+	if(isPlayer(attacker) && attacker != self && attacker.pers["team"] != self.pers["team"])
+	{
+		attacker maps\mp\gametypes\_player_stat::AddKill();
+
+		if (sMeansOfDeath == "MOD_HEAD_SHOT")
+			attacker maps\mp\gametypes\_player_stat::AddHeadshot();
+	}
 }
 
 // Called as last funtction after all onPlayerKilled events are processed
@@ -903,6 +921,9 @@ startGame()
 
 	level.matchstarted = true;
 	level.starttime = getTime();
+
+	// Each minute send match data
+	level thread maps\mp\gametypes\_matchinfo::uploadMatchDataPeriodically("hq minute");
 
 
 

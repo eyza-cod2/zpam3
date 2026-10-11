@@ -974,6 +974,7 @@ onPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 		if (isDefined(eAttacker) && isPlayer(eAttacker) && eAttacker != self && eAttacker.pers["team"] != self.pers["team"] && !level.in_readyup && level.roundstarted && !level.roundended)
 		{
 			eAttacker thread watchPlayerDamageForStats(self, iDamage);
+			eAttacker maps\mp\gametypes\_player_stat::AddDamageDealt(iDamage, self);
 
 			// For assists
 			if (isDefined(self.lastAttacker) && self.lastAttacker != eAttacker)
@@ -1139,6 +1140,17 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 			{
 				attacker maps\mp\gametypes\_player_stat::AddKill();
 				attacker maps\mp\gametypes\_player_stat::AddScore(1);
+				attacker maps\mp\gametypes\_player_stat::AddRoundKill(self);
+
+				if (sMeansOfDeath == "MOD_HEAD_SHOT")
+				{
+					attacker maps\mp\gametypes\_player_stat::AddHeadshot();
+				}
+
+				if (sMeansOfDeath == "MOD_GRENADE_SPLASH")
+				{
+					attacker maps\mp\gametypes\_player_stat::AddGrenade();
+				}
 
 				// For assists
 				if (isDefined(self.lastAttacker) && isDefined(self.lastAttacker2) && self.lastAttacker2 != attacker && (self.lastAttackerTime2 + 5000) > gettime())
@@ -1641,6 +1653,9 @@ startRound()
 	// Round started
 	level.roundstarted = true;
 
+	// Player's stats - start tracking entry kills, aces and clutches (_player_stat.gsc)
+	level maps\mp\gametypes\_player_stat::RoundStarted();
+
 
 	thread HUD_Clock(level.roundlength * 60);
 
@@ -1940,6 +1955,9 @@ endRound(roundwinner)
 
  	level.roundended = true;
 
+	// Player's stats - evaluate aces and clutches (_player_stat.gsc)
+	level maps\mp\gametypes\_player_stat::RoundEnded(roundwinner);
+
 
 
 	// Delete objective targets
@@ -2068,6 +2086,9 @@ endRound(roundwinner)
 
 	// Print damage stats
 	//maps\mp\gametypes\_round_report::printToAll();
+
+	// Upload match data
+	maps\mp\gametypes\_matchinfo::uploadMatchData("re endround", true, true);
 
 
 	// In SD there are 3 checks: Time limit, Score limit and Round limit
@@ -2288,6 +2309,9 @@ updateTeamStatus()
 
 	if(level.roundended)
 		return;
+
+	// Player's stats - detect 1vX situations (_player_stat.gsc)
+	level maps\mp\gametypes\_player_stat::UpdateClutch();
 
 	// if both allies and axis were alive and now they are both dead in the same instance
 	if(oldvalue["allies"] && !level.exist["allies"] && oldvalue["axis"] && !level.exist["axis"])

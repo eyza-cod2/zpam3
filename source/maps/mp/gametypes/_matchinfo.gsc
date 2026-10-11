@@ -359,28 +359,59 @@ uploadMatchData(debug, printSuccess, printError) {
 		stats = player maps\mp\gametypes\_player_stat::getStats();
 		if (!isDefined(stats)) continue;
 		
-		if (level.gametype == "sd") {
+		if (level.gametype == "sd" || level.gametype == "re") {
+
+			if (level.gametype == "sd") {
+				player matchPlayerSetData(
+					"score", 	format_fractional(stats["score"], 1, 1),
+					"deaths", 	stats["deaths"],
+					"plants", 	stats["plants"],
+					"defuses", 	stats["defuses"]
+				);
+			} else {
+				// Score in RE contains objective points
+				player matchPlayerSetData(
+					"score", 	player.score,
+					"deaths", 	stats["deaths"]
+				);
+			}
 
 			player matchPlayerSetData(
-				"score", 	format_fractional(stats["score"], 1, 1),
 				"kills", 	stats["kills"],
 				"assists", 	stats["assists"],
-				"damage", 	format_fractional(stats["damage"] / 100, 1, 1),
-				"deaths", 	stats["deaths"],
+				"damage", 	stats["damage_dealt"],
 				"grenades", stats["grenades"],
-				"plants", 	stats["plants"],
-				"defuses", 	stats["defuses"]
+				"headshots", 	stats["headshots"],
+				"entry_kills", 	stats["entry_kills"],
+				"entry_deaths", stats["entry_deaths"],
+				"aces", 	stats["aces"]
 			);
+
+			// 1v1 - 1v5 are always sent, bigger situations only if they happened
+			for (c = 1; c <= stats["clutches_max"]; c++)
+			{
+				if (!isDefined(stats["clutches_won_1v" + c]))
+					continue;
+				player matchPlayerSetData(
+					"clutches_won_1v" + c, 		stats["clutches_won_1v" + c],
+					"clutches_attempts_1v" + c, stats["clutches_attempts_1v" + c]
+				);
+			}
 		} else if (level.gametype == "dm") {
 			player matchPlayerSetData(
 				"score", 	format_fractional(stats["score"], 1, 1),
 				"kills", 	stats["kills"],
-				"deaths", 	stats["deaths"]
+				"deaths", 	stats["deaths"],
+				"damage", 	stats["damage_dealt"],
+				"headshots", 	stats["headshots"]
 			);
 		} else {
 			player matchPlayerSetData(
 				"score", 	player.score,
-				"deaths", 	player.deaths
+				"kills", 	stats["kills"],
+				"deaths", 	stats["deaths"],
+				"damage", 	stats["damage_dealt"],
+				"headshots", 	stats["headshots"]
 			);
 		}
 	}
@@ -395,6 +426,24 @@ uploadMatchData(debug, printSuccess, printError) {
 	else
 		matchUploadData();
 
+}
+
+// Upload match data every minute until map ends (gametypes without rounds)
+uploadMatchDataPeriodically(debug) {
+	level endon("intermission");
+
+	if (!matchIsActivated()) {
+		return;
+	}
+
+	for(;;) {
+		wait level.fps_multiplier * 60;
+
+		if (level.mapended)
+			return;
+
+		uploadMatchData(debug, false, true);
+	}
 }
 
 matchUploadDoneVoid() {}
