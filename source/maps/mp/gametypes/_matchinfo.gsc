@@ -17,6 +17,7 @@ Init()
 
 	registerCvar("scr_matchinfo", "INT", 0, 0, 2);					// level.scr_matchinfo
 	registerCvarEx("I", "scr_matchinfo_reset", "BOOL", 0);
+	registerCvarEx("I", "scr_matchinfo_kick_not_allowed", "BOOL", 1);	// level.scr_matchinfo_kick_not_allowed
 
 	addEventListener("onConnected",     ::onConnected);
 
@@ -465,6 +466,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 	switch(cvar)
 	{
 		case "scr_matchinfo": level.scr_matchinfo = value; return true;
+		case "scr_matchinfo_kick_not_allowed": level.scr_matchinfo_kick_not_allowed = value; return true;
 		case "scr_matchinfo_reset":
 		{
 			if (value == 1)
@@ -488,15 +490,125 @@ onConnecting(firstTime) {
 
 	// Redownload match data when player is connecting to allow connect host that was added to team while match was already in progress
 	if (matchIsActivated() && firstTime) {
-
-		// Make sure redownload is called only once in short period of time
-		level notify("matchinfo_data_redownload");
-		level endon("matchinfo_data_redownload");
-
-		wait level.fps_multiplier * 1;
-		
-		matchRedownloadData();
+		level thread redownloadMatchDataDebounced();
 	}
+}
+
+
+// Kick player in team that is not allowed to play in the match (not logged in via /match login or not assigned to any team)
+// Player is checked every 5 seconds, warned 2 times, then reason is showed and player is kicked after 3 seconds
+kickNotAllowedPlayer()
+{
+	self endon("disconnect");
+
+	checkInterval = 5;	// seconds between checks
+	checksToKick = 3;	// failed check that leads to kick
+	kickDelay = 3;		// seconds between showing kick reason and kick
+
+	// Saved in pers to avoid reset of warnings on map_restart or by switching to spectator
+	if (!isDefined(self.pers["matchinfo_notAllowedChecks"]))
+		self.pers["matchinfo_notAllowedChecks"] = 0;
+
+	// After map_restart make sure player is warned at least once before kick
+	if (self.pers["matchinfo_notAllowedChecks"] > 1)
+		self.pers["matchinfo_notAllowedChecks"] = 1;
+
+	for(;;)
+	{
+		wait level.fps_multiplier * checkInterval;
+
+		if (!isKickNotAllowedActive())
+		{
+			self.pers["matchinfo_notAllowedChecks"] = 0;
+			continue;
+		}
+
+		// Bots added by zpam for testing
+		if (isDefined(self.pers["isBot"]) && self.pers["isBot"])
+			continue;
+
+		// Only players in team are checked (spectators and streamers are allowed)
+		if (!self isInPlayingTeam())
+			continue;
+
+		// Player may login via /match login after connect
+		if (self matchPlayerIsAllowed())
+		{
+			self.pers["matchinfo_notAllowedChecks"] = 0;
+			continue;
+		}
+
+		self.pers["matchinfo_notAllowedChecks"]++;
+
+		notLoggedIn = (self matchPlayerGetData("uuid") == "");
+
+		if (self.pers["matchinfo_notAllowedChecks"] >= checksToKick)
+		{
+			if (notLoggedIn)
+				reason = "not logged into the match";
+			else
+				reason = "not assigned to any team in the match";
+
+			// Kick message cannot be customized, so show reason before kick
+			self iprintlnbold("^1You are being kicked: " + reason);
+
+			wait level.fps_multiplier * kickDelay;
+
+			// Player logged in meanwhile
+			if (self matchPlayerIsAllowed())
+			{
+				self.pers["matchinfo_notAllowedChecks"] = 0;
+				continue;
+			}
+
+			// Kick was disabled, match was canceled, map ended or player left team meanwhile
+			if (!isKickNotAllowedActive() || !self isInPlayingTeam())
+				continue;
+
+			iprintln(self.name + "^7 was kicked: ^1" + reason);
+
+			kick(self getEntityNumber());
+			return;
+		}
+
+		// Player may be added into team after connect - redownload match data (async, result is used in next check)
+		level thread redownloadMatchDataDebounced();
+
+		kickIn = (checksToKick - self.pers["matchinfo_notAllowedChecks"]) * checkInterval + kickDelay;
+
+		if (notLoggedIn)
+		{
+			self iprintlnbold("^1You are not logged into the match!");
+			self iprintlnbold("Run the game via ^3Anticheat^7 or you will be kicked in " + kickIn + " seconds");
+		}
+		else
+		{
+			self iprintlnbold("^1You are not assigned to any team in the match!");
+			self iprintlnbold("Run the game via ^3Anticheat^7 with correct account or you will be kicked in " + kickIn + " seconds");
+		}
+	}
+}
+
+// Kick is not used in public mode, because kick would also ban player for sv_kickBanTime
+isKickNotAllowedActive()
+{
+	return level.scr_matchinfo_kick_not_allowed && matchIsActivated() && !game["is_public_mode"] && game["state"] != "intermission";
+}
+
+isInPlayingTeam()
+{
+	return isDefined(self.pers["team"]) && (self.pers["team"] == "allies" || self.pers["team"] == "axis");
+}
+
+// Redownload match data, multiple calls in short period of time are merged into one
+redownloadMatchDataDebounced()
+{
+	level notify("matchinfo_data_redownload");
+	level endon("matchinfo_data_redownload");
+
+	wait level.fps_multiplier * 1;
+
+	matchRedownloadData();
 }
 
 
@@ -517,6 +629,8 @@ iprint_to_team_players(text)
 onConnected()
 {
 	self endon("disconnect");
+
+	self thread kickNotAllowedPlayer();
 
 	// Ingame match info bar
 	if (!isDefined(self.pers["matchinfo_ingame"]))
