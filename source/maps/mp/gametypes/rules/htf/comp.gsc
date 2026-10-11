@@ -101,7 +101,7 @@ GetCvars(arr)
 	arr = ruleCvarDefault(arr, "scr_hitbox_torso_fix", 1);					// Damage of M1, rifles, scopes and shotgun is adjusted to have less hits in game
 	arr = ruleCvarDefault(arr, "scr_hitbox_neck_kill", 1);			// neck hitbox will count as a headshot, buffs non-bolts
 	arr = ruleCvarDefault(arr, "scr_killcam", 0);					// Killcam
-	arr = ruleCvarDefault(arr, "scr_smoke_type", 0);	// smoke type
+	arr = ruleCvarDefault(arr, "scr_smoke_type", 2);	// smoke type
 
 
   	/*********

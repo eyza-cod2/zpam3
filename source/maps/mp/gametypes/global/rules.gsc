@@ -167,7 +167,7 @@ Init()
 		if (rifle && SA && custom && !_2v2 && !draw && lan)		game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | Rifle | ^3LAN";
 		if (rifle && SA && custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | ^3Custom^7 | Rifle";
 		if (rifle && SA && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"^2SA^7 | Rifle";
-		if (rifle && !NA && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"EU | Rifle";
+		if (rifle && !NA && !SA && !custom && !_2v2 && !draw && !lan)	game["leagueOptionsString"] = &"EU | Rifle";
 
 		precacheString(game["leagueOptionsString"]);
 	}
