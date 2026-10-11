@@ -7,18 +7,19 @@ The code from the previous version zPAM 2.07 was completely rewritten and ported
 Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 4.08.<br>
+*This page describe only actual version zPAM 4.09.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
 - #### Actual version for CoD2x 1.4
-	- 2026/05/20 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.08/zpam408.zip">zPAM 4.08 - zpam408.zip</a></b> - compatible with CoD2x 1.4.6.7 and higher.
+	- 2026/10/11 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.09/zpam409.zip">zPAM 4.09 - zpam409.zip</a></b> - compatible with CoD2x 1.4.6.7 and higher.
 
 - #### Compatible version for 1.3
 	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
 
 ## Version list
-- 2026/05/20 - <b>zPAM 4.08</b>
+- 2026/10/11 - <b>zPAM 4.09</b>
+- 2026/05/20 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/83285ae8d2ba65640cf46318feade49463652a06">zPAM 4.08</a></b>
 - 2026/05/13 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/d30f47d10380f98284d8912488b22c7868701b9f">zPAM 4.07</a></b>
 - 2026/03/24 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/85e6cf4a8c1e6b848973ca5ceb2e1db64fd57885">zPAM 4.06</a></b>
 - 2026/02/21 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/69d849e354cb94ca01ac7dc077c292a17bc7c0d3">zPAM 4.05</a></b>
@@ -51,6 +52,24 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+
+<details><summary>zPAM 4.09 changes (click to open)</summary>
+<p>
+
+**Changes:**
+- Extended match stats: real damage, headshots, entry kills/deaths, aces and clutches (thanks Frane)
+	- damage in match data is now real HP dealt to enemies (capped by victim's remaining health)
+	- headshots counted in all gametypes; TDM/HQ/CTF/HTF now track kills/deaths/damage/headshots
+	- SD/RE: entry kills/deaths, aces and 1vX clutches (counted only if both teams have 2+ players)
+	- RE uploads match data after every round, TDM/HQ/CTF/HTF every minute
+- Kick players in team that are not allowed to play in the match (not logged in via /match login or not assigned to any team) - players are warned 2 times and then kicked; can be disabled via new cvar scr_matchinfo_kick_not_allowed (thanks Frane)
+- New PAM sub-mode ruleset for the South American region - comp_sa (thanks brolpzt)
+- EU competitive rules: scr_smoke_type changed to 2 (consistent smoke), same as NA
+</p>
+</details>
+
+
 
 
 <details><summary>zPAM 4.08 changes (click to open)</summary>
@@ -612,8 +631,8 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.08/zpam408.zip">zPAM 4.08</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam408.iwd
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.09/zpam409.zip">zPAM 4.09</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam409.iwd
 	- ./Call of Duty 2/main/zpam_maps_v7.iwd <i>(*not required for 1.0 and 1.2 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
@@ -1157,7 +1176,7 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 #### Cvar /fs_game is not empty!
 Make sure cvar /fs_game is empty (+set fs_game "") and iwd files are placed in main folder.
 
-#### Iwd file zpam408.iwd must be installed in main folder.
+#### Iwd file zpam409.iwd must be installed in main folder.
  - Since version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that player's settings changed in game are not saved into the config when running a game with fs_game set.
 

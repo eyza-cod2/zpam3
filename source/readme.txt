@@ -1,8 +1,11 @@
-zPAM4.08
-Released 2026/05/20
+zPAM4.09
+Released 2026/10/11
 
-This mod was created by EYZA and Fjozek
+This mod was created by EYZA
 
-(and a tiny bit of harry :D)
+Contributors:
+- Fjozek
+- harry
+- h1z
 
 More info: https://github.com/eyza-cod2/zpam3
