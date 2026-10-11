@@ -223,6 +223,16 @@ jobs:
 
           Set-Content -Path $notesPath -Value $body -Encoding UTF8
 
+      - name: Tag release commit
+        shell: pwsh
+        run: |
+          # Tag the built commit, move the tag if it remained on an amended commit
+          git tag -f $env:VERSION_TAG $env:GITHUB_SHA
+          git push --force origin "refs/tags/$($env:VERSION_TAG)"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to push tag '$env:VERSION_TAG'."
+          }
+
       - name: Create or update GitHub release
         uses: softprops/action-gh-release@v2
         with:
