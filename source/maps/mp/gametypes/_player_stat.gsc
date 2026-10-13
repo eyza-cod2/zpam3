@@ -241,6 +241,8 @@ onConnected()
 	dataId = findReconnectData(self.name, id, self getHWID());
 	if (dataId >= 0) // note: isConnected is reseted every map_restart
 	{
+		oldPlayer = game["playerstats"][dataId]["player"];
+
 		game["playerstats"][dataId]["player"] = self;
 		game["playerstats"][dataId]["entityId"] = id;
 		game["playerstats"][dataId]["hwid"] = self getHWID();
@@ -250,6 +252,17 @@ onConnected()
 		game["playerstats"][dataId]["name"] = self.name;
 
 		self thread restoreScore(game["playerstats"][dataId]["kills"], game["playerstats"][dataId]["deaths"]);
+
+		// Player reconnected into another slot while his old connection is still there (999 ping) - drop the old connection now
+		// instead of waiting for sv_timeout. Only for new connection in the middle of the map, not when all players
+		// are connected again after map_restart / map change (old and new connection would be processed in random order)
+		// Not in public mode, where kick ban time is not set to 0 and player with same IP would be temporary banned
+		if (!game["is_public_mode"] && self.pers["callbacksetup_firstTime"] && isDefined(level.allPlayersConnected) &&
+			isDefined(oldPlayer) && oldPlayer != self && self getHWID() != "" && oldPlayer getHWID() == self getHWID())
+		{
+			iprintln(self.name + " ^7reconnected, dropping old connection");
+			kick(oldPlayer getEntityNumber());
+		}
 	}
 	else
 	{
