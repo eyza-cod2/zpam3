@@ -701,7 +701,7 @@ watchPlayerDamageForStats(enemy, damage, sMeansOfDeath, sWeapon)
 	weapons["g43_mp"] = 			50;
 	weapons["mp40_mp"] = 			50;
 	weapons["mp44_mp"] = 			50;
-	weapons["kar98k_sniper_mp"] = 		50;/*
+	weapons["kar98k_sniper_mp"] = 		100;/*
 	weapons["colt_mp"] = 			50;
 	weapons["luger_mp"] = 			50;
 	weapons["tt30_mp"] = 			50;
