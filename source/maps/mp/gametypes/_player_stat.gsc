@@ -52,7 +52,11 @@ removeOld()
 
     if (data["deleted"] || data["isConnected"]) continue;
 
-    timeout = 2; // wait 5min by default
+    // Keep stats of disconnected players for the whole match, so player who reconnects later
+    // (router / PC restart) will get his score back
+    if (game["match_exists"] || matchIsActivated()) continue;
+
+    timeout = 2; // wait 2min by default
     if (game["is_public_mode"])
     	timeout = 0.1; // 6sec in public mode
     else if (isDefined(level.in_readyup) && level.in_readyup)
@@ -248,6 +252,8 @@ onConnected()
 	dataId = findReconnectData(self.name, id, self getHWID());
 	if (dataId >= 0) // note: isConnected is reseted every map_restart
 	{
+		oldPlayer = game["playerstats"][dataId]["player"];
+
 		game["playerstats"][dataId]["player"] = self;
 		game["playerstats"][dataId]["entityId"] = id;
 		game["playerstats"][dataId]["hwid"] = self getHWID();
@@ -257,6 +263,17 @@ onConnected()
 		game["playerstats"][dataId]["name"] = self.name;
 
 		self thread restoreScore(game["playerstats"][dataId]["kills"], game["playerstats"][dataId]["deaths"]);
+
+		// Player reconnected into another slot while his old connection is still there (999 ping) - drop the old connection now
+		// instead of waiting for sv_timeout. Only for new connection in the middle of the map, not when all players
+		// are connected again after map_restart / map change (old and new connection would be processed in random order)
+		// Not in public mode, where kick ban time is not set to 0 and player with same IP would be temporary banned
+		if (!game["is_public_mode"] && self.pers["callbacksetup_firstTime"] && isDefined(level.allPlayersConnected) &&
+			isDefined(oldPlayer) && oldPlayer != self && self getHWID() != "" && oldPlayer getHWID() == self getHWID())
+		{
+			iprintln(self.name + " ^7reconnected, dropping old connection");
+			kick(oldPlayer getEntityNumber());
+		}
 	}
 	else
 	{
@@ -329,11 +346,42 @@ onDisconnect()
   dataId = findData(self.name, self getEntityNumber(), self getHWID());
   if (dataId >= 0)
   {
+    // Old 999 connection timed out after the same player already reconnected into another slot
+    // and reclaimed this stats row - keep the row connected and bound to the new connection
+    newPlayer = self findReconnectedPlayer();
+    if (isDefined(newPlayer))
+    {
+      game["playerstats"][dataId]["player"] = newPlayer;
+      game["playerstats"][dataId]["entityId"] = newPlayer getEntityNumber();
+      game["playerstats"][dataId]["isConnected"] = true;
+      game["playerstats"][dataId]["lastTime"] = getTime();
+      return;
+    }
+
     game["playerstats"][dataId]["isConnected"] = false;
     game["playerstats"][dataId]["player"] = undefined;
     game["playerstats"][dataId]["lastTime"] = getTime();
     game["playerstats"][dataId]["name"] = self.name;		// in case player renamed since connect
   }
+}
+
+// Returns other connected player with the same HWID and name as disconnecting player
+findReconnectedPlayer()
+{
+  hwid = self getHWID();
+  if (hwid == "")
+    return undefined;
+
+  players = getentarray("player", "classname");
+  for (i = 0; i < players.size; i++)
+  {
+    player = players[i];
+    if (player == self) continue;
+
+    if (player getHWID() == hwid && player.name == self.name)
+      return player;
+  }
+  return undefined;
 }
 
 
