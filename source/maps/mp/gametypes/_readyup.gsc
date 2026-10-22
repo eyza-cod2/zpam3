@@ -1058,6 +1058,9 @@ Update_Players_Count()
 
 createLevelHUD()
 {
+	// Start time of ready-up Clock (used by _matchinfo_ready_timeout.gsc)
+	level.readyup_clock_start = getTime();
+
 	// Show name of league + pam version
 	thread maps\mp\gametypes\_pam::PAM_Header();
 

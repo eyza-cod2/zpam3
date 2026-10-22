@@ -7,7 +7,9 @@ Enabled only if match data contains key "readyTimeout" with number of seconds (f
 If the key is missing or is 0, feature is disabled (ladder matches).
 
 Timer runs only in first ready-up of the first map of the match.
-Time is kept in cvars, so it continues after map change or map restart in ready-up.
+Timer follows the ready-up "Clock" - it starts when the Clock starts (first player connected)
+and is reset together with the Clock on map change / map restart.
+If nobody connects, time is counted from map start.
 If ready-up does not end in time, match is canceled:
  - if some players did not join, only their uuids are sent
  - else uuids of players who did not ready-up are sent (not ready, not in allies/axis, wrong side, misnamed)
@@ -29,6 +31,9 @@ init()
 	if (!isDefined(game["readyup_first_run"]) || !game["readyup_first_run"])
 		return;
 
+	// Level time is not reset by map_restart, so save the start time of this level
+	level.ready_timeout_level_start = getTime();
+
 	level thread watchTimeout();
 }
 
@@ -40,33 +45,49 @@ watchTimeout()
 	// Offset thread from other threads, wait for matchinfo to prepare map
 	wait level.frame * 10;
 
-	// Only first map of the match
-	if (!matchIsActivated() || !level.in_readyup || int(matchGetData("finishedMapsCount")) > 0 || !isEnabled())
+	if (!matchIsActivated() || !level.in_readyup)
 	{
-		clearSavedTime();
+		setCvar("_ready_timeout_canceled", "");
 		return;
 	}
 
-	// Continue with time saved before map change / map restart
-	matchId = matchGetData("match_id");
-	remaining = int(matchGetData("readyTimeout"));
-	if (getCvar("_ready_timeout_match") == matchId && getCvar("_ready_timeout_left") != "")
-		remaining = getCvarInt("_ready_timeout_left");
+	// Map was restarted while the match was being canceled, finish the cancel
+	if (getCvar("_ready_timeout_canceled") == matchGetData("match_id"))
+	{
+		setCvar("_ready_timeout_canceled", "");
+		matchCancel("Players did not join / ready-up in time");
+		return;
+	}
 
-	setCvar("_ready_timeout_match", matchId);
-	setCvar("_ready_timeout_left", "" + remaining);
+	// Only first map of the match
+	if (int(matchGetData("finishedMapsCount")) > 0 || !isEnabled())
+	{
+		setCvar("_ready_timeout_canceled", "");
+		return;
+	}
 
 	level thread onReadyupOver();
 
-	while (remaining > 0)
+	timeout = int(matchGetData("readyTimeout")) * 1000;
+
+	for (;;)
 	{
-		if (remaining <= 10 && !isDefined(level.ready_timeout_hud))
-			level thread HUD_CancelIn(remaining);
+		// Same start time as ready-up Clock (set in _readyup::createLevelHUD)
+		// Clock is created when first player connects, until then count from map start
+		start = level.ready_timeout_level_start;
+		if (isDefined(level.readyup_clock_start))
+			start = level.readyup_clock_start;
 
-		wait level.fps_multiplier * 1;
+		remaining = start + timeout - getTime();
+		if (remaining <= 0)
+			break;
 
-		remaining--;
-		setCvar("_ready_timeout_left", "" + remaining);
+		if (remaining <= 10000 && !isDefined(level.ready_timeout_hud))
+			level thread HUD_CancelIn(remaining / 1000);
+		else if (remaining > 10000 && isDefined(level.ready_timeout_hud))
+			HUD_Destroy(); // Clock started in the meantime
+
+		wait level.fps_multiplier * 0.1;
 	}
 
 	// Players who readied-up right before the deadline (level.playersready is set with 1 second delay)
@@ -84,13 +105,15 @@ watchTimeout()
 	// Match data might be redownloaded in the meantime (player added to team for example)
 	if (!isEnabled())
 	{
-		clearSavedTime();
 		HUD_Destroy();
 		return;
 	}
 
 	// From now the match will be canceled, ready-up cannot end anymore (checked in _readyup::areAllPlayersReady)
 	level.ready_timeout_expired = true;
+
+	// If map is restarted before matchCancel is called, match is canceled right after the restart
+	setCvar("_ready_timeout_canceled", matchGetData("match_id"));
 
 	level thread cancelMatch();
 }
@@ -117,18 +140,10 @@ isEnabled()
 }
 
 
-clearSavedTime()
-{
-	setCvar("_ready_timeout_match", "");
-	setCvar("_ready_timeout_left", "");
-}
-
-
 onReadyupOver()
 {
 	level waittill("rupover");
 
-	clearSavedTime();
 	HUD_Destroy();
 }
 
@@ -257,8 +272,7 @@ cancelMatch()
 	level waittill("ready_timeout_upload_finished");
 	wait level.fps_multiplier * 3;
 
-	// Cleared only now - if map is restarted in the meantime, match is canceled again right away (saved time is 0)
-	clearSavedTime();
+	setCvar("_ready_timeout_canceled", "");
 
 	matchCancel(text);
 }
