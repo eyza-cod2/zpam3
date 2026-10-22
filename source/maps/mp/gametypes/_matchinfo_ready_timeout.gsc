@@ -32,6 +32,7 @@ init()
 	if (game["firstInit"])
 	{
 		precacheString2("STRING_READY_TIMEOUT_CANCEL_IN", &"Match will be canceled in");
+		precacheString2("STRING_READY_TIMEOUT_DO_NOT_LEAVE", &"Do not leave the server");
 	}
 
 	if (!isDefined(game["readyup_first_run"]) || !game["readyup_first_run"])
@@ -488,8 +489,11 @@ HUD_Destroy()
 		level.ready_timeout_hud destroy2();
 	if (isDefined(level.ready_timeout_hud_clock))
 		level.ready_timeout_hud_clock destroy2();
+	if (isDefined(level.ready_timeout_hud_info))
+		level.ready_timeout_hud_info destroy2();
 	level.ready_timeout_hud = undefined;
 	level.ready_timeout_hud_clock = undefined;
+	level.ready_timeout_hud_info = undefined;
 	level notify("ready_timeout_hud_destroyed");
 }
 
@@ -514,4 +518,14 @@ HUD_CancelIn(seconds)
 	level.ready_timeout_hud_clock.fontscale = 1.4;
 	level.ready_timeout_hud_clock.color = (1, 0.2, 0.2);
 	level.ready_timeout_hud_clock setTimer(seconds);
+
+	level.ready_timeout_hud_info = newHudElem2();
+	level.ready_timeout_hud_info.x = 320;
+	level.ready_timeout_hud_info.y = 160;
+	level.ready_timeout_hud_info.alignX = "center";
+	level.ready_timeout_hud_info.alignY = "middle";
+	level.ready_timeout_hud_info.font = "default";
+	level.ready_timeout_hud_info.fontscale = 1.1;
+	level.ready_timeout_hud_info.color = (0.9, 0.9, 0.9);
+	level.ready_timeout_hud_info setText(game["STRING_READY_TIMEOUT_DO_NOT_LEAVE"]);
 }
