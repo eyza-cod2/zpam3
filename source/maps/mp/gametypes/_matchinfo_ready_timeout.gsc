@@ -13,6 +13,12 @@ If nobody connects, time is counted from map start.
 If ready-up does not end in time, match is canceled:
  - if some players did not join, only their uuids are sent
  - else uuids of players who did not ready-up are sent (not ready, not in allies/axis, wrong side, misnamed)
+During the countdown (last 10 seconds) state of connected players is saved every second.
+Player who leaves during the countdown:
+ - when all players were connected -> reported as not joined (he broke the match start)
+ - when some player was missing -> judged by his last saved state (ready = not reported)
+During the countdown, players who block the match start are printed every few seconds.
+On cancel, state of every player is written into server log (lines starting with "READY_TIMEOUT:").
 
 Uploaded global data:
 	state:               "canceled"
@@ -83,9 +89,18 @@ watchTimeout()
 			break;
 
 		if (remaining <= 10000 && !isDefined(level.ready_timeout_hud))
+		{
+			// Players who leave during the countdown are judged by their last known state (updated every second)
+			level.ready_timeout_snapshot = undefined;
 			level thread HUD_CancelIn(remaining / 1000);
+			level thread printBlockingPlayers();
+		}
 		else if (remaining > 10000 && isDefined(level.ready_timeout_hud))
-			HUD_Destroy(); // Clock started in the meantime
+		{
+			// Clock started in the meantime
+			HUD_Destroy();
+			level.ready_timeout_snapshot = undefined;
+		}
 
 		wait level.fps_multiplier * 0.1;
 	}
@@ -148,38 +163,27 @@ onReadyupOver()
 }
 
 
-isReadyInTeam()
+// Returns "" if player is ready in team, otherwise reason why not
+getNotReadyReason()
 {
-	if (!isDefined(self.isReady) || !self.isReady)
-		return false;
 	if (!isDefined(self.pers["team"]) || (self.pers["team"] != "allies" && self.pers["team"] != "axis"))
-		return false;
+		return "not in team";
 	// Wrong side, misnamed, ... (sides are determined only in scr_matchinfo 2)
 	if (game["scr_matchinfo"] == 2 && isDefined(self.pers["matchinfo_error"]) && self.pers["matchinfo_error"] != "")
-		return false;
-	return true;
+		return self.pers["matchinfo_error"];
+	if (!isDefined(self.isReady) || !self.isReady)
+		return "not ready";
+	return "";
 }
 
 
-cancelMatch()
+// Returns array with state of every player from match data:
+//   ["uuid"], ["name"], ["state"] = "ok" / "not_ready" / "not_joined", ["detail"]
+getRosterStatus()
 {
-	HUD_Destroy();
-
 	// Make sure player errors (wrong side, misnamed) are up to date
 	if (game["scr_matchinfo"] == 2)
 		maps\mp\gametypes\_matchinfo::generateMatchDescription();
-
-	expected_uuids = [];
-	expected_names = [];
-	for (t = 1; t <= 2; t++)
-	{
-		team_uuids = matchGetData("team" + t + "_player_uuids");
-		team_names = matchGetData("team" + t + "_player_names");
-		for (i = 0; i < team_uuids.size; i++) {
-			expected_uuids[expected_uuids.size] = team_uuids[i];
-			expected_names[expected_names.size] = team_names[i];
-		}
-	}
 
 	// Also makes sure all connected players are part of uploaded players data
 	players = getentarray("player", "classname");
@@ -187,37 +191,183 @@ cancelMatch()
 	for (j = 0; j < players.size; j++)
 		players_uuid[j] = players[j] matchPlayerGetData("uuid");
 
+	status = [];
+	for (t = 1; t <= 2; t++)
+	{
+		team_uuids = matchGetData("team" + t + "_player_uuids");
+		team_names = matchGetData("team" + t + "_player_names");
+		for (i = 0; i < team_uuids.size; i++)
+		{
+			player = [];
+			player["uuid"] = team_uuids[i];
+			player["name"] = team_names[i];
+			if (!isDefined(player["name"]))
+				player["name"] = team_uuids[i];
+			player["state"] = "not_joined";
+			player["detail"] = "not connected";
+
+			// Ready if any client with this uuid is ready
+			for (j = 0; j < players.size; j++)
+			{
+				if (players_uuid[j] != team_uuids[i] || player["state"] == "ok")
+					continue;
+				player["name"] = players[j].name;
+				player["detail"] = players[j] getNotReadyReason();
+				if (player["detail"] == "")
+					player["state"] = "ok";
+				else
+					player["state"] = "not_ready";
+			}
+
+			status[status.size] = player;
+		}
+	}
+	return status;
+}
+
+
+// Max 5 names, so the line is not too long
+joinNames(names)
+{
+	text = "";
+	for (i = 0; i < names.size && i < 5; i++)
+	{
+		if (i > 0) text += ", ";
+		text += removeColorsFromString(names[i]);
+	}
+	if (names.size > 5)
+		text += " +" + (names.size - 5) + " more";
+	return text;
+}
+
+
+// Update saved state of players who are connected now, so players who leave are judged by their last known state
+updateSnapshot(status)
+{
+	snapshot = level.ready_timeout_snapshot;
+	if (!isDefined(snapshot))
+		snapshot = [];
+
+	// Are all players from match data connected now?
+	fullLobby = true;
+	for (i = 0; i < status.size; i++)
+	{
+		if (status[i]["state"] == "not_joined")
+			fullLobby = false;
+	}
+
+	for (i = 0; i < status.size; i++)
+	{
+		if (status[i]["state"] == "not_joined")
+			continue;
+
+		status[i]["fullLobby"] = fullLobby;
+
+		found = false;
+		for (j = 0; j < snapshot.size; j++)
+		{
+			if (snapshot[j]["uuid"] == status[i]["uuid"])
+			{
+				snapshot[j] = status[i];
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+			snapshot[snapshot.size] = status[i];
+	}
+
+	level.ready_timeout_snapshot = snapshot;
+}
+
+
+// During the countdown save state of players every second and print players who block the match start
+printBlockingPlayers()
+{
+	level endon("rupover");
+	level endon("ready_timeout_hud_destroyed");
+
+	for (tick = 0; ; tick++)
+	{
+		status = getRosterStatus();
+		updateSnapshot(status);
+
+		if (tick % 3 != 0)
+		{
+			wait level.fps_multiplier * 1;
+			continue;
+		}
+
+		notJoined = [];
+		notReady = [];
+		for (i = 0; i < status.size; i++)
+		{
+			if (status[i]["state"] == "not_joined")
+				notJoined[notJoined.size] = status[i]["name"];
+			else if (status[i]["state"] == "not_ready")
+				notReady[notReady.size] = status[i]["name"];
+		}
+
+		if (notJoined.size > 0)
+			iprintln("^1Waiting for: ^7" + joinNames(notJoined));
+		else if (notReady.size > 0)
+			iprintln("^1Not ready: ^7" + joinNames(notReady));
+
+		wait level.fps_multiplier * 1;
+	}
+}
+
+
+cancelMatch()
+{
+	HUD_Destroy();
+
+	status = getRosterStatus();
+
+	// Players who left during the countdown:
+	//  - left when all players were connected -> they broke the match start, reported as not joined
+	//  - left when some player was missing -> judged by their last known state
+	snapshot = level.ready_timeout_snapshot;
+	for (i = 0; i < status.size; i++)
+	{
+		status[i]["left"] = false;
+		if (status[i]["state"] != "not_joined" || !isDefined(snapshot))
+			continue;
+		for (j = 0; j < snapshot.size; j++)
+		{
+			if (snapshot[j]["uuid"] == status[i]["uuid"])
+			{
+				status[i]["name"] = snapshot[j]["name"];
+				status[i]["left"] = true;
+				if (snapshot[j]["fullLobby"])
+				{
+					status[i]["detail"] = "left when all players were connected";
+				}
+				else
+				{
+					status[i]["state"] = snapshot[j]["state"];
+					status[i]["detail"] = snapshot[j]["detail"];
+				}
+				break;
+			}
+		}
+	}
+
 	notJoined_uuids = [];
 	notJoined_names = [];
 	notReady_uuids = [];
 	notReady_names = [];
-
-	for (i = 0; i < expected_uuids.size; i++)
+	for (i = 0; i < status.size; i++)
 	{
-		joined = false;
-		ready = false;
-		name = expected_names[i];
-		if (!isDefined(name))
-			name = expected_uuids[i];
-		for (j = 0; j < players.size; j++)
+		if (status[i]["state"] == "not_joined")
 		{
-			if (players_uuid[j] != expected_uuids[i])
-				continue;
-			joined = true;
-			name = players[j].name;
-			if (players[j] isReadyInTeam())
-				ready = true;
+			notJoined_uuids[notJoined_uuids.size] = status[i]["uuid"];
+			notJoined_names[notJoined_names.size] = status[i]["name"];
 		}
-
-		if (!joined)
+		else if (status[i]["state"] == "not_ready")
 		{
-			notJoined_uuids[notJoined_uuids.size] = expected_uuids[i];
-			notJoined_names[notJoined_names.size] = name;
-		}
-		else if (!ready)
-		{
-			notReady_uuids[notReady_uuids.size] = expected_uuids[i];
-			notReady_names[notReady_names.size] = name;
+			notReady_uuids[notReady_uuids.size] = status[i]["uuid"];
+			notReady_names[notReady_names.size] = status[i]["name"];
 		}
 	}
 
@@ -249,14 +399,11 @@ cancelMatch()
 	}
 
 	iprintlnbold("^1Match canceled: " + text);
-	namesString = "";
-	for (i = 0; i < names.size; i++)
-	{
-		if (i > 0) namesString += "^7, ";
-		namesString += names[i];
-	}
+	namesString = joinNames(names);
 	if (namesString != "")
 		iprintln("^1" + text + ": ^7" + namesString);
+
+	logStatus(reason, uuids.size, status);
 
 	matchSetData(
 		"map", level.mapname,
@@ -275,6 +422,48 @@ cancelMatch()
 	setCvar("_ready_timeout_canceled", "");
 
 	matchCancel(text);
+}
+
+// Write state of every player into server log, so it's possible to check disputes
+logStatus(reason, reportedCount, status)
+{
+	logprint("READY_TIMEOUT: match " + matchGetData("match_id") + " canceled, reason: " + reason + ", reported players: " + reportedCount + "\n");
+
+	for (i = 0; i < status.size; i++)
+	{
+		line = "READY_TIMEOUT: " + status[i]["uuid"] + " " + status[i]["name"] + " - ";
+		if (status[i]["state"] == "ok")
+			line += "ok";
+		else
+			line += status[i]["detail"];
+		if (status[i]["left"])
+			line += " (left during countdown)";
+		if ((reason == "not_joined" && status[i]["state"] == "not_joined") || (reason == "not_ready" && status[i]["state"] == "not_ready"))
+			line += " [reported]";
+		logprint(line + "\n");
+	}
+
+	// Connected players who are not part of the match
+	players = getentarray("player", "classname");
+	for (j = 0; j < players.size; j++)
+	{
+		uuid = players[j] matchPlayerGetData("uuid");
+		found = false;
+		for (i = 0; i < status.size; i++)
+		{
+			if (status[i]["uuid"] == uuid)
+			{
+				found = true;
+				break;
+			}
+		}
+		if (found)
+			continue;
+		if (uuid == "")
+			logprint("READY_TIMEOUT: " + players[j].name + " - connected, not logged in to the match\n");
+		else
+			logprint("READY_TIMEOUT: " + players[j].name + " - connected, uuid " + uuid + " is not part of the match\n");
+	}
 }
 
 onUploadDone()
@@ -301,6 +490,7 @@ HUD_Destroy()
 		level.ready_timeout_hud_clock destroy2();
 	level.ready_timeout_hud = undefined;
 	level.ready_timeout_hud_clock = undefined;
+	level notify("ready_timeout_hud_destroyed");
 }
 
 HUD_CancelIn(seconds)
