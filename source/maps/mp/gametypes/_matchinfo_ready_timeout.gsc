@@ -13,6 +13,7 @@ If nobody connects, time is counted from map start.
 If ready-up does not end in time, match is canceled:
  - if some players did not join, only their uuids are sent
  - else uuids of players who did not ready-up are sent (not ready, not in allies/axis, wrong side, misnamed)
+Players are informed about the time limit when they connect.
 Every player must stay on the server until the end - player who leaves during the countdown is not joined.
 During the countdown (last 10 seconds) connected players are saved every second, so it's possible
 to see in the server log who left during the countdown.
@@ -36,6 +37,8 @@ init()
 
 	if (!isDefined(game["readyup_first_run"]) || !game["readyup_first_run"])
 		return;
+
+	addEventListener("onConnected", ::onConnected);
 
 	// Level time is not reset by map_restart, so save the start time of this level
 	level.ready_timeout_level_start = getTime();
@@ -74,7 +77,10 @@ watchTimeout()
 
 	level thread onReadyupOver();
 
-	timeout = int(matchGetData("readyTimeout")) * 1000;
+	// Players are informed about the time limit when they connect
+	level.ready_timeout_seconds = int(matchGetData("readyTimeout"));
+
+	timeout = level.ready_timeout_seconds * 1000;
 
 	for (;;)
 	{
@@ -159,7 +165,25 @@ onReadyupOver()
 {
 	level waittill("rupover");
 
+	level.ready_timeout_seconds = undefined;
+
 	HUD_Destroy();
+}
+
+
+// Inform player about the time limit (when the feature is active)
+onConnected()
+{
+	self endon("disconnect");
+
+	// Wait until player fully loads in
+	wait level.fps_multiplier * 3;
+
+	if (!isDefined(level.ready_timeout_seconds) || isDefined(level.ready_timeout_expired))
+		return;
+
+	self iprintln("^3Ready-up time limit: ^7" + formatTime(level.ready_timeout_seconds) + " ^3(Clock)");
+	self iprintln("^3Ready-up in time and do not leave the server until the match starts.");
 }
 
 
