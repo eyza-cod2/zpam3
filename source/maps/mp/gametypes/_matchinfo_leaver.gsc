@@ -17,10 +17,10 @@ Players are taken from match data when the match starts, later changes in match 
 Note: a player whose game crashed stays connected (999 ping) until the server drops him (sv_timeout),
 that time is not counted.
 
-When the summed time reaches leaverTimeout, the player is flagged as leaver and match data are uploaded
-with global data:
-	leaver_uuids: "uuid1,uuid2"
-The value stays in match data, so it's included also in all next uploads (round end, map end).
+Global match data (included in every upload - round end, every minute in DM, map end):
+	disconnected_times: "uuid1:312,uuid2:45" - counted disconnected time in seconds of every player who has any
+	leaver_uuids:       "uuid1,uuid2"        - players whose time reached leaverTimeout
+When a player is flagged as leaver, match data are uploaded right away.
 The match continues normally.
 */
 init()
@@ -92,6 +92,7 @@ watchLeavers()
 			players_uuid[j] = players[j] matchPlayerGetData("uuid");
 
 		newLeaver = false;
+		timeChanged = false;
 		for (i = 0; i < match_uuids.size; i++)
 		{
 			uuid = match_uuids[i];
@@ -112,6 +113,7 @@ watchLeavers()
 			if (!isDefined(game[key]))
 				game[key] = 0;
 			game[key] += elapsed;
+			timeChanged = true;
 
 			if (game[key] >= timeout && !isLeaver(uuid))
 			{
@@ -124,12 +126,31 @@ watchLeavers()
 			}
 		}
 
+		if (timeChanged)
+			matchSetData("disconnected_times", getDisconnectedTimes(match_uuids));
+
 		if (newLeaver)
 		{
 			matchSetData("leaver_uuids", game["leaver_uuids"]);
 			maps\mp\gametypes\_matchinfo::uploadMatchData("leaver", false, false);
 		}
 	}
+}
+
+
+// "uuid1:312,uuid2:45" - disconnected time in seconds of players who have any
+getDisconnectedTimes(match_uuids)
+{
+	text = "";
+	for (i = 0; i < match_uuids.size; i++)
+	{
+		key = "leaver_time_" + match_uuids[i];
+		if (!isDefined(game[key]) || int(game[key] / 1000) <= 0)
+			continue;
+		if (text != "") text += ",";
+		text += match_uuids[i] + ":" + int(game[key] / 1000);
+	}
+	return text;
 }
 
 
