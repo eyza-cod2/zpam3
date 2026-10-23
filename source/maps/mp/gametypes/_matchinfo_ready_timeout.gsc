@@ -24,6 +24,8 @@ Uploaded global data:
 	state:               "canceled"
 	cancel_reason:       "not_joined" / "not_ready"
 	cancel_player_uuids: "uuid1,uuid2"
+	cancel_details:      "uuid1:not_connected,uuid2:ok,..." - state of every player from match data:
+	                     ok, not_connected, left_during_countdown, not_ready, not_in_team, wrong_side_or_name
 
 After the upload, matchCancel() is called (CoD2x sends type "error" with cancel reason).
 */
@@ -413,7 +415,8 @@ cancelMatch()
 		"map", level.mapname,
 		"state", "canceled",
 		"cancel_reason", reason,
-		"cancel_player_uuids", uuidsString
+		"cancel_player_uuids", uuidsString,
+		"cancel_details", getDetailsString(status)
 	);
 
 	matchUploadData(::onUploadDone, ::onUploadError);
@@ -427,6 +430,32 @@ cancelMatch()
 
 	matchCancel(text);
 }
+
+// State of every player from match data for upload: "uuid1:not_connected,uuid2:ok,..."
+getDetailsString(status)
+{
+	text = "";
+	for (i = 0; i < status.size; i++)
+	{
+		if (status[i]["state"] == "ok")
+			code = "ok";
+		else if (status[i]["left"])
+			code = "left_during_countdown";
+		else if (status[i]["state"] == "not_joined")
+			code = "not_connected";
+		else if (status[i]["detail"] == "not in team")
+			code = "not_in_team";
+		else if (status[i]["detail"] == "not ready")
+			code = "not_ready";
+		else
+			code = "wrong_side_or_name";
+
+		if (i > 0) text += ",";
+		text += status[i]["uuid"] + ":" + code;
+	}
+	return text;
+}
+
 
 // Write state of every player into server log, so it's possible to check disputes
 logStatus(reason, reportedCount, status)
