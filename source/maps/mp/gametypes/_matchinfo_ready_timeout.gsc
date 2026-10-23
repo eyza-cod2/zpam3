@@ -13,10 +13,9 @@ If nobody connects, time is counted from map start.
 If ready-up does not end in time, match is canceled:
  - if some players did not join, only their uuids are sent
  - else uuids of players who did not ready-up are sent (not ready, not in allies/axis, wrong side, misnamed)
-During the countdown (last 10 seconds) state of connected players is saved every second.
-Player who leaves during the countdown:
- - when all players were connected and ready -> reported as not joined (he broke the match start)
- - otherwise (some player was missing / not ready) -> judged by his last saved state (ready = not reported)
+Every player must stay on the server until the end - player who leaves during the countdown is not joined.
+During the countdown (last 10 seconds) connected players are saved every second, so it's possible
+to see in the server log who left during the countdown.
 During the countdown, players who block the match start are printed every few seconds.
 On cancel, state of every player is written into server log (lines starting with "READY_TIMEOUT:").
 
@@ -91,7 +90,7 @@ watchTimeout()
 
 		if (remaining <= 10000 && !isDefined(level.ready_timeout_hud))
 		{
-			// Players who leave during the countdown are judged by their last known state (updated every second)
+			// Players connected during the countdown (updated every second)
 			level.ready_timeout_snapshot = undefined;
 			level thread HUD_CancelIn(remaining / 1000);
 			level thread printBlockingPlayers();
@@ -242,27 +241,18 @@ joinNames(names)
 }
 
 
-// Update saved state of players who are connected now, so players who leave are judged by their last known state
+// Save players who are connected now, so it's possible to log who left during the countdown
 updateSnapshot(status)
 {
 	snapshot = level.ready_timeout_snapshot;
 	if (!isDefined(snapshot))
 		snapshot = [];
 
-	// Are all players from match data connected and ready now?
-	allReady = true;
-	for (i = 0; i < status.size; i++)
-	{
-		if (status[i]["state"] != "ok")
-			allReady = false;
-	}
-
 	for (i = 0; i < status.size; i++)
 	{
 		if (status[i]["state"] == "not_joined")
 			continue;
 
-		status[i]["allReady"] = allReady;
 
 		found = false;
 		for (j = 0; j < snapshot.size; j++)
@@ -325,9 +315,7 @@ cancelMatch()
 
 	status = getRosterStatus();
 
-	// Players who left during the countdown:
-	//  - left when all players were connected and ready -> they broke the match start, reported as not joined
-	//  - otherwise (some player was missing / not ready) -> judged by their last known state
+	// Players who left during the countdown are not joined too, only mark them for the log
 	snapshot = level.ready_timeout_snapshot;
 	for (i = 0; i < status.size; i++)
 	{
@@ -340,15 +328,6 @@ cancelMatch()
 			{
 				status[i]["name"] = snapshot[j]["name"];
 				status[i]["left"] = true;
-				if (snapshot[j]["allReady"])
-				{
-					status[i]["detail"] = "left when all players were ready";
-				}
-				else
-				{
-					status[i]["state"] = snapshot[j]["state"];
-					status[i]["detail"] = snapshot[j]["detail"];
-				}
 				break;
 			}
 		}
