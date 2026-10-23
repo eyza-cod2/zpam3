@@ -18,6 +18,12 @@ init()
     // Minimal team size to count entry kills, 1vX clutches and aces (to ignore 1v1 matches)
     level.stat_round_min_team_size = 2;
 
+    // Time window to trade a death of teammate (ms)
+    level.stat_trade_time = 5000;
+
+    // Weapon classes for kills_<class> stats
+    level.stat_weapon_classes = getWeaponKillClasses();
+
     //thread printThread();
 }
 
@@ -209,6 +215,11 @@ print()
       println("game[playerstats]["+i+"][entry_kills] = " + data["entry_kills"]);
       println("game[playerstats]["+i+"][entry_deaths]= " + data["entry_deaths"]);
       println("game[playerstats]["+i+"][aces]        = " + data["aces"]);
+      println("game[playerstats]["+i+"][multi_kills] = " + data["multi_kills_2"] + " / " + data["multi_kills_3"] + " / " + data["multi_kills_4"] + " / " + data["multi_kills_5"]);
+      println("game[playerstats]["+i+"][trades]      = " + data["trade_kills"] + " kills, " + data["traded_deaths"] + " traded deaths");
+      classes = level.stat_weapon_classes;
+      for (c = 0; c < classes.size; c++)
+        println("game[playerstats]["+i+"][kills_"+classes[c]+"] = " + data["kills_" + classes[c]]);
       for (c = 1; c <= data["clutches_max"]; c++)
         if (isDefined(data["clutches_won_1v" + c]))
           println("game[playerstats]["+i+"][clutches_won_1v"+c+"]  = " + data["clutches_won_1v" + c] + " / " + data["clutches_attempts_1v" + c]);
@@ -308,6 +319,18 @@ onConnected()
 			{
 				game["playerstats"][newIndex]["clutches_won_1v" + c] = 0;
 				game["playerstats"][newIndex]["clutches_attempts_1v" + c] = 0;
+			}
+			for (c = 2; c <= 5; c++)
+				game["playerstats"][newIndex]["multi_kills_" + c] = 0;
+			game["playerstats"][newIndex]["trade_kills"] = 0;
+			game["playerstats"][newIndex]["traded_deaths"] = 0;
+			game["playerstats"][newIndex]["round_trade_kills"] = 0;
+			game["playerstats"][newIndex]["round_traded_deaths"] = 0;
+			classes = level.stat_weapon_classes;
+			for (c = 0; c < classes.size; c++)
+			{
+				game["playerstats"][newIndex]["kills_" + classes[c]] = 0;
+				game["playerstats"][newIndex]["round_kills_" + classes[c]] = 0;
 			}
 		}
 	}
@@ -459,10 +482,80 @@ AddHeadshot()
     }
 }
 
+// Weapon classes for kills_<class> stats (saved in level.stat_weapon_classes)
+getWeaponKillClasses()
+{
+    classes = [];
+    classes[classes.size] = "smg";
+    classes[classes.size] = "assault";
+    classes[classes.size] = "rifle";
+    classes[classes.size] = "scope";
+    classes[classes.size] = "shotgun";
+    classes[classes.size] = "secondary";
+    classes[classes.size] = "grenade";
+    classes[classes.size] = "knife";
+    classes[classes.size] = "other";
+    return classes;
+}
+
+// self is attacker
+getWeaponKillClass(sWeapon, sMeansOfDeath)
+{
+    if (sMeansOfDeath == "MOD_MELEE")
+      return "knife";
+
+    // Same rule as grenades stat
+    if (sMeansOfDeath == "MOD_GRENADE_SPLASH")
+      return "grenade";
+
+    // Mounted MG - game may report weapon in hands instead of the MG
+    if (self isUsingTurret())
+      return "other";
+
+    if (maps\mp\gametypes\_weapons::isPistol(sWeapon))
+      return "secondary";
+
+    // FG42 is automatic rifle (in zPAM weapon classes it is smg)
+    if (sWeapon == "fg42_mp")
+      return "assault";
+
+    if (maps\mp\gametypes\_weapons::isMainWeapon(sWeapon))
+    {
+      switch(level.weapons[sWeapon].classname)
+      {
+        case "smg":           return "smg";
+        case "mg":            return "assault";
+        case "boltaction":
+        case "semiautomatic": return "rifle";
+        case "sniper":        return "scope";
+        case "shotgun":       return "shotgun";
+      }
+    }
+
+    // Mounted MGs, unknown weapons
+    return "other";
+}
+
+// self is attacker, called for every counted enemy kill
+AddWeaponKill(sWeapon, sMeansOfDeath)
+{
+    dataId = self getStatId();
+    if (dataId < 0)
+      return;
+
+    weaponClass = self getWeaponKillClass(sWeapon, sMeansOfDeath);
+
+    // In round based gametypes kills are added to totals when round ends (round cut by map_restart is not counted)
+    if (isRoundActive())
+      game["playerstats"][dataId]["round_kills_" + weaponClass] += 1;
+    else
+      game["playerstats"][dataId]["kills_" + weaponClass] += 1;
+}
+
 
 
 /*
-Round based stats (entry kills, aces, clutches) - used in SD and RE
+Round based stats (entry kills, aces, clutches, multi-kills, trades) - used in SD and RE
 Flow:
   RoundStarted()          - when round goes live (after strat time)
   AddRoundKill(victim)    - for every enemy kill counted into stats
@@ -479,13 +572,19 @@ RoundStarted()
     level.stat_round_team_size = [];
     level.stat_round_team_size["allies"] = 0;
     level.stat_round_team_size["axis"] = 0;
+    level.stat_round_open_deaths = [];
 
     updateRoundTeamSize();
 
+    classes = level.stat_weapon_classes;
     for (i = 0; i < game["playerstats"].size; i++)
     {
       game["playerstats"][i]["round_kills"] = 0;
       game["playerstats"][i]["round_kills_team"] = "";
+      game["playerstats"][i]["round_trade_kills"] = 0;
+      game["playerstats"][i]["round_traded_deaths"] = 0;
+      for (c = 0; c < classes.size; c++)
+        game["playerstats"][i]["round_kills_" + classes[c]] = 0;
     }
 }
 
@@ -525,11 +624,14 @@ AddRoundKill(victim)
     updateRoundTeamSize();
 
     dataId = self getStatId();
+    victimId = victim getStatId();
     if (dataId >= 0)
     {
       game["playerstats"][dataId]["round_kills"] += 1;
       game["playerstats"][dataId]["round_kills_team"] = victim.pers["team"];
     }
+
+    addTrade(dataId, victimId);
 
     // First kill of the round
     if (!level.stat_round_entry_done &&
@@ -541,7 +643,6 @@ AddRoundKill(victim)
       if (dataId >= 0)
         game["playerstats"][dataId]["entry_kills"] += 1;
 
-      victimId = victim getStatId();
       if (victimId >= 0)
         game["playerstats"][victimId]["entry_deaths"] += 1;
     }
@@ -590,6 +691,53 @@ UpdateClutch()
     }
 }
 
+// Trade - kill of enemy who killed a teammate in last 5 seconds
+// Each death can be traded only once, player cannot trade his own death (e.g. by grenade thrown before death)
+addTrade(killerId, victimId)
+{
+    time = getTime();
+    traded = false;
+
+    openDeaths = [];
+    for (i = 0; i < level.stat_round_open_deaths.size; i++)
+    {
+      death = level.stat_round_open_deaths[i];
+
+      // Too old to be traded
+      if ((time - death.time) > level.stat_trade_time)
+        continue;
+
+      // Victim of this kill killed a teammate of the killer
+      if (victimId >= 0 && death.killerId == victimId)
+      {
+        // Killer avenged his own death - not a trade, death stays untraded
+        if (death.victimId == killerId)
+          continue;
+
+        game["playerstats"][death.victimId]["round_traded_deaths"] += 1;
+        traded = true;
+        continue;
+      }
+
+      openDeaths[openDeaths.size] = death;
+    }
+
+    if (traded && killerId >= 0)
+      game["playerstats"][killerId]["round_trade_kills"] += 1;
+
+    // This death can be traded by victim's teammates
+    if (killerId >= 0 && victimId >= 0)
+    {
+      death = spawnstruct();
+      death.killerId = killerId;
+      death.victimId = victimId;
+      death.time = time;
+      openDeaths[openDeaths.size] = death;
+    }
+
+    level.stat_round_open_deaths = openDeaths;
+}
+
 RoundEnded(roundwinner)
 {
     if (!isRoundActive())
@@ -632,5 +780,27 @@ RoundEnded(roundwinner)
       enemyCount = level.stat_round_team_size[data["round_kills_team"]];
       if (enemyCount >= level.stat_round_min_team_size && data["round_kills"] >= enemyCount)
         game["playerstats"][i]["aces"] += 1;
+    }
+
+    // Multi-kills, trades and weapon kills of finished round are added to totals
+    classes = level.stat_weapon_classes;
+    for (i = 0; i < game["playerstats"].size; i++)
+    {
+      data = game["playerstats"][i];
+      if (data["deleted"])
+        continue;
+
+      // One bucket per round - 2, 3, 4 or 5+ kills
+      kills = data["round_kills"];
+      if (kills > 5)
+        kills = 5;
+      if (kills >= 2)
+        game["playerstats"][i]["multi_kills_" + kills] += 1;
+
+      game["playerstats"][i]["trade_kills"] += data["round_trade_kills"];
+      game["playerstats"][i]["traded_deaths"] += data["round_traded_deaths"];
+
+      for (c = 0; c < classes.size; c++)
+        game["playerstats"][i]["kills_" + classes[c]] += data["round_kills_" + classes[c]];
     }
 }

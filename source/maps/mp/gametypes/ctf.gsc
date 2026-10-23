@@ -469,6 +469,7 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 	if(isPlayer(attacker) && attacker != self && attacker.pers["team"] != self.pers["team"])
 	{
 		attacker maps\mp\gametypes\_player_stat::AddKill();
+		attacker maps\mp\gametypes\_player_stat::AddWeaponKill(sWeapon, sMeansOfDeath);
 
 		if (sMeansOfDeath == "MOD_HEAD_SHOT")
 			attacker maps\mp\gametypes\_player_stat::AddHeadshot();

@@ -1139,6 +1139,7 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 			if (!level.in_readyup && level.roundstarted && !level.roundended)
 			{
 				attacker maps\mp\gametypes\_player_stat::AddKill();
+				attacker maps\mp\gametypes\_player_stat::AddWeaponKill(sWeapon, sMeansOfDeath);
 				attacker maps\mp\gametypes\_player_stat::AddScore(1);
 				attacker maps\mp\gametypes\_player_stat::AddRoundKill(self);
 
@@ -1653,7 +1654,7 @@ startRound()
 	// Round started
 	level.roundstarted = true;
 
-	// Player's stats - start tracking entry kills, aces and clutches (_player_stat.gsc)
+	// Player's stats - start tracking entry kills, aces, clutches, multi-kills, trades and weapon kills (_player_stat.gsc)
 	level maps\mp\gametypes\_player_stat::RoundStarted();
 
 
@@ -1955,7 +1956,7 @@ endRound(roundwinner)
 
  	level.roundended = true;
 
-	// Player's stats - evaluate aces and clutches (_player_stat.gsc)
+	// Player's stats - evaluate aces, clutches, multi-kills, trades and weapon kills (_player_stat.gsc)
 	level maps\mp\gametypes\_player_stat::RoundEnded(roundwinner);
 
 
