@@ -7,18 +7,19 @@ The code from the previous version zPAM 2.07 was completely rewritten and ported
 Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 4.09.<br>
+*This page describe only actual version zPAM 4.10.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
 - #### Actual version for CoD2x 1.4
-	- 2026/10/11 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.09/zpam409.zip">zPAM 4.09 - zpam409.zip</a></b> - compatible with CoD2x 1.4.6.7 and higher.
+	- 2026/10/31 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.10/zpam410.zip">zPAM 4.10 - zpam410.zip</a></b> - compatible with CoD2x 1.4.6.8 and higher.
 
 - #### Compatible version for 1.3
 	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
 
 ## Version list
-- 2026/10/11 - <b>zPAM 4.09</b>
+- 2026/10/31 - <b>zPAM 4.10</b>
+- 2026/10/11 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/4564703851819f9476c4eaf11891b1cf6fcdd11c">zPAM 4.09</a></b>
 - 2026/05/20 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/83285ae8d2ba65640cf46318feade49463652a06">zPAM 4.08</a></b>
 - 2026/05/13 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/d30f47d10380f98284d8912488b22c7868701b9f">zPAM 4.07</a></b>
 - 2026/03/24 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/85e6cf4a8c1e6b848973ca5ceb2e1db64fd57885">zPAM 4.06</a></b>
@@ -52,6 +53,25 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+
+<details><summary>zPAM 4.10 changes (click to open)</summary>
+<p>
+
+**Changes:**
+- Fixed hits counting in scoreboard: scoped Kar98k was counted only +0.5 instead of +1; new PPSh, BAR, Bren and FG42 hits were not counted at all
+- Round report now shows weapon name for kills by new PPSh, BAR, Bren and FG42
+- Extended match stats: multi-kills, trades and kills by weapon class (thanks h1z)
+	- SD/RE: multi_kills_2 / 3 / 4 / 5 (rounds with exactly 2, 3, 4 or 5+ enemy kills), trade_kills and traded_deaths (enemy killed within 5 seconds after he killed a teammate)
+	- all gametypes: kills_smg, kills_assault, kills_rifle, kills_scope, kills_shotgun, kills_secondary, kills_grenade, kills_knife, kills_other
+- Leaver detection for CoD2x match (thanks h1z)
+	- enabled only if match data contains leaverTimeout (seconds); works in SD and DM
+	- disconnected time of players from match data is summed (only live time is counted); when it reaches leaverTimeout, player is reported via match data (leaver_uuids), match continues
+	- disconnected time of every player is sent in match data (disconnected_times)
+</p>
+</details>
+
+
 
 
 <details><summary>zPAM 4.09 changes (click to open)</summary>
@@ -631,8 +651,8 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.09/zpam409.zip">zPAM 4.09</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam409.iwd
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.10/zpam410.zip">zPAM 4.10</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam410.iwd
 	- ./Call of Duty 2/main/zpam_maps_v7.iwd <i>(*not required for 1.0 and 1.2 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
@@ -1221,7 +1241,7 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 #### Cvar /fs_game is not empty!
 Make sure cvar /fs_game is empty (+set fs_game "") and iwd files are placed in main folder.
 
-#### Iwd file zpam409.iwd must be installed in main folder.
+#### Iwd file zpam410.iwd must be installed in main folder.
  - Since version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that player's settings changed in game are not saved into the config when running a game with fs_game set.
 
