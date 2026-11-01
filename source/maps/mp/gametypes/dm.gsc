@@ -388,6 +388,7 @@ onPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHit
 		if (!level.in_readyup && level.matchstarted && !level.mapended)
 		{
 			attacker maps\mp\gametypes\_player_stat::AddKill();
+			attacker maps\mp\gametypes\_player_stat::AddWeaponKill(sWeapon, sMeansOfDeath);
 			attacker maps\mp\gametypes\_player_stat::AddScore(1);
 
 			if (sMeansOfDeath == "MOD_HEAD_SHOT")

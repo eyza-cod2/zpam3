@@ -398,6 +398,15 @@ uploadMatchData(debug, printSuccess, printError) {
 					"clutches_attempts_1v" + c, stats["clutches_attempts_1v" + c]
 				);
 			}
+
+			player matchPlayerSetData(
+				"multi_kills_2", 	stats["multi_kills_2"],
+				"multi_kills_3", 	stats["multi_kills_3"],
+				"multi_kills_4", 	stats["multi_kills_4"],
+				"multi_kills_5", 	stats["multi_kills_5"],
+				"trade_kills", 		stats["trade_kills"],
+				"traded_deaths", 	stats["traded_deaths"]
+			);
 		} else if (level.gametype == "dm") {
 			player matchPlayerSetData(
 				"score", 	format_fractional(stats["score"], 1, 1),
@@ -415,6 +424,11 @@ uploadMatchData(debug, printSuccess, printError) {
 				"headshots", 	stats["headshots"]
 			);
 		}
+
+		// Kills by weapon class (kills_smg, kills_rifle, ...)
+		classes = level.stat_weapon_classes;
+		for (c = 0; c < classes.size; c++)
+			player matchPlayerSetData("kills_" + classes[c], stats["kills_" + classes[c]]);
 	}
 
 	// Start upload

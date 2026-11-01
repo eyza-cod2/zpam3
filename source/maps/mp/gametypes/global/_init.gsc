@@ -83,6 +83,7 @@ InitModules()
 	thread maps\mp\gametypes\_teamname::init();
 	thread maps\mp\gametypes\_matchinfo::init();	// depends on readyup, teamname, bash, overtime
 	thread maps\mp\gametypes\_matchinfo_ready_timeout::init(); // depends on readyup, matchinfo
+	thread maps\mp\gametypes\_matchinfo_leaver::init(); // depends on matchinfo, readyup, timeout
 	thread maps\mp\gametypes\_menu_serverinfo::init();	// depends on matchinfo
 	thread maps\mp\gametypes\_menu_matchinfo::init();	// depends on matchinfo
 	thread maps\mp\gametypes\_record::init();	// depends on matchinfo

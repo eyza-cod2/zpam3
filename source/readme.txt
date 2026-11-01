@@ -1,5 +1,5 @@
-zPAM4.09
-Released 2026/10/11
+zPAM4.10
+Released 2026/10/31
 
 This mod was created by EYZA
 
