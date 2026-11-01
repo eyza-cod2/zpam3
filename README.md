@@ -7,18 +7,19 @@ The code from the previous version zPAM 2.07 was completely rewritten and ported
 Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 4.10.<br>
+*This page describe only actual version zPAM 4.11.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
 - #### Actual version for CoD2x 1.4
-	- 2026/10/31 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.10/zpam410.zip">zPAM 4.10 - zpam410.zip</a></b> - compatible with CoD2x 1.4.6.8 and higher.
+	- 2026/11/01 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.11/zpam411.zip">zPAM 4.11 - zpam411.zip</a></b> - compatible with CoD2x 1.4.6.8 and higher.
 
 - #### Compatible version for 1.3
 	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
 
 ## Version list
-- 2026/10/31 - <b>zPAM 4.10</b>
+- 2026/11/01 - <b>zPAM 4.11</b>
+- 2026/10/31 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/b56668d7452e1269f001002b97e48a2b0e013fdc">zPAM 4.10</a></b>
 - 2026/10/11 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/4564703851819f9476c4eaf11891b1cf6fcdd11c">zPAM 4.09</a></b>
 - 2026/05/20 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/83285ae8d2ba65640cf46318feade49463652a06">zPAM 4.08</a></b>
 - 2026/05/13 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/d30f47d10380f98284d8912488b22c7868701b9f">zPAM 4.07</a></b>
@@ -53,6 +54,22 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+
+<details><summary>zPAM 4.11 changes (click to open)</summary>
+<p>
+
+**Changes:**
+- Time limit to join and ready-up in CoD2x match (thanks h1z)
+	- enabled only if match data contains readyTimeout (seconds); only in first ready-up of the first map
+	- if ready-up does not end in time, match is canceled and players who did not join / ready-up are reported via match data (cancel_reason, cancel_player_uuids, cancel_details)
+	- countdown "Match will be canceled in" is showed in last 10 seconds, players who block the match start are printed
+- Player stats are kept for the whole match when player reconnects later (router / PC restart) (thanks h1z)
+	- old 999 connection is dropped immediately when player reconnects into another slot
+</p>
+</details>
+
+
 
 
 <details><summary>zPAM 4.10 changes (click to open)</summary>
@@ -651,8 +668,8 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.10/zpam410.zip">zPAM 4.10</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam410.iwd
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.11/zpam411.zip">zPAM 4.11</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam411.iwd
 	- ./Call of Duty 2/main/zpam_maps_v7.iwd <i>(*not required for 1.0 and 1.2 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
@@ -1241,7 +1258,7 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 #### Cvar /fs_game is not empty!
 Make sure cvar /fs_game is empty (+set fs_game "") and iwd files are placed in main folder.
 
-#### Iwd file zpam410.iwd must be installed in main folder.
+#### Iwd file zpam411.iwd must be installed in main folder.
  - Since version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that player's settings changed in game are not saved into the config when running a game with fs_game set.
 
