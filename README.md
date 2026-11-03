@@ -1233,6 +1233,112 @@ Example: "autorecording_1|matchinfo_1|score_0|playersleft_1"
 - XRAY needs to be enabled (wich is automatically enabled when entering free spectating)
 - You can enter free spectating by pressing Shift key
 
+### Server log (games_mp.log) for stats applications
+zPAM writes events of the match into the server log file (`g_log`, by default `main/games_mp.log`, `g_logSync 1` is recommended).<br>
+This section describes the format for authors of stats applications.
+
+#### General rules
+- Each line starts with the time added by the game (minutes:seconds since the server started), followed by the line type and fields separated by `;`
+  ```
+   12:34 Kill;0;3;victim;axis;0;5;attacker;allies;kar98k_mp;135;MOD_HEAD_SHOT;head;100;;;;;1250;754120
+  ```
+- Player names cannot contain `;` (the game does not allow it), so splitting by `;` is safe. Names contain color codes (`^1` etc.)
+- **The format is only extended, never changed** - new fields are added only to the end of lines with a fixed number of fields and new data are written as new line types. Parse lines by field index and ignore unknown line types and extra fields.
+- Version of the log format is printed in the `LogInfo` line (version `2` is described here, version `1` = zPAM 4.11 and older, without the extended fields)
+- Fields called `time` are the server time in milliseconds (`getTime()`). Use it only to compare events of one map (order, round duration, time between kills). The time is not reset on round restart.
+- Player identification:
+  - `num` - client slot number (0 - 63), unique only while the player is connected
+  - `guid` - CD-key GUID, may be `0` (for example on cracked servers)
+  - `uuid` - user id from the CoD2x match system (for example FPS Challenge), empty if the match is not activated or the player is not logged in. This is the most reliable id when available.
+  - `hwid` - hardware id of the player's computer from CoD2x, empty for bots. It is the most reliable id for players outside of CoD2x matches (it does not change with name or CD-key).
+  - `name` - nickname, players can rename during the map
+- Team is `allies`, `axis`, `spectator`, `streamer` or `none`. The real team names (clan names) are printed in `RoundStartInfo` and `StatsStart` when they are known.
+- Teams swap sides at half-time - `allies` / `axis` is the side, not the team. Use `uuid` / team names to follow teams across halves.
+- The game itself also writes some lines (for example `InitGame` with server info including `mapname` and `g_gametype`, `ShutdownGame`, `say`, `sayteam`)
+
+#### Lines
+Fields marked with *(v2)* were added in log version 2 at the end of existing lines.
+
+| Line | Fields | Description |
+|---|---|---|
+| `LogInfo` | version; zpam; gametype; map; pam_mode; match_id; time | Printed once at the start of each map. `zpam` is the zPAM iwd name, for example `zpam411`. `match_id` is CoD2x match id (empty if not activated) |
+| `Connected` | guid; num; name; *(v2)* uuid; hwid; time | Player connected (also printed again for every connected player after each round restart) |
+| `Disconnected` | guid; num; name; *(v2)* uuid; hwid; time | Player disconnected |
+| `Team` | guid; num; name; team; uuid; hwid; time | Player joined a team (or spectators / streamers) |
+| `ReadyupDone` | - | Ready-up is over, the match is starting |
+| `RoundStart` | - | New round (SD, RE) |
+| `RoundInfo` | `score:<allies>:<axis>`; `round:<n>` | Score before the round. Note: `round` is the number of the **previous** round, use `RoundStartInfo` instead |
+| `RoundStartInfo` | round; half; overtime; attackers; defenders; allies_score; axis_score; allies_team_name; axis_team_name; time | Info about the new round (SD, RE). `half` is 1 or 2, `overtime` is 0 or 1, `attackers` / `defenders` is `allies` or `axis`. Printed also before a bash round and again with the same round number when the round is repeated after a timeout - in that case no `RoundLive` / `RoundResult` follows for the first line |
+| `RoundLive` | round; round_length_sec; time | The round went live - strat time is over and players can move (SD, RE). Followed by `RoundPlayer` lines |
+| `RoundPlayer` | round; guid; num; name; team; uuid; hwid; alive; primary_weapon; secondary_weapon | Every player in allies / axis when the round went live. `alive` is 1 if the player is spawned (weapons are empty if not) |
+| `Damage` | victim_guid; victim_num; victim_name; victim_team; attacker_guid; attacker_num; attacker_name; attacker_team; weapon; damage; means_of_death; hit_location; *(v2)* real_damage; victim_uuid; victim_hwid; attacker_uuid; attacker_hwid; distance; time | Player was hit and survived. See notes below |
+| `Kill` | victim_guid; victim_num; victim_name; victim_team; attacker_guid; attacker_num; attacker_name; attacker_team; weapon; damage; means_of_death; hit_location; *(v2)* real_damage; victim_uuid; victim_hwid; attacker_uuid; attacker_hwid; distance; time | Player was killed. See notes below |
+| `Bomb` | guid; num; team; name; action; *(v2)* uuid; hwid; site; round; time | Bomb planted (`bomb_plant`) or defused (`bomb_defuse`) in SD. `site` is `A` or `B` |
+| `BombExploded` | planter_guid; planter_num; planter_team; planter_name; planter_uuid; planter_hwid; site; round; time | Bomb exploded in SD (printed after kills caused by the explosion) |
+| `RoundEnd` | - | Round ended (SD, RE). Followed by `Winners`, `Losers`, `Score` and `RoundResult` |
+| `Winners` | team; then pairs of guid; name | Players of the winning team. In a draw the team is `draw` and the list is empty |
+| `Losers` | team; then pairs of guid; name | Players of the losing team. In a draw this line contains `axis` players only (kept for compatibility, use `RoundResult`) |
+| `Score` | `allies`; score; `axis`; score | Score after the round |
+| `RoundResult` | round; winner; reason; allies_score; axis_score; duration; time | `winner` is `allies`, `axis` or `draw`. `reason` is `eliminated`, `time_expired`, `bomb_exploded`, `bomb_defused`, `objective_captured` or empty (round ended by admin). `duration` is milliseconds since `RoundLive` (-1 if unknown) |
+| `HalfTime` | - | Half-time |
+| `OverTime` | - | Overtime started |
+| `TO_CALL` / `TO_CANCEL` | team; name | Timeout called / canceled |
+| `TOO` | - | Timeout is over |
+| `BASH_CALL` | team; name | Bash mode called |
+| `StatsStart`, `StatsHeader`, `PlayerStats`, `StatsEnd` | see below | Overall stats of the map |
+| `MatchEnd` | - | The map is over |
+| `ServerRestart` | `EmptyServer` | Server was restarted after the last player left |
+| `LEAVER:` / `READY_TIMEOUT:` | free text | Info about CoD2x match leavers / ready-up timeout (human readable) |
+
+Notes for `Damage` and `Kill`:
+- `damage` is the damage of the hit (for example 135 for a head shot by rifle), it can be more than the health the victim had. `real_damage` is the health that was really removed (0 - 100).
+- The hit that kills the player is not printed as `Damage`, only as `Kill`. To count the total damage of a player, sum `real_damage` of his `Damage` and `Kill` lines (or use `damage_dealt` from map stats).
+- `Damage` lines are not printed during ready-up in SD and RE (other gametypes print them).
+- `means_of_death` is `MOD_HEAD_SHOT` for head shots (except shotgun and knife), `MOD_MELEE` for bash / knife, `MOD_GRENADE_SPLASH` for grenades, `MOD_SUICIDE`, `MOD_FALLING`, ...
+- Attacker is `-1` / `world` if the player was not killed by a player (fall, bomb without planter). In SD the planter is the attacker of bomb kills.
+- If friendly fire is `reflect` or `shared`, the attacker fields of `Damage` contain the victim (the player who was damaged by reflected damage).
+- `distance` is distance between the victim and the attacker in game units (-1 if there is no attacker).
+- Two kills in the same moment (one grenade) are printed as two `Kill` lines with the same `time` (log version 2, older versions printed only one of them).
+
+#### Map stats
+At the end of the map (before `MatchEnd`) zPAM prints the overall stats of all players of the map.<br>
+These are the same values that are shown in the scoreboard and sent to the CoD2x match system, so the parser does not need to count them from kills.<br>
+If the map is ended differently (map change via rcon, server shutdown), the stats are not printed.
+```
+ 30:12 StatsStart;2;sd;mp_toujane;13;7;Team One;Team Two;20;match123;1812345
+ 30:12 StatsHeader;name;team;connected;guid;uuid;hwid;score;kills;deaths;assists;hits;damage_dealt;headshots;...
+ 30:12 PlayerStats;eyza;allies;1;0;3c7acf99-...;a1b2c3...;25.5;21;12;4;9.5;2410;8;...
+ 30:12 PlayerStats;player2;axis;1;0;;d4e5f6...;18;15;16;2;6;1850;5;...
+ 30:12 StatsEnd;2
+ 30:12 MatchEnd;
+```
+- `StatsStart` - log_version; gametype; map; allies_score; axis_score; allies_team_name; axis_team_name; rounds_played; match_id; time
+- `StatsHeader` - names of the columns of `PlayerStats` lines. **Always map the columns by this header**, new columns may be added in future
+- `PlayerStats` - one line per player who played on the map (including players who disconnected)
+- `StatsEnd` - number of `PlayerStats` lines
+
+| Column | Description |
+|---|---|
+| name | Last known nickname |
+| team | Last team of the player (`allies`, `axis`, `spectator`, ...) |
+| connected | 1 if the player is connected at the end of the map |
+| guid, uuid, hwid | Last known ids of the player (see above) |
+| score | Score (see [Scoreboard menu](#scoreboard-menu)) |
+| kills, deaths, assists | Kills, deaths and assists |
+| hits | Hits points (see [Scoreboard menu](#scoreboard-menu)) |
+| damage_dealt | Health removed from enemies (overkill is not counted) |
+| headshots | Head shot kills |
+| grenades | Grenade kills |
+| plants, defuses | Bomb plants and defuses |
+| entry_kills, entry_deaths | First kill / first death of the round (only when both teams have at least 2 players) |
+| trade_kills, traded_deaths | Kill of an enemy who killed a teammate in last 5 seconds / death that was traded by a teammate |
+| aces | Rounds where the player killed the whole enemy team |
+| multi_kills_2 - multi_kills_5 | Rounds with 2, 3, 4, 5+ kills |
+| kills_smg, kills_assault, kills_rifle, kills_scope, kills_shotgun, kills_secondary, kills_grenade, kills_knife, kills_other | Kills by weapon class (`assault` = MG / BAR / Bren / FG42 / StG44..., `secondary` = pistols, `other` = mounted MG and others) |
+| clutches_won_1vN, clutches_attempts_1vN | 1vN situations (N = 1 - 5, more columns if bigger situation happened) and how many of them were won |
+
+Round based stats (entry kills, trades, aces, multi-kills, clutches) are counted in SD and RE only. In SD and RE kills of a round cut by restart (timeout, admin) are not counted in `multi_kills`, trades and kills by weapon class.
+
 
 <br>
 

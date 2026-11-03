@@ -313,6 +313,8 @@ onConnected()
 			game["playerstats"][newIndex]["entityId"] = id;
 			game["playerstats"][newIndex]["name"] = self.name;
 			game["playerstats"][newIndex]["hwid"] = self getHWID();
+			game["playerstats"][newIndex]["guid"] = "";
+			game["playerstats"][newIndex]["uuid"] = "";
 			game["playerstats"][newIndex]["team"] = self.sessionteam;
 			game["playerstats"][newIndex]["isConnected"] = true;
 			game["playerstats"][newIndex]["lastTime"] = getTime();
@@ -360,6 +362,32 @@ onJoinedTeam(team)
 	if (dataId >= 0)
 	{
 		game["playerstats"][dataId]["team"] = team;
+		self saveIdentity(dataId);
+	}
+}
+
+// Save ids of the player for the server log, so they are known also after the player disconnects
+saveIdentity(dataId)
+{
+	game["playerstats"][dataId]["guid"] = self getGuid();
+
+	// sessionteam saved on connect is not the real team for streamers, DM players and after half-time swap
+	if (isDefined(self.pers["team"]))
+		game["playerstats"][dataId]["team"] = self.pers["team"];
+
+	uuid = maps\mp\gametypes\_log::getPlayerUuid(self);
+	if (uuid != "")
+		game["playerstats"][dataId]["uuid"] = uuid;
+}
+
+saveIdentityOfConnectedPlayers()
+{
+	players = getentarray("player", "classname");
+	for (i = 0; i < players.size; i++)
+	{
+		dataId = players[i] getStatId();
+		if (dataId >= 0)
+			players[i] saveIdentity(dataId);
 	}
 }
 
@@ -380,6 +408,8 @@ onDisconnect()
       game["playerstats"][dataId]["lastTime"] = getTime();
       return;
     }
+
+    self saveIdentity(dataId);
 
     game["playerstats"][dataId]["isConnected"] = false;
     game["playerstats"][dataId]["player"] = undefined;

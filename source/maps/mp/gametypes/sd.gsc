@@ -672,7 +672,7 @@ onAfterPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWe
 
 
 	if(self.sessionstate != "dead" && !level.in_readyup)
-		level notify("log_damage", self, eAttacker, sWeapon, iDamage, sMeansOfDeath, sHitLoc, isFriendlyFire);
+		maps\mp\gametypes\_log::logDamage(self, eAttacker, sWeapon, iDamage, sMeansOfDeath, sHitLoc, isFriendlyFire);
 }
 
 // Self if player who is hitting enemy
@@ -909,7 +909,7 @@ onAfterPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir,
 	}
 
 
-	level notify("log_kill", self, attacker,  sWeapon, iDamage, sMeansOfDeath, sHitLoc);
+	maps\mp\gametypes\_log::logKill(self, attacker, sWeapon, iDamage, sMeansOfDeath, sHitLoc);
 
 
 	self.pers["weapon1"] = undefined;
@@ -1262,6 +1262,8 @@ startRound()
 	// Define round number
 	game["round"] = game["roundsplayed"] + 1;
 
+	maps\mp\gametypes\_log::logRoundStartInfo();
+
 
 	// If is bash, there is no time-limit
 	if(level.in_bash)
@@ -1330,6 +1332,9 @@ startRound()
 	// Player's stats - start tracking entry kills, aces, clutches, multi-kills, trades and weapon kills (_player_stat.gsc)
 	level maps\mp\gametypes\_player_stat::RoundStarted();
 
+	// Log players and their weapons when round goes live
+	maps\mp\gametypes\_log::logRoundLive();
+
 
 	// Hide pam info hud
 	thread maps\mp\gametypes\_pam::PAM_Header_Delete();
@@ -1379,11 +1384,11 @@ startRound()
 
 	// If there is no opponent -> draw
 	if(!level.exist[game["attackers"]] || !level.exist[game["defenders"]])
-		level thread endRound("draw");
+		level thread endRound("draw", "time_expired");
 
 	// By default defenders wins if time expires, because attackers did not plant bonb
 	else
-		level thread endRound(game["defenders"]);
+		level thread endRound(game["defenders"], "time_expired");
 }
 
 strattime_end_timer(time)
@@ -1812,7 +1817,7 @@ stratTime_g_speed()
 
 
 // Is called when time expired, last player is killed, bomb expldoes, bomb is defused
-endRound(roundwinner)
+endRound(roundwinner, reason)
 {
 	level endon("intermission");
 
@@ -1920,7 +1925,7 @@ endRound(roundwinner)
 	level maps\mp\gametypes\_hud_teamscore::updateScore();
 
 	// LOG stuff
-	level notify("log_round_end", roundwinner);
+	level thread maps\mp\gametypes\_log::logRoundEnd(roundwinner, reason);
 
 
 	// Increase played rounds
@@ -2159,13 +2164,13 @@ updateTeamStatus()
 		{
 			// if allies planted the bomb, allies win
 			iprintln(&"MP_ALLIEDMISSIONACCOMPLISHED");
-			level thread endRound("allies");
+			level thread endRound("allies", "eliminated");
 			return;
 		}
 
 		// if there is no bomb planted the round is a draw
 		iprintln(&"MP_ROUNDDRAW");
-		level thread endRound("draw");
+		level thread endRound("draw", "eliminated");
 		return;
 	}
 
@@ -2178,7 +2183,7 @@ updateTeamStatus()
 
 		thread teamWinner("allies");
 		level thread playSoundOnPlayers("mp_announcer_allieselim");
-		level thread endRound("axis");
+		level thread endRound("axis", "eliminated");
 		return;
 	}
 
@@ -2191,7 +2196,7 @@ updateTeamStatus()
 
 		thread teamWinner("axis");
 		level thread playSoundOnPlayers("mp_announcer_axiselim");
-		level thread endRound("allies");
+		level thread endRound("allies", "eliminated");
 		return;
 	}
 }
@@ -2495,10 +2500,9 @@ bombzone_think(bombzone_other)
 					level.bombtimerstart = gettime();
 					level.planting_team = player.pers["team"];
 					level.planting_player = player;
+					level.planting_site = maps\mp\gametypes\_matchinfo::ToUpper(self.script_label);
 
-					lpselfnum = player getEntityNumber();
-					lpselfguid = player getGuid();
-					logPrint("Bomb;" + lpselfguid + ";" + lpselfnum + ";" + player.pers["team"] + ";" + player.name + ";" + "bomb_plant" + "\n");
+					maps\mp\gametypes\_log::logBomb(player, "bomb_plant", level.planting_site);
 
 
 					if (level.bomb_plant_points)
@@ -2602,7 +2606,9 @@ bomb_countdown()
 	earthquake(0.2, 2, origin, 1200);
 
 	level thread playSoundOnPlayers("mp_announcer_objdest");
-	level thread endRound(level.planting_team);
+	maps\mp\gametypes\_log::logBombExploded(level.planting_player, level.planting_site);
+
+	level thread endRound(level.planting_team, "bomb_exploded");
 }
 
 bomb_think()
@@ -2693,9 +2699,7 @@ bomb_think()
 					iprintln(&"MP_EXPLOSIVESDEFUSED");
 					level thread playSoundOnPlayers("MP_announcer_bomb_defused");
 
-					lpselfnum = player getEntityNumber();
-					lpselfguid = player getGuid();
-					logPrint("Bomb;" + lpselfguid + ";" + lpselfnum + ";" + player.pers["team"] + ";" + player.name + ";" + "bomb_defuse" + "\n");
+					maps\mp\gametypes\_log::logBomb(player, "bomb_defuse", level.planting_site);
 
 					if (level.bomb_defuse_points)
 					{
@@ -2707,7 +2711,7 @@ bomb_think()
 					player maps\mp\gametypes\_player_stat::AddDefuse();
 					player maps\mp\gametypes\_player_stat::AddScore(0.5);
 
-					level thread endRound(player.pers["team"]);
+					level thread endRound(player.pers["team"], "bomb_defused");
 
 					return;	//TEMP, script should stop after the wait level.frame
 				}

@@ -740,6 +740,9 @@ CodeCallback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath
 	// Call onPlayerDamaged event
 	maps\mp\gametypes\global\events::notifyDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
 
+	// Save health before damage is applied, so log can print real damage
+	self maps\mp\gametypes\_log::saveHealthBeforeDamage(eAttacker);
+
 	// Call gametype specific event that is called as last
 	[[level.onAfterPlayerDamaged]](eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
 

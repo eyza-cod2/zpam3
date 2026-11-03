@@ -42,6 +42,7 @@ restartIfEmpty()
 			iprintln("Restarting server...");
 			// Will disable all comming map-restrat (so map can be changed correctly)
 			level.pam_mode_change = true;
+			maps\mp\gametypes\_log::logServerRestart();
 			map_restart(false);
 		}
 }

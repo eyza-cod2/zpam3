@@ -52,6 +52,9 @@ Do_Map_End()
 
 	wait level.fps_multiplier * 6;
 
+	// Overall stats of the map for stats applications
+	maps\mp\gametypes\_log::logMapStats();
+
 	logPrint("MatchEnd;\n");
 
     // Avoid map change if pam_mode is changing

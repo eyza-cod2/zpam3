@@ -881,17 +881,24 @@ ingame_handleVisiblity() {
 
 
 
+// Returns name of the match team on allies / axis side (empty if not known)
+getMatchTeamName(side)
+{
+	team1_side = "allies";
+	if (game["match_team1_side"] == "axis")
+		team1_side = "axis";
+
+	if (side == team1_side)
+		return game["match_team1_name"];
+	return game["match_team2_name"];
+}
+
 updateScoreboardTeamNames()
 {
 	//println("##updateTeamNames:"+game["match_team1_name"]);
 
-	teamname_allies = game["match_team1_name"];
-	teamname_axis = game["match_team2_name"];
-	if (game["match_team1_side"] == "axis")
-	{
-		teamname_allies = game["match_team2_name"];
-		teamname_axis = game["match_team1_name"];
-	}
+	teamname_allies = getMatchTeamName("allies");
+	teamname_axis = getMatchTeamName("axis");
 
 
 	if (teamname_allies != "")

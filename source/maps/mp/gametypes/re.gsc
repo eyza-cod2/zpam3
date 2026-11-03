@@ -1070,7 +1070,7 @@ onAfterPlayerDamaged(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWe
 
 
 	if(self.sessionstate != "dead" && !level.in_readyup)
-		level notify("log_damage", self, eAttacker, sWeapon, iDamage, sMeansOfDeath, sHitLoc, isFriendlyFire);
+		maps\mp\gametypes\_log::logDamage(self, eAttacker, sWeapon, iDamage, sMeansOfDeath, sHitLoc, isFriendlyFire);
 }
 
 // Self if player who is hitting enemy
@@ -1273,7 +1273,7 @@ onAfterPlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir,
 	}
 
 
-	level notify("log_kill", self, attacker,  sWeapon, iDamage, sMeansOfDeath, sHitLoc);
+	maps\mp\gametypes\_log::logKill(self, attacker, sWeapon, iDamage, sMeansOfDeath, sHitLoc);
 
 
 	self.pers["weapon1"] = undefined;
@@ -1596,6 +1596,8 @@ startRound()
 	// Define round number
 	game["round"] = game["roundsplayed"] + 1;
 
+	maps\mp\gametypes\_log::logRoundStartInfo();
+
 
 	// If is bash, there is no time-limit
 	if(level.in_bash)
@@ -1656,6 +1658,9 @@ startRound()
 
 	// Player's stats - start tracking entry kills, aces, clutches, multi-kills, trades and weapon kills (_player_stat.gsc)
 	level maps\mp\gametypes\_player_stat::RoundStarted();
+
+	// Log players and their weapons when round goes live
+	maps\mp\gametypes\_log::logRoundLive();
 
 
 	thread HUD_Clock(level.roundlength * 60);
@@ -1719,13 +1724,13 @@ startRound()
 
 	// If there is no opponent -> draw
 	if(!level.exist[game["attackers"]] || !level.exist[game["defenders"]])
-		level thread endRound("draw");
+		level thread endRound("draw", "time_expired");
 
 	// By default defenders wins if time expires, because attackers did not plant bonb
 	else
 	{
 		level thread playSoundOnPlayers("MP_announcer_objective_defended");
-		level thread endRound(game["defenders"]);
+		level thread endRound(game["defenders"], "time_expired");
 	}
 }
 
@@ -1946,7 +1951,7 @@ stratTime_g_speed()
 
 
 // Is called when time expired, last player is killed, bomb expldoes, bomb is defused
-endRound(roundwinner)
+endRound(roundwinner, reason)
 {
 	level endon("intermission");
 
@@ -2061,7 +2066,7 @@ endRound(roundwinner)
 	level maps\mp\gametypes\_hud_teamscore::updateScore();
 
 	// LOG stuff
-	level notify("log_round_end", roundwinner);
+	level thread maps\mp\gametypes\_log::logRoundEnd(roundwinner, reason);
 
 
 	// Increase played rounds
@@ -2318,7 +2323,7 @@ updateTeamStatus()
 	if(oldvalue["allies"] && !level.exist["allies"] && oldvalue["axis"] && !level.exist["axis"])
 	{
 		iprintln(&"MP_ALLIEDMISSIONACCOMPLISHED");
-		level thread endRound("allies");
+		level thread endRound("allies", "eliminated");
 		return;
 	}
 
@@ -2327,7 +2332,7 @@ updateTeamStatus()
 	{
 		iprintln(&"MP_ALLIESHAVEBEENELIMINATED");
 		level thread playSoundOnPlayers("mp_announcer_allieselim");
-		level thread endRound("axis");
+		level thread endRound("axis", "eliminated");
 		return;
 	}
 
@@ -2336,7 +2341,7 @@ updateTeamStatus()
 	{
 		iprintln(&"MP_AXISHAVEBEENELIMINATED");
 		level thread playSoundOnPlayers("mp_announcer_axiselim");
-		level thread endRound("allies");
+		level thread endRound("allies", "eliminated");
 		return;
 	}
 }
@@ -2678,7 +2683,7 @@ objective_carrier_atgoal_wait(player)
 
 
 			level thread playSoundOnPlayers("MP_announcer_objective_captured");
-			level thread endRound(game["attackers"]);
+			level thread endRound(game["attackers"], "objective_captured");
 
 			return;
 		}
@@ -2891,7 +2896,7 @@ drop_objective(player, endround)
 
 
 			level thread playSoundOnPlayers("MP_announcer_objective_captured");
-			level thread endRound(game["attackers"]);
+			level thread endRound(game["attackers"], "objective_captured");
 
 			return;
 		}
@@ -3295,7 +3300,7 @@ drop_objective_on_disconnect_or_death(player)
 
 
 		level thread playSoundOnPlayers("MP_announcer_objective_captured");
-		level thread endRound(game["attackers"]);
+		level thread endRound(game["attackers"], "objective_captured");
 
 		return;
 	}
