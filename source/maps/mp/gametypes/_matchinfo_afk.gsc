@@ -15,7 +15,7 @@ for sv_kickBanTime seconds (0 in all competitive rulesets).
 Only live time is counted (same as leaver detection):
  - SD: from the end of strat time to the end of the round
  - DM: from the end of strat time to the end of the map
-Ready-ups, timeouts, strat time, time between rounds and time when player is dead or spectating are not counted,
+Ready-ups, timeouts, strat time, time between rounds, pistol bash rounds and time when player is dead or spectating are not counted,
 but they do not reset the inactive time either, so AFK player is kicked even if he dies in every round.
 Player is warned 30, 20 and 10 seconds before the kick, moving cancels the kick until the player is kicked.
 
