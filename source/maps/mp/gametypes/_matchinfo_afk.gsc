@@ -19,6 +19,10 @@ Ready-ups, timeouts, strat time, time between rounds and time when player is dea
 but they do not reset the inactive time either, so AFK player is kicked even if he dies in every round.
 Player is warned 30, 20 and 10 seconds before the kick, moving cancels the kick until the player is kicked.
 
+Spinning the view to avoid the kick (+left / +right bind, weight on the mouse, macro) is not counted as activity:
+when player does not move and does not press any button, a turn of the view in the same direction and at nearly
+the same speed as in the previous second, without moving the view up / down, is ignored.
+
 AFK kick is not reported in match data - kicked player is not connected anymore,
 so if he does not come back, leaver detection counts his time as usual.
 */
@@ -38,6 +42,10 @@ onConnected()
 	// Inactive time in ms, kept in pers to survive round restarts
 	if (!isDefined(self.pers["afk_time"]))
 		self.pers["afk_time"] = 0;
+
+	// Turn of the view in last counted second, kept in pers to detect spinning right after round restart
+	if (!isDefined(self.pers["afk_yawDelta"]))
+		self.pers["afk_yawDelta"] = 0;
 
 	// Offset thread from other threads, wait for matchinfo to prepare map
 	wait level.frame * 10;
@@ -71,8 +79,13 @@ onConnected()
 
 		origin = self.origin;
 		angles = self getPlayerAngles();
-		active = distanceSquared(origin, lastOrigin) > 1 || angles[0] != lastAngles[0] || angles[1] != lastAngles[1] ||
-			self attackButtonPressed() || self useButtonPressed() || self meleeButtonPressed();
+		moved = distanceSquared(origin, lastOrigin) > 1;
+		buttons = self attackButtonPressed() || self useButtonPressed() || self meleeButtonPressed();
+		pitchDelta = angleDelta(angles[0], lastAngles[0]);
+		yawDelta = angleDelta(angles[1], lastAngles[1]);
+		viewChanged = pitchDelta != 0 || yawDelta != 0;
+		spinning = !moved && !buttons && isSpinning(pitchDelta, yawDelta, self.pers["afk_yawDelta"]);
+		active = moved || buttons || (viewChanged && !spinning);
 		lastOrigin = origin;
 		lastAngles = angles;
 
@@ -91,6 +104,9 @@ onConnected()
 			wasCounted = true;
 			continue;
 		}
+
+		// Turn speed is saved only in counted time, so spinning is detected also right after respawn / round restart
+		self.pers["afk_yawDelta"] = yawDelta;
 
 		if (active)
 		{
@@ -162,6 +178,46 @@ isCounted()
 		return false;
 
 	return maps\mp\gametypes\_matchinfo_leaver::isLiveTime();
+}
+
+
+// View is turned in the same direction at nearly the same speed as in previous second, without moving it up / down
+// (+left / +right bind, weight on the mouse, macro). Real player holding an angle makes small corrections in both directions.
+isSpinning(pitchDelta, yawDelta, lastYawDelta)
+{
+	if (yawDelta == 0 || lastYawDelta == 0)
+		return false;
+
+	// Different direction
+	if ((yawDelta > 0) != (lastYawDelta > 0))
+		return false;
+
+	// View moved up / down
+	if (absValue(pitchDelta) > 0.5)
+		return false;
+
+	// Speed changed by more than 25% (+1 degree tolerance for slow turning)
+	return absValue(yawDelta - lastYawDelta) <= absValue(lastYawDelta) * 0.25 + 1;
+}
+
+
+// Difference of two angles in range -180 .. 180
+angleDelta(angle, lastAngle)
+{
+	delta = angle - lastAngle;
+	while (delta > 180)
+		delta -= 360;
+	while (delta < -180)
+		delta += 360;
+	return delta;
+}
+
+
+absValue(num)
+{
+	if (num < 0)
+		return num * -1;
+	return num;
 }
 
 
