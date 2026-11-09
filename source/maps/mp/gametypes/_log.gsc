@@ -27,7 +27,7 @@ logInfo()
 {
 	waittillframeend; // wait until gametype variables are set
 
-	pam_version = getsubstr(level.pam_folder, 5, level.pam_folder.size); // "main/zpam411" -> "zpam411"
+	pam_version = getsubstr(level.pam_folder, 5, level.pam_folder.size); // "main/zpam412" -> "zpam412"
 
 	logPrint("LogInfo;" + level.log_version + ";" + pam_version + ";" + level.gametype + ";" + level.mapname + ";" + level.pam_mode + ";" +
 		getMatchId() + ";" + getTime() + "\n");

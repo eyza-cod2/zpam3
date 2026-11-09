@@ -7,18 +7,19 @@ The code from the previous version zPAM 2.07 was completely rewritten and ported
 Work on this PAM was initiated by me in 2015 and was never fully finished. On corona days, I decided to finish it.
 
 ❗ Note ❗ <br>
-*This page describe only actual version zPAM 4.11.<br>
+*This page describe only actual version zPAM 4.12.<br>
 To see description of previous versions, click on the links in [Version list](#version-list).*
 
 ## Download
 - #### Actual version for CoD2x 1.4
-	- 2026/11/01 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.11/zpam411.zip">zPAM 4.11 - zpam411.zip</a></b> - compatible with CoD2x 1.4.6.8 and higher.
+	- 2026/11/09 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.12/zpam412.zip">zPAM 4.12 - zpam412.zip</a></b> - compatible with CoD2x 1.4.6.8 and higher.
 
 - #### Compatible version for 1.3
 	- 2025/09/15 - <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/3.36/zpam336.zip">zPAM 3.36 - zpam336.zip</a></b> - compatible with CoD2 1.0, 1.2 and 1.3
 
 ## Version list
-- 2026/11/01 - <b>zPAM 4.11</b>
+- 2026/11/09 - <b>zPAM 4.12</b>
+- 2026/11/01 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/c05f226fad71c1845eee069e9cce63377507b7dc">zPAM 4.11</a></b>
 - 2026/10/31 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/b56668d7452e1269f001002b97e48a2b0e013fdc">zPAM 4.10</a></b>
 - 2026/10/11 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/4564703851819f9476c4eaf11891b1cf6fcdd11c">zPAM 4.09</a></b>
 - 2026/05/20 - <b><a href="https://github.com/eyza-cod2/zpam3/tree/83285ae8d2ba65640cf46318feade49463652a06">zPAM 4.08</a></b>
@@ -54,6 +55,27 @@ To see description of previous versions, click on the links in [Version list](#v
 
 
 ## Changelog
+
+
+<details><summary>zPAM 4.12 changes (click to open)</summary>
+<p>
+
+**Changes:**
+- Call of Duty 2 21st birthday event in ready-up (enabled by default in this version, cvar scr_event_birthday 0 turns it off)
+	- birthday cake with 21 candles on the aim trainer poster in both spawns, each hit lights a candle and shows its number
+	- the 21st hit explodes the cake: short celebration with confetti, fireworks and cheering, the birthday poster appears with the anniversary emblem floating over it
+	- the first burst of each poster throws out 5 party hats, every later burst a party hat launcher (20 hats, bounce off players, stick to walls)
+	- only in ready-up, everything is removed when ready-up ends, nothing affects the match
+- AFK kick in CoD2x match (thanks h1z)
+	- enabled only if match data contains afkTimeout (seconds); counted in live time only, works in SD and DM
+	- player is warned 30, 20 and 10 seconds before the kick; spinning the view does not count as activity
+	- kick reason is shown in the disconnect dialog with CoD2x supporting kick reason
+- Pistol bash rounds are not counted as live time in leaver detection (thanks h1z)
+- Server log extended for stats applications (log version 2) - new fields and lines, overall map stats before MatchEnd, see [Server log](#server-log-games_mplog-for-stats-applications)
+</p>
+</details>
+
+
 
 
 <details><summary>zPAM 4.11 changes (click to open)</summary>
@@ -668,8 +690,8 @@ r_polygonOffsetScale and r_polygonOffsetBias warning appears even if they were c
 
 ## Installation
 
-- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.11/zpam411.zip">zPAM 4.11</a></b> and extract files into following locations:
-	- ./Call of Duty 2/main/zpam411.iwd
+- Download <b><a href="https://github.com/eyza-cod2/zpam3/releases/download/4.12/zpam412.zip">zPAM 4.12</a></b> and extract files into following locations:
+	- ./Call of Duty 2/main/zpam412.iwd
 	- ./Call of Duty 2/main/zpam_maps_v7.iwd <i>(*not required for 1.0 and 1.2 game version)</i>
 	- ./Call of Duty 2/main/server.cfg
 
@@ -1261,7 +1283,7 @@ Fields marked with *(v2)* were added in log version 2 at the end of existing lin
 
 | Line | Fields | Description |
 |---|---|---|
-| `LogInfo` | version; zpam; gametype; map; pam_mode; match_id; time | Printed once at the start of each map. `zpam` is the zPAM iwd name, for example `zpam411`. `match_id` is CoD2x match id (empty if not activated) |
+| `LogInfo` | version; zpam; gametype; map; pam_mode; match_id; time | Printed once at the start of each map. `zpam` is the zPAM iwd name, for example `zpam412`. `match_id` is CoD2x match id (empty if not activated) |
 | `Connected` | guid; num; name; *(v2)* uuid; hwid; time | Player connected (also printed again for every connected player after each round restart) |
 | `Disconnected` | guid; num; name; *(v2)* uuid; hwid; time | Player disconnected |
 | `Team` | guid; num; name; team; uuid; hwid; time | Player joined a team (or spectators / streamers) |
@@ -1364,7 +1386,7 @@ Round based stats (entry kills, trades, aces, multi-kills, clutches) are counted
 #### Cvar /fs_game is not empty!
 Make sure cvar /fs_game is empty (+set fs_game "") and iwd files are placed in main folder.
 
-#### Iwd file zpam411.iwd must be installed in main folder.
+#### Iwd file zpam412.iwd must be installed in main folder.
  - Since version 3.20, all iwd files have to be installed in main folder.
 This is because of bug that player's settings changed in game are not saved into the config when running a game with fs_game set.
 
