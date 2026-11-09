@@ -121,7 +121,7 @@ onConnected()
 
 		remaining = timeout - int(self.pers["afk_time"] / 1000);
 
-		if (remaining <= -kickDelay)
+		if (remaining + kickDelay <= 0) // unary minus on variable is not supported
 		{
 			self kickAfk(timeout);
 			return;
