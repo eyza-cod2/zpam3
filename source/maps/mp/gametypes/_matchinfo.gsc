@@ -563,7 +563,7 @@ kickNotAllowedPlayer()
 			else
 				reason = "not assigned to any team in the match";
 
-			// Kick message cannot be customized, so show reason before kick
+			// Kick message cannot be customized in older CoD2x, so show reason before kick
 			self iprintlnbold("^1You are being kicked: " + reason);
 
 			wait level.fps_multiplier * kickDelay;
@@ -581,7 +581,8 @@ kickNotAllowedPlayer()
 
 			iprintln(self.name + "^7 was kicked: ^1" + reason);
 
-			kick(self getEntityNumber());
+			// Reason is shown in disconnect dialog and to all players as "<name> <reason>" (CoD2x with kick reason support - callofduty2x/CoD2x#45, older versions ignore it)
+			kick(self getEntityNumber(), "^7was kicked: ^1" + reason);
 			return;
 		}
 

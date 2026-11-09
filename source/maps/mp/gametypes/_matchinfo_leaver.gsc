@@ -12,7 +12,7 @@ After the match started (first ready-up is over), time when a player from match 
 is summed for all his disconnects. Only live time is counted:
  - SD: from the end of strat time to the end of the round
  - DM: from the end of strat time to the end of the map
-Ready-ups (halftime), timeouts, strat time and time between rounds are not counted.
+Ready-ups (halftime), timeouts, strat time, time between rounds and pistol bash rounds are not counted.
 Players are taken from match data when the match starts, later changes in match data are ignored.
 Note: a player whose game crashed stays connected (999 ping) until the server drops him (sv_timeout),
 that time is not counted.
@@ -189,6 +189,10 @@ isLeaver(uuid)
 isLiveTime()
 {
 	if (game["state"] != "playing" || level.in_readyup || level.in_timeout || level.in_strattime)
+		return false;
+
+	// Pistol bash rounds are played before the match (after first ready-up, followed by ready-up again)
+	if (level.in_bash)
 		return false;
 
 	if (level.gametype == "sd")
