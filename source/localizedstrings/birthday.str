@@ -1,0 +1,8 @@
+// zPAM - Call of Duty 2 birthday event (scr_event_birthday)
+VERSION             "1"
+CONFIG              "C:\trees\cod2\bin\StringEd.cfg"
+
+REFERENCE           HAT_LAUNCHER
+LANG_ENGLISH        "Party Hat Launcher"
+
+ENDMARKER

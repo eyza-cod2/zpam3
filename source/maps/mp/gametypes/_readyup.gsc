@@ -163,6 +163,11 @@ Start_Readyup_Mode(runned_in_middle_of_game)
 	// Create "Ready-up Mode", "Waiting On X Players", "Clock", "Waring: PB is off.." atd...
 	createLevelHUD();
 
+	// Birthday event (scr_event_birthday)
+	level thread maps\mp\gametypes\_party_hat::readyupStarted();
+	level thread maps\mp\gametypes\_hat_launcher::readyupStarted();
+	level thread maps\mp\gametypes\_birthday_poster::readyupStarted();
+
 	// Enable online renaming
 	wait level.frame;
 	setClientNameMode("auto_change");

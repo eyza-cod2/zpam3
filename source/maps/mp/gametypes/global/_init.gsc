@@ -120,4 +120,8 @@ InitModules()
 
 	thread maps\mp\gametypes\_objective::init(); // depends on readyup, timeout
 
+	thread maps\mp\gametypes\_party_hat::init(); // birthday event, depends on readyup
+	thread maps\mp\gametypes\_hat_launcher::init(); // birthday event, depends on readyup
+	thread maps\mp\gametypes\_birthday_poster::init(); // birthday event, depends on readyup
+
 }

@@ -46,3 +46,32 @@ aim_trainer_piano_9,,piano/f2.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
 aim_trainer_piano_10,,piano/f4.wav,0.4,0.4,,1,1,,,auto,streamed,,,,,,,,,
 aim_trainer_horn,,vehicles/horn_beep.wav,0.9,0.9,,1,1,,,auto,,,,,,,,,,
 aim_trainer_horse,,amb_elements/elm_horse10.wav,1,1,,1,1,,,auto,,,,,,,,,,
+
+# Birthday event party hat picked up (stock body fall on dirt / sand)
+zpam_hat_pickup,,bodyfalls/mrk_bodyfall_dirtsand01.wav,0.8,0.8,,1,1,60,800,auto,,,,,,,,,,,,
+# Birthday event party hat launcher fire: soft pop (Mixkit soccer ball kick, trimmed, pitched up)
+zpam_hat_fire,,zpam/hat_fire.wav,0.9,1,,1.6,1.8,60,1200,auto,,,,,,,,,,,,
+
+# Birthday celebration: the cake explodes and the finale: OpenGameArt rubberduck cannon_01 (CC0) boom, Mixkit 'Clear firework
+# explosions' + 'Multiple fireworks explosions' (bangs at 0, 0.48, 0.66 and 0.84 s get a firework effect each) and the
+# confetti crackle, mixed, first bang at 0
+zpam_bday_explosion,,zpam/bday_explosion.wav,1,1,,1,1,300,4000,auto,,,,,,,,,,,,
+# Birthday celebration fireworks, a random one of 8 (OpenGameArt rubberduck '25 CC0 bang / firework SFX' fw_01-06, CC0;
+# Mixkit 'Firework rockets exploding' and 'Small firework explosion'), trimmed so the bang is at 0; entries of one name need their own sequence (else 'duplicate alias')
+zpam_bday_firework,1,zpam/bday_firework_1.wav,1,1,,0.95,1.05,200,3000,auto,,,,,,,,,,,,
+zpam_bday_firework,2,zpam/bday_firework_2.wav,1,1,,0.95,1.05,200,3000,auto,,,,,,,,,,,,
+zpam_bday_firework,3,zpam/bday_firework_3.wav,1,1,,0.95,1.05,200,3000,auto,,,,,,,,,,,,
+zpam_bday_firework,4,zpam/bday_firework_4.wav,1,1,,0.95,1.05,200,3000,auto,,,,,,,,,,,,
+zpam_bday_firework,5,zpam/bday_firework_5.wav,1,1,,0.95,1.05,200,3000,auto,,,,,,,,,,,,
+zpam_bday_firework,6,zpam/bday_firework_6.wav,1,1,,0.95,1.05,200,3000,auto,,,,,,,,,,,,
+zpam_bday_firework,7,zpam/bday_firework_7.wav,1,1,,0.95,1.05,200,3000,auto,,,,,,,,,,,,
+zpam_bday_firework,8,zpam/bday_firework_8.wav,1,1,,0.95,1.05,200,3000,auto,,,,,,,,,,,,
+# Birthday celebration confetti fountains and finale: crackling sizzle (Mixkit 'Firework whoosh explosion', from its onset)
+zpam_bday_confetti,,zpam/bday_confetti.wav,0.8,0.9,,0.95,1.05,200,3000,auto,,,,,,,,,,,,
+# Birthday celebration: the crowd cheers when the cake explodes, a random one of 2 (Mixkit 'Happy
+# birthday crowd cheer' and 'Birthday crowd party cheer', Mixkit License)
+zpam_bday_cheer,1,zpam/bday_cheer_1.wav,0.9,0.9,,0.97,1.03,300,4000,auto,,,,,,,,,,,,
+zpam_bday_cheer,2,zpam/bday_cheer_2.wav,0.9,0.9,,0.97,1.03,300,4000,auto,,,,,,,,,,,,
+# Birthday cake / poster hit: a candle is lit, with the flare of fx/zpam/bday_candle_light.efx (Mixkit 'Fire match lighting':
+# only the strike, at 0)
+zpam_bday_candle,,zpam/bday_candle.wav,0.7,0.7,,0.95,1.05,150,1500,auto,,,,,,,,,,,,

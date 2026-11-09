@@ -220,6 +220,10 @@ handleActivation()
 
 		player thread maps\mp\gametypes\_damagefeedback::updateDamageFeedback(undefined);
 
+		// Birthday event: the poster counts the hits (_birthday_poster.gsc), no hint
+		if (maps\mp\gametypes\_birthday_poster::isActive())
+			continue;
+
 		// Printed just a few seconds ago
 		if (player.aimTrainerActivatorDelay > gettime())
 			continue;

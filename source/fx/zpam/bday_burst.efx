@@ -1,0 +1,1789 @@
+Particle
+{
+	name				anniversary
+
+	flags				useAlpha
+
+	life				1600
+
+	origin				100 0 0
+
+	rgb
+	{
+		curve
+		[
+			0 1 1 1
+			1 1 1 1
+		]
+	}
+
+	rgbRand
+	{
+		curve
+		[
+			0 1 1 1
+			1 1 1 1
+		]
+	}
+
+	alpha
+	{
+		curve
+		[
+			0 1 0 0
+			0.95 1 0 0
+			1 0 0 0
+		]
+	}
+
+	alphaRand
+	{
+		curve
+		[
+			0 1 0 0
+			0.95 1 0 0
+			1 0 0 0
+		]
+	}
+
+	size
+	{
+		curve
+		[
+			0 0.2 0 0
+			0.15625 1.2 0 0
+			0.3125 1 0 0
+			1 1 0 0
+		]
+
+		scale			56
+	}
+
+	sizeRand
+	{
+		curve
+		[
+			0 0.2 0 0
+			0.15625 1.2 0 0
+			0.3125 1 0 0
+			1 1 0 0
+		]
+
+		scale			56
+	}
+
+	size2
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	size2Rand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	length
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	lengthRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	rotationDelta
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	rotationDeltaRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocityX
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocityXRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocityY
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocityYRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocityZ
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocityZRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2X
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2XRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Y
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2YRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Z
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2ZRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	shaders
+	[
+		zpam_bday_21years
+	]
+}
+
+Particle
+{
+	name				confetti
+
+	flags				useAlpha useRandomColors useRandomVelocity useRandomRotationDelta
+
+	count				24
+
+	life				1800 3000
+
+	rotation				0 360
+
+	gravity				-500
+
+	rgb
+	{
+		curve
+		[
+			0 1 0.15 0.15
+			1 1 0.15 0.15
+		]
+	}
+
+	rgbRand
+	{
+		curve
+		[
+			0 1 0.45 0.3
+			1 1 0.45 0.3
+		]
+	}
+
+	alpha
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	alphaRand
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	size
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	sizeRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	size2
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	size2Rand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	length
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	lengthRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	rotationDelta
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			2
+	}
+
+	rotationDeltaRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			2
+	}
+
+	velocityX
+	{
+		curve
+		[
+			0 0.5 0 0
+			1 0.5 0 0
+		]
+
+		scale			480
+	}
+
+	velocityXRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			480
+	}
+
+	velocityY
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityYRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZ
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocity2X
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2XRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Y
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2YRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Z
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2ZRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	shaders
+	[
+		zpam_bday_confetti
+	]
+}
+
+Particle
+{
+	name				confetti
+
+	flags				useAlpha useRandomColors useRandomVelocity useRandomRotationDelta
+
+	count				24
+
+	life				1800 3000
+
+	rotation				0 360
+
+	gravity				-500
+
+	rgb
+	{
+		curve
+		[
+			0 1 0.85 0.1
+			1 1 0.85 0.1
+		]
+	}
+
+	rgbRand
+	{
+		curve
+		[
+			0 1 1 0.45
+			1 1 1 0.45
+		]
+	}
+
+	alpha
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	alphaRand
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	size
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	sizeRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	size2
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	size2Rand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	length
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	lengthRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	rotationDelta
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			2
+	}
+
+	rotationDeltaRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			2
+	}
+
+	velocityX
+	{
+		curve
+		[
+			0 0.5 0 0
+			1 0.5 0 0
+		]
+
+		scale			480
+	}
+
+	velocityXRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			480
+	}
+
+	velocityY
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityYRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZ
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocity2X
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2XRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Y
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2YRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Z
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2ZRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	shaders
+	[
+		zpam_bday_confetti
+	]
+}
+
+Particle
+{
+	name				confetti
+
+	flags				useAlpha useRandomColors useRandomVelocity useRandomRotationDelta
+
+	count				23
+
+	life				1800 3000
+
+	rotation				0 360
+
+	gravity				-500
+
+	rgb
+	{
+		curve
+		[
+			0 0.2 0.9 0.2
+			1 0.2 0.9 0.2
+		]
+	}
+
+	rgbRand
+	{
+		curve
+		[
+			0 0.5 1 0.4
+			1 0.5 1 0.4
+		]
+	}
+
+	alpha
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	alphaRand
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	size
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	sizeRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	size2
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	size2Rand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	length
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	lengthRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	rotationDelta
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			2
+	}
+
+	rotationDeltaRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			2
+	}
+
+	velocityX
+	{
+		curve
+		[
+			0 0.5 0 0
+			1 0.5 0 0
+		]
+
+		scale			480
+	}
+
+	velocityXRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			480
+	}
+
+	velocityY
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityYRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZ
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocity2X
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2XRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Y
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2YRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Z
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2ZRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	shaders
+	[
+		zpam_bday_confetti
+	]
+}
+
+Particle
+{
+	name				confetti
+
+	flags				useAlpha useRandomColors useRandomVelocity useRandomRotationDelta
+
+	count				23
+
+	life				1800 3000
+
+	rotation				0 360
+
+	gravity				-500
+
+	rgb
+	{
+		curve
+		[
+			0 0.15 0.6 1
+			1 0.15 0.6 1
+		]
+	}
+
+	rgbRand
+	{
+		curve
+		[
+			0 0.4 0.9 1
+			1 0.4 0.9 1
+		]
+	}
+
+	alpha
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	alphaRand
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	size
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	sizeRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	size2
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	size2Rand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	length
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	lengthRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	rotationDelta
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			2
+	}
+
+	rotationDeltaRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			2
+	}
+
+	velocityX
+	{
+		curve
+		[
+			0 0.5 0 0
+			1 0.5 0 0
+		]
+
+		scale			480
+	}
+
+	velocityXRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			480
+	}
+
+	velocityY
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityYRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZ
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocity2X
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2XRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Y
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2YRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Z
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2ZRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	shaders
+	[
+		zpam_bday_confetti
+	]
+}
+
+Particle
+{
+	name				confetti
+
+	flags				useAlpha useRandomColors useRandomVelocity useRandomRotationDelta
+
+	count				23
+
+	life				1800 3000
+
+	rotation				0 360
+
+	gravity				-500
+
+	rgb
+	{
+		curve
+		[
+			0 0.6 0.25 1
+			1 0.6 0.25 1
+		]
+	}
+
+	rgbRand
+	{
+		curve
+		[
+			0 0.85 0.5 1
+			1 0.85 0.5 1
+		]
+	}
+
+	alpha
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	alphaRand
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	size
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	sizeRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	size2
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	size2Rand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	length
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	lengthRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	rotationDelta
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			2
+	}
+
+	rotationDeltaRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			2
+	}
+
+	velocityX
+	{
+		curve
+		[
+			0 0.5 0 0
+			1 0.5 0 0
+		]
+
+		scale			480
+	}
+
+	velocityXRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			480
+	}
+
+	velocityY
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityYRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZ
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocity2X
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2XRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Y
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2YRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Z
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2ZRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	shaders
+	[
+		zpam_bday_confetti
+	]
+}
+
+Particle
+{
+	name				confetti
+
+	flags				useAlpha useRandomColors useRandomVelocity useRandomRotationDelta
+
+	count				23
+
+	life				1800 3000
+
+	rotation				0 360
+
+	gravity				-500
+
+	rgb
+	{
+		curve
+		[
+			0 1 0.3 0.75
+			1 1 0.3 0.75
+		]
+	}
+
+	rgbRand
+	{
+		curve
+		[
+			0 1 0.6 0.9
+			1 1 0.6 0.9
+		]
+	}
+
+	alpha
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	alphaRand
+	{
+		curve
+		[
+			0 1 0 0
+			0.75 1 0 0
+			1 0 0 0
+		]
+	}
+
+	size
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	sizeRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 0.8 0 0
+		]
+
+		scale			1.9
+	}
+
+	size2
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	size2Rand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	length
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	lengthRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	rotationDelta
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			2
+	}
+
+	rotationDeltaRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			2
+	}
+
+	velocityX
+	{
+		curve
+		[
+			0 0.5 0 0
+			1 0.5 0 0
+		]
+
+		scale			480
+	}
+
+	velocityXRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			480
+	}
+
+	velocityY
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityYRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZ
+	{
+		curve
+		[
+			0 -1 0 0
+			1 -1 0 0
+		]
+
+		scale			240
+	}
+
+	velocityZRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			240
+	}
+
+	velocity2X
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2XRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Y
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2YRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Z
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2ZRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	shaders
+	[
+		zpam_bday_confetti
+	]
+}

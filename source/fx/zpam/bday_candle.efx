@@ -1,0 +1,251 @@
+Particle
+{
+	name				flame
+
+	flags				useRandomSize
+
+	life				260
+
+	origin				1.2 0 0
+
+	sequenceStartFrameMode				2
+
+	sequenceFixedFpsValue				24.000000
+
+	sequenceLoopTimes				0
+
+	rgb
+	{
+		curve
+		[
+			0 1 0.85 0.6
+			1 1 0.85 0.6
+		]
+	}
+
+	rgbRand
+	{
+		curve
+		[
+			0 1 0.85 0.6
+			1 1 0.85 0.6
+		]
+	}
+
+	alpha
+	{
+		curve
+		[
+			0 0.6 0 0
+			0.5 0.9 0 0
+			1 0 0 0
+		]
+	}
+
+	alphaRand
+	{
+		curve
+		[
+			0 0.6 0 0
+			0.5 0.9 0 0
+			1 0 0 0
+		]
+	}
+
+	size
+	{
+		curve
+		[
+			0 0.9 0 0
+			1 0.7 0 0
+		]
+
+		scale			1.1
+	}
+
+	sizeRand
+	{
+		curve
+		[
+			0 1.1 0 0
+			1 0.9 0 0
+		]
+
+		scale			1.1
+	}
+
+	size2
+	{
+		curve
+		[
+			0 0.9 0 0
+			1 0.7 0 0
+		]
+
+		scale			1.1
+	}
+
+	size2Rand
+	{
+		curve
+		[
+			0 0.9 0 0
+			1 0.7 0 0
+		]
+
+		scale			1.1
+	}
+
+	length
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	lengthRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+	}
+
+	rotationDelta
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	rotationDeltaRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocityX
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			3
+	}
+
+	velocityXRand
+	{
+		curve
+		[
+			0 1 0 0
+			1 1 0 0
+		]
+
+		scale			3
+	}
+
+	velocityY
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocityYRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocityZ
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocityZRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2X
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2XRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Y
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2YRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2Z
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	velocity2ZRand
+	{
+		curve
+		[
+			0 0 0 0
+			1 0 0 0
+		]
+	}
+
+	shaders
+	[
+		gfx_fire_atlas
+	]
+}

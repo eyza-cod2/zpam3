@@ -779,6 +779,10 @@ dropWeapon()
 	if(current == "none")
 		return;
 
+	// Birthday event: the party hat launcher of ready-up is never dropped (it would be picked up into the match)
+	if (maps\mp\gametypes\_hat_launcher::isHatLauncher(current))
+		return;
+
 	if (level.gametype == "re" && self.obj_carrier)
 		return;
 

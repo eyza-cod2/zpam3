@@ -105,6 +105,9 @@ Register_Shared_Cvars()
 	[[sVar]]("scr_friendlyfire", "INT", 0, 0, 3); 	// level.scr_friendlyfire on, off, reflect, shared
 
 	[[sVar]]("scr_posters", "BOOL", 0);              // level.scr_posters, ignore change
+	// CoD2 21st birthday event in ready-up (_birthday_poster.gsc, _party_hat.gsc, _hat_launcher.gsc), applied on map start.
+	// Enabled by default for this release only: in the next zPAM release change the default to 0 (that alone turns it off)
+	[[sVarEx]]("I", "scr_event_birthday", "BOOL", 1);  // level.scr_event_birthday
 
 	[[sVar]]("g_competitive", "BOOL", 1);   // CoD2x
 	[[sVar]]("g_shotgun_spread_fix", "BOOL", 1);   // CoD2x since 1.4.6.5
@@ -214,6 +217,10 @@ onCvarChanged(cvar, value, isRegisterTime)
 			if (!isRegisterTime) {
 				level thread restartMap();
 			}
+			return true;
+
+		case "scr_event_birthday":
+			level.scr_event_birthday = value;
 			return true;
 
 		case "sv_cracked": return true;

@@ -10,6 +10,7 @@ init()
 	registerCvar("debug_fastreload", "BOOL", false);
 	registerCvar("debug_handhitbox", "BOOL", false);
 	registerCvar("debug_torsohitbox", "BOOL", false);
+	registerCvar("debug_birthday", "BOOL", false);	// birthday event log (_birthday_poster.gsc::debug)
 
 	//thread waypoint_xyz(1);
 
@@ -374,6 +375,7 @@ onCvarChanged(cvar, value, isRegisterTime)
 		case "debug_fastreload": 	level.debug_fastreload = value; return true;
 		case "debug_handhitbox": 	level.debug_handhitbox = value; return true;
 		case "debug_torsohitbox": 	level.debug_torsohitbox = value; return true;
+		case "debug_birthday": 		level.debug_birthday = value; return true;
 
 	}
 	return false;
