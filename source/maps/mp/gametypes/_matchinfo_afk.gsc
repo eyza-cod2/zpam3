@@ -7,10 +7,12 @@ Enabled only if match data contains key "afkTimeout" with number of seconds (for
 If the key is missing or is 0, feature is disabled.
 Works in SD and DM.
 
-Player in team (allies / axis) who is alive and stays near his spawn point (within level.afk_spawnRadius units)
+Player in team (allies / axis) who is alive and does not move from the position he spawned at
 for afkTimeout seconds of live time is kicked from the server.
-Turning the view and pressing buttons is not activity - only leaving the spawn point is. So a player who holds
-an angle or camps away from his spawn point is never kicked, and spinning the view / macros do not avoid the kick.
+Only horizontal position is compared with a tolerance of level.afk_moveTolerance units, so falling onto the ground
+after spawn or jumping in place is not a move.
+Turning the view and pressing buttons is not activity - only moving from the spawn position is. So a player who holds
+an angle or camps anywhere else is never kicked, and spinning the view / macros do not avoid the kick.
 The reason is shown to the player 3 seconds before the kick and passed to kick() - newer CoD2x shows it
 in the disconnect dialog and does not ban the player. Older CoD2x ignores the reason and bans the player
 for sv_kickBanTime seconds (0 in all competitive rulesets).
@@ -18,10 +20,10 @@ Only live time is counted (same as leaver detection):
  - SD: from the end of strat time to the end of the round
  - DM: from the end of strat time to the end of the map
 Ready-ups, timeouts, strat time, time between rounds, pistol bash rounds and time when player is dead or spectating are not counted,
-but they do not reset the AFK time either, so AFK player is kicked even if he dies near his spawn point in every round.
-Leaving the spawn point resets the AFK time. It starts counting again only after the next spawn.
+but they do not reset the AFK time either, so AFK player is kicked even if he dies at his spawn position in every round.
+Moving from the spawn position resets the AFK time. It starts counting again only after the next spawn.
 Warning is shown at the top of the screen (not in the center, so it does not cover the crosshair on wide resolutions):
-for 3 seconds at 30 and 20 seconds before the kick, then a countdown every second from 10. Leaving the spawn point cancels the kick until the player is kicked.
+for 3 seconds at 30 and 20 seconds before the kick, then a countdown every second from 10. Moving from the spawn position cancels the kick until the player is kicked.
 
 AFK kick is not reported in match data - kicked player is not connected anymore,
 so if he does not come back, leaver detection counts his time as usual.
@@ -33,12 +35,12 @@ init()
 
 	if (game["firstInit"])
 	{
-		precacheString2("STRING_AFK_WARNING", &"You are AFK! Leave your spawn or you will be kicked in");
+		precacheString2("STRING_AFK_WARNING", &"You are AFK! Move or you will be kicked in");
 		precacheString2("STRING_AFK_KICKING", &"You are being kicked for being AFK");
 	}
 
-	// Distance from the spawn point the player must reach to not be AFK
-	level.afk_spawnRadius = 200;
+	// Horizontal distance from the spawn position that counts as a move
+	level.afk_moveTolerance = 5;
 
 	addEventListener("onConnected", ::onConnected);
 	addEventListener("onSpawnedPlayer", ::onSpawnedPlayer);
@@ -71,7 +73,7 @@ onConnected()
 		return;
 
 	kickDelay = 3; // seconds between showing kick reason and kick
-	radiusSquared = level.afk_spawnRadius * level.afk_spawnRadius;
+	toleranceSquared = level.afk_moveTolerance * level.afk_moveTolerance;
 
 	lastTime = getTime();
 
@@ -94,11 +96,14 @@ onConnected()
 			continue;
 		}
 
-		// Already left the spawn point in this life - not AFK until next spawn
+		// Already moved from spawn position in this life - not AFK until next spawn
 		if (self.afk_leftSpawn)
 			continue;
 
-		if (distanceSquared(self.origin, self.afk_spawnOrigin) > radiusSquared)
+		// Moved from spawn position (horizontally)
+		dx = self.origin[0] - self.afk_spawnOrigin[0];
+		dy = self.origin[1] - self.afk_spawnOrigin[1];
+		if (dx * dx + dy * dy > toleranceSquared)
 		{
 			self HUD_Destroy();
 			self.afk_leftSpawn = true;
@@ -180,12 +185,12 @@ kickAfk(timeout)
 	uuid = self matchPlayerGetData("uuid");
 
 	iprintln(self.name + "^7 was kicked: ^1AFK for " + timeout + " seconds");
-	logprint("AFK: " + uuid + " (" + self.name + ") was kicked after " + timeout + " seconds near spawn point\n");
+	logprint("AFK: " + uuid + " (" + self.name + ") was kicked after " + timeout + " seconds at spawn position\n");
 
 	self.pers["afk_time"] = 0;
 
 	// Reason is shown in disconnect dialog and to all players as "<name> <reason>" (CoD2x with kick reason support - callofduty2x/CoD2x#45, older versions ignore it)
-	kick(self getEntityNumber(), "^1was kicked for being AFK^7 (did not leave spawn for " + timeout + " seconds)");
+	kick(self getEntityNumber(), "^1was kicked for being AFK^7 (did not move from spawn for " + timeout + " seconds)");
 }
 
 
