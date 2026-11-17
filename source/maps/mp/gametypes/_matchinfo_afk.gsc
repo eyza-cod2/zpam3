@@ -20,8 +20,8 @@ Only live time is counted (same as leaver detection):
 Ready-ups, timeouts, strat time, time between rounds, pistol bash rounds and time when player is dead or spectating are not counted,
 but they do not reset the AFK time either, so AFK player is kicked even if he dies near his spawn point in every round.
 Leaving the spawn point resets the AFK time. It starts counting again only after the next spawn.
-In last 30 seconds before the kick, a countdown is shown at the top of the screen (not in the center, so it does not cover
-the crosshair on wide resolutions). Leaving the spawn point cancels the kick until the player is kicked.
+Warning is shown at the top of the screen (not in the center, so it does not cover the crosshair on wide resolutions):
+for 3 seconds at 30 and 20 seconds before the kick, then a countdown every second from 10. Leaving the spawn point cancels the kick until the player is kicked.
 
 AFK kick is not reported in match data - kicked player is not connected anymore,
 so if he does not come back, leaver detection counts his time as usual.
@@ -120,9 +120,16 @@ onConnected()
 		if (remaining <= 0)
 			self HUD_Kicking();
 
-		// Countdown in last 30 seconds before kick
-		else if (remaining <= 30)
+		// Countdown every second in last 10 seconds before kick
+		else if (remaining <= 10)
 			self HUD_Warning(remaining);
+
+		// Warning for 3 seconds at 30 and 20 seconds before kick (range, because a check can skip a second)
+		else if ((remaining <= 30 && remaining > 27) || (remaining <= 20 && remaining > 17))
+			self HUD_Warning(int((remaining + 9) / 10) * 10); // 30, 20
+
+		else
+			self HUD_Destroy();
 	}
 }
 
