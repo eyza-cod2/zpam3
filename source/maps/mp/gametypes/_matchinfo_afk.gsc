@@ -20,7 +20,8 @@ Only live time is counted (same as leaver detection):
 Ready-ups, timeouts, strat time, time between rounds, pistol bash rounds and time when player is dead or spectating are not counted,
 but they do not reset the AFK time either, so AFK player is kicked even if he dies near his spawn point in every round.
 Leaving the spawn point resets the AFK time. It starts counting again only after the next spawn.
-Player is warned 30, 20 and 10 seconds before the kick, leaving the spawn point cancels the kick until the player is kicked.
+In last 30 seconds before the kick, a countdown is shown at the top of the screen (not in the center, so it does not cover
+the crosshair on wide resolutions). Leaving the spawn point cancels the kick until the player is kicked.
 
 AFK kick is not reported in match data - kicked player is not connected anymore,
 so if he does not come back, leaver detection counts his time as usual.
@@ -29,6 +30,12 @@ init()
 {
 	if (level.gametype != "sd" && level.gametype != "dm")
 		return;
+
+	if (game["firstInit"])
+	{
+		precacheString2("STRING_AFK_WARNING", &"You are AFK! Leave your spawn or you will be kicked in");
+		precacheString2("STRING_AFK_KICKING", &"You are being kicked for being AFK");
+	}
 
 	// Distance from the spawn point the player must reach to not be AFK
 	level.afk_spawnRadius = 200;
@@ -67,7 +74,6 @@ onConnected()
 	radiusSquared = level.afk_spawnRadius * level.afk_spawnRadius;
 
 	lastTime = getTime();
-	lastWarning = 0;
 
 	for (;;)
 	{
@@ -84,7 +90,7 @@ onConnected()
 		// Not counted, but AFK time is kept (paused)
 		if (!self isCounted())
 		{
-			lastWarning = 0;
+			self HUD_Destroy();
 			continue;
 		}
 
@@ -94,11 +100,9 @@ onConnected()
 
 		if (distanceSquared(self.origin, self.afk_spawnOrigin) > radiusSquared)
 		{
-			if (lastWarning != 0)
-				self iprintlnbold("^2AFK kick canceled");
+			self HUD_Destroy();
 			self.afk_leftSpawn = true;
 			self.pers["afk_time"] = 0;
-			lastWarning = 0;
 			continue;
 		}
 
@@ -114,25 +118,53 @@ onConnected()
 
 		// Kick message cannot be customized in older CoD2x, so show reason before kick
 		if (remaining <= 0)
-		{
-			if (lastWarning != -1)
-			{
-				lastWarning = -1;
-				self iprintlnbold("^1You are being kicked for being AFK");
-			}
-		}
+			self HUD_Kicking();
 
-		// Warn 30, 20 and 10 seconds before kick
+		// Countdown in last 30 seconds before kick
 		else if (remaining <= 30)
-		{
-			warning = int((remaining + 9) / 10) * 10; // 30, 20, 10
-			if (warning != lastWarning)
-			{
-				lastWarning = warning;
-				self iprintlnbold("^1You are AFK!^7 Leave your spawn or you will be kicked in " + remaining + " seconds");
-			}
-		}
+			self HUD_Warning(remaining);
 	}
+}
+
+
+// Text at the top of the screen - iprintlnbold is in the middle and covers the crosshair on wide resolutions (for example 1920x710)
+HUD_Create()
+{
+	if (isDefined(self.afk_hud))
+		return;
+
+	self.afk_hud = addHUDClient(self, 0, 60, 1.4, (1, 0.2, 0.2), "center", "top", "center", "top");
+	self.afk_hud.font = "default";
+	self.afk_hud.archived = false;
+
+	self.afk_hud_value = addHUDClient(self, 0, 80, 1.4, (1, 0.2, 0.2), "center", "top", "center", "top");
+	self.afk_hud_value.font = "default";
+	self.afk_hud_value.archived = false;
+}
+
+HUD_Warning(remaining)
+{
+	self HUD_Create();
+	self.afk_hud setText(game["STRING_AFK_WARNING"]);
+	self.afk_hud_value.alpha = 1;
+	self.afk_hud_value setValue(remaining);
+}
+
+HUD_Kicking()
+{
+	self HUD_Create();
+	self.afk_hud setText(game["STRING_AFK_KICKING"]);
+	self.afk_hud_value.alpha = 0;
+}
+
+HUD_Destroy()
+{
+	if (isDefined(self.afk_hud))
+		self.afk_hud destroy2();
+	if (isDefined(self.afk_hud_value))
+		self.afk_hud_value destroy2();
+	self.afk_hud = undefined;
+	self.afk_hud_value = undefined;
 }
 
 
