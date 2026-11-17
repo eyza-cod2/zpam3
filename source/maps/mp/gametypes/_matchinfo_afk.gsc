@@ -23,7 +23,7 @@ Ready-ups, timeouts, strat time, time between rounds, pistol bash rounds and tim
 but they do not reset the AFK time either, so AFK player is kicked even if he dies at his spawn position in every round.
 Moving from the spawn position resets the AFK time. It starts counting again only after the next spawn.
 Warning is shown at the top of the screen (not in the center, so it does not cover the crosshair on wide resolutions):
-a countdown every second in last 10 seconds before the kick. Moving from the spawn position cancels the kick until the player is kicked.
+a countdown every second in last 15 seconds before the kick. Moving from the spawn position cancels the kick until the player is kicked.
 
 AFK kick is not reported in match data - kicked player is not connected anymore,
 so if he does not come back, leaver detection counts his time as usual.
@@ -125,8 +125,8 @@ onConnected()
 		if (remaining <= 0)
 			self HUD_Kicking();
 
-		// Countdown every second in last 10 seconds before kick
-		else if (remaining <= 10)
+		// Countdown every second in last 15 seconds before kick
+		else if (remaining <= 15)
 			self HUD_Warning(remaining);
 	}
 }
