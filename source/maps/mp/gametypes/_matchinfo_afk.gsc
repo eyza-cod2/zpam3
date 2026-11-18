@@ -22,7 +22,7 @@ Only live time is counted (same as leaver detection):
 Ready-ups, timeouts, strat time, time between rounds, pistol bash rounds and time when player is dead or spectating are not counted,
 but they do not reset the AFK time either, so AFK player is kicked even if he dies at his spawn position in every round.
 Moving from the spawn position resets the AFK time. It starts counting again only after the next spawn.
-Warning is shown at the top of the screen (not in the center, so it does not cover the crosshair on wide resolutions):
+Warning is shown above the crosshair, where iprintlnbold messages are:
 a countdown every second in last 15 seconds before the kick. Moving from the spawn position cancels the kick until the player is kicked.
 
 AFK kick is not reported in match data - kicked player is not connected anymore,
@@ -132,17 +132,17 @@ onConnected()
 }
 
 
-// Text at the top of the screen - iprintlnbold is in the middle and covers the crosshair on wide resolutions (for example 1920x710)
+// Text above the crosshair, where iprintlnbold messages are (HUD element, so the countdown does not stack up lines like iprintlnbold)
 HUD_Create()
 {
 	if (isDefined(self.afk_hud))
 		return;
 
-	self.afk_hud = addHUDClient(self, 0, 60, 1.4, (1, 0.2, 0.2), "center", "top", "center", "top");
+	self.afk_hud = addHUDClient(self, 0, 120, 1.4, (1, 0.2, 0.2), "center", "top", "center", "top");
 	self.afk_hud.font = "default";
 	self.afk_hud.archived = false;
 
-	self.afk_hud_value = addHUDClient(self, 0, 80, 1.4, (1, 0.2, 0.2), "center", "top", "center", "top");
+	self.afk_hud_value = addHUDClient(self, 0, 140, 1.4, (1, 0.2, 0.2), "center", "top", "center", "top");
 	self.afk_hud_value.font = "default";
 	self.afk_hud_value.archived = false;
 }
